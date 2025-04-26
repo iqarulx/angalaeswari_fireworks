@@ -948,8 +948,7 @@
             }
         }
 
-        if(isset($_POST['gst_option']))
-        {
+        if(isset($_POST['gst_option'])){
             $gst_option = $_POST['gst_option'];
             $gst_option = trim($gst_option);
             $gst_option_error = $valid->common_validation($gst_option, 'GST option', 'select');
@@ -1297,7 +1296,6 @@
                 }
             }
         }
-     
     
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
@@ -1390,7 +1388,6 @@
         $result = "";
     
         
-    
         for($i=0;$i<count($product_ids);$i++)
         {
             for($j=$i+1;$j<count($product_ids);$j++)

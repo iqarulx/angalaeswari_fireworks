@@ -480,7 +480,6 @@ function ProductRowCheck(obj) {
                     tax = tax.trim();
                     final_price = (parseFloat(final_rate) * 100) / (100 + parseFloat(tax));
                     final_rate = final_price.toFixed(2);
-                    console.log(final_rate);
                 }
             }
             else {
@@ -489,7 +488,6 @@ function ProductRowCheck(obj) {
                     tax = tax.trim();
                     final_price = (parseFloat(final_rate) * 100) / 100;
                     final_rate = final_price.toFixed(2);
-                    console.log(final_rate);
                 }
             }
         }
@@ -511,7 +509,6 @@ function ProductRowCheck(obj) {
         }
     }
 
-    // console.log(final_rate);
     var amount = "";
     if (final_rate != '' && selected_quantity != '') {
         amount = (parseFloat(final_rate) * parseFloat(selected_quantity));
@@ -639,6 +636,8 @@ function calTotal() {
         }
     }
     CheckCharges();
+    getAgentCommission();
+    checkGST();
 }
 
 function checkGST() {
@@ -705,6 +704,10 @@ function checkGST() {
         party_state = jQuery('input[name="party_state"]').val();
         party_state = jQuery.trim(party_state);
     }
+
+    console.log(gst_option);
+    console.log(tax_type);
+
     if (parseInt(gst_option) == 1) {
         if (parseInt(tax_type) == 1) {
             if (jQuery('.product_row').length > 0) {
@@ -899,11 +902,9 @@ function checkGST() {
             }
         }
     }
-    getAgentCommission();
 }
 
 function getAgentCommission() {
-    // alert("hello");
     var agent_commission = "";
     if (jQuery('input[name="agent_commission"]').length > 0) {
         agent_commission = jQuery('input[name="agent_commission"]').val();
@@ -920,7 +921,6 @@ function getAgentCommission() {
             commission_total = jQuery('.commission_total').html(commission_total);
         }
     }
-    // alert(overall_total+"hell"+agent_commission);
     checkOverallAmount();
 }
 
@@ -971,7 +971,6 @@ function AddChargesRow(obj) {
                         result = jQuery.trim(result);
                         if (charges_count < 5) {
                             if (jQuery('.charges_row').length > 0) {
-                                // alert(jQuery('.charges_row').last());
                                 jQuery('.charges_row').last().after(result);
                             }
                         }
@@ -1006,19 +1005,15 @@ function CheckCharges() {
                 var charges_value = 0; var charges_check = 1; var charges_type = "";
                 if (jQuery(this).find('input[name="other_charges_value[]"]').length > 0) {
                     charges_value = jQuery(this).find('input[name="other_charges_value[]"]').val();
-                    // alert(charges_value);
                     charges_value = charges_value.trim();
                     if (charges_value != "" && charges_value != 0 && typeof charges_value != "undefined" && charges_value != null) {
-                        // alert(charges_value+"hello");
                         if (charges_value.indexOf('%') != -1) {
                             charges_value = charges_value.replace('%', '');
                             charges_value = charges_value.trim();
-                            // alert(charges_value);
                             if (price_regex.test(charges_value) == false) {
                                 charges_check = 0;
                             }
                             else {
-                                // alert(total_amount+"hello"+charges_value);
                                 charges_value = (parseFloat(total_amount) * parseFloat(charges_value)) / 100;
                                 charges_value = charges_value.toFixed(2);
                             }
@@ -1107,6 +1102,7 @@ function CheckCharges() {
 
     }
     // getGST();
+    getAgentCommission();
 }
 
 function AddproformaProducts(event) {
@@ -1124,7 +1120,7 @@ function AddproformaProducts(event) {
     if (jQuery('select[name="tax_type"]').length > 0) {
         tax_type = jQuery('select[name="tax_type"]').val();
     }
-    var check_login_session = 1; var all_errors_check = 1;
+    var check_login_session = 1; var all_errors_check = '';
     var post_url = "dashboard_changes.php?check_login_session=1";
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
@@ -1144,7 +1140,7 @@ function AddproformaProducts(event) {
                     selected_product_id = jQuery('select[name="selected_product_id"]').val();
                     selected_product_id = jQuery.trim(selected_product_id);
                     if (typeof selected_product_id == "undefined" || selected_product_id == "" || selected_product_id == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = "Product";
                     }
                 }
 
@@ -1153,13 +1149,13 @@ function AddproformaProducts(event) {
                     selected_quantity = jQuery('input[name="selected_quantity"]').val();
                     selected_quantity = jQuery.trim(selected_quantity);
                     if (typeof selected_quantity == "undefined" || selected_quantity == "" || selected_quantity == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Quantity" : "Quantity";
                     }
                     else if (price_regex.test(selected_quantity) == false) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Quantity" : "Quantity";
                     }
                     else if (parseFloat(selected_quantity) > 99999) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Quantity" : "Quantity";
                     }
                 }
 
@@ -1168,7 +1164,7 @@ function AddproformaProducts(event) {
                     selected_unit_type = jQuery('select[name="selected_unit_type"]').val();
                     selected_unit_type = jQuery.trim(selected_unit_type);
                     if (typeof selected_unit_type == "undefined" || selected_unit_type == "" || selected_unit_type == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Unit" : "Unit";
                     }
                 }
 
@@ -1178,13 +1174,13 @@ function AddproformaProducts(event) {
                     selected_rate = jQuery('input[name="selected_sales_rate"]').val();
                     selected_rate = jQuery.trim(selected_rate);
                     if (typeof selected_rate == "undefined" || selected_rate == "" || selected_rate == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Rate" : "Rate";
                     }
                     else if (price_regex.test(selected_rate) == false) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Rate" : "Rate";
                     }
                     else if (parseFloat(selected_rate) > 99999) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Rate" : "Rate";
                     }
                 }
 
@@ -1193,13 +1189,13 @@ function AddproformaProducts(event) {
                     selected_per = jQuery('input[name="selected_per"]').val();
                     selected_per = jQuery.trim(selected_per);
                     if (typeof selected_per == "undefined" || selected_per == "" || selected_per == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Per" : "Per";
                     }
                     else if (price_regex.test(selected_per) == false) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Per" : "Per";
                     }
                     else if (parseFloat(selected_per) > 99999) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Per" : "Per";
                     }
                 }
 
@@ -1208,7 +1204,7 @@ function AddproformaProducts(event) {
                     selected_per_type = jQuery('select[name="selected_per_type"]').val();
                     selected_per_type = jQuery.trim(selected_per_type);
                     if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Per" : "Per";
                     }
                 }
 
@@ -1217,7 +1213,7 @@ function AddproformaProducts(event) {
                     selected_final_rate = jQuery('input[name="selected_final_rate"]').val();
                     selected_final_rate = jQuery.trim(selected_final_rate);
                     if (typeof selected_final_rate == "undefined" || selected_final_rate == "" || selected_final_rate == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Final Rate" : "Final Rate";
                     }
                 }
 
@@ -1226,7 +1222,7 @@ function AddproformaProducts(event) {
                     selected_amount = jQuery('input[name="selected_amount"]').val();
                     selected_amount = jQuery.trim(selected_amount);
                     if (typeof selected_amount == "undefined" || selected_amount == "" || selected_amount == 0) {
-                        all_errors_check = 0;
+                        all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
                     }
                 }
 
@@ -1236,18 +1232,18 @@ function AddproformaProducts(event) {
                         selected_content = jQuery('input[name="selected_content"]').val();
                         selected_content = jQuery.trim(selected_content);
                         if (typeof selected_content == "undefined" || selected_content == "" || selected_content == 0) {
-                            all_errors_check = 0;
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
                         }
                         else if (price_regex.test(selected_content) == false) {
-                            all_errors_check = 0;
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
                         }
                         else if (parseFloat(selected_content) > 99999) {
-                            all_errors_check = 0;
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
                         }
                     }
 
                 }
-                if (parseFloat(all_errors_check) == 1) {
+                if (all_errors_check == '') {
                     var add = 1;
                     if (selected_product_id != "") {
                         if (jQuery('input[name="product_id[]"]').length > 0) {
@@ -1258,7 +1254,6 @@ function AddproformaProducts(event) {
                                 if (jQuery('input[name="content[]"]').length > 0) {
                                     prev_content = jQuery(this).find('input[name="content[]"]').val();
                                 }
-                                // alert(prev_brand_id+"hai"+selected_brand_id+"hai"+prev_product_id+"hai"+selected_product_id+"hai"+prev_content+"hai"+selected_content+"hai"+prev_unit_type+"hai"+selected_unit_type);
                                 if (subunit_need == '1') {
                                     if (prev_product_id == selected_product_id && prev_content == selected_content && prev_unit_type == selected_unit_type) {
                                         add = 0;
@@ -1292,7 +1287,6 @@ function AddproformaProducts(event) {
                                 }
 
                                 if (jQuery('select[name="magazine_type"]').length > 0) {
-                                    alert("helo");
                                     jQuery('.overall_magazine').addClass('d-none');
                                     jQuery('.indv_magazine').addClass('d-none');
 
@@ -1358,19 +1352,39 @@ function AddproformaProducts(event) {
                                     jQuery('.action_element').removeClass('d-none');
                                 }
 
-
                                 var addcol = 0;
                                 if (gst_option == '1' && tax_type == '1') {
                                     if (jQuery('.tax_element').length > 0) {
                                         jQuery('.tax_element').removeClass('d-none');
                                     }
                                 }
-                                calTotal();
 
+                                if (jQuery('.product_row').length > 0) {
+                                    var product_row = 0;
+                                    jQuery('.product_row').each(function () {
+                                        product_row = product_row + 1;
+                                    });
+
+                                    if (product_row != 0) {
+                                        if ((jQuery('select[name="magazine_id"]').length > 0) && ((jQuery('select[name="magazine_type"]').length > 0))) {
+                                            if ((jQuery('#div_selected_magazine_type').length > 0) && jQuery('#div_selected_magazine_id').length > 0) {
+                                                jQuery('#div_selected_magazine_type').css({
+                                                    'pointer-events': 'none',
+                                                    'background-color': '#e9ecef'
+                                                });
+                                                jQuery('#div_selected_magazine_id').css({
+                                                    'pointer-events': 'none',
+                                                    'background-color': '#e9ecef'
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                calTotal();
                             }
                         });
-                    }
-                    else {
+                    } else {
 
                         // if(godown_type == 1){
                         jQuery('.proforma_invoice_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Brand, Product and Contains and Unit type Already Exists</span>');
@@ -1381,10 +1395,9 @@ function AddproformaProducts(event) {
                         //      jQuery('.received_slip_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Godown ,Brand, Product and Contains Already Exists</span>');
                         // }
                     }
-
                 }
                 else {
-                    jQuery('.proforma_invoice_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">Check All Details</span>');
+                    jQuery('.proforma_invoice_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">Check ' + all_errors_check + '</span>');
                     if (jQuery('.add_products_button').length > 0) {
                         jQuery('.add_products_button').attr('disabled', false);
                     }
@@ -1399,163 +1412,211 @@ function AddproformaProducts(event) {
 }
 
 function CalProductAmount() {
-    if (jQuery('span.infos').length > 0) {
-        jQuery('span.infos').remove();
-    }
-    var contains_check = 1; var contains_error = 1; var rate_error = 1; var rate_check = 1;
-    var content = ""; var per_check = 1; var per_error = 1; var per_type_check = 1; var per_type_error = 1; var subunitNeed = 0;
-    var selected_amount = 0; var selected_subunit_amount = 0;
+    var quantity = jQuery('input[name="selected_quantity"]').val() || 0;
+    var content = jQuery('input[name="selected_content"]').val();
+    var rate = jQuery('input[name="selected_sales_rate"]').val() || 0;
+    var per = jQuery('input[name="selected_per"]').val() || 1;
+    var unit_type = jQuery('select[name="selected_unit_type"]').val();
+    var per_type = jQuery('select[name="selected_per_type"]').val();
+    var final_rate = jQuery('input[name="selected_final_rate"]');
 
-    var selected_rate = "";
-    if (jQuery('input[name="selected_sales_rate"]').length > 0) {
-        selected_rate = jQuery('input[name="selected_sales_rate"]').val();
-        selected_rate = jQuery.trim(selected_rate);
-        if (typeof selected_rate == "undefined" || selected_rate == "" || selected_rate == 0) {
-            rate_check = 0;
-        }
-        else if (price_regex.test(selected_rate) == false) {
-            rate_error = 0;
-        }
-        else if (parseFloat(selected_rate) > 99999) {
-            rate_error = 0;
-        }
-    }
-    var selected_per = "";
-    if (jQuery('input[name="selected_per"]').length > 0) {
-        selected_per = jQuery('input[name="selected_per"]').val();
-        selected_per = jQuery.trim(selected_per);
-        if (typeof selected_per == "undefined" || selected_per == "" || selected_per == 0) {
-            per_check = 0;
-        }
-        else if (price_regex.test(selected_per) == false) {
-            per_error = 0;
-        }
-        else if (parseFloat(selected_per) > 99999) {
-            per_error = 0;
-        }
-    }
-    var selected_per_type = "";
-    if (jQuery('select[name="selected_per_type"]').length > 0) {
-        selected_per_type = jQuery('select[name="selected_per_type"]').val();
-        selected_per_type = jQuery.trim(selected_per_type);
-        if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
-            per_type_check = 0;
-        }
-        else if (price_regex.test(selected_per_type) == false) {
-            per_type_error = 0;
-        }
-        else if (parseFloat(selected_per_type) > 99999) {
-            per_type_error = 0;
-        }
-    }
-    if (jQuery('input[name="selected_subunit_need"]').length > 0) {
-        subunitNeed = jQuery('input[name="selected_subunit_need"]').val();
-    }
-
-    if (jQuery('input[name="selected_content"]').length > 0) {
-        content = jQuery('input[name="selected_content"]').val();
-        content = jQuery.trim(content);
-        if (typeof content == "undefined" || content == "" || content == 0) {
-            if (subunitNeed == '1') {
-                contains_check = 0;
+    var total_amount = 0; var per_rate = 0;
+    if (unit_type == 1) {
+        if (per_type == 1) {
+            per_rate = rate / per;
+            total_amount = quantity * per_rate;
+        } else if (per_type == 2) {
+            if (content != "") {
+                per_rate = (rate / per) * content;
+                total_amount = quantity * per_rate;
             }
         }
-        else if (price_regex.test(content) == false) {
-            contains_error = 0;
-        }
-        else if (parseFloat(content) > 99999) {
-            contains_error = 0;
-        }
-    }
 
-    var final_rate = 0;
-    // console.log(subunitNeed);
-    if (subunitNeed == 1) {
-        // console.log(per_check+" "+per_)
-        if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1 && parseFloat(contains_check) == 1 && parseFloat(contains_error) == 1) {
-            // console.log(selected_rate+" hai "+selected_per);
-            rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
-            // console.log(selected_per_type); 
-            if (selected_per_type == '1') {
-                selected_amount = rate_per_unit;
-                selected_subunit_amount = rate_per_unit;
-                final_rate = selected_subunit_amount;
+        if (per_rate != 0) {
+            if (final_rate.length > 0) {
+                jQuery('input[name="selected_final_rate"]').val(per_rate.toFixed(2));
             }
-            else if (selected_per_type == '2') {
-                selected_subunit_amount = rate_per_unit;
-                selected_amount = parseFloat(rate_per_unit) * parseFloat(content);
-                final_rate = selected_amount;
+        }
+    } else if (unit_type == 2) {
+        if (content != "") {
+            if (per_type == 1) {
+                per_rate = (rate / per) / content;
+                total_amount = quantity * per_rate;
+            } else if (per_type == 2) {
+                per_rate = rate / per;
+                total_amount = quantity * per_rate;
             }
 
-            if (jQuery('input[name="selected_final_rate"]').length > 0) {
-                jQuery('input[name="selected_final_rate"]').val(final_rate);
-            }
-
-        }
-        else {
-            if (jQuery('input[name="selected_final_rate"]').length > 0) {
-                jQuery('input[name="selected_final_rate"]').val('');
-            }
-        }
-        // console.log(final_rate+"helo");
-    } else {
-        if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1) {
-            rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
-
-
-            if (selected_per_type == '1') {
-                selected_amount = rate_per_unit;
-                final_rate = selected_amount;
-            }
-            else if (selected_per_type == '2') {
-                selected_amount = parseFloat(content) * parseFloat(rate_per_unit);
-                final_rate = selected_amount;
-            }
-            // console.log(final_rate);
-            if (jQuery('input[name="selected_final_rate"]').length > 0) {
-                jQuery('input[name="selected_final_rate"]').val(final_rate);
-            }
-        }
-        else {
-            if (jQuery('#rate_per_unit').length > 0) {
-                jQuery('#rate_per_unit').html('');
-            }
-            if (jQuery('#rate_per_subunit').length > 0) {
-                jQuery('#rate_per_subunit').html('');
-            }
-            if (jQuery('input[name="selected_final_rate"]').length > 0) {
-                jQuery('input[name="selected_final_rate"]').val('');
+            if (per_rate != 0) {
+                if (final_rate.length > 0) {
+                    jQuery('input[name="selected_final_rate"]').val(per_rate.toFixed(2));
+                }
             }
         }
     }
 
-    var quantity_error = 1; var quantity_check = 1;
-
-    var selected_quantity = "";
-    if (jQuery('input[name="selected_quantity"]').length > 0) {
-        selected_quantity = jQuery('input[name="selected_quantity"]').val();
-        selected_quantity = jQuery.trim(selected_quantity);
-        if (typeof selected_quantity == "undefined" || selected_quantity == "" || selected_quantity == 0) {
-            quantity_check = 0;
-        }
-        else if (price_regex.test(selected_quantity) == false) {
-            quantity_error = 0;
-        }
-        else if (parseFloat(selected_quantity) > 99999) {
-            quantity_error = 0;
-        }
+    var selected_amount = jQuery('input[name="selected_amount"]');
+    if (selected_amount.length > 0) {
+        selected_amount.val(total_amount.toFixed(2));
     }
-    // console.log(selected_amount);
-    if (parseFloat(quantity_check) == 1 && parseFloat(quantity_error) == 1 && parseFloat(rate_error) == 1 && parseFloat(rate_check) == 1) {
-        var selected_amount = "";
-        selected_amount = parseFloat(selected_quantity) * parseFloat(final_rate);
-        if (jQuery('input[name="selected_amount"]').length > 0) {
-            jQuery('input[name="selected_amount"]').val(selected_amount);
-        }
-        // alert(selected_amount);
-    }
-
 }
+
+// function CalProductAmount() {
+//     if (jQuery('span.infos').length > 0) {
+//         jQuery('span.infos').remove();
+//     }
+//     var contains_check = 1; var contains_error = 1; var rate_error = 1; var rate_check = 1;
+//     var content = ""; var per_check = 1; var per_error = 1; var per_type_check = 1; var per_type_error = 1; var subunitNeed = 0;
+//     var selected_amount = 0; var selected_subunit_amount = 0;
+
+//     var selected_rate = "";
+//     if (jQuery('input[name="selected_sales_rate"]').length > 0) {
+//         selected_rate = jQuery('input[name="selected_sales_rate"]').val();
+//         selected_rate = jQuery.trim(selected_rate);
+//         if (typeof selected_rate == "undefined" || selected_rate == "" || selected_rate == 0) {
+//             rate_check = 0;
+//         }
+//         else if (price_regex.test(selected_rate) == false) {
+//             rate_error = 0;
+//         }
+//         else if (parseFloat(selected_rate) > 99999) {
+//             rate_error = 0;
+//         }
+//     }
+//     var selected_per = "";
+//     if (jQuery('input[name="selected_per"]').length > 0) {
+//         selected_per = jQuery('input[name="selected_per"]').val();
+//         selected_per = jQuery.trim(selected_per);
+//         if (typeof selected_per == "undefined" || selected_per == "" || selected_per == 0) {
+//             per_check = 0;
+//         }
+//         else if (price_regex.test(selected_per) == false) {
+//             per_error = 0;
+//         }
+//         else if (parseFloat(selected_per) > 99999) {
+//             per_error = 0;
+//         }
+//     }
+//     var selected_per_type = "";
+//     if (jQuery('select[name="selected_per_type"]').length > 0) {
+//         selected_per_type = jQuery('select[name="selected_per_type"]').val();
+//         selected_per_type = jQuery.trim(selected_per_type);
+//         if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
+//             per_type_check = 0;
+//         }
+//         else if (price_regex.test(selected_per_type) == false) {
+//             per_type_error = 0;
+//         }
+//         else if (parseFloat(selected_per_type) > 99999) {
+//             per_type_error = 0;
+//         }
+//     }
+//     if (jQuery('input[name="selected_subunit_need"]').length > 0) {
+//         subunitNeed = jQuery('input[name="selected_subunit_need"]').val();
+//     }
+
+//     if (jQuery('input[name="selected_content"]').length > 0) {
+//         content = jQuery('input[name="selected_content"]').val();
+//         content = jQuery.trim(content);
+//         if (typeof content == "undefined" || content == "" || content == 0) {
+//             if (subunitNeed == '1') {
+//                 contains_check = 0;
+//             }
+//         }
+//         else if (price_regex.test(content) == false) {
+//             contains_error = 0;
+//         }
+//         else if (parseFloat(content) > 99999) {
+//             contains_error = 0;
+//         }
+//     }
+
+//     var final_rate = 0;
+//     // console.log(subunitNeed);
+//     if (subunitNeed == 1) {
+//         // console.log(per_check+" "+per_)
+//         if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1 && parseFloat(contains_check) == 1 && parseFloat(contains_error) == 1) {
+//             // console.log(selected_rate+" hai "+selected_per);
+//             rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
+//             // console.log(selected_per_type); 
+//             if (selected_per_type == '1') {
+//                 selected_amount = rate_per_unit;
+//                 selected_subunit_amount = rate_per_unit;
+//                 final_rate = selected_subunit_amount;
+//             }
+//             else if (selected_per_type == '2') {
+//                 selected_subunit_amount = rate_per_unit;
+//                 selected_amount = parseFloat(rate_per_unit) * parseFloat(content);
+//                 final_rate = selected_amount;
+//             }
+
+//             if (jQuery('input[name="selected_final_rate"]').length > 0) {
+//                 jQuery('input[name="selected_final_rate"]').val(final_rate);
+//             }
+
+//         }
+//         else {
+//             if (jQuery('input[name="selected_final_rate"]').length > 0) {
+//                 jQuery('input[name="selected_final_rate"]').val('');
+//             }
+//         }
+//         // console.log(final_rate+"helo");
+//     } else {
+//         if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1) {
+//             rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
+
+
+//             if (selected_per_type == '1') {
+//                 selected_amount = rate_per_unit;
+//                 final_rate = selected_amount;
+//             }
+//             else if (selected_per_type == '2') {
+//                 selected_amount = parseFloat(content) * parseFloat(rate_per_unit);
+//                 final_rate = selected_amount;
+//             }
+//             // console.log(final_rate);
+//             if (jQuery('input[name="selected_final_rate"]').length > 0) {
+//                 jQuery('input[name="selected_final_rate"]').val(final_rate);
+//             }
+//         }
+//         else {
+//             if (jQuery('#rate_per_unit').length > 0) {
+//                 jQuery('#rate_per_unit').html('');
+//             }
+//             if (jQuery('#rate_per_subunit').length > 0) {
+//                 jQuery('#rate_per_subunit').html('');
+//             }
+//             if (jQuery('input[name="selected_final_rate"]').length > 0) {
+//                 jQuery('input[name="selected_final_rate"]').val('');
+//             }
+//         }
+//     }
+
+//     var quantity_error = 1; var quantity_check = 1;
+
+//     var selected_quantity = "";
+//     if (jQuery('input[name="selected_quantity"]').length > 0) {
+//         selected_quantity = jQuery('input[name="selected_quantity"]').val();
+//         selected_quantity = jQuery.trim(selected_quantity);
+//         if (typeof selected_quantity == "undefined" || selected_quantity == "" || selected_quantity == 0) {
+//             quantity_check = 0;
+//         }
+//         else if (price_regex.test(selected_quantity) == false) {
+//             quantity_error = 0;
+//         }
+//         else if (parseFloat(selected_quantity) > 99999) {
+//             quantity_error = 0;
+//         }
+//     }
+//     if (parseFloat(quantity_check) == 1 && parseFloat(quantity_error) == 1 && parseFloat(rate_error) == 1 && parseFloat(rate_check) == 1) {
+//         var selected_amount = "";
+//         selected_amount = parseFloat(selected_quantity) * parseFloat(final_rate);
+//         if (jQuery('input[name="selected_amount"]').length > 0) {
+//             jQuery('input[name="selected_amount"]').val(selected_amount);
+//         }
+//     }
+
+// }
 
 function getRateByTaxOption() {
     var tax_option = "";
@@ -1726,7 +1787,6 @@ function getRateByTaxOption() {
                                 quantity = jQuery.trim(quantity);
                                 if (price_regex.test(quantity) == true && price_regex.test(product_price) == true) {
                                     var amount = "";
-                                    // alert(product_price)
 
                                     amount = parseFloat(quantity) * parseFloat(product_price);
                                     amount = amount.toFixed(2);
@@ -1753,7 +1813,6 @@ function getRateByTaxOption() {
 }
 
 function DeleteChargesRow(obj, row_index) {
-    // alert(row_index);
     if (jQuery("input[name='charges_count']").length > 0) {
         charges_count = jQuery('input[name="charges_count"]').val();
         charges_count = parseInt(charges_count) - 1;
@@ -1777,6 +1836,22 @@ function DeletePurchaseRow(row_index, id_name) {
                 if (jQuery('#' + id_name + row_index).length > 0) {
                     jQuery('#' + id_name + row_index).remove();
                 }
+
+                if (!(jQuery('.product_row').length > 0)) {
+                    if ((jQuery('select[name="magazine_id"]').length > 0) && ((jQuery('select[name="magazine_type"]').length > 0))) {
+                        if ((jQuery('#div_selected_magazine_type').length > 0) && jQuery('#div_selected_magazine_id').length > 0) {
+                            jQuery('#div_selected_magazine_type').css({
+                                'pointer-events': 'auto',
+                                'background-color': '#e9ecef'
+                            });
+                            jQuery('#div_selected_magazine_id').css({
+                                'pointer-events': 'auto',
+                                'background-color': '#e9ecef'
+                            });
+                        }
+                    }
+                }
+
                 calTotal();
             }
             else {
@@ -1803,7 +1878,6 @@ function GetProdetails() {
                     url: post_url, success: function (result) {
                         if (result != "") {
                             result = result.split("$$$");
-                            console.log(result);
                             if ($("select[name='selected_unit_type']").length > 0) {
                                 $("select[name='selected_unit_type']").html(result[0]);
                             }
@@ -1883,7 +1957,6 @@ function magazineList() {
     if (jQuery('select[name="magazine_type"]').length > 0) {
         magazine_type = jQuery('select[name="magazine_type"]').val();
     }
-    alert(magazine_type);
     jQuery('.overall_magazine').addClass('d-none');
     jQuery('.indv_magazine').addClass('d-none');
 
@@ -1897,5 +1970,34 @@ function magazineList() {
             jQuery('.indv_magazine').removeClass('d-none');
         }
     }
+
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                if (magazine_type == 1) {
+                    var magazine_id = "";
+                    if (jQuery('select[name="magazine_id"]').length > 0) {
+                        magazine_id = jQuery('select[name="magazine_id"]').val();
+                    }
+                    if (magazine_id != "") {
+                        post_url = "proforma_invoice_changes.php?get_product_by_magazine=" + magazine_type + "&magazine_id=" + magazine_id;
+                        jQuery.ajax({
+                            url: post_url, success: function (result) {
+                                jQuery('select[name="selected_product_id"]').html(result);
+                            }
+                        });
+                    }
+                } else {
+                    post_url = "proforma_invoice_changes.php?get_product_by_magazine=" + magazine_type;
+                    jQuery.ajax({
+                        url: post_url, success: function (result) {
+                            jQuery('select[name="selected_product_id"]').html(result);
+                        }
+                    });
+                }
+            }
+        }
+    });
     getGST();
 }

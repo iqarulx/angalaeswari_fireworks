@@ -518,13 +518,16 @@
                 }
 
                 $prev_iden_customer_id = ""; $iden_customer_error = "";	$prev_iden_customer_name ="";
-                if(!empty($identification)) {
+
+                if(!empty($identification) && $identification != $GLOBALS['null_value']) {
                     // $prev_customer_id = $obj->customeridentificationExists($identification);
                     $prev_iden_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'identification', $identification, 'customer_id');
                     if(!empty($prev_iden_customer_id) && $prev_iden_customer_id != $edit_id) {
                         $prev_iden_customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$prev_iden_customer_id,'customer_name');
-						$prev_iden_customer_name = $obj->encode_decode("decrypt",$prev_iden_customer_name);
-                        $iden_customer_error = "This Identification number is already exist in ".$prev_iden_customer_name;
+                        if(!empty($prev_iden_customer_name)){
+                            $prev_iden_customer_name = $obj->encode_decode("decrypt",$prev_iden_customer_name);
+                            $iden_customer_error = "This Identification number is already exist in ".$prev_iden_customer_name;
+                        }
                     }
                 }
         
@@ -546,7 +549,7 @@
                             $customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'id', $customer_insert_id, 'customer_id');
                            	
                             $balance = 1;
-                            $result = array('number' => '1', 'msg' => 'customer Successfully Created','customer_id' => $customer_id);
+                            $result = array('number' => '1', 'msg' => 'Customer Successfully Created','customer_id' => $customer_id);
                             				
                         }
                         else {

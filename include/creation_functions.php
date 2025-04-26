@@ -524,6 +524,52 @@
             return $list;
         }
 
+		public function getProfomaInvoiceList($from_date, $to_date, $search_text, $show_bill) {
+            $list = array(); $select_query = ""; $where = "";
+            $bill_company_id = $GLOBALS['bill_company_id'];
+            if(!empty($bill_company_id)) {
+				$where = "bill_company_id = '".$bill_company_id."' ";
+			}
+            if(!empty($from_date)) {
+                $from_date = date("Y-m-d", strtotime($from_date));
+                if(!empty($where)) {
+                    $where = $where." AND proforma_invoice_date >= '".$from_date."'";
+                }
+                else {
+                    $where = "proforma_invoice_date >= '".$from_date."'";
+                }
+            }
+            if(!empty($to_date)) {
+                $to_date = date("Y-m-d", strtotime($to_date));
+                if(!empty($where)) {
+                    $where = $where." AND proforma_invoice_date <= '".$to_date."'";
+                }
+                else {
+                    $where = "proforma_invoice_date <= '".$to_date."'";
+                }
+            }
+            if($show_bill == '0' || $show_bill == '1'){
+                if(!empty($where)) {
+                    $where = $where." AND cancelled = '".$show_bill."' ";
+                }
+                else {
+                    $where = "cancelled = '".$show_bill."' ";
+                }
+            }
+
+			if(!empty($where)) {
+				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
+			}
+			else{
+				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+			}
+            
+            if(!empty($select_query)) {
+                $list = $this->getQueryRecords($GLOBALS['proforma_invoice_table'], $select_query);
+            }
+            return $list;
+        }
+
 		public function getContractorFinishedProducts($contractor_id,$finished_product_group_id) {
 			$list = array(); $select_query = "";
 		

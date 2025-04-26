@@ -3,136 +3,160 @@
 	if(isset($_REQUEST['show_proforma_invoice_id'])) { 
         $show_proforma_invoice_id = $_REQUEST['show_proforma_invoice_id'];
 
-        $proforma_invoice_number =""; $customer_id =""; $proforma_invoice_date =date('Y-m-d');  $sub_total =""; $grand_total =""; $total_amount =""; $round_off =""; $product_id =array(); $product_name =array(); $brand_id =array(); $brand_name =array(); $per =array(); $per_type =array(); $unit_type =array(); $unit_id =array(); $subunit_id =array(); $subunit_name =array();  $unit_name =array(); $subunit_content =array(); $sales_rate =array();  $product_name =array(); $charges_id =array(); $charges_type =array(); $charges_value =array(); $charges_total =array(); $product_quantity =array(); $agent_id =array(); $gst_option =""; $tax_option =""; $tax_type =""; $product_tax =""; $overall_tax ="";
-        
+        $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
+        $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";
+
         if(!empty($show_proforma_invoice_id)) {
             $proforma_invoice_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $show_proforma_invoice_id, '');
-            $agent_id = "";
             if(!empty($proforma_invoice_list)) {
-                foreach($proforma_invoice_list as $Q_list) {
-                    if(!empty($Q_list['proforma_invoice_number'])) {
-                        $proforma_invoice_number = $Q_list['proforma_invoice_number'];
+                foreach($proforma_invoice_list as $pi) {
+                    if(!empty($pi['proforma_invoice_number'])) {
+                        $proforma_invoice_number = $pi['proforma_invoice_number'];
                     }
-                    if(!empty($Q_list['customer_id'])) {
-                        $customer_id = $Q_list['customer_id'];
+                    if(!empty($pi['customer_id'])) {
+                        $customer_id = $pi['customer_id'];
                     }
-                    if(!empty($Q_list['proforma_invoice_date'])) {
-                        $proforma_invoice_date = $Q_list['proforma_invoice_date'];
+                    if(!empty($pi['proforma_invoice_date'])) {
+                        $proforma_invoice_date = date('Y-m-d', strtotime($proforma_invoice_date));
                     }
-                    if(!empty($Q_list['sub_total'])) {
-                        $sub_total = $Q_list['sub_total'];
+                    if(!empty($pi['agent_id'])) {
+                        $agent_id = $pi['agent_id'];
                     }
-                    if(!empty($Q_list['grand_total'])) {
-                        $grand_total = $Q_list['grand_total'];
+                    if(!empty($pi['transport_id'])) {
+                        $transport_id = $pi['transport_id'];
                     }
-                    if(!empty($Q_list['total_amount'])) {
-                        $total_amount = $Q_list['total_amount'];
+                    if(!empty($pi['bank_id'])) {
+                        $bank_id = $pi['bank_id'];
                     }
-                    if(!empty($Q_list['round_off'])) {
-                        $round_off = $Q_list['round_off'];
+                    if(!empty($pi['magazine_type'])) {
+                        $magazine_type = $pi['magazine_type'];
                     }
-                    if(!empty($Q_list['product_id'])) {
-                        $product_id = $Q_list['product_id'];
-                        $product_id = explode(",", $product_id);
-                        $product_id = array_reverse($product_id);
+                    if(!empty($pi['magazine_id'])) {
+                        $magazine_id = $pi['magazine_id'];
                     }
-                    if(!empty($Q_list['product_name'])) {
-                        $product_name = $Q_list['product_name'];
-                        $product_name = explode(",", $product_name);
-                        $product_name = array_reverse($product_name);
+                    if(!empty($pi['gst_option'])) {
+                        $gst_option = $pi['gst_option'];
                     }
-                    if(!empty($Q_list['brand_id'])) {
-                        $brand_id = $Q_list['brand_id'];
-                        $brand_id = explode(",", $brand_id);
-                        $brand_id = array_reverse($brand_id);
+                    if(!empty($pi['address'])) {
+                        $address = $pi['address'];
                     }
-                    if(!empty($Q_list['brand_name'])) {
-                        $brand_name = $Q_list['brand_name'];
-                        $brand_name = explode(",", $brand_name);
-                        $brand_name = array_reverse($brand_name);
+                    if(!empty($pi['tax_option'])) {
+                        $tax_option = $pi['tax_option'];
                     }
-                    if(!empty($Q_list['per'])) {
-                        $per = $Q_list['per'];
+                    if(!empty($pi['tax_type'])) {
+                        $tax_type = $pi['tax_type'];
+                    }
+                    if(!empty($pi['overall_tax'])) {
+                        $overall_tax = $pi['overall_tax'];
+                    }
+                    if(!empty($pi['company_state'])) {
+                        $company_state = $pi['company_state'];
+                    }
+                    if(!empty($pi['party_state'])) {
+                        $party_state = $pi['party_state'];
+                    }
+                    if(!empty($pi['product_id'])) {
+                        $product_ids = $pi['product_id'];
+                        $product_ids = explode(",", $product_ids);
+                        $product_ids = array_reverse($product_ids);
+                    }
+                    if(!empty($pi['indv_magazine_id'])) {
+                        $indv_magazine_ids = $pi['indv_magazine_id'];
+                        $indv_magazine_ids = explode(",", $indv_magazine_ids);
+                        $indv_magazine_ids = array_reverse($indv_magazine_ids);
+                    }
+                    if(!empty($pi['product_name'])) {
+                        $product_names = $pi['product_name'];
+                        $product_names = explode(",", $product_names);
+                        $product_names = array_reverse($product_names);
+                    }
+                    if(!empty($pi['unit_type'])) {
+                        $unit_types = $pi['unit_type'];
+                        $unit_types = explode(",", $unit_types);
+                        $unit_types = array_reverse($unit_types);
+                    }
+                    if(!empty($pi['subunit_need'])) {
+                        $subunit_needs = $pi['subunit_need'];
+                        $subunit_needs = explode(",", $subunit_needs);
+                        $subunit_needs = array_reverse($subunit_needs);
+                    }
+                    if(!empty($pi['content'])) {
+                        $contents = $pi['content'];
+                        $contents = explode(",", $contents);
+                        $contents = array_reverse($contents);
+                    }
+                    if(!empty($pi['unit_id'])) {
+                        $unit_ids = $pi['unit_id'];
+                        $unit_ids = explode(",", $unit_ids);
+                        $unit_ids = array_reverse($unit_ids);
+                    }
+                    if(!empty($pi['unit_name'])) {
+                        $unit_names = $pi['unit_name'];
+                        $unit_names = explode(",", $unit_names);
+                        $unit_names = array_reverse($unit_names);
+                    }
+                    if(!empty($pi['quantity'])) {
+                        $quantity = $pi['quantity'];
+                        $quantity = explode(",", $quantity);
+                        $quantity = array_reverse($quantity);
+                    }
+                    if(!empty($pi['rate'])) {
+                        $rate = $pi['rate'];
+                        $rate = explode(",", $rate);
+                        $rate = array_reverse($rate);
+                    }       
+                    if(!empty($pi['per'])) {
+                        $per = $pi['per'];
                         $per = explode(",", $per);
                         $per = array_reverse($per);
-                    }
-                    if(!empty($Q_list['per_type'])) {
-                        $per_type = $Q_list['per_type'];
+                    }    
+                    if(!empty($pi['per_type'])) {
+                        $per_type = $pi['per_type'];
                         $per_type = explode(",", $per_type);
                         $per_type = array_reverse($per_type);
+                    }     
+                    if(!empty($pi['product_tax'])) {
+                        $product_tax = $pi['product_tax'];
+                        $product_tax = explode(",", $product_tax);
+                        $product_tax = array_reverse($product_tax);
+                    }     
+                    if(!empty($pi['final_rate'])) {
+                        $final_rate = $pi['final_rate'];
+                        $final_rate = explode(",", $final_rate);
+                        $final_rate = array_reverse($final_rate);
+                    }      
+            
+                    if(!empty($pi['amount'])) {
+                        $amount = $pi['amount'];
+                        $amount = explode(",", $amount);
+                        $amount = array_reverse($amount);
                     }
-                    if(!empty($Q_list['unit_type'])) {
-                        $unit_type = $Q_list['unit_type'];
-                        $unit_type = explode(",", $unit_type);
-                        $unit_type = array_reverse($unit_type);
-                    }
-                    if(!empty($Q_list['unit_id'])) {
-                        $unit_id = $Q_list['unit_id'];
-                        $unit_id = explode(",", $unit_id);
-                        $unit_id = array_reverse($unit_id);
-                    }
-                    if(!empty($Q_list['subunit_id'])) {
-                        $subunit_id = $Q_list['subunit_id'];
-                        $subunit_id = explode(",", $subunit_id);
-                        $subunit_id = array_reverse($subunit_id);
-                    }
-                    if(!empty($Q_list['unit_name'])) {
-                        $unit_name = $Q_list['unit_name'];
-                        $unit_name = explode(",", $unit_name);
-                        $unit_name = array_reverse($unit_name);
-                    }
-                    if(!empty($Q_list['subunit_name'])) {
-                        $subunit_name = $Q_list['subunit_name'];
-                        $subunit_name = explode(",", $subunit_name);
-                        $subunit_name = array_reverse($subunit_name);
-                    }
-                    if(!empty($Q_list['content'])) {
-                        $subunit_content = $Q_list['content'];
-                        $subunit_content = explode(",", $subunit_content);
-                        $subunit_content = array_reverse($subunit_content);
-                    }
-                    if(!empty($Q_list['product_rate'])) {
-                        $sales_rate = $Q_list['product_rate'];
-                        $sales_rate = explode(",", $sales_rate);
-                        $sales_rate = array_reverse($sales_rate);
-                    }
-                    if(!empty($Q_list['product_amount'])) {
-                        $product_amount = $Q_list['product_amount'];
-                        $product_amount = explode(",", $product_amount);
-                        $product_amount = array_reverse($product_amount);
-                    }
-                    if(!empty($Q_list['charges_id'])) {
-                        $charges_id = $Q_list['charges_id'];
-                        $charges_id = explode(",", $charges_id);
-                    }
-                    if(!empty($Q_list['charges_type'])) {
-                        $charges_type = $Q_list['charges_type'];
+                    
+                    if(!empty($pi['other_charges_id'])) {
+                        $other_charges_id = $pi['other_charges_id'];
+                        $other_charges_id = explode(",", $other_charges_id);
+                        $other_charges_id = array_reverse($other_charges_id);
+                    }      
+            
+                    if(!empty($pi['charges_type'])) {
+                        $charges_type = $pi['charges_type'];
                         $charges_type = explode(",", $charges_type);
-                    }
-                    if(!empty($Q_list['charges_value'])) {
-                        $charges_value = $Q_list['charges_value'];
-                        $charges_value = explode(",", $charges_value);
-                    }
-                    if(!empty($Q_list['charges_total'])) {
-                        $charges_total = $Q_list['charges_total'];
-                        $charges_total = explode(",", $charges_total);
-                    }
-                    if(!empty($Q_list['product_quantity'])) {
-                        $product_quantity = $Q_list['product_quantity'];
-                        $product_quantity = explode(",", $product_quantity);
-                        $product_quantity = array_reverse($product_quantity);
-                    }
-                    if(!empty($Q_list['agent_id']) && $Q_list['agent_id'] != $GLOBALS['null_value']) {
-                        $agent_id = $Q_list['agent_id'];
-                    }
+                        $charges_type = array_reverse($charges_type);
+                    } 
+                    if(!empty($pi['other_charges_value'])) {
+                        $other_charges_value = $pi['other_charges_value'];
+                        $other_charges_value = explode(",", $other_charges_value);
+                        $other_charges_value = array_reverse($other_charges_value);
+                    }    
+                    if(!empty($pi['agent_commission'])) {
+                        $agent_commission = $pi['agent_commission'];
+                    }                        
                 }
             }
         }
 
         $customer_list =array();
         $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
-        $product_list =array();
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
         $charges_list =array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $agent_list =array();
@@ -143,6 +167,15 @@
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         $other_charges_list = array();
         $other_charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
+        $bank_list =array();
+        $bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '', '', '');
+        $product_list =array();
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+        $country = "India"; $state = "";
+		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
+        if(!empty($company_state)) {
+			$company_state = $obj->encode_decode('decrypt', $company_state);
+		}
 
     ?>
         <form class="poppins pd-20" name="proforma_invoice_form" method="POST">
@@ -157,7 +190,9 @@
                 </div>
             </div>
             <div class="row p-2">
-                <input type="hidden" name="edit_id" value="<?php if(!empty($show_proforma_invoice_id)) { echo $show_proforma_invoice_id; } ?>">      
+                <input type="hidden" name="edit_id" value="<?php if(!empty($show_proforma_invoice_id)) { echo $show_proforma_invoice_id; } ?>">    
+                <input type="hidden" name="company_state" value="<?php if(!empty($company_state)) { echo $company_state; } ?>">
+                <input type="hidden" name="party_state" value="<?php if(!empty($party_state)) { echo $party_state; } else { echo "Tamil Nadu"; } ?>">  
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -200,18 +235,20 @@
                                 style="width: 100%;">
                                 <option value="">Select Customer</option>
                                 <?php if (!empty($customer_list)) {
-                                    foreach ($customer_list as $P_list) { ?>
-                                        <option value="<?php if (!empty($P_list['customer_id'])) {
-                                            echo $P_list['customer_id'];
-                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $P_list['customer_id']) { echo "selected"; } ?>>
-                                            <?php if (!empty($P_list['customer_name'])) {
-                                                echo $obj->encode_decode('decrypt', $P_list['customer_name']);
-                                            } ?>
+                                    foreach ($customer_list as $customer) { ?>
+                                        <option value="<?php if (!empty($customer['customer_id'])) {
+                                            echo $customer['customer_id'];
+                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
+                                            <?php
+                                                if(!empty($customer['name_mobile_city']) && $customer['name_mobile_city'] != $GLOBALS['null_value']) {
+                                                    echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
+                                                }
+                                            ?>
                                         </option>
                                     <?php }
                                 } ?>
                             </select>
-                            <label>Select Customer</label>
+                            <label>Select Customer<span class="text-danger">*</span></label>
                         </div>
                     </div>
                 </div>
@@ -240,20 +277,41 @@
                 <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="bank_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select Bank</option>
+                                <?php if (!empty($bank_list)) {
+                                    foreach ($bank_list as $list) { ?>
+                                        <option value="<?php if (!empty($list['bank_id'])) {
+                                            echo $list['bank_id'];
+                                        } ?>" <?php if(!empty($bank_id) && $bank_id == $list['bank_id']) { echo "selected"; } ?>>
+                                            <?php if (!empty($list['bank_name'])) {
+                                                echo $obj->encode_decode('decrypt', $list['bank_name']);
+                                            } ?>
+                                        </option>
+                                    <?php }
+                                } ?>
+                            </select>
+                            <label>Select Bank<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
+                <?php /*
+                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border" id="div_selected_magazine_type">
                             <select class="select2 select2-danger" name="magazine_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:magazineList();">
                                 <option value="">Magazie Type</option>
                                 <option value="1">Overall Magazie</option>
                                 <option value="2">Productwise Magazie</option>
                             </select>
-                            <label>Select Magazine</label>
+                            <label>Select Magazine<span class="text-danger">*</span></label>
                         </div>
                     </div> 
                 </div>
                 <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 overall_magazine d-none">
                     <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="magazine_id" data-dropdown-css-class="select2-danger"
-                                        style="width: 100%;">
+                        <div class="form-label-group in-border" id="div_selected_magazine_id">
+                            <select class="select2 select2-danger" name="magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:magazineList();">
                                 <option value="">Select Magazine</option>
                                 <?php if (!empty($magazine_list)) {
                                     foreach ($magazine_list as $list) { ?>
@@ -271,6 +329,7 @@
                         </div>
                     </div> 
                 </div>
+                */ ?>
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="flex-shrink-0">
@@ -435,7 +494,7 @@
                                 <tr style="white-space:pre;">
                                     <th>#</th>
                                     <th style="width: 150px;">Product</th>
-                                    <th style="width: 100px;" class="indv_magazine d-none">Magazine</th>
+                                    <!-- <th style="width: 100px;" class="indv_magazine d-none">Magazine</th> -->
                                     <th style="width: 100px;">Type</th>
                                     <th style="width: 100px;">QTY</th>
                                     <th style="width: 100px;">Content</th>
@@ -624,7 +683,7 @@
                                                     </div>
                                                 </td>
                                                 <td colspan="1">
-                                                    <div class="text-end"><span class="other_charges_total"></span></div>
+                                                    <div class="text-end"><span class="other_charges_total text-end"></span></div>
                                                 </td>
                                                 <td></td>
                                             </tr>
@@ -642,7 +701,7 @@
                                 {
                                     ?>
                                     <tr class="smallfnt1 charges_row" id="charges_row_1">  
-                                        <td class="charges_head" colspan="6"></td>
+                                        <td class="charges_head" colspan="4"></td>
                                         <td colspan="3">
                                             <div class="form-group">
                                                 <div class="form-label-group in-border mb-0">
@@ -681,16 +740,15 @@
                                             </div>
                                         </td>
                                         <td colspan="1">
-                                            <div class="other_charges_total"></div>
+                                            <div class="other_charges_total text-end"></div>
                                         </td>
                                     </tr>
                                     <tr class="charges_row" id="charges_row_total_1">
-                                        <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>11<?php }else{ ?>10<?php }?>" class="text-end charges_sub">Total :</td>
+                                        <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end charges_sub">Total :</td>
                                         <td colspan="1" class="text-end charges_sub_total"></td>
                                     </tr>
                                     <?php
                                 }?>
-                                
                                 <tr class="d-none">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end cgst">CGST :</td>
                                     <td class="text-end cgst_value"></td>
@@ -707,16 +765,15 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end total_tax">Total Tax :</td>
                                     <td class="text-end total_tax_value"></td>
                                 </tr>
-                                <!-- <tr>
-                                    <td colspan="10" class="text-end ">Total :</td>
-                                    <td colspan="1" class="text-end"></td>
-                                </tr>  -->
                                 <tr style="color:green;" class="agent_tr <?php if(empty($agent_id)){ ?>d-none<?php } ?>">
-                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?></td>
+                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
+                                        Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
+                                    </td>
                                     <input type="hidden" name="agent_commission" value="<?php if(!empty($agent_commission)){ echo $agent_commission; }?>">
-                                    <td colspan="1" class="text-end "><span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span></td>
+                                    <td class="text-end ">
+                                        <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
+                                    </td>
                                 </tr>
-                                    
                                 <tr>
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end round">Round OFF :</td>
                                     <td colspan="1" class="text-end round_off"></td>
@@ -730,7 +787,7 @@
                     </div>
                 </div>
                 <div class="col-md-12 py-3 text-center">
-                    <button class="btn btn-danger submit_button" type="button" onClick="Javascript:SaveModalContent(event,'purchase_bill_form', 'purchase_bill_changes.php', 'purchase_bill.php');">
+                    <button class="btn btn-danger submit_button" type="button" onClick="Javascript:SaveModalContent(event,'proforma_invoice_form', 'proforma_invoice_changes.php', 'proforma_invoice.php');">
                         Submit
                     </button>
                 </div>
@@ -738,9 +795,7 @@
         </form>       
         <script>
             jQuery(document).ready(function(){
-                <?php 
-                    if(!empty($show_purchase_bill_id)) { ?>calTotal();<?php }
-                ?>
+                <?php if(!empty($show_purchase_bill_id)) { ?>calTotal(); <?php }?>
             });
         </script>                    
         <script src="include/select2/js/select2.min.js"></script>
@@ -748,27 +803,29 @@
     <?php 
     } 
 
-    if(isset($_POST['form_name'])) {
-        $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $party_id = ""; $party_id_error = ""; $product_ids = array(); $product_names = array(); $brand_ids = array(); $brand_names = array(); $product_quantity = array(); $unit_ids = array(); $unit_names = array(); $subunit_contains = array();  $subunit_ids = array(); $subunit_names = array();
-        $product_rate = array(); $per = array(); $per_type = array(); $rate_per_unit = array(); $product_amount = array(); $sub_total = 0; $charges_id = array(); $charges_names = array(); $price_type = ""; $price_type_error = "";
-        $charges_values = array(); $charges_type = array(); $charges_total = array();
-        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0;
-        $agent_id = ""; $agent_id_error = "";
-        $valid_proforma_invoice = ""; $form_name = ""; $edit_id = ""; $current_date = date('Y-m-d'); $proforma_invoice_error = ""; $draft = "0";
-        // print_r($_POST);
-        if(isset($_POST['form_name'])) {
-            $form_name = $_POST['form_name'];
-            $form_name = trim($form_name);
+    if(isset($_POST['edit_id'])) {
+        // Strings
+        $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_proforma_invoice = "";  $edit_id = ""; $proforma_invoice_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; /* $magazine_type = 0; $magazine_id = ""; */ $gst_option = ""; $address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = "";
         
-        }
+        // Arrays
+        $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array();$other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
+       
+        // Doubles
+        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0; $sub_total = 0; $total_tax_value = 0;
+       
+        // Statics
+        $form_name = "proforma_invoice_form"; $current_date = date('Y-m-d'); 
+
         if(isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
             $edit_id = trim($edit_id);
         }
+        
         if (isset($_POST['draft'])) {
             $draft = $_POST['draft'];
             $draft = trim($draft);
         }
+
         if(isset($_POST['proforma_invoice_date'])) {
             $proforma_invoice_date = $_POST['proforma_invoice_date'];
             $proforma_invoice_date = trim($proforma_invoice_date);
@@ -779,6 +836,7 @@
                 }
             }
         }
+
         if(!empty($proforma_invoice_date_error)) {
             if(!empty($valid_proforma_invoice)) {
                 $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->error_display($form_name, "proforma_invoice_date", $proforma_invoice_date_error, 'text');
@@ -788,19 +846,21 @@
             }
         }
 
-        if(isset($_POST['party_id'])) {
-            $party_id = $_POST['party_id'];
-            $party_id = trim($party_id);
-            $party_id_error = $valid->common_validation($party_id, 'Party', 'select');
+        if(isset($_POST['customer_id'])) {
+            $customer_id = $_POST['customer_id'];
+            $customer_id = trim($customer_id);
+            $customer_id_error = $valid->common_validation($customer_id, 'Customer', 'select');
         }
-        if(!empty($party_id_error)) {
+
+        if(!empty($customer_id_error)) {
             if(!empty($valid_proforma_invoice)) {
-                $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->error_display($form_name, "party_id", $party_id_error, 'select');
+                $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
             }
             else {
-                $valid_proforma_invoice = $valid->error_display($form_name, "party_id", $party_id_error, 'select');
+                $valid_proforma_invoice = $valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
             }
         }
+
         if(isset($_POST['agent_id'])) {
             $agent_id = $_POST['agent_id'];
             $agent_id = trim($agent_id);
@@ -808,6 +868,7 @@
                 $agent_id_error = $valid->common_validation($agent_id, 'Agent', 'select');
             }
         }
+
         if(!empty($agent_id_error)) {
             if(!empty($valid_proforma_invoice)) {
                 $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
@@ -816,275 +877,382 @@
                 $valid_proforma_invoice = $valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
             }
         }
-    
+
+        if(isset($_POST['transport_id'])) {
+            $transport_id = $_POST['transport_id'];
+            $transport_id = trim($transport_id);
+        }
+
+        if(isset($_POST['bank_id'])) {
+            $bank_id = $_POST['bank_id'];
+            $bank_id = trim($bank_id);
+            $bank_id_error = $valid->common_validation($bank_id, 'Bank', 'select');
+        }
+
+        if(!empty($bank_id_error)) {
+            if(!empty($valid_proforma_invoice)) {
+                $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
+            }
+            else {
+                $valid_proforma_invoice = $valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
+            }
+        }
+
+        // if(isset($_POST['magazine_type'])) {
+        //     $magazine_type = $_POST['magazine_type'];
+        //     $magazine_type = trim($magazine_type);
+        // }
+
+        // if(isset($_POST['magazine_id'])) {
+        //     $magazine_id = $_POST['magazine_id'];
+        //     $magazine_id = trim($magazine_id);
+        // }
+
+        if(isset($_POST['gst_option'])){
+            $gst_option = $_POST['gst_option'];
+            $gst_option = trim($gst_option);
+            $gst_option_error = $valid->common_validation($gst_option, 'GST option', 'select');
+            if(empty($gst_option_error)) {
+                if($gst_option != '1' && $gst_option != '2') {
+                    $gst_option_error = "Invalid GST option";
+                }
+            }
+        }
+        
+        if(!empty($gst_option_error)) {
+            if(!empty($valid_purchase)) {
+                $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'gst_option', $gst_option_error, 'text');
+            } else {
+                $valid_purchase = $valid->error_display($form_name, 'gst_option', $gst_option_error, 'text');
+            }
+        }
+
+        if($gst_option == '1') {
+            $tax_type = $_POST['tax_type'];
+            $tax_type = trim($tax_type);
+            $tax_type_error = $valid->common_validation($tax_type, 'Tax Type', 'select');
+            if(empty($tax_type_error)) {
+                if($tax_type != '1' && $tax_type != '2') {
+                    $tax_type_error = "Invalid Tax Type";
+                }
+            }
+            if(!empty($tax_type_error)) {
+                if(!empty($valid_purchase)) {
+                    $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'tax_type', $tax_type_error, 'select');
+                } else {
+                    $valid_purchase = $valid->error_display($form_name, 'tax_type', $tax_type_error, 'select');
+                }
+            }
+
+            $tax_option = $_POST['tax_option'];
+            $tax_option = trim($tax_option);
+            $tax_option_error = $valid->common_validation($tax_option, 'Tax Option', 'select');
+            if(empty($tax_option_error)) {
+                if($tax_option != '1' && $tax_option != '2') {
+                    $tax_option_error = "Invalid Tax Option";
+                }
+            }
+            if(!empty($tax_option_error)) {
+                if(!empty($valid_purchase)) {
+                    $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'tax_option', $tax_option_error, 'select');
+                } else {
+                    $valid_purchase = $valid->error_display($form_name, 'tax_option', $tax_option_error, 'select');
+                }
+            }
+
+            if($tax_type == '2') {
+                if(isset($_POST['overall_tax'])) {
+                    $overall_tax = $_POST['overall_tax'];
+                    $overall_tax = trim($overall_tax);
+                }
+            }
+        } else {
+            $overall_tax = $GLOBALS['null_value']; 
+        }
+
+        if(isset($_POST['address'])) {
+            $address = $_POST['address'];
+            $address = trim($address);
+        }
+
+        if(isset($_POST['company_state'])) {
+            $company_state = $_POST['company_state'];
+            $company_state = trim($company_state);
+        }
+
+        if(isset($_POST['party_state'])) {
+            $party_state = $_POST['party_state'];
+            $party_state = trim($party_state);
+        }
+
+        if(isset($_POST['product_count'])) {
+            $product_count = $_POST['product_count'];
+            $product_count = trim($product_count);
+        }
+
         if(isset($_POST['product_id'])) {
             $product_ids = $_POST['product_id'];
             $product_ids = array_reverse($product_ids);
         }
-        if(isset($_POST['brand_id'])) {
-            $brand_ids = $_POST['brand_id'];
-            $brand_ids = array_reverse($brand_ids);
-        }
-        if(isset($_POST['proforma_invoice_qty'])) {
-            $product_quantity = $_POST['proforma_invoice_qty'];
-            $product_quantity = array_reverse($product_quantity);
-        }
-        if(isset($_POST['proforma_invoice_unit_type'])) {
-            $unit_types = $_POST['proforma_invoice_unit_type'];
+
+        if(isset($_POST['unit_type'])) {
+            $unit_types = $_POST['unit_type'];
             $unit_types = array_reverse($unit_types);
         }
-        if(isset($_POST['proforma_invoice_unit_id'])) {
-            $unit_ids = $_POST['proforma_invoice_unit_id'];
+
+        if(isset($_POST['unit_id'])) {
+            $unit_ids = $_POST['unit_id'];
             $unit_ids = array_reverse($unit_ids);
         }
-        if(isset($_POST['proforma_invoice_subunit_id'])) {
-            $subunit_ids = $_POST['proforma_invoice_subunit_id'];
-            $subunit_ids = array_reverse($subunit_ids);
+
+        if(isset($_POST['unit_name'])) {
+            $unit_names = $_POST['unit_name'];
+            $unit_names = array_reverse($unit_names);
         }
-        if(isset($_POST['proforma_invoice_subunit_name'])) {
-            $subunit_names = $_POST['proforma_invoice_subunit_name'];
-            $subunit_names = array_reverse($subunit_names);
+
+        if(isset($_POST['subunit_need'])) {
+            $subunit_need = $_POST['subunit_need'];
+            $subunit_need = array_reverse($subunit_need);
         }
-        if(isset($_POST['proforma_invoice_content'])) {
-            $subunit_contains = $_POST['proforma_invoice_content'];
-            $subunit_contains = array_reverse($subunit_contains);
+
+        if(isset($_POST['quantity'])) {
+            $quantity = $_POST['quantity'];
+            $quantity = array_reverse($quantity);
         }
-        if(isset($_POST['proforma_invoice_sales_rate'])) {
-            $product_rate = $_POST['proforma_invoice_sales_rate'];
-            $product_rate = array_reverse($product_rate);
+
+        // if(isset($_POST['indv_magazine_id'])) {
+        //     $indv_magazine_id = $_POST['indv_magazine_id'];
+        //     if(!empty($indv_magazine_id)){
+        //         $indv_magazine_id = array_reverse($indv_magazine_id);
+        //     }
+        // }
+
+        if(isset($_POST['content'])) {
+            $contents = $_POST['content'];
+            $contents = array_reverse($contents);
         }
-        if(isset($_POST['proforma_invoice_per'])) {
-            $per = $_POST['proforma_invoice_per'];
+
+        if(isset($_POST['rate'])) {
+            $rates = $_POST['rate'];
+            $rates = array_reverse($rates);
+        }
+
+        if(isset($_POST['per'])) {
+            $per = $_POST['per'];
             $per = array_reverse($per);
         }
-        if(isset($_POST['proforma_invoice_per_type'])) {
-            $per_type = $_POST['proforma_invoice_per_type'];
+
+        if(isset($_POST['per_type'])) {
+            $per_type = $_POST['per_type'];
             $per_type = array_reverse($per_type);
         }
-        if(isset($_POST['total_qty'])) {
-            $total_subunit_quantity = $_POST['total_qty'];
-            $total_subunit_quantity = array_reverse($total_subunit_quantity);
+
+        if(isset($_POST['product_tax'])) {
+            $product_tax = $_POST['product_tax'];
+            $product_tax = array_reverse($product_tax);
         }
-        if(!empty($product_ids)) {
-            $product_quantity = array_reverse($product_quantity);
-            // $quantity_limit = array_reverse($quantity_limit);
-            $a =1;
-            for($i=0; $i < count($product_ids); $i++) {
-                $product_ids[$i] = trim($product_ids[$i]);
-                $product_name = "";
-                $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'product_name');
 
-
-                $product_unit_id = "";
-                $product_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'unit_id');
-
-                $product_subunit_id = "";
-                $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'subunit_id');
-
-                $product_names[$i] = $product_name;
-
-                $brand_ids[$i] = trim($brand_ids[$i]);
-                if(isset($brand_ids[$i])) {
-                    $brand_error = "";
-                    $brand_error = $valid->common_validation($brand_ids[$i], 'Brand', 'select');
-                    if(!empty($brand_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'brand_id[]', $brand_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'brand_id[]', $brand_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-
-                $product_quantity[$i] = trim($product_quantity[$i]);
-                if(isset($product_quantity[$i])) {
-                    $quantity_error = "";
-                    $quantity_error = $valid->valid_number($product_quantity[$i], 'Qty', '1', '5');
-                    if(!empty($quantity_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'proforma_invoice_qty[]', $quantity_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'proforma_invoice_qty[]', $quantity_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-
-                $subunit_contains[$i] = trim($subunit_contains[$i]);
-                if(isset($subunit_contains[$i])) {
-                    $contains_error = ""; $required = 0;
-                    if($unit_ids[$i] == $product_unit_id && $product_subunit_id != $GLOBALS['null_value']) {
-                        $required = 1;
-                    }
-                    $contains_error = $valid->valid_number($subunit_contains[$i], 'Contains', $required, '5');
-                    if(!empty($contains_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'proforma_invoice_content[]', $contains_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'proforma_invoice_content[]', $contains_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-
-                $product_rate[$i] = trim($product_rate[$i]);
-                if(isset($product_rate[$i])) {
-                    $rate_error = "";
-                    $rate_error = $valid->valid_price($product_rate[$i], 'Rate', '1', '99999');
-                    if(!empty($rate_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'proforma_invoice_sales_rate[]', $rate_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'proforma_invoice_sales_rate[]', $rate_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-
-                $per[$i] = trim($per[$i]);
-                if(isset($per[$i])) {
-                    $per_error = "";
-                    $per_error = $valid->valid_number($per[$i], 'Per', '1', '5');
-                    if(!empty($per_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'proforma_invoice_per[]', $per_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'proforma_invoice_per[]', $per_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-
-                $per_type[$i] = trim($per_type[$i]);
-                if(isset($per_type[$i])) {
-                    $per_type_error = "";
-                    $per_type_error = $valid->common_validation($per_type[$i], 'Unit Type', 'select');
-                    if(!empty($per_type_error)) {
-                        if(!empty($valid_proforma_invoice)) {
-                            $valid_proforma_invoice = $valid_proforma_invoice." ".$valid->row_error_display($form_name, 'proforma_invoice_per_type[]', $per_type_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                        else {
-                            $valid_proforma_invoice = $valid->row_error_display($form_name, 'proforma_invoice_per_type[]', $per_type_error, 'text', 'proforma_invoice_row', ($a));
-                        }
-                    }
-                }
-                if ($draft == "1") {
-                    $valid_proforma_invoice = "";
-                }
-                if(empty($valid_proforma_invoice)) {
-                    $brand_name = "";
-                    $brand_name = $obj->getTableColumnValue($GLOBALS['brand_table'], 'brand_id', $brand_ids[$i], 'brand_name');
-                    $brand_names[$i] = $brand_name;
-
-                    $unit_name = "";
-                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
-                    $unit_names[$i] = $unit_name;
-
-                    $total_qty = 0; 
-                    $amount = 0;
-                    if($per_type[$i] == '1' || $per_type[$i] == 1) {
-                        $rate_per_case = $product_rate[$i] / $per[$i];
-                        $rate_per_piece = $rate_per_case / (int)$subunit_contains[$i];
-                    } else {
-                        $rate_per_piece = $product_rate[$i] / $per[$i];
-                        $rate_per_case = (int)$subunit_contains[$i] * $rate_per_piece;
-                    }
-
-                    if($unit_types[$i] == '1' || $unit_types[$i] == 1) {
-                        $rate_per_unit[$i]= $rate_per_case;
-                        $amount = (int)$product_quantity[$i] * $rate_per_case;
-                    } else {
-                        $amount = (int)$product_quantity[$i] * $rate_per_piece;
-                        $rate_per_unit[$i] = $rate_per_piece;
-                    }
-                    $amount = number_format($amount, 2);
-                    $amount = str_replace(",", "", $amount);
-                    $product_amount[$i] = $amount;
-                    $sub_total += $amount;
-                    if($unit_ids[$i] == $product_unit_id) {
-                        $total_unit_qty += (int)$product_quantity[$i];
-                    }
-                    else if($unit_ids[$i] == $product_subunit_id) {
-                        $total_subunit_qty += (int)$product_quantity[$i];
-                    }
-                    for($j=$i+1; $j < count($product_ids); $j++) {
-                        if ($product_ids[$i] == $product_ids[$j] &&
-                            $brand_ids[$i] == $brand_ids[$j] &&
-                            $unit_types[$i] == $unit_types[$j] &&
-                            $subunit_contains[$i] == $subunit_contains[$j]) {
-                                $proforma_invoice_error = "Same Combination exists in Row No.".($i+1)." & ".($j+1);
-                                break;
-                        }
-                    }
-                }
-                $a++;
-            }
-            $product_quantity = array_reverse($product_quantity);
-            // $quantity_limit = array_reverse($quantity_limit);
+        if(isset($_POST['final_rate'])) {
+            $final_rate = $_POST['final_rate'];
+            $final_rate = array_reverse($final_rate);
         }
-        else {
-            $proforma_invoice_error = "Select Products";
+
+        if(isset($_POST['amount'])) {
+            $amount = $_POST['amount'];
+            $amount = array_reverse($amount);
         }
-        $total_amount = $sub_total;
-        if(isset($_POST['charges_id'])) {
-            $charges_id = $_POST['charges_id'];
+
+        if(isset($_POST['charges_count'])) {
+            $charges_count = $_POST['charges_count'];
+            $charges_count = trim($charges_count);
         }
+
+        if(isset($_POST['other_charges_id'])) {
+            $other_charges_id = $_POST['other_charges_id'];
+            $other_charges_id = array_reverse($other_charges_id);
+        }
+
         if(isset($_POST['charges_type'])) {
             $charges_type = $_POST['charges_type'];
+            $charges_type = array_reverse($charges_type);
+        }   
+        
+        if(isset($_POST['other_charges_value'])) {
+            $other_charges_values = $_POST['other_charges_value'];
+            $other_charges_values = array_reverse($other_charges_values);
+        }   
+
+        if(isset($_POST['agent_commission'])) {
+            $agent_commission = $_POST['agent_commission'];
+            $agent_commission = trim($agent_commission);
         }
-        if(isset($_POST['charges_value'])) {
-            $charges_values = $_POST['charges_value'];
+
+        $rate_per_cases =array(); $rate_per_pieces =array(); $final_rate =array(); $rate_per_unit =array();
+        if(!empty($product_ids)) {
+            for($i=0; $i < count($product_ids); $i++) {
+                $product_ids[$i] = trim($product_ids[$i]);
+                $product_unique_id = "";
+                $product_unique_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'id');
+                if(preg_match("/^\d+$/", $product_unique_id)) {
+                    $product_name = "";
+                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'product_name');
+                    $product_names[$i] = $product_name;
+
+                    $unit_ids[$i] = trim($unit_ids[$i]);
+                    $unit_name = "";
+                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
+                    $unit_names[$i] = $unit_name; 
+                    $quantity[$i] = trim($quantity[$i]);
+                    
+                    if(!empty($quantity[$i])) {
+                        if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999){
+                            $unit_types[$i] = trim($unit_types[$i]);
+                            if(!empty($unit_types[$i])) {
+                                $contents[$i] = trim($contents[$i]);
+
+                                if(!empty($contents[$i])) {
+                                    if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $contents[$i]) && $contents[$i] <= 99999) {
+                                        if($unit_types[$i] == '1') {
+                                            $total_qty[$i] = $quantity[$i] * $contents[$i];
+                                        } else {
+                                            $total_qty[$i] = $quantity[$i];
+                                        }
+    
+                                        $rates[$i] = trim($rates[$i]);
+                                        if(!empty($rates[$i])) {
+                                            if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $rates[$i]) && $rates[$i] <= 99999) {
+                                                $per[$i] = trim($per[$i]);
+                                                if(!empty($per[$i])) {
+                                                    if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $per[$i]) && $per[$i] <= 99999) {
+                                                    $per_type[$i] = trim($per_type[$i]);
+                                                        if(!empty($per_type[$i])) {        
+                                                            if($unit_types[$i] == '1') {
+                                                                if($per_type[$i] == '1') {
+                                                                    $rate_per_cases[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_cases[$i];
+                                                                } else if($per_type[$i] == '2') {
+                                                                    $rate_per_pieces[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_pieces[$i] * $contents[$i];
+                                                                }
+                                                            } else if($unit_types[$i] =='2') {
+                                                                if($per_type[$i] == '1') {
+                                                                    $rate_per_cases[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_cases[$i]/$contents[$i];
+                                                                } else if($per_type[$i] == '2') {
+                                                                    $final_rate[$i] = $rates[$i]/$per[$i];
+                                                                }
+                                                            }
+                                                            if($gst_option == '1') {
+                                                                if($tax_option == '2') {
+                                                                    $tax ="";
+                                                                    if($tax_type == '1') {
+                                                                        $tax= $product_tax[$i];
+                                                                    } else {
+                                                                        $tax = $overall_tax;
+                                                                    }
+                                                                    $tax = trim(str_replace("%", "",$tax));
+                                                                    $final_rate[$i] = $final_rate[$i]-($final_rate[$i] * $tax)/($tax + 100);
+                                                                }
+                                                            }
+                                                            if(!empty($final_rate[$i]) && !empty($quantity[$i])) {
+                                                                $rate_per_unit[$i] = $final_rate[$i];
+                                                                $product_amount[$i] = $final_rate[$i] * $quantity[$i];
+                                                            }
+                                                            $sub_total += $product_amount[$i];
+                                                        } else {
+                                                            $product_error = "Empty Per Type in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                        }
+                                                    } else {
+                                                        $product_error = "Invalid per in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                    }
+                                                } else {
+                                                    $product_error = "Empty Per in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                }
+                                            } else {
+                                                $product_error = "Invalid rate in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                            }
+                                        } else {
+                                            $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                        }     
+                                    } else {
+                                        $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    }
+                                } else {
+                                    $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                } 
+                            } else {
+                                $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
+                            }  
+                        } else {
+                            $product_error = "Invalid quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
+                        }
+                    } else {
+                        $product_error = "Empty quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
+                    }    
+                } else {
+                    $product_error = "Invalid Product";
+                }
+            }
+        } else {
+            $product_error = "Add Products";
         }
-        if(!empty($charges_id) && empty($proforma_invoice_error)) {
-            for($i=0; $i < count($charges_id); $i++) {
-                $charges_id[$i] = trim($charges_id[$i]);
-                if(!empty($charges_id[$i])) {
-                    $charges_name = ""; $charges_value = 0;
-                    $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $charges_id[$i], 'charges_name');
-                    $charges_names[$i] = $charges_name;
+
+        $total_amount = $sub_total;
+
+        if(empty($product_error) && empty($total_amount)) {
+            $product_error = "Bill value cannot be 0";
+        }
+       
+        $charges_total_amounts = array();
+        if(!empty($other_charges_id) && empty($product_error)) {
+            for($i=0; $i < count($other_charges_id); $i++) {
+                $other_charges_id[$i] = trim($other_charges_id[$i]);
+                if(!empty($other_charges_id[$i])) {
+                    $other_charges_name = ""; $other_charges_value = 0;
+                    $other_charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$i], 'charges_name');
+                    $other_charges_names[$i] = $other_charges_name;
                     $charges_type[$i] = trim($charges_type[$i]);
-                    $charges_values[$i] = trim($charges_values[$i]);
-                    if(isset($charges_values[$i])) {
-                        $charges_error = "";
-                        if(strpos($charges_values[$i], '%') !== false) {
-                            $charges_value = str_replace('%', '', $charges_values[$i]);
-                            $charges_value = trim($charges_value);
+                    $other_charges_values[$i] = trim($other_charges_values[$i]);
+                    if(isset($other_charges_values[$i])) {
+                        $other_charges_error = "";
+                        if(strpos($other_charges_values[$i], '%') !== false) {
+                            $other_charges_value = str_replace('%', '', $other_charges_values[$i]);
+                            $other_charges_value = trim($other_charges_value);
+                        } else {
+                            $other_charges_value = $other_charges_values[$i];
                         }
-                        else {
-                            $charges_value = $charges_values[$i];
-                        }
-                        $charges_error = $valid->valid_price($charges_value, ($obj->encode_decode('decrypt', $charges_name)), 1, '');
-                        if(!empty($charges_error)) {
-                            if(!empty($proforma_invoice_error)) {
-                                $proforma_invoice_error = $proforma_invoice_error."<br>".$charges_error;
+                        $other_charges_error = $valid->valid_price($other_charges_value, ($obj->encode_decode('decrypt', $other_charges_name)), 1, '');
+                        if(!empty($other_charges_error)) {
+                            if(!empty($purchase_entry_error)) {
+                                $purchase_entry_error = $purchase_entry_error."<br>".$other_charges_error;
                             }
                             else {
-                                $proforma_invoice_error = $charges_error;
+                                $purchase_entry_error = $other_charges_error;
                             }
                         }
                         else {
-                            if(strpos($charges_values[$i], '%') !== false) {
-                                $charges_value = ($charges_value * $total_amount) / 100;
-                                $charges_value = number_format($charges_value, 2);
-                                $charges_value = str_replace(",", "", $charges_value);
+                            if(strpos($other_charges_values[$i], '%') !== false) {
+                                $other_charges_value = ($other_charges_value * $total_amount) / 100;
+                                $other_charges_value = number_format($other_charges_value, 2);
+                                $other_charges_value = str_replace(",", "", $other_charges_value);
                             }
                         }
                     }
-                    if(empty($proforma_invoice_error)) {
-                        $charges_total[$i] = $charges_value;
+                    if(empty($purchase_entry_error)) {
+                        $other_charges_total[$i] = $other_charges_value;
                         if($charges_type[$i] == "minus") {
-                            $total_amount -= $charges_value;
+                            $total_amount -= $other_charges_value;
                         }
                         else if($charges_type[$i] == "plus") {
-                            $total_amount += $charges_value;
+                            $total_amount += $other_charges_value;
                         }
                     }
+                    $charges_total_amounts[] = $total_amount;
                 }
-                if(empty($proforma_invoice_error)) {
-                    for($j=$i+1; $j < count($charges_id); $j++) {
-                        if($charges_id[$i] == $charges_id[$j]) {
-                            $proforma_invoice_error = "Same Charges Repeatedly Exists";
+                if(empty($purchase_entry_error)) {
+                    for($j=$i+1; $j < count($other_charges_id); $j++) {
+                        if($other_charges_id[$i] == $other_charges_id[$j]) {
+                            $purchase_entry_error = "Same Charges Repeatedly Exists";
                             break;
                         }
                     }
@@ -1092,15 +1260,66 @@
             }
         }
     
-
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
 
+        if($gst_option == '1' && empty($product_error) && empty($valid_proforma_invoice)) {
+            $percentage = 100;
+            if($tax_type == '1') {
+                for ($a = 0; $a < count($product_ids); $a++) {
+                    $tax = trim(str_replace("%", "",$product_tax[$a]));
+
+                    if ($product_tax[$a] != '' && $tax != '%') {
+                        $tax_plus_value = ($product_amount[$a] * $tax) / 100;
+                        
+                        $total_tax_value += $tax_plus_value;
+                        $total_tax_amount = $total_tax_value;
+                    } else {
+                        $tax_error = "Select tax for product - ".($obj->encode_decode('decrypt', $product_names[$a]));
+                    }
+                    if (!empty($tax_error)) {
+                        if (!empty($proforma_invoice_error)) {
+                            $proforma_invoice_error = $proforma_invoice_error . "<br>" . $tax_error;
+                        } else {
+                            $proforma_invoice_error = $tax_error;
+                        }
+                    }
+                }
+            } else if($tax_type == '2') {
+                $tax = "";
+                $tax = str_replace("%", "", $overall_tax);
+                $tax = trim($tax);
+                if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $tax)) {
+                    $total_tax_value = ($tax * $grand_total) / $percentage;
+                }
+                else {
+                    $product_error = "Invalid Overall tax";
+                }
+            }
+            if(!empty($total_tax_value)) {
+                $total_tax_value = number_format($total_tax_value, 2);
+                $total_tax_value = str_replace(",", "", $total_tax_value);
+                if($company_state == $party_state) {
+                    $cgst_value = $total_tax_value / 2;
+                    $cgst_value = number_format($cgst_value, 2);
+                    $cgst_value = str_replace(",", "", $cgst_value);
+                    $sgst_value = $total_tax_value / 2;
+                    $sgst_value = number_format($sgst_value, 2);
+                    $sgst_value = str_replace(",", "", $sgst_value);
+                } else {
+                    $igst_value = $total_tax_value;
+                    $igst_value = number_format($igst_value, 2);
+                    $igst_value = str_replace(",", "", $igst_value);
+                }
+                $total_amount = $total_amount + $total_tax_value;
+            }
+        }
+
         $round_off = 0;
-        if(!empty($grand_total)) {	
-            if (strpos( $grand_total, "." ) !== false) {
-                $pos = strpos($grand_total, ".");
-                $decimal = substr($grand_total, ($pos + 1), strlen($grand_total));
+        if(!empty($total_amount)) {	
+            if (strpos( $total_amount, "." ) !== false) {
+                $pos = strpos($total_amount, ".");
+                $decimal = substr($total_amount, ($pos + 1), strlen($total_amount));
                 if($decimal != "00") {
                     if(strlen($decimal) == 1) {
                         $decimal = $decimal."0";
@@ -1114,39 +1333,28 @@
                             $round_off = "0.".$round_off;
                         }
                         
-                        $grand_total = $grand_total + $round_off;
+                        $total_amount = $total_amount + $round_off;
                     }
                     else {
                         $decimal = "0.".$decimal;
                         $round_off = "-".$decimal;
-                        $grand_total = $grand_total - $decimal;
+                        $total_amount = $total_amount - $decimal;
                     }
                 }
             }
         }
-
-
-
-        $party_error = "";
-        if ($draft == "1" && empty($party_id)) {
-            $valid_proforma_invoice = "";
-            $proforma_invoice_error = "";
-            $party_error = "Select Party Name";
-        } else if ($draft == "1" && !empty($party_id)) {
-            $valid_proforma_invoice = "";
-            $proforma_invoice_error = "";
-        }
+        
         $result = "";
-        if(empty($valid_proforma_invoice) && empty($proforma_invoice_error) && empty($party_error)) {
+
+        if(empty($valid_proforma_invoice) && empty($product_error) && empty($proforma_invoice_error)) {
             $check_user_id_ip_address = 0;
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
             if(preg_match("/^\d+$/", $check_user_id_ip_address)) { 
-                $party_name_mobile_city = ""; $party_details = "";
+                $customer_name_mobile_city = ""; $customer_details = "";
                 $agent_name_mobile_city = ""; $agent_details = "";
                 if(!empty($proforma_invoice_number)) {
                     $proforma_invoice_number = $obj->encode_decode('encrypt', $proforma_invoice_number);
-                }
-                else {
+                } else {
                     $proforma_invoice_number = $GLOBALS['null_value'];
                 }
                 if(!empty($proforma_invoice_date)) {
@@ -1155,139 +1363,138 @@
                 if(!empty($agent_id)) {
                     $agent_name_mobile_city = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'name_mobile_city');
                     $agent_details = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_details');
-                }
-                else {
+                } else {
                     $agent_id = $GLOBALS['null_value'];
                     $agent_name_mobile_city = $GLOBALS['null_value'];
                     $agent_details = $GLOBALS['null_value'];
                 }
                 
-                if(!empty($party_id)) {
-                    $party_name_mobile_city = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'name_mobile_city');
-                    $party_details = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_details');
+                if(!empty($customer_id)) {
+                    $customer_name_mobile_city = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'name_mobile_city');
+                    $customer_details = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'customer_details');
                 }
                 else {
-                    $party_id = $GLOBALS['null_value'];
-                    $party_name_mobile_city = $GLOBALS['null_value'];
-                    $party_details = $GLOBALS['null_value'];
+                    $customer_id = $GLOBALS['null_value'];
+                    $customer_name_mobile_city = $GLOBALS['null_value'];
+                    $customer_details = $GLOBALS['null_value'];
                 }
+               
                 if(!empty($product_ids)) {
-                    // $product_ids = array_reverse($product_ids);
+                    $product_ids = array_reverse($product_ids);
                     $product_ids = implode(",", $product_ids);
-                }
-                else {
+                }else{
                     $product_ids = $GLOBALS['null_value'];
                 }
+               
                 if(!empty($product_names)) {
-                    // $product_names = array_reverse($product_names);
+                    $product_names = array_reverse($product_names);
                     $product_names = implode(",", $product_names);
-                }
-                else {
+                }else{
                     $product_names = $GLOBALS['null_value'];
                 }
-                if(!empty($brand_ids)) {
-                    // $brand_ids = array_reverse($brand_ids);
-                    $brand_ids = implode(",", $brand_ids);
-                }
-                else {
-                    $brand_ids = $GLOBALS['null_value'];
-                }
-                if(!empty($brand_names)) {
-                    // $brand_names = array_reverse($brand_names);
-                    $brand_names = implode(",", $brand_names);
-                }
-                else {
-                    $brand_names = $GLOBALS['null_value'];
-                }
+    
                 if(!empty($unit_ids)) {
-                    // $unit_ids = array_reverse($unit_ids);
+                    $unit_ids = array_reverse($unit_ids);
                     $unit_ids = implode(",", $unit_ids);
-                }
-                else {
+                }else{
                     $unit_ids = $GLOBALS['null_value'];
                 }
+
                 if(!empty($unit_names)) {
-                    // $unit_names = array_reverse($unit_names);
+                    $unit_names = array_reverse($unit_names);
                     $unit_names = implode(",", $unit_names);
-                }
-                else {
+                }else{
                     $unit_names = $GLOBALS['null_value'];
                 }
-                if(!empty($subunit_ids)) {
-                    // $subunit_ids = array_reverse($subunit_ids);
-                    $subunit_ids = implode(",", $subunit_ids);
-                }
-                else {
-                    $subunit_ids = $GLOBALS['null_value'];
-                }
-                if(!empty($subunit_names)) {
-                    // $subunit_names = array_reverse($subunit_names);
-                    $subunit_names = implode(",", $subunit_names);
-                }
-                else {
-                    $subunit_names = $GLOBALS['null_value'];
+
+                if(!empty($quantity)) {
+                    $quantity = array_reverse($quantity);
+                    $quantity = implode(",", $quantity);
+                }else{
+                    $quantity = $GLOBALS['null_value'];
                 }
                 if(!empty($unit_types)) {
-                    // $unit_types = array_reverse($unit_types);
+                    $unit_types = array_reverse($unit_types);
                     $unit_types = implode(",", $unit_types);
-                }
-                else {
+                }else{
                     $unit_types = $GLOBALS['null_value'];
                 }
-                if(!empty(array_filter($subunit_contains, fn($value) => $value !== ""))) {
-                    // $subunit_contains = array_reverse($subunit_contains);
-                    $subunit_contains = implode(",", $subunit_contains);
+
+                if(!empty($contents)) {
+                    $contents = array_reverse($contents);
+                    $contents = implode(",", $contents);
+                }else{
+                    $contents = $GLOBALS['null_value'];
                 }
-                else {
-                    $subunit_contains = $GLOBALS['null_value'];
+
+                // if(!empty($indv_magazine_id)) {
+                //     $indv_magazine_id = array_reverse($indv_magazine_id);
+                //     $indv_magazine_id = implode(",", $indv_magazine_id);
+                // }else{
+                //     $indv_magazine_id = $GLOBALS['null_value'];
+                // }
+
+                if(!empty($total_qty)) {
+                    $total_qty = array_reverse($total_qty);
+                    $total_qty = implode(",", $total_qty);
+                }else{
+                    $total_qty = $GLOBALS['null_value'];
                 }
-                if(!empty($product_quantity)) {
-                    // $product_quantity = array_reverse($product_quantity);
-                    $product_quantity = implode(",", $product_quantity);
+
+                if(!empty($rates)) {
+                    $rates = array_reverse($rates);
+                    $rates = implode(",", $rates);
+                }else{
+                    $rates = $GLOBALS['null_value'];
                 }
-                else {
-                    $product_quantity = $GLOBALS['null_value'];
-                }
-                if(!empty($product_rate)) {
-                    // $product_rate = array_reverse($product_rate);
-                    $product_rate = implode(",", $product_rate);
-                }
-                else {
-                    $product_rate = $GLOBALS['null_value'];
-                }
+
                 if(!empty($per)) {
-                    // $per = array_reverse($per);
+                    $per = array_reverse($per);
                     $per = implode(",", $per);
-                }
-                else {
+                }else{
                     $per = $GLOBALS['null_value'];
                 }
+
                 if(!empty($per_type)) {
-                    // $per_type = array_reverse($per_type);
+                    $per_type = array_reverse($per_type);
                     $per_type = implode(",", $per_type);
-                }
-                else {
+                }else{
                     $per_type = $GLOBALS['null_value'];
                 }
-                if(!empty($rate_per_unit)) {
-                    // $rate_per_unit = array_reverse($rate_per_unit);
-                    $rate_per_unit = implode(",", $rate_per_unit);
+
+                if(!empty($final_rate)) {
+                    $final_rate = array_reverse($final_rate);
+                    $final_rate = implode(",", $final_rate);
+                }else{
+                    $final_rate = $GLOBALS['null_value'];
                 }
-                else {
-                    $rate_per_unit = $GLOBALS['null_value'];
-                }
+
                 if(!empty($product_amount)) {
-                    // $product_amount = array_reverse($product_amount);
+                    $product_amount = array_reverse($product_amount);
                     $product_amount = implode(",", $product_amount);
-                }
-                else {
+                }else{
                     $product_amount = $GLOBALS['null_value'];
                 }
-                if(!empty(array_filter($charges_id, fn($value) => $value !== ""))) {
-                    $charges_id = implode(",", $charges_id);
+
+                if(!empty($product_tax)) {
+                    $product_tax = array_reverse($product_tax);
+                    $product_tax = implode(",", $product_tax);
+                }else{
+                    $product_tax = $GLOBALS['null_value'];
+                }
+
+                if(!empty($rate_per_unit)) {
+                    $rate_per_unit = array_reverse($rate_per_unit);
+                    $rate_per_unit = implode(",", $rate_per_unit);
+                }else{
+                    $rate_per_unit = $GLOBALS['null_value'];
+                }
+
+                if(!empty(array_filter($other_charges_id, fn($value) => $value !== ""))) {
+                    $other_charges_id = implode(",", $other_charges_id);
                 }
                 else {
-                    $charges_id = $GLOBALS['null_value'];
+                    $other_charges_id = $GLOBALS['null_value'];
                 }
                 if(!empty(array_filter($charges_type, fn($value) => $value !== ""))) {
                     $charges_type = implode(",", $charges_type);
@@ -1295,51 +1502,36 @@
                 else {
                     $charges_type = $GLOBALS['null_value'];
                 }
-                if(!empty(array_filter($charges_values, fn($value) => $value !== ""))) {
-                    $charges_values = implode(",", $charges_values);
+                if(!empty(array_filter($other_charges_values, fn($value) => $value !== ""))) {
+                    $other_charges_values = implode(",", $other_charges_values);
                 }
                 else {
-                    $charges_values = $GLOBALS['null_value'];
+                    $other_charges_values = $GLOBALS['null_value'];
                 }
-                if(!empty(array_filter($charges_total, fn($value) => $value !== ""))) {
-                    $charges_total = implode(",", $charges_total);
-                }
-                else {
-                    $charges_total = $GLOBALS['null_value'];
-                }
-                if(!empty($total_unit_qty)) {
-                    $total_quantity = $total_unit_qty." Case";
+                if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
+                    $other_charges_total = implode(",", $other_charges_total);
                 }
                 else {
-                    $total_unit_qty = $GLOBALS['null_value'];
+                    $other_charges_total = $GLOBALS['null_value'];
                 }
-                if(!empty($total_subunit_qty)) {
-                    if(!empty($total_quantity)) {
-                        $total_quantity = $total_quantity." ".$total_subunit_qty." Pcs";
-                    }
-                    else {
-                        $total_quantity = $total_subunit_qty." Pcs";
-                    }
-                }
-                else {
-                    $total_subunit_qty = $GLOBALS['null_value'];
-                }
-                
-                $grand_qty = 0;
-                if(!empty($total_subunit_quantity)) {
-                    $total_subunit_quantity = array_reverse($total_subunit_quantity);
-                    for($i = 0; $i< count($total_subunit_quantity); $i++) {
-                        $total_subunit_quantity[$i] = trim($total_subunit_quantity[$i]);
-                        if(!empty($total_subunit_quantity[$i])) {
-                            $grand_qty += (int)$total_subunit_quantity[$i];
-                        }
-                    }
-                    $total_subunit_quantity = implode(",", $total_subunit_quantity);
-                }
-                else {
-                    $total_subunit_quantity = $GLOBALS['null_value'];
+                     
+                if(!empty($charges_total_amounts)) {
+                    $charges_total_amounts = implode(",", $charges_total_amounts);
+                }else{
+                    $charges_total_amounts = $GLOBALS['null_value'];
                 }
 
+                if(!empty($subunit_need)) {
+                    $subunit_need = implode(",", $subunit_need);
+                }else{
+                    $subunit_need = $GLOBALS['null_value'];
+                }
+
+                if(!empty($amount)) {
+                    $amount = implode(",", $amount);
+                }else{
+                    $amount = $GLOBALS['null_value'];
+                }
 
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
@@ -1350,133 +1542,17 @@
                 if(empty($edit_id)) {
                     $action = "";
                     if(!empty($party_name_mobile_city) && $party_name_mobile_city != $GLOBALS['null_value']) {
-                        $action = "New proforma_invoice Created. Party - ".($obj->encode_decode('decrypt', $party_name_mobile_city));
+                        $action = "New proforma invoice Created. Party - ".($obj->encode_decode('decrypt', $party_name_mobile_city));
                     }
-                    if(empty($draft) && $draft != "1") {
-                        $proforma_invoice_number = $obj->automate_number($GLOBALS['proforma_invoice_table'], 'proforma_invoice_number');
-                    }
+                    
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'party_id', 'party_name_mobile_city', 'party_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'product_id', 'product_name', 'brand_id', 'brand_name', 'content', 'unit_id', 'unit_name', 'subunit_id', 'subunit_name', 'product_quantity', 'unit_type', 'product_rate', 'per', 'per_type', 'product_amount', 'rate_per_unit', 'sub_total', 'charges_id', 'charges_type', 'charges_value', 'charges_total',  'total_amount', 'round_off', 'grand_total','total_unit_qty', 'total_subunit_qty','total_quantity', 'total_qty','grand_qty', 'drafted', 'cancelled', 'deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$null_value."'", "'".$proforma_invoice_number."'", "'".$proforma_invoice_date."'", "'".$party_id."'", "'".$party_name_mobile_city."'", "'".$party_details."'","'".$agent_id."'", "'".$agent_name_mobile_city."'", "'".$agent_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$brand_ids."'", "'".$brand_names."'", "'".$subunit_contains."'", "'".$unit_ids."'", "'".$unit_names."'",  "'".$subunit_ids."'", "'".$subunit_names."'", "'".$product_quantity."'", "'".$unit_types."'",  "'".$product_rate."'", "'".$per."'", "'".$per_type."'", "'".$product_amount."'", "'".$rate_per_unit."'", "'".$sub_total."'", "'".$charges_id."'", "'".$charges_type."'", "'".$charges_values."'", "'".$charges_total."'", "'".$total_amount."'", "'".$round_off."'", "'".$grand_total."'", "'".$total_unit_qty."'", "'".$total_subunit_qty."'", "'".$total_quantity."'","'".$total_subunit_quantity."'", "'".$grand_qty."'", "'".$draft."'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  ' 	customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$null_value."'", "'".$proforma_invoice_number."'", "'".$proforma_invoice_date."'", "'".$customer_id."'", "'".$customer_name_mobile_city."'", "'".$customer_details."'","'".$agent_id."'", "'".$agent_name_mobile_city."'", "'".$agent_details."'", "'".$transport_id."'" , "'".$bank_id."'" , "'".$gst_option."'" , "'".$address."'" , "'".$tax_option."'" ,"'".$tax_type."'", "'".$overall_tax."'" ,"'".$company_state."'" ,"'".$party_state."'" ,"'".$product_ids."'" , "'".$product_names."'", "'".$unit_types."'","'".$subunit_need."'","'".$contents."'","'".$unit_ids."'","'".$unit_names."'","'".$quantity."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$product_tax."'","'".$final_rate."'","'".$amount."'","'".$other_charges_id."'","'".$charges_type."'","'".$other_charges_values."'","'".$agent_commission."'","'".$total_amount."'", "'0'", "'0'");
 
-                    $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_table'], $columns, $values,'proforma_invoice_id', '', $action);
+                    $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_table'], $columns, $values, 'proforma_invoice_id', 'proforma_invoice_number', $action);
 
                     if(preg_match("/^\d+$/", $proforma_invoice_insert_id)) {
-                        if ($draft != "1") {
-                            $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'id', $proforma_invoice_insert_id, 'proforma_invoice_id');
-                            $proforma_invoice_number = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'id', $proforma_invoice_insert_id, 'proforma_invoice_number');
-
-                            if(!empty($product_ids)) {
-                                $product_ids = explode(",", $product_ids);
-                            }
-                            else {
-                                $product_ids = $GLOBALS['null_value'];
-                            }
-                            if(!empty($product_names)) {
-                                $product_names = explode(",", $product_names);
-                            }
-                            else {
-                                $product_names = $GLOBALS['null_value'];
-                            }
-                            if(!empty($brand_ids)) {
-                                $brand_ids = explode(",", $brand_ids);
-                            }
-                            else {
-                                $brand_ids = $GLOBALS['null_value'];
-                            }
-                            if(!empty($brand_names)) {
-                                $brand_names = explode(",", $brand_names);
-                            }
-                            else {
-                                $brand_names = $GLOBALS['null_value'];
-                            }
-                            if(!empty($unit_ids)) {
-                                $unit_ids = explode(",", $unit_ids);
-                            }
-                            else {
-                                $unit_ids = $GLOBALS['null_value'];
-                            }
-                            if(!empty($unit_names)) {
-                                $unit_names = explode(",", $unit_names);
-                            }
-                            else {
-                                $unit_names = $GLOBALS['null_value'];
-                            }
-                            if(!empty($subunit_ids)) {
-                                $subunit_ids = explode(",", $subunit_ids);
-                            }
-                            else {
-                                $subunit_ids = $GLOBALS['null_value'];
-                            }
-                            if(!empty($subunit_names)) {
-                                $subunit_names = explode(",", $subunit_names);
-                            }
-                            else {
-                                $subunit_names = $GLOBALS['null_value'];
-                            }
-                            if(!empty($unit_types)) {
-                                $unit_types = explode(",", $unit_types);
-                            }
-                            else {
-                                $unit_types = $GLOBALS['null_value'];
-                            }
-                            if(!empty($subunit_contains)) {
-                                $subunit_contains = explode(",", $subunit_contains);
-                            }
-                            else {
-                                $subunit_contains = $GLOBALS['null_value'];
-                            }
-                            if(!empty($product_quantity)) {
-                                $product_quantity = explode(",", $product_quantity);
-                            }
-                            else {
-                                $product_quantity = $GLOBALS['null_value'];
-                            }
-                            if(!empty($product_rate)) {
-                                $product_rate = explode(",", $product_rate);
-                            }
-                            else {
-                                $product_rate = $GLOBALS['null_value'];
-                            }
-                            if(!empty($per)) {
-                                $per = explode(",", $per);
-                            }
-                            else {
-                                $per = $GLOBALS['null_value'];
-                            }
-                            if(!empty($per_type)) {
-                                $per_type = explode(",", $per_type);
-                            }
-                            else {
-                                $per_type = $GLOBALS['null_value'];
-                            }
-                            if(!empty($rate_per_unit)) {
-                                $rate_per_unit = explode(",", $rate_per_unit);
-                            }
-                            else {
-                                $rate_per_unit = $GLOBALS['null_value'];
-                            }
-                            if(!empty($product_amount)) {
-                                $product_amount = explode(",", $product_amount);
-                            }
-                            else {
-                                $product_amount = $GLOBALS['null_value'];
-                            }
-
-                            if(!empty($product_ids) && $product_ids != $GLOBALS['null_value']) {
-                                for($i=0; $i < count($product_ids); $i++) {
-                                    $columns = array(); $values = array();
-                                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'proforma_invoice_number', 'product_id', 'product_name', 'brand_id', 'brand_name', 'subunit_contains', 'unit_id', 'unit_name', 'subunit_id', 'subunit_name', 'product_quantity','balance_qty', 'unit_type', 'product_rate', 'per', 'per_type', 'product_amount',  'deleted');
-                                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$proforma_invoice_number."'", "'".$product_ids[$i]."'", "'".$product_names[$i]."'", "'".$brand_ids[$i]."'", "'".$brand_names[$i]."'", "'".$subunit_contains[$i]."'", "'".$unit_ids[$i]."'", "'".$unit_names[$i]."'",  "'".$subunit_ids[$i]."'", "'".$subunit_names[$i]."'", "'".$product_quantity[$i]."'","'".$product_quantity[$i]."'", "'".$unit_types[$i]."'",  "'".$product_rate[$i]."'", "'".$per[$i]."'", "'".$per_type[$i]."'", "'".$product_amount[$i]."'", "'0'");
-                                    $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_product_table'], $columns, $values,'', '', $action);
-                                }
-                            }
-
-                            $result = array('number' => '1', 'msg' => 'proforma_invoice Successfully Created','redirection_page'=>'proforma_invoice.php');
-                        } else {
-
-                            $result = array('number' => '1', 'msg' => 'proforma_invoice Saved in Draft');
-                        }
+                        $result = array('number' => '1', 'msg' => 'Proforma Invoice Successfully Created','redirection_page'=>'proforma_invoice.php');
                     }
                     else {
                         $result = array('number' => '2', 'msg' => $proforma_invoice_insert_id);
@@ -1650,14 +1726,13 @@
             else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
-        }
-        else {
+        } else {
             if(!empty($valid_proforma_invoice)) {
                 $result = array('number' => '3', 'msg' => $valid_proforma_invoice);
+            } else if(!empty($product_error)) {
+                $result = array('number' => '2', 'msg' => $product_error);
             } else if(!empty($proforma_invoice_error)) {
                 $result = array('number' => '2', 'msg' => $proforma_invoice_error);
-            } else if (!empty($party_error)) {
-                $result = array('number' => '2', 'msg' => $party_error);
             }
         }
         
@@ -1670,40 +1745,206 @@
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number'];
 		$page_limit = $_POST['page_limit'];
-		$page_title = $_POST['page_title']; ?>
+		$page_title = $_POST['page_title']; 
+        $from_date = ""; $to_date = ""; $search_text = "";
+        $show_bill = 0;$show_draft_bill = 0;
+        $customer_id = "";
+        if(isset($_POST['from_date'])) {
+            $from_date = $_POST['from_date'];
+        }
+        if(isset($_POST['to_date'])) {
+            $to_date = $_POST['to_date'];
+        }
+        if(isset($_POST['show_bill'])) {
+            $show_bill = $_POST['show_bill'];
+        }
+        if(isset($_POST['customer_id'])) {
+            $customer_id = $_POST['customer_id'];
+        }
+
+        if(isset($_POST['search_text'])) {
+            $search_text = $_POST['search_text'];
+        }
+
+        $total_records_list = array();
+        $total_records_list = $obj->getProfomaInvoiceList($from_date, $to_date, $search_text, $show_bill);
+        
+        if(!empty($customer_id)) {
+            $list = array();
+            if(!empty($total_records_list)) {
+                foreach($total_records_list as $val) {
+                    if( (strpos($val['customer_id'], $customer_id) !== false) ) {
+                        $list[] = $val;
+                    }
+                }
+            }
+            $total_records_list = $list;
+        }
+
+        if(!empty($search_text)) {
+            $search_text = strtolower($search_text);
+            $list = array();
+            if(!empty($total_records_list)) {
+                foreach($total_records_list as $val) {
+                    if( (strpos(strtolower($val['profoma_invoice_number']), $search_text) !== false) ) {
+                        $list[] = $val;
+                    }
+                }
+            }
+            $total_records_list = $list;
+        }
+
+        $total_pages = 0;	
+		$total_pages = count($total_records_list);
+
+        $page_start = 0; $page_end = 0;
+		if(!empty($page_number) && !empty($page_limit) && !empty($total_pages)) {
+			if($total_pages > $page_limit) {
+				if($page_number) {
+					$page_start = ($page_number - 1) * $page_limit;
+					$page_end = $page_start + $page_limit;
+				}
+			}
+			else {
+				$page_start = 0;
+				$page_end = $page_limit;
+			}
+		}
+
+		$show_records_list = array();
+        if(!empty($total_records_list)) {
+            foreach($total_records_list as $key => $val) {
+                if($key >= $page_start && $key < $page_end) {
+                    $show_records_list[] = $val;
+                }
+            }
+        }
+		
+		$prefix = 0;
+		if(!empty($page_number) && !empty($page_limit)) {
+			$prefix = ($page_number * $page_limit) - $page_limit;
+		}
+        ?>
+        <?php if($total_pages > $page_limit) { ?>
+            <div class="pagination_cover mt-3"> 
+                <?php include("pagination.php"); ?> 
+            </div> 
+        <?php } ?>
+        <?php
+        $access_error = "";
+        if(!empty($loginner_id)) {
+            $permission_action = $view_action;
+            include('permission_action.php');
+        }
+        if(empty($access_error)) { 
+        ?>
         
 		<table class="table nowrap cursor text-center smallfnt">
             <thead class="bg-light">
                 <tr>
                     <th>#</th>
-                    <th>Proforma Invoice No /  Date</th>
-                    <th>Party Name</th>
+                    <th>Bill No / Bill Date</th>
+                    <th>Customer Name</th>
                     <th>Amount</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>IO/25/001 / 19-02-2025 </td>
-                    <td>Mahesh Prabhu - Sivakasi</td>
-                    <td>50,000.00</td>
-                    <td>
-                        <div class="dropdown">
-                            <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                <li><a class="dropdown-item" href="#">View</a></li>
-                                <li><a class="dropdown-item" href="#">Edit</a></li>
-                                <li><a class="dropdown-item" href="#">Delete</a></li>
-                            </ul>
-                        </div> 
-                    </td>
-                </tr>
+            <?php
+                if(!empty($show_records_list)) {
+                    foreach($show_records_list as $key => $list) {
+                        $index = $key + 1;
+                        if(!empty($prefix)) { $index = $index + $prefix; }   
+                        ?>
+                        <tr>
+                            <td>
+                                <?php echo $index; ?>
+                            </td>
+                            <td> 
+                                <?php
+                                    if(!empty($list['proforma_invoice_number']) && $list['proforma_invoice_number'] != $GLOBALS['null_value']) {
+                                        echo $list['proforma_invoice_number'];
+                                    }
+                                ?>
+                                <br>
+                                <?php
+                                    if(!empty($list['proforma_invoice_date'])) {
+                                        echo date('d-m-Y', strtotime($list['proforma_invoice_date']));
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                    if(!empty($list['customer_name_mobile_city']) && $list['customer_name_mobile_city'] != $GLOBALS['null_value']) {
+                                        echo ($obj->encode_decode('decrypt', $list['customer_name_mobile_city']));
+                                    }
+                                    else {
+                                        echo '-';
+                                    }
+                                
+                                if(!empty($list['cancelled'])) {
+                                    ?>
+                                            <br><span style="color: red;">Cancelled</span>
+                                    <?php	
+                                }	 ?>
+                            </td>
+                            
+                            <td>
+                                <?php
+                                    if(!empty($list['bill_total'])) {
+                                        echo number_format($list['bill_total'],2);
+                                    }
+                                    else {
+                                        echo '-';
+                                    }
+                                ?>
+                            </td>
+
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                        <?php 
+                                            $access_error = "";
+                                            if(!empty($loginner_id)) {
+                                                $permission_action = $edit_action;
+                                                include('permission_action.php');
+                                            }
+                                            if(empty($access_error) && empty($list['cancelled'])) {
+                                            ?> 
+                                            <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Edit</a></li>
+                                            <?php } ?>
+                                            <?php 
+                                                $access_error = "";
+                                                if(!empty($loginner_id)) {
+                                                    $permission_action = $delete_action;
+                                                    include('permission_action.php');
+                                                }
+                                                if(empty($access_error) && empty($list['cancelled'])) {
+                                            ?>     
+                                        <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Delete</a></li>
+                                        <?php } ?>
+                                    </ul>
+                                </div> 
+                            </td>
+                        </tr>
+                        
+                        <?php
+                    }
+                }
+                else {
+                    ?>
+                    <tr>
+                        <td colspan="7" class="text-center">Sorry! No records found</td>
+                    </tr>
+                <?php 
+                    } 
+                ?>
             </tbody>
-        </table>               
-	<?php 
+        </table>              
+    <?php }
     }
 
     if(isset($_REQUEST['change_product_id'])) {
@@ -1790,10 +2031,11 @@
                     <input type="hidden" name="product_id[]" value="<?php if(!empty($product_id)) { echo $product_id; } ?>"><br>
                     
                 </th>
+                <?php /*
                 <th class="text-center px-2 py-2 indv_magazine d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                            <select class="select2 select2-danger" name="indv_magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
                                 <option value="">Select Magazine</option>
                                 <?php if (!empty($magazine_list)) {
                                     foreach ($magazine_list as $list) { ?>
@@ -1811,6 +2053,7 @@
                         </div>
                     </div> 
                 </th>
+                */ ?>
                 <th class="text-center px-2 py-2">
                     <?php if($selected_unit_type == '1'){
                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_id,'unit_id');
@@ -1901,19 +2144,91 @@
 
     if(isset($_REQUEST['get_agent_customer_id'])){
         $agent_id = $_REQUEST['get_agent_customer_id'];
-        $customer_list = $obj->getAgentcustomerList($agent_id);
-        $agent_commission = $obj->getTableColumnValue($GLOBALS['agent_table'],'agent_id',$agent_id,'commission');
-        // $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'agent_id',$agent_id,'');
-        ?>
-        <option value="">Select customer</option>
-        <?php
-        foreach($customer_list as $data)
-        {
+
+        if(!empty($agent_id) && $agent_id != $GLOBALS['null_value']) {
+            $customer_list = $obj->getAgentcustomerList($agent_id);
+            $agent_commission = $obj->getTableColumnValue($GLOBALS['agent_table'],'agent_id',$agent_id,'commission');
             ?>
-                <option value="<?php if(!empty($data['customer_id'])){ echo $data['customer_id']; }?>"><?php if(!empty($data['customer_name'])){ echo $obj->encode_decode("decrypt",$data['customer_name']); } ?></option>
+            <option value="">Select customer</option>
             <?php
+            foreach($customer_list as $data)
+            {
+                ?>
+                    <option value="<?php if(!empty($data['customer_id'])){ echo $data['customer_id']; }?>">
+                        <?php
+                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                            }
+                        ?>
+                    </option>
+                <?php
+            }
+            echo "$$$ Commission : ".$agent_commission."$$$".$agent_commission;
+        } else {
+            $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+            ?>
+            <option value="">Select customer</option>
+            <?php
+            foreach($customer_list as $data)
+            {
+                ?>
+                    <option value="<?php if(!empty($data['customer_id'])){ echo $data['customer_id']; }?>">
+                        <?php
+                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                            }
+                        ?>
+                    </option>
+                <?php
+            }
+            echo "$$$$$$";
         }
-        echo "$$$ Commission : ".$agent_commission."$$$".$agent_commission;
+    }
+
+    if(isset($_REQUEST['get_product_by_magazine'])){
+        $magazine_type = $_REQUEST['get_product_by_magazine'];
+        if($magazine_type == '1') {
+            $magazine_id = $_REQUEST['magazine_id'];
+            if(!empty($magazine_id)) {
+                $product_list =array();
+                $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'location_id', $magazine_id, '');
+
+                if(!empty($product_list)) {
+                    ?>
+                    <option value="">Select product</option>
+                    <?php
+                    foreach($product_list as $data)
+                    {
+                        ?>
+                            <option value="<?php if (!empty($data['product_id'])) { echo $data['product_id']; } ?>">
+                                <?php if (!empty($data['product_name'])) {
+                                    echo $obj->encode_decode('decrypt', $data['product_name']);
+                                } ?>
+                            </option>
+                        <?php
+                    }
+                }
+            }
+        } else {
+            $product_list =array();
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+
+            if(!empty($product_list)) {
+                ?>
+                <option value="">Select product</option>
+                <?php
+                foreach($product_list as $data)
+                {
+                    ?>
+                        <option value="<?php if (!empty($data['product_id'])) { echo $data['product_id']; } ?>">
+                            <?php if (!empty($data['product_name'])) {
+                                echo $obj->encode_decode('decrypt', $data['product_name']);
+                            } ?>
+                        </option>
+                    <?php
+                }
+            }
+        }
     }
 
     if(isset($_REQUEST['get_charges_row']) && $_REQUEST['get_charges_row'] == '1') {
@@ -1963,7 +2278,7 @@
                 </div>
             </td>
             <td colspan="1">
-                <div class="text-end"><span class="other_charges_total"></span></div>
+                <div class="text-end"><span class="other_charges_total text-end"></span></div>
             </td>
             <td></td>
         </tr>

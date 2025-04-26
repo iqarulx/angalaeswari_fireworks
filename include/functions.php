@@ -322,6 +322,14 @@
 			return $list;
 		}
 
+		public function getProfomaInvoiceList($from_date, $to_date,$search_text,$show_bill) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getProfomaInvoiceList($from_date, $to_date,$search_text,$show_bill);
+			return $list;
+		}
+
 		public function getContractorFinishedProducts($contractor_id,$finished_product_group_id) {
 			$billobj = "";
 			$billobj = $this->creation_function_object();

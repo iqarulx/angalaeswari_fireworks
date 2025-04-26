@@ -105,9 +105,9 @@
 			else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                 $prefix = 'DAP';
             }
-			// else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
-            //     $prefix = 'STA';
-            // }
+			else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+                $prefix = 'PI';
+            }
 			// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
             //     $prefix = 'SMI';
             // }
@@ -172,10 +172,10 @@
                         $last_number = str_replace("DAP","",$last_number);
                         $last_number = trim($last_number);
                     }
-					// else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
-                    //     $last_number = str_replace("STA","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
+					else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+                        $last_number = str_replace("PI","",$last_number);
+                        $last_number = trim($last_number);
+                    }
 					// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
                     //     $last_number = str_replace("SMI","",$last_number);
                     //     $last_number = trim($last_number);
