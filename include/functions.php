@@ -322,11 +322,67 @@
 			return $list;
 		}
 
-		public function getProfomaInvoiceList($from_date, $to_date,$search_text,$show_bill) {
+		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
 			$creationobj = "";
 			$creationobj = $this->creation_function_object();
 			$list = array();
-			$list = $creationobj->getProfomaInvoiceList($from_date, $to_date,$search_text,$show_bill);
+			$list = $creationobj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill);
+			return $list;
+		}
+
+		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill);
+			return $list;
+		}
+
+		public function getDeliverySlipIndex($delivery_slip_id, $conversion_update) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getDeliverySlipIndex($delivery_slip_id, $conversion_update);
+			return $list;
+		}
+
+		public function getProformaInvoiceActions($proforma_invoice_id) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getProformaInvoiceActions($proforma_invoice_id);
+			return $list;
+		}
+
+		public function getDeliverySlipActions($delivery_slip_id) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getDeliverySlipActions($delivery_slip_id);
+			return $list;
+		}
+
+		public function getDeliveryProductsFromPI($proforma_invoice_id) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getDeliveryProductsFromPI($proforma_invoice_id);
+			return $list;
+		}
+
+		public function getEstimateIndex($estimate_id, $conversion_update) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getEstimateIndex($estimate_id, $conversion_update);
+			return $list;
+		}
+
+		public function getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
+			$creationobj = "";
+			$creationobj = $this->creation_function_object();
+			$list = array();
+			$list = $creationobj->getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill);
 			return $list;
 		}
 

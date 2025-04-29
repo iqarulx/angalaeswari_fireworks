@@ -1,6 +1,6 @@
 // JavaScript Document
 function CheckPassword(field_name) {
-	
+
 	var password = "";
 	if (jQuery('input[name="password"]').length > 0) {
 		password = jQuery('input[name="password"]').val();
@@ -113,7 +113,7 @@ function CustomCheckboxToggle(obj, toggle_id) {
 						else {
 							jQuery('#' + select_all_checkbox).prop('checked', false);
 						}
-						if(parseInt(view_count) > 0){
+						if (parseInt(view_count) > 0) {
 							jQuery('#' + view_checkbox).prop('checked', true);
 							jQuery('#' + view_checkbox).val('1');
 						}
@@ -167,6 +167,7 @@ function SelectAllModuleActionToggle(obj, toggle_id) {
 	});
 }
 function FormSubmit(event, form_name, submit_page, redirection_page) {
+
 	event.preventDefault();
 	if (jQuery('div.alert').length > 0) {
 		jQuery('div.alert').remove();
@@ -319,7 +320,7 @@ function ShowModalContent(page_title, add_edit_id_value) {
 				jQuery('.add_update_form_content').html("");
 				jQuery('.add_update_form_content').html(result);
 			}
-			
+
 		}
 	});
 	// }
@@ -409,14 +410,14 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 						}
 						if (jQuery('#table_records_cover').hasClass('d-none')) {
 							jQuery('#table_records_cover').removeClass('d-none');
-						} 
+						}
 						table_listing_records_filter();
 					}
 				}, 1000);
 			}
 			if (x.number == '2') {
-				if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
-					if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
+				if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
+					if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
 						jQuery('.Product_Fix_field').attr('disabled', true);
 					}
 				}
@@ -426,8 +427,8 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 				}
 			}
 			if (x.number == '3') {
-				if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
-					if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
+				if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
+					if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
 						jQuery('.Product_Fix_field').attr('disabled', true);
 					}
 				}
@@ -443,7 +444,7 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 	});
 }
 function DeleteModalContent(page_title, delete_content_id) {
-	
+
 	var check_login_session = 1;
 	var post_url = "dashboard_changes.php?check_login_session=1";
 	jQuery.ajax({
@@ -562,9 +563,9 @@ function cancel_delete_modal(obj) {
 		}
 	});
 }
-function ToLower(obj){
-    var input = jQuery(obj);
-    input.val(input.val().toLowerCase());
+function ToLower(obj) {
+	var input = jQuery(obj);
+	input.val(input.val().toLowerCase());
 }
 function assign_bill_value() {
 	if (jQuery("#show_bill").val() == "0") {
@@ -589,7 +590,7 @@ function checkDateCheck() {
 	if (jQuery('input[name="to_date"]').length > 0) {
 		to_date = jQuery('input[name="to_date"]').val();
 	}
-	if(to_date != "") {
+	if (to_date != "") {
 		if (from_date > to_date) {
 			jQuery('input[name="to_date"]').after('<span class="infos">To date Must be greater than the date ' + from_date + '</span>');
 			if (jQuery('input[name="to_date"]').length > 0) {
@@ -601,43 +602,66 @@ function checkDateCheck() {
 
 function ViewDetails(type) {
 	var type_id = ""; var lower_type = "";
-	if(type != "") {
+	if (type != "") {
 		lower_type = type.toLowerCase();
 		lower_type = lower_type.trim();
-		type = type.replace("_"," ");
+		type = type.replace("_", " ");
 	}
-	if(jQuery('select[name="'+lower_type+'_id"]').length > 0) {
-		type_id = jQuery('select[name="'+lower_type+'_id"]').val();
+	if (jQuery('select[name="' + lower_type + '_id"]').length > 0) {
+		type_id = jQuery('select[name="' + lower_type + '_id"]').val();
 	}
 	var stock_type = "";
-	if(lower_type == 'from_location' || lower_type == 'to_location') {
-		if(jQuery('select[name="stock_type"]').length > 0) {
+	if (lower_type == 'from_location' || lower_type == 'to_location') {
+		if (jQuery('select[name="stock_type"]').length > 0) {
 			stock_type = jQuery('select[name="stock_type"]').val();
 		}
-		if(stock_type != "" && stock_type != 0 && typeof stock_type != "undefined") {
-			if(parseFloat(stock_type) == 1) {
+		if (stock_type != "" && stock_type != 0 && typeof stock_type != "undefined") {
+			if (parseFloat(stock_type) == 1) {
 				lower_type = "godown";
 			}
-			else if(parseFloat(stock_type) == 2) {
+			else if (parseFloat(stock_type) == 2) {
 				lower_type = "magazine";
 			}
 		}
 	}
-	var post_url = "filter_changes.php?view_details="+type_id+"&details_type="+lower_type;
+	var post_url = "filter_changes.php?view_details=" + type_id + "&details_type=" + lower_type;
 	jQuery.ajax({
 		url: post_url, success: function (result) {
 			result = result.trim();
-			if(jQuery('.details_modal_button').length > 0) {
+			if (jQuery('.details_modal_button').length > 0) {
 				jQuery('.details_modal_button').trigger('click');
 			}
-			if(jQuery('#ViewDetailsModal').length > 0) {
-				if(jQuery('#ViewDetailsModal').find('.modal-title').length > 0) {
-					jQuery('#ViewDetailsModal').find('.modal-title').html(type+' Details');
+			if (jQuery('#ViewDetailsModal').length > 0) {
+				if (jQuery('#ViewDetailsModal').find('.modal-title').length > 0) {
+					jQuery('#ViewDetailsModal').find('.modal-title').html(type + ' Details');
 				}
-				if(jQuery('#ViewDetailsModal').find('.modal-body').length > 0) {
+				if (jQuery('#ViewDetailsModal').find('.modal-body').length > 0) {
 					jQuery('#ViewDetailsModal').find('.modal-body').html(result);
 				}
 			}
+		}
+	});
+}
+
+function ShowConversion(conversion_id, page_title) {
+	if (page_title == 'Proforma Invoice') {
+		var post_url = "delivery_slip_changes.php?show_delivery_slip_id=" + conversion_id + "&conversion_update=1";
+	} else if (page_title == 'Delivery Slip') {
+		var post_url = "estimate_changes.php?show_estimate_id=" + conversion_id + "&conversion_update=1";
+	}
+	jQuery.ajax({
+		url: post_url, success: function (result) {
+			if (jQuery('#table_records_cover').length > 0) {
+				jQuery('#table_records_cover').addClass('d-none');
+			}
+			if (jQuery('#add_update_form_content').length > 0) {
+				jQuery('#add_update_form_content').removeClass('d-none');
+			}
+			if (jQuery('.add_update_form_content').length > 0) {
+				jQuery('.add_update_form_content').html("");
+				jQuery('.add_update_form_content').html(result);
+			}
+
 		}
 	});
 }

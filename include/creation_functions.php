@@ -524,20 +524,12 @@
             return $list;
         }
 
-		public function getProfomaInvoiceList($from_date, $to_date, $search_text, $show_bill) {
+		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
             $list = array(); $select_query = ""; $where = "";
-            $bill_company_id = $GLOBALS['bill_company_id'];
-            if(!empty($bill_company_id)) {
-				$where = "bill_company_id = '".$bill_company_id."' ";
-			}
+
             if(!empty($from_date)) {
                 $from_date = date("Y-m-d", strtotime($from_date));
-                if(!empty($where)) {
-                    $where = $where." AND proforma_invoice_date >= '".$from_date."'";
-                }
-                else {
-                    $where = "proforma_invoice_date >= '".$from_date."'";
-                }
+				$where = "proforma_invoice_date >= '".$from_date."'";
             }
             if(!empty($to_date)) {
                 $to_date = date("Y-m-d", strtotime($to_date));
@@ -557,6 +549,14 @@
                 }
             }
 
+			if(!empty($customer_id)){
+                if(!empty($where)) {
+                    $where = $where." AND customer_id = '".$customer_id."' ";
+                } else {
+                    $where = "customer_id = '".$customer_id."' ";
+                }
+            }
+
 			if(!empty($where)) {
 				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
 			}
@@ -570,6 +570,672 @@
             return $list;
         }
 
+		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
+            $list = array(); $select_query = ""; $where = "";
+
+            if(!empty($from_date)) {
+                $from_date = date("Y-m-d", strtotime($from_date));
+				$where = "delivery_slip_date >= '".$from_date."'";
+            }
+            if(!empty($to_date)) {
+                $to_date = date("Y-m-d", strtotime($to_date));
+                if(!empty($where)) {
+                    $where = $where." AND delivery_slip_date <= '".$to_date."'";
+                } else {
+                    $where = "delivery_slip_date <= '".$to_date."'";
+                }
+            }
+            if($show_bill == '0' || $show_bill == '1'){
+                if(!empty($where)) {
+                    $where = $where." AND cancelled = '".$show_bill."' ";
+                }
+                else {
+                    $where = "cancelled = '".$show_bill."' ";
+                }
+            }
+
+			if(!empty($customer_id)){
+                if(!empty($where)) {
+                    $where = $where." AND customer_id = '".$customer_id."' ";
+                } else {
+                    $where = "customer_id = '".$customer_id."' ";
+                }
+            }
+
+			if(!empty($where)) {
+				$select_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
+			}
+			else{
+				$select_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+			}
+            
+            if(!empty($select_query)) {
+                $list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $select_query);
+            }
+            return $list;
+        }
+
+		public function getDeliverySlipIndex($delivery_slip_id, $conversion_update) {
+			$list = array();
+			if(!empty($conversion_update) && $conversion_update == 1) {
+				$old_delivery_slip = array();
+				$old_delivery_slip_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE proforma_invoice_id = '" . $delivery_slip_id . "' AND deleted = '0' AND cancelled = '0'";
+
+				$old_delivery_slip = $this->getQueryRecords('', $old_delivery_slip_query);
+	
+				$old_products_list = array();
+
+				if (!empty($old_delivery_slip)) {
+					foreach ($old_delivery_slip as $old_delivery_slip_data) {
+						$product_ids = explode(',', $old_delivery_slip_data['product_id']);
+						$quantities = explode(',', $old_delivery_slip_data['quantity']);
+
+						for ($i = 0; $i < count($product_ids); $i++) {
+							$old_products_list[] = [
+								'product_id' => trim($product_ids[$i]),
+								'quantity' => (float)trim($quantities[$i])
+							];
+						}
+					}
+				}
+
+				$merged_old_products = array();
+
+				foreach ($old_products_list as $old_product) {
+					$product_id = $old_product['product_id'];
+					$quantity = (float) $old_product['quantity'];
+
+					if (isset($merged_old_products[$product_id])) {
+						$merged_old_products[$product_id]['quantity'] += $quantity;
+					} else {
+						$merged_old_products[$product_id] = array(
+							'product_id' => $product_id,
+							'quantity' => $quantity
+						);
+					}
+				}
+
+				$old_products_list = array_values($merged_old_products);
+
+				$proforma_invoice_list = $this->getTableRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $delivery_slip_id, '');
+
+				if (!empty($proforma_invoice_list)) {
+					$proforma_invoice = $proforma_invoice_list[0];
+
+					if (!empty($proforma_invoice)) {
+						if (!empty($old_products_list)) {
+							$filtered_products = [
+								'product_id' => [],
+								'indv_magazine_id' => [],
+								'product_name' => [],
+								'unit_type' => [],
+								'subunit_need' => [],
+								'content' => [],
+								'unit_id' => [],
+								'unit_name' => [],
+								'quantity' => [],
+								'rate' => [],
+								'per' => [],
+								'per_type' => [],
+								'product_tax' => [],
+								'final_rate' => [],
+								'amount' => [],
+							];
+
+							// Explode the proforma fields
+							$product_ids = explode(',', $proforma_invoice['product_id']);
+							$indv_magazine_ids = explode(',', $proforma_invoice['indv_magazine_id']);
+							$product_names = explode(',', $proforma_invoice['product_name']);
+							$unit_types = explode(',', $proforma_invoice['unit_type']);
+							$subunit_needs = explode(',', $proforma_invoice['subunit_need']);
+							$contents = explode(',', $proforma_invoice['content']);
+							$unit_ids = explode(',', $proforma_invoice['unit_id']);
+							$unit_names = explode(',', $proforma_invoice['unit_name']);
+							$quantitys = explode(',', $proforma_invoice['quantity']);
+							$rates = explode(',', $proforma_invoice['rate']);
+							$pers = explode(',', $proforma_invoice['per']);
+							$per_types = explode(',', $proforma_invoice['per_type']);
+							$product_taxs = explode(',', $proforma_invoice['product_tax']);
+							$final_rates = explode(',', $proforma_invoice['final_rate']);
+							$amounts = explode(',', $proforma_invoice['amount']);
+
+							for ($i = 0; $i < count($product_ids); $i++) {
+								$current_product_id = trim($product_ids[$i]);
+								$current_quantity = (float)trim($quantitys[$i]);
+
+								// Check if this product_id exists in old products list
+								$found = false;
+								foreach ($old_products_list as $old_product) {
+									if ($old_product['product_id'] == $current_product_id) {
+										$found = true;
+										$old_quantity = $old_product['quantity'];
+
+										if ($old_quantity < $current_quantity) {
+											// Adjust quantity
+											$new_quantity = $current_quantity - $old_quantity;
+
+											$filtered_products['product_id'][] = $current_product_id;
+											$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
+											$filtered_products['product_name'][] = trim($product_names[$i]);
+											$filtered_products['unit_type'][] = trim($unit_types[$i]);
+											$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
+											$filtered_products['content'][] = trim($contents[$i]);
+											$filtered_products['unit_id'][] = trim($unit_ids[$i]);
+											$filtered_products['unit_name'][] = trim($unit_names[$i]);
+											$filtered_products['quantity'][] = $new_quantity;
+											$filtered_products['rate'][] = trim($rates[$i]);
+											$filtered_products['per'][] = trim($pers[$i]);
+											$filtered_products['per_type'][] = trim($per_types[$i]);
+											$filtered_products['product_tax'][] = trim($product_taxs[$i]);
+											$filtered_products['final_rate'][] = trim($final_rates[$i]);
+											$filtered_products['amount'][] = trim($amounts[$i]);
+										}
+										// If old == current quantity, skip adding (means remove)
+										break;
+									}
+								}
+
+								if (!$found) {
+									// If not found in old products, add as it is
+									$filtered_products['product_id'][] = $current_product_id;
+									$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
+									$filtered_products['product_name'][] = trim($product_names[$i]);
+									$filtered_products['unit_type'][] = trim($unit_types[$i]);
+									$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
+									$filtered_products['content'][] = trim($contents[$i]);
+									$filtered_products['unit_id'][] = trim($unit_ids[$i]);
+									$filtered_products['unit_name'][] = trim($unit_names[$i]);
+									$filtered_products['quantity'][] = $current_quantity;
+									$filtered_products['rate'][] = trim($rates[$i]);
+									$filtered_products['per'][] = trim($pers[$i]);
+									$filtered_products['per_type'][] = trim($per_types[$i]);
+									$filtered_products['product_tax'][] = trim($product_taxs[$i]);
+									$filtered_products['final_rate'][] = trim($final_rates[$i]);
+									$filtered_products['amount'][] = trim($amounts[$i]);
+								}
+							}
+
+							// Merge new proforma data
+							$new_proforma_invoice = [
+								'product_id' => implode(',', $filtered_products['product_id']),
+								'indv_magazine_id' => implode(',', $filtered_products['indv_magazine_id']),
+								'product_name' => implode(',', $filtered_products['product_name']),
+								'unit_type' => implode(',', $filtered_products['unit_type']),
+								'subunit_need' => implode(',', $filtered_products['subunit_need']),
+								'content' => implode(',', $filtered_products['content']),
+								'unit_id' => implode(',', $filtered_products['unit_id']),
+								'unit_name' => implode(',', $filtered_products['unit_name']),
+								'quantity' => implode(',', $filtered_products['quantity']),
+								'rate' => implode(',', $filtered_products['rate']),
+								'per' => implode(',', $filtered_products['per']),
+								'per_type' => implode(',', $filtered_products['per_type']),
+								'product_tax' => implode(',', $filtered_products['product_tax']),
+								'final_rate' => implode(',', $filtered_products['final_rate']),
+								'amount' => implode(',', $filtered_products['amount']),
+							];
+
+							// Final list
+							$list = array_merge($proforma_invoice, $new_proforma_invoice);
+
+						} else {
+							$list = $proforma_invoice;
+						}
+					}
+				}
+			} else {
+				$list = $this->getTableRecords($GLOBALS['delivery_slip_table'], 'delivery_slip_id', $delivery_slip_id, '');
+
+				if(!empty($list)) {
+					$list = $list[0];
+				}
+			}
+			return $list;
+        }
+
+		public function getProformaInvoiceActions($proforma_invoice_id) {
+			$list = array();
+			$proforma_invoice_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";    
+			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
+		
+			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
+			$proforma_invoice_list = $this->getQueryRecords($GLOBALS['proforma_invoice_table'], $proforma_invoice_query);
+		
+			if (!empty($delivery_slip_list)) {
+				$old_products_list = array();
+		
+				foreach ($delivery_slip_list as $delivery_slip_data) {
+					$product_ids = explode(',', $delivery_slip_data['product_id']);
+					$quantities = explode(',', $delivery_slip_data['quantity']);
+		
+					for ($i = 0; $i < count($product_ids); $i++) {
+						$old_products_list[] = [
+							'product_id' => trim($product_ids[$i]),
+							'quantity' => (float)trim($quantities[$i])
+						];
+					}
+				}
+		
+				// Merge old products (combine quantities of duplicate products)
+				$merged_old_products = array();
+				foreach ($old_products_list as $old_product) {
+					$product_id = $old_product['product_id'];
+					$quantity = $old_product['quantity'];
+		
+					if (isset($merged_old_products[$product_id])) {
+						$merged_old_products[$product_id]['quantity'] += $quantity;
+					} else {
+						$merged_old_products[$product_id] = array(
+							'product_id' => $product_id,
+							'quantity' => $quantity
+						);
+					}
+				}
+		
+				// Get proforma invoice
+				if (!empty($proforma_invoice_list)) {
+					$proforma_invoice = $proforma_invoice_list[0];
+				}
+		
+				if (!empty($proforma_invoice)) {
+					$product_ids = explode(',', $proforma_invoice['product_id']);
+					$quantities = explode(',', $proforma_invoice['quantity']);
+		
+					$merged_new_products = array();
+					for ($i = 0; $i < count($product_ids); $i++) {
+						$product_id = trim($product_ids[$i]);
+						$quantity = (float)trim($quantities[$i]);
+		
+						if (isset($merged_new_products[$product_id])) {
+							$merged_new_products[$product_id]['quantity'] += $quantity;
+						} else {
+							$merged_new_products[$product_id] = array(
+								'product_id' => $product_id,
+								'quantity' => $quantity
+							);
+						}
+					}
+		
+					// Now compare merged_old_products vs merged_new_products
+					$mismatch_found = false;
+
+		
+					foreach ($merged_old_products as $product_id => $old_product) {
+						$old_qty = $old_product['quantity'];
+						$new_qty = isset($merged_new_products[$product_id]['quantity']) ? $merged_new_products[$product_id]['quantity'] : 0;
+		
+						if ($old_qty != $new_qty) {
+							$mismatch_found = true;
+							break;
+						}
+					}
+		
+					// Also check if there are extra products in new which are not in old
+					foreach ($merged_new_products as $product_id => $new_product) {
+						if (!isset($merged_old_products[$product_id])) {
+							$mismatch_found = true;
+							break;
+						}
+					}
+		
+					if ($mismatch_found) {
+						$list = [ "edit", "convert" ];
+					} else {
+						$list = []; // all quantities match
+					}
+				}
+			} else {
+				$list = [ "edit", "delete", "convert" ];
+			}
+		
+			return $list;
+		}	
+		
+		public function getDeliverySlipActions($delivery_slip_id) {
+			$list = array();
+			$estimate_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE delivery_slip_id = '" . $delivery_slip_id . "' AND deleted = '0'";
+			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $delivery_slip_id . "' AND deleted = '0'";
+		
+			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
+			$estimate_list = $this->getQueryRecords($GLOBALS['estimate_table'], $estimate_query);
+		
+			if (!empty($estimate_list)) {
+				$old_products_list = array();
+		
+				foreach ($estimate_list as $delivery_slip_data) {
+					$product_ids = explode(',', $delivery_slip_data['product_id']);
+					$quantities = explode(',', $delivery_slip_data['quantity']);
+		
+					for ($i = 0; $i < count($product_ids); $i++) {
+						$old_products_list[] = [
+							'product_id' => trim($product_ids[$i]),
+							'quantity' => (float)trim($quantities[$i])
+						];
+					}
+				}
+		
+				// Merge old products (combine quantities of duplicate products)
+				$merged_old_products = array();
+				foreach ($old_products_list as $old_product) {
+					$product_id = $old_product['product_id'];
+					$quantity = $old_product['quantity'];
+		
+					if (isset($merged_old_products[$product_id])) {
+						$merged_old_products[$product_id]['quantity'] += $quantity;
+					} else {
+						$merged_old_products[$product_id] = array(
+							'product_id' => $product_id,
+							'quantity' => $quantity
+						);
+					}
+				}
+		
+				// Get proforma invoice
+				if (!empty($delivery_slip_list)) {
+					$proforma_invoice = $delivery_slip_list[0];
+				}
+		
+				if (!empty($proforma_invoice)) {
+					$product_ids = explode(',', $proforma_invoice['product_id']);
+					$quantities = explode(',', $proforma_invoice['quantity']);
+		
+					$merged_new_products = array();
+					for ($i = 0; $i < count($product_ids); $i++) {
+						$product_id = trim($product_ids[$i]);
+						$quantity = (float)trim($quantities[$i]);
+		
+						if (isset($merged_new_products[$product_id])) {
+							$merged_new_products[$product_id]['quantity'] += $quantity;
+						} else {
+							$merged_new_products[$product_id] = array(
+								'product_id' => $product_id,
+								'quantity' => $quantity
+							);
+						}
+					}
+		
+					// Now compare merged_old_products vs merged_new_products
+					$mismatch_found = false;
+
+		
+					foreach ($merged_old_products as $product_id => $old_product) {
+						$old_qty = $old_product['quantity'];
+						$new_qty = isset($merged_new_products[$product_id]['quantity']) ? $merged_new_products[$product_id]['quantity'] : 0;
+		
+						if ($old_qty != $new_qty) {
+							$mismatch_found = true;
+							break;
+						}
+					}
+		
+					// Also check if there are extra products in new which are not in old
+					foreach ($merged_new_products as $product_id => $new_product) {
+						if (!isset($merged_old_products[$product_id])) {
+							$mismatch_found = true;
+							break;
+						}
+					}
+		
+					if ($mismatch_found) {
+						$list = [ "edit", "convert" ];
+					} else {
+						$list = []; // all quantities match
+					}
+				}
+			} else {
+				$list = [ "edit", "delete", "convert" ];
+			}
+		
+			return $list;
+		}	
+
+		public function getDeliveryProductsFromPI($proforma_invoice_id) {
+			$list = array();
+		
+			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
+			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
+		
+			$old_products_list = array();
+		
+			if (!empty($delivery_slip_list)) {
+				foreach ($delivery_slip_list as $delivery_slip_data) {
+					$product_ids = explode(',', $delivery_slip_data['product_id']);
+					$quantities = explode(',', $delivery_slip_data['quantity']);
+		
+					for ($i = 0; $i < count($product_ids); $i++) {
+						$old_products_list[] = trim($product_ids[$i]);
+					}
+				}
+			}
+		
+			$merged_old_products = array_values(array_unique($old_products_list));
+			
+			$list = $merged_old_products;
+
+			return $list;
+		}		
+
+		public function getEstimateIndex($estimate_id, $conversion_update) {
+			$list = array();
+			if(!empty($conversion_update) && $conversion_update == 1) {
+			// 	$old_delivery_slip = array();
+			// 	$old_delivery_slip_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE proforma_invoice_id = '" . $delivery_slip_id . "' AND deleted = '0' AND cancelled = '0'";
+
+			// 	$old_delivery_slip = $this->getQueryRecords('', $old_delivery_slip_query);
+	
+			// 	$old_products_list = array();
+
+			// 	if (!empty($old_delivery_slip)) {
+			// 		foreach ($old_delivery_slip as $old_delivery_slip_data) {
+			// 			$product_ids = explode(',', $old_delivery_slip_data['product_id']);
+			// 			$quantities = explode(',', $old_delivery_slip_data['quantity']);
+
+			// 			for ($i = 0; $i < count($product_ids); $i++) {
+			// 				$old_products_list[] = [
+			// 					'product_id' => trim($product_ids[$i]),
+			// 					'quantity' => (float)trim($quantities[$i])
+			// 				];
+			// 			}
+			// 		}
+			// 	}
+
+			// 	$merged_old_products = array();
+
+			// 	foreach ($old_products_list as $old_product) {
+			// 		$product_id = $old_product['product_id'];
+			// 		$quantity = (float) $old_product['quantity'];
+
+			// 		if (isset($merged_old_products[$product_id])) {
+			// 			$merged_old_products[$product_id]['quantity'] += $quantity;
+			// 		} else {
+			// 			$merged_old_products[$product_id] = array(
+			// 				'product_id' => $product_id,
+			// 				'quantity' => $quantity
+			// 			);
+			// 		}
+			// 	}
+
+			// 	$old_products_list = array_values($merged_old_products);
+
+				$delivery_slip_list = $this->getTableRecords($GLOBALS['delivery_slip_table'], 'delivery_slip_id', $estimate_id, '');
+
+				if (!empty($delivery_slip_list)) {
+					$delivery_slip = $delivery_slip_list[0];
+
+					// if (!empty($delivery_slip)) {
+			// 			if (!empty($old_products_list)) {
+			// 				$filtered_products = [
+			// 					'product_id' => [],
+			// 					'indv_magazine_id' => [],
+			// 					'product_name' => [],
+			// 					'unit_type' => [],
+			// 					'subunit_need' => [],
+			// 					'content' => [],
+			// 					'unit_id' => [],
+			// 					'unit_name' => [],
+			// 					'quantity' => [],
+			// 					'rate' => [],
+			// 					'per' => [],
+			// 					'per_type' => [],
+			// 					'product_tax' => [],
+			// 					'final_rate' => [],
+			// 					'amount' => [],
+			// 				];
+
+			// 				// Explode the proforma fields
+			// 				$product_ids = explode(',', $proforma_invoice['product_id']);
+			// 				$indv_magazine_ids = explode(',', $proforma_invoice['indv_magazine_id']);
+			// 				$product_names = explode(',', $proforma_invoice['product_name']);
+			// 				$unit_types = explode(',', $proforma_invoice['unit_type']);
+			// 				$subunit_needs = explode(',', $proforma_invoice['subunit_need']);
+			// 				$contents = explode(',', $proforma_invoice['content']);
+			// 				$unit_ids = explode(',', $proforma_invoice['unit_id']);
+			// 				$unit_names = explode(',', $proforma_invoice['unit_name']);
+			// 				$quantitys = explode(',', $proforma_invoice['quantity']);
+			// 				$rates = explode(',', $proforma_invoice['rate']);
+			// 				$pers = explode(',', $proforma_invoice['per']);
+			// 				$per_types = explode(',', $proforma_invoice['per_type']);
+			// 				$product_taxs = explode(',', $proforma_invoice['product_tax']);
+			// 				$final_rates = explode(',', $proforma_invoice['final_rate']);
+			// 				$amounts = explode(',', $proforma_invoice['amount']);
+
+			// 				for ($i = 0; $i < count($product_ids); $i++) {
+			// 					$current_product_id = trim($product_ids[$i]);
+			// 					$current_quantity = (float)trim($quantitys[$i]);
+
+			// 					// Check if this product_id exists in old products list
+			// 					$found = false;
+			// 					foreach ($old_products_list as $old_product) {
+			// 						if ($old_product['product_id'] == $current_product_id) {
+			// 							$found = true;
+			// 							$old_quantity = $old_product['quantity'];
+
+			// 							if ($old_quantity < $current_quantity) {
+			// 								// Adjust quantity
+			// 								$new_quantity = $current_quantity - $old_quantity;
+
+			// 								$filtered_products['product_id'][] = $current_product_id;
+			// 								$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
+			// 								$filtered_products['product_name'][] = trim($product_names[$i]);
+			// 								$filtered_products['unit_type'][] = trim($unit_types[$i]);
+			// 								$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
+			// 								$filtered_products['content'][] = trim($contents[$i]);
+			// 								$filtered_products['unit_id'][] = trim($unit_ids[$i]);
+			// 								$filtered_products['unit_name'][] = trim($unit_names[$i]);
+			// 								$filtered_products['quantity'][] = $new_quantity;
+			// 								$filtered_products['rate'][] = trim($rates[$i]);
+			// 								$filtered_products['per'][] = trim($pers[$i]);
+			// 								$filtered_products['per_type'][] = trim($per_types[$i]);
+			// 								$filtered_products['product_tax'][] = trim($product_taxs[$i]);
+			// 								$filtered_products['final_rate'][] = trim($final_rates[$i]);
+			// 								$filtered_products['amount'][] = trim($amounts[$i]);
+			// 							}
+			// 							// If old == current quantity, skip adding (means remove)
+			// 							break;
+			// 						}
+			// 					}
+
+			// 					if (!$found) {
+			// 						// If not found in old products, add as it is
+			// 						$filtered_products['product_id'][] = $current_product_id;
+			// 						$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
+			// 						$filtered_products['product_name'][] = trim($product_names[$i]);
+			// 						$filtered_products['unit_type'][] = trim($unit_types[$i]);
+			// 						$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
+			// 						$filtered_products['content'][] = trim($contents[$i]);
+			// 						$filtered_products['unit_id'][] = trim($unit_ids[$i]);
+			// 						$filtered_products['unit_name'][] = trim($unit_names[$i]);
+			// 						$filtered_products['quantity'][] = $current_quantity;
+			// 						$filtered_products['rate'][] = trim($rates[$i]);
+			// 						$filtered_products['per'][] = trim($pers[$i]);
+			// 						$filtered_products['per_type'][] = trim($per_types[$i]);
+			// 						$filtered_products['product_tax'][] = trim($product_taxs[$i]);
+			// 						$filtered_products['final_rate'][] = trim($final_rates[$i]);
+			// 						$filtered_products['amount'][] = trim($amounts[$i]);
+			// 					}
+			// 				}
+
+			// 				// Merge new proforma data
+			// 				$new_proforma_invoice = [
+			// 					'product_id' => implode(',', $filtered_products['product_id']),
+			// 					'indv_magazine_id' => implode(',', $filtered_products['indv_magazine_id']),
+			// 					'product_name' => implode(',', $filtered_products['product_name']),
+			// 					'unit_type' => implode(',', $filtered_products['unit_type']),
+			// 					'subunit_need' => implode(',', $filtered_products['subunit_need']),
+			// 					'content' => implode(',', $filtered_products['content']),
+			// 					'unit_id' => implode(',', $filtered_products['unit_id']),
+			// 					'unit_name' => implode(',', $filtered_products['unit_name']),
+			// 					'quantity' => implode(',', $filtered_products['quantity']),
+			// 					'rate' => implode(',', $filtered_products['rate']),
+			// 					'per' => implode(',', $filtered_products['per']),
+			// 					'per_type' => implode(',', $filtered_products['per_type']),
+			// 					'product_tax' => implode(',', $filtered_products['product_tax']),
+			// 					'final_rate' => implode(',', $filtered_products['final_rate']),
+			// 					'amount' => implode(',', $filtered_products['amount']),
+			// 				];
+
+			// 				// Final list
+			// 				$list = array_merge($proforma_invoice, $new_proforma_invoice);
+
+						// } else {
+							$list = $delivery_slip;
+						// }
+					}
+			// 	}
+			} else {
+				$list = $this->getTableRecords($GLOBALS['estimate_table'], 'estimate_id', $estimate_id, '');
+
+				if(!empty($list)) {
+					$list = $list[0];
+				}
+			}
+			return $list;
+        }
+
+		public function getEstimateList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
+            $list = array(); $select_query = ""; $where = "";
+
+            if(!empty($from_date)) {
+                $from_date = date("Y-m-d", strtotime($from_date));
+				$where = "estimate_date >= '".$from_date."'";
+            }
+            if(!empty($to_date)) {
+                $to_date = date("Y-m-d", strtotime($to_date));
+                if(!empty($where)) {
+                    $where = $where." AND estimate_date <= '".$to_date."'";
+                } else {
+                    $where = "estimate_date <= '".$to_date."'";
+                }
+            }
+            if($show_bill == '0' || $show_bill == '1'){
+                if(!empty($where)) {
+                    $where = $where." AND cancelled = '".$show_bill."' ";
+                }
+                else {
+                    $where = "cancelled = '".$show_bill."' ";
+                }
+            }
+
+			if(!empty($customer_id)){
+                if(!empty($where)) {
+                    $where = $where." AND customer_id = '".$customer_id."' ";
+                } else {
+                    $where = "customer_id = '".$customer_id."' ";
+                }
+            }
+
+			if(!empty($where)) {
+				$select_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
+			}
+			else{
+				$select_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+			}
+            
+            if(!empty($select_query)) {
+                $list = $this->getQueryRecords($GLOBALS['estimate_table'], $select_query);
+            }
+            return $list;
+        }
+		
 		public function getContractorFinishedProducts($contractor_id,$finished_product_group_id) {
 			$list = array(); $select_query = "";
 		
@@ -593,7 +1259,6 @@
 			}
 			return $list;
 		}
-	
 		
 		public function getDailyProductionList($from_date, $to_date, $filter_factory_id, $filter_magazine_id, $filter_contractor_id, $show_bill) {
 			$list = array(); $select_query = ""; $where = "";

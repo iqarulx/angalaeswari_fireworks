@@ -197,6 +197,8 @@
 							$loginer_name = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_name_mobile'];
                             $loginer_name = $obj->encode_decode('encrypt', $loginer_name);
 						}
+
+                        $company_id = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'company_id');
 						
 						$columns = array('loginer_name', 'login_date_time', 'logout_date_time', 'ip_address', 'browser', 'os_detail', 'type', 'user_id', 'deleted');
 						$values = array("'".$loginer_name."'", "'".$create_date_time."'", "'".$create_date_time."'", "'".$ip_address."'", "'".$browser."'", "'".$os_detail."'", "'".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type']."'", "'".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']."'", "'0'");			
@@ -219,7 +221,8 @@
                             }
 
 							$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_login_record_id'] = $user_login_record_id;
-							$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address'] = $ip_address;						
+							$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address'] = $ip_address;					
+                            $_SESSION['bill_company_id'] = $company_id;	
 							if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address'])) {
 								$result = array('number' => '1', 'msg' => 'Login Successfully');
 							}

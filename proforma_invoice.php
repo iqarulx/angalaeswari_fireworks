@@ -22,6 +22,8 @@
     $cancelled_bill = $obj->getAllRecords($GLOBALS['proforma_invoice_table'], 'cancelled', 1);
     $cancelled_count = count($cancelled_bill);
 
+    $customer_list =array();
+    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,15 +67,15 @@
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-2">
                                             <div class="input-group">
-                                                <select class="select2 select2-danger" name="search_text" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
-                                                    <option value="">Select Party</option>
-                                                    <?php if (!empty($party_list)) {
-                                                        foreach ($party_list as $P_list) { ?>
-                                                            <option value="<?php if (!empty($P_list['party_id'])) {
-                                                                echo $P_list['party_id'];
-                                                            } ?>" <?php if(!empty($party_id) && $party_id == $P_list['party_id']) { echo "selected"; } ?>>
-                                                                <?php if (!empty($P_list['party_name'])) {
-                                                                    echo $obj->encode_decode('decrypt', $P_list['party_name']);
+                                                <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
+                                                    <option value="">Select Customer</option>
+                                                    <?php if (!empty($customer_list)) {
+                                                        foreach ($customer_list as $customer) { ?>
+                                                            <option value="<?php if (!empty($customer['customer_id'])) {
+                                                                echo $customer['customer_id'];
+                                                            } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
+                                                                <?php if (!empty($customer['name_mobile_city'])) {
+                                                                    echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
                                                                 } ?>
                                                             </option>
                                                         <?php }

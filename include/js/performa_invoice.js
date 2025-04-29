@@ -34,18 +34,30 @@ function ShowGST(obj, gst_option) {
                     }
                 }
                 getGST();
-                /*if(option == 1) {
+
+                if (jQuery('.product_row').length > 0) {
+                    if (jQuery('select[name="product_tax[]"]').length > 0) {
+                        jQuery('select[name="product_tax[]"]').each(function () {
+                            if (jQuery(this).length > 0) {
+                                jQuery(this).val('').trigger('change');
+                            }
+                        });
+                    }
+                }
+
+                /* if(option == 1) {
                     getGST();
                 }
                 else{
                     checkOverallAmount();
-                }*/
+                } */
             }
             else {
                 window.location.reload();
             }
         }
     });
+    checkOverallAmount();
 }
 
 function getPartyState(party_id) {
@@ -157,6 +169,7 @@ function getGST() {
     $(".cgst").attr('colspan', 8 + parseInt(addcol));
     $(".sgst").attr('colspan', 8 + parseInt(addcol));
     $(".igst").attr('colspan', 8 + parseInt(addcol));
+    $(".agent_commission").attr('colspan', 8 + parseInt(addcol));
     $(".total_tax").attr('colspan', 8 + parseInt(addcol));
     $(".round").attr('colspan', 8 + parseInt(addcol));
     $(".grand_total").attr('colspan', 8 + parseInt(addcol));
@@ -223,10 +236,11 @@ function checkOverallAmount() {
                     decimal = numbers[1];
                 }
 
-                if (decimal != "" && decimal != 0) {
+                if (decimal != "" && decimal != 00) {
                     if (decimal.length == 1) {
                         decimal = decimal + '0';
                     }
+
                     if (parseFloat(decimal) >= 50) {
                         var round_off = 0;
                         round_off = 100 - parseFloat(decimal);
@@ -243,9 +257,9 @@ function checkOverallAmount() {
                         }
                     }
                     else {
-                        decimal = "0." + decimal;
+                        decimal = "0." + decimal.padStart(2, '0');
+                        console.log(decimal + "From else" + jQuery('.round_off').length);
                         jQuery('.round_off').html('- ' + decimal);
-                        total = parseFloat(total) - parseFloat(decimal);
                     }
                     total = total.toFixed(2);
                 }
@@ -416,9 +430,21 @@ function ProductRowCheck(obj) {
         }
     }
 
+    // var selected_per_type = "";
+    // if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
+    //     selected_per_type = jQuery(obj).closest('tr').find('select[name="per_type[]"]').val();
+    //     selected_per_type = jQuery.trim(selected_per_type);
+    //     if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
+    //         per_check = 0;
+    //     }
+    //     else if (price_regex.test(selected_per_type) == false) {
+    //         per_error = 0;
+    //     }
+    // }
+
     var selected_per_type = "";
-    if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
-        selected_per_type = jQuery(obj).closest('tr').find('select[name="per_type[]"]').val();
+    if (jQuery(obj).closest('tr').find('input[name="per_type[]"]').length > 0) {
+        selected_per_type = jQuery(obj).closest('tr').find('input[name="per_type[]"]').val();
         selected_per_type = jQuery.trim(selected_per_type);
         if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
             per_check = 0;
@@ -433,14 +459,20 @@ function ProductRowCheck(obj) {
             jQuery(obj).closest('tr').find('input[name="rate[]"]').after('<span class="infos">Invalid rate</span>');
         }
     }
+
     if (parseFloat(per_error) == 0) {
         if (jQuery(obj).closest('tr').find('input[name="per[]"]').length > 0) {
             jQuery(obj).closest('tr').find('input[name="per[]"]').after('<span class="infos">Invalid Per</span>');
         }
     }
+    // if (parseFloat(per_type_error) == 0) {
+    //     if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
+    //         jQuery(obj).closest('tr').find('select[name="per_type[]"]').after('<span class="infos">Invalid Per</span>');
+    //     }
+    // }
     if (parseFloat(per_type_error) == 0) {
-        if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
-            jQuery(obj).closest('tr').find('select[name="per_type[]"]').after('<span class="infos">Invalid Per</span>');
+        if (jQuery(obj).closest('tr').find('input[name="per_type[]"]').length > 0) {
+            jQuery(obj).closest('tr').find('input[name="per_type[]"]').after('<span class="infos">Invalid Per</span>');
         }
     }
 
@@ -451,7 +483,6 @@ function ProductRowCheck(obj) {
                 final_rate = parseFloat(selected_rate) / parseFloat(selected_per);
             }
             else if (selected_per_type == '2') {
-                // console.log("hello");
                 rate_per_piece = parseFloat(selected_rate) / parseFloat(selected_per);
                 final_rate = parseFloat(rate_per_piece) * parseFloat(selected_content);
             }
@@ -493,10 +524,10 @@ function ProductRowCheck(obj) {
         }
 
         if (jQuery(obj).closest('tr').find('.final_rate').length > 0) {
-            jQuery(obj).closest('tr').find('.final_rate').html(final_rate);
+            jQuery(obj).closest('tr').find('.final_rate').html(parseFloat(final_rate).toFixed(2));
         }
         if (jQuery(obj).closest('tr').find('input[name="final_rate[]"]').length > 0) {
-            jQuery(obj).closest('tr').find('input[name="final_rate[]"]').val(final_rate);
+            jQuery(obj).closest('tr').find('input[name="final_rate[]"]').val(parseFloat(final_rate).toFixed(2));
         }
 
     }
@@ -548,9 +579,9 @@ function calTotal() {
     if (jQuery('.total_tax_value').length > 0) {
         jQuery('.total_tax_value').html('');
     }
-    if (jQuery('.round_off').length > 0) {
-        jQuery('.round_off').html('');
-    }
+    // if (jQuery('.round_off').length > 0) {
+    //     jQuery('.round_off').html('');
+    // }
     if (jQuery('.overall_total').length > 0) {
         jQuery('.overall_total').html('');
     }
@@ -581,7 +612,7 @@ function calTotal() {
 
             if (jQuery(this).find('input[name="final_rate[]"]').length > 0) {
                 final_rate = jQuery(this).find('input[name="final_rate[]"]').val();
-                final_rate = jQuery.trim(final_rate);
+                final_rate = jQuery.trim(parseFloat(final_rate).toFixed(2));
             }
             if (jQuery(this).find('input[name="quantity[]"]').length > 0) {
                 selected_quantity = jQuery(this).find('input[name="quantity[]"]').val();
@@ -637,6 +668,7 @@ function calTotal() {
     }
     CheckCharges();
     getAgentCommission();
+    getGST();
     checkGST();
 }
 
@@ -656,9 +688,9 @@ function checkGST() {
     if (jQuery('.total_tax_value').length > 0) {
         jQuery('.total_tax_value').html('');
     }
-    if (jQuery('.round_off').length > 0) {
-        jQuery('.round_off').html('');
-    }
+    // if (jQuery('.round_off').length > 0) {
+    //     jQuery('.round_off').html('');
+    // }
     if (jQuery('.overall_total').length > 0) {
         jQuery('.overall_total').html('');
     }
@@ -704,9 +736,6 @@ function checkGST() {
         party_state = jQuery('input[name="party_state"]').val();
         party_state = jQuery.trim(party_state);
     }
-
-    console.log(gst_option);
-    console.log(tax_type);
 
     if (parseInt(gst_option) == 1) {
         if (parseInt(tax_type) == 1) {
@@ -1101,8 +1130,9 @@ function CheckCharges() {
         }
 
     }
-    // getGST();
     getAgentCommission();
+    getGST();
+    checkGST();
 }
 
 function AddproformaProducts(event) {
@@ -1232,13 +1262,13 @@ function AddproformaProducts(event) {
                         selected_content = jQuery('input[name="selected_content"]').val();
                         selected_content = jQuery.trim(selected_content);
                         if (typeof selected_content == "undefined" || selected_content == "" || selected_content == 0) {
-                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Content" : "Content";
                         }
                         else if (price_regex.test(selected_content) == false) {
-                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Content" : "Content";
                         }
                         else if (parseFloat(selected_content) > 99999) {
-                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Amount" : "Amount";
+                            all_errors_check = (all_errors_check != '') ? all_errors_check + ", Content" : "Content";
                         }
                     }
 
@@ -1387,12 +1417,12 @@ function AddproformaProducts(event) {
                     } else {
 
                         // if(godown_type == 1){
-                        jQuery('.proforma_invoice_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Brand, Product and Contains and Unit type Already Exists</span>');
+                        jQuery('.proforma_invoice_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Product and Contains and Unit type Already Exists</span>');
                         if (jQuery('.add_products_button').length > 0) {
                             jQuery('.add_products_button').attr('disabled', false);
                         }
                         // }else{
-                        //      jQuery('.received_slip_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Godown ,Brand, Product and Contains Already Exists</span>');
+                        //      jQuery('.received_slip_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Godown, Product and Contains Already Exists</span>');
                         // }
                     }
                 }
@@ -1532,13 +1562,9 @@ function CalProductAmount() {
 //     }
 
 //     var final_rate = 0;
-//     // console.log(subunitNeed);
 //     if (subunitNeed == 1) {
-//         // console.log(per_check+" "+per_)
 //         if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1 && parseFloat(contains_check) == 1 && parseFloat(contains_error) == 1) {
-//             // console.log(selected_rate+" hai "+selected_per);
 //             rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
-//             // console.log(selected_per_type); 
 //             if (selected_per_type == '1') {
 //                 selected_amount = rate_per_unit;
 //                 selected_subunit_amount = rate_per_unit;
@@ -1560,7 +1586,6 @@ function CalProductAmount() {
 //                 jQuery('input[name="selected_final_rate"]').val('');
 //             }
 //         }
-//         // console.log(final_rate+"helo");
 //     } else {
 //         if (parseFloat(per_check) == 1 && parseFloat(per_error) == 1 && parseFloat(per_type_check) == 1 && parseFloat(per_type_error) == 1) {
 //             rate_per_unit = parseFloat(selected_rate) / parseFloat(selected_per);
@@ -1574,7 +1599,6 @@ function CalProductAmount() {
 //                 selected_amount = parseFloat(content) * parseFloat(rate_per_unit);
 //                 final_rate = selected_amount;
 //             }
-//             // console.log(final_rate);
 //             if (jQuery('input[name="selected_final_rate"]').length > 0) {
 //                 jQuery('input[name="selected_final_rate"]').val(final_rate);
 //             }
@@ -1624,7 +1648,6 @@ function getRateByTaxOption() {
         tax_option = jQuery('select[name="tax_option"]').val();
         tax_option = jQuery.trim(tax_option);
     }
-    // console.log(tax_option);
     var tax_type = "";
     if (jQuery('select[name="tax_type"]').length > 0) {
         tax_type = jQuery('select[name="tax_type"]').val();
@@ -1674,7 +1697,6 @@ function getRateByTaxOption() {
                         final_rate = parseFloat(selected_rate) / parseFloat(per);
                     }
                     else if (per_type == '2') {
-                        // console.log("hello");
                         rate_per_piece = parseFloat(selected_rate) / parseFloat(per);
                         final_rate = parseFloat(rate_per_piece) * parseFloat(content);
                     }
@@ -1691,8 +1713,6 @@ function getRateByTaxOption() {
 
                 var rate = 0; var selected_rate = 0; var tax = "";
                 if (typeof tax_option != "undefined" && tax_option != null && tax_option != "") {
-
-                    console.log(tax_type);
                     if (tax_type == '1') {
                         if (jQuery(this).find('select[name="product_tax[]"]').length > 0) {
                             var tax = jQuery(this).find('select[name="product_tax[]"]').val();
@@ -1714,7 +1734,6 @@ function getRateByTaxOption() {
                     // var tax = jQuery(this).find('.tax').html();
                     // var tax = product_tax.value;
                     // tax = jQuery.trim(tax);
-                    console.log(final_rate + "jai" + tax);
                     if (price_regex.test(final_rate) == true) {
                         // if(typeof tax != "undefined" && tax != null && tax != "") {
                         //     tax = tax.replace("%", "");
@@ -1747,7 +1766,7 @@ function getRateByTaxOption() {
                                 jQuery(this).find('input[name="final_rate[]"]').val(rate);
                             }
                             if (jQuery(this).find('.final_rate').length > 0) {
-                                jQuery(this).find('.final_rate').html(rate);
+                                jQuery(this).find('.final_rate').html(parseFloat(rate).toFixed(2));
                             }
                             // if (jQuery(this).find('.amount').length > 0) {
                             //     jQuery(this).find('.amount').html(product_price);
@@ -1904,7 +1923,6 @@ function GetProdetails() {
                                 }
                             }
                             // window.globalVar = result[5].split("%%");
-                            // console.log(globalVar);
                         }
                     }
                 });
@@ -2000,4 +2018,34 @@ function magazineList() {
         }
     });
     getGST();
+}
+
+function changeState() {
+    var customer_id = "";
+    if (jQuery('select[name="customer_id"]').length > 0) {
+        customer_id = jQuery('select[name="customer_id"]').val();
+    }
+
+    if (customer_id != '') {
+        var check_login_session = 1;
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url, success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    post_url = "proforma_invoice_changes.php?party_change_state=" + customer_id;
+                    jQuery.ajax({
+                        url: post_url, success: function (result) {
+                            if (result != '') {
+                                if (jQuery('input[name="party_state"]').length > 0) {
+                                    jQuery('input[name="party_state"]').val(result);
+                                    getGST();
+                                    checkGST();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
 }

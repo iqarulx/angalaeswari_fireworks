@@ -101,13 +101,16 @@
             // }
 			if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
                 $prefix = 'CON';
-            }
-			else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                 $prefix = 'DAP';
-            }
-			else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                 $prefix = 'PI';
+            } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
+                $prefix = 'DS';
+            } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+                $prefix = 'EST';
             }
+			
 			// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
             //     $prefix = 'SMI';
             // }
@@ -171,9 +174,14 @@
 					else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                         $last_number = str_replace("DAP","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                         $last_number = str_replace("PI","",$last_number);
+                        $last_number = trim($last_number);
+                    } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
+                        $last_number = str_replace("DS","",$last_number);
+                        $last_number = trim($last_number);
+                    } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+                        $last_number = str_replace("EST","",$last_number);
                         $last_number = trim($last_number);
                     }
 					// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {

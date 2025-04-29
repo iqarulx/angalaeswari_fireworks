@@ -4,7 +4,7 @@
         $show_proforma_invoice_id = $_REQUEST['show_proforma_invoice_id'];
 
         $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
-        $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";
+        $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $ds_product_ids = array();
 
         if(!empty($show_proforma_invoice_id)) {
             $proforma_invoice_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $show_proforma_invoice_id, '');
@@ -136,6 +136,7 @@
                         $other_charges_id = $pi['other_charges_id'];
                         $other_charges_id = explode(",", $other_charges_id);
                         $other_charges_id = array_reverse($other_charges_id);
+                        $charges_count = count($other_charges_id);
                     }      
             
                     if(!empty($pi['charges_type'])) {
@@ -150,9 +151,10 @@
                     }    
                     if(!empty($pi['agent_commission'])) {
                         $agent_commission = $pi['agent_commission'];
-                    }                        
+                    }
                 }
             }
+            $ds_product_ids = $obj->getDeliveryProductsFromPI($show_proforma_invoice_id);
         }
 
         $customer_list =array();
@@ -199,7 +201,7 @@
                             <input type="date" name="proforma_invoice_date" class="form-control shadow-none" placeholder="" value="<?php if (!empty($proforma_invoice_date)) { echo $proforma_invoice_date; } ?>" required="">
                             <label>Date</label>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
@@ -231,8 +233,7 @@
                 <div class="col-lg-3 col-md-3 col-12 px-lg-1 py-2">
                     <div class="form-group pb-1">
                         <div class="form-label-group in-border pb-1">
-                            <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger"
-                                style="width: 100%;">
+                            <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:changeState();">
                                 <option value="">Select Customer</option>
                                 <?php if (!empty($customer_list)) {
                                     foreach ($customer_list as $customer) { ?>
@@ -343,7 +344,7 @@
                 <div class="col-lg-4 col-md-3 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address"></textarea>
+                            <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address"><?php if(!empty($address)) { echo $address; } ?></textarea>
                             <label>Delivery Address</label>
                         </div>
                     </div>
@@ -488,7 +489,7 @@
                     <div class="table-responsive">
                         <input type="hidden" name="company_state" value="<?php if(!empty($company_state)) { echo $company_state; } ?>">
                         <input type="hidden" name="party_state" value="<?php if(!empty($party_state)) { echo $party_state; } ?>">
-                        <input type="hidden" name="product_count" value="<?php if(!empty($product_count)) { echo $product_count; } else { echo '0'; } ?>">
+
                         <table class="table nowrap cursor text-center table-bordered smallfnt w-100 proforma_invoice_table">
                             <thead class="bg-dark">
                                 <tr style="white-space:pre;">
@@ -508,12 +509,14 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    if(!empty($product_ids)) {
-                                        for($i=0; $i < count($product_ids); $i++) {    
+                                    if(!empty($product_ids)){
+                                        $product_count = 0;
+                                        $product_count = count($product_ids);
+
+                                        for($i =0; $i < $product_count; $i++){
                                             ?>
-                                            <tr class="product_row" id="product_row<?php if(!empty($product_count)) { echo $product_count; } ?>">
-                                                <th class="text-center px-2 py-2 sno"><?php if(!empty($product_count)) { echo $product_count; } ?></th>
-                                            
+                                            <tr class="product_row" id="product_row<?php echo $i; ?>">
+                                                <th class="text-center px-2 py-2 sno"><?php echo ($i+1); ?></th>
                                                 <th class="text-center px-2 py-2">
                                                     <?php
                                                         if(!empty($product_ids[$i])) {
@@ -525,105 +528,88 @@
                                                         }
                                                     ?>
                                                     <input type="hidden" name="product_id[]" value="<?php if(!empty($product_ids[$i])) { echo $product_ids[$i]; } ?>"><br>
-                                                
-                                                </th>
-                                                <th class="text-center px-2 py-2">
-                                                    <?php
-                                                        if(!empty($product_ids[$i])) {
-                                                            $product_name = "";
-                                                            $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'product_name');
-                                                            if(!empty($product_name) && $product_name != $GLOBALS['null_value']) {
-                                                                echo $obj->encode_decode('decrypt', $product_name);
-                                                            }
-                                                        }
-                                                    ?>
-                                                    <input type="hidden" name="product_id[]" value="<?php if(!empty($product_ids[$i])) { echo $product_ids[$i]; } ?>"><br>
-                                                
-                                                </th>
-                                                <th class="text-center px-2 py-2">
-                                                <?php if($unit_types[$i] == '1'){
-                                                    $unit_ids[$i] = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_id');
-                                                    $unit_names[$i] = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
-                                                }
-                                                elseif($unit_types[$i] == '2')
-                                                {
-                                                    $unit_ids[$i] = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_id');
-                                                    $unit_names[$i] = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
                                                     
-                                                }
-
-                                                if(!empty($unit_names[$i]) && $unit_names[$i] !='NULL')
-                                                {
-                                                    echo $unit_names[$i] = $obj->encode_decode("decrypt",$unit_names[$i]);
-                                                }
-                                                ?>                                            <input type="hidden" name="unit_type[]" class="form-control shadow-none" value="<?php if(!empty($unit_types[$i])) { echo $unit_types[$i]; } ?>">
-                                                <input type="hidden" name="unit_id[]" class="form-control shadow-none" value="<?php if(!empty($unit_ids[$i])) { echo $unit_ids[$i]; } ?>">
-                                                <input type="hidden" name="unit_name[]" class="form-control shadow-none" value="<?php if(!empty($unit_names[$i])) { echo $unit_names[$i]; } ?>" >
-                                                    <!-- <input type="text" name="unit_type[]" class="form-control shadow-none" value="<?php if(!empty($unit_types[$i])) { echo $unit_types[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);"> -->
                                                 </th>
                                                 <th class="text-center px-2 py-2">
-                                                    <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity[$i])) { echo $quantity[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);" <?php if($conversion_update == '1' || !empty($received_slip_id)){ ?>readonly<?php } ?>>
-                                                </th>
-                                                
+                                                    <?php if($unit_types[$i] == '1'){
+                                                        $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_id');
+                                                        $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
+                                                    }
+                                                    elseif($unit_types[$i] == '2')
+                                                    {
+                                                        $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_id');
+                                                        $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
+                                                        
+                                                    }
 
-                                                <th class="text-center px-2 py-2">
-                                                    <input type="text" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);" <?php if($conversion_update == '1' || !empty($received_slip_id)){ ?>readonly<?php } ?>>
+                                                    if(!empty($unit_name) && $unit_name !='NULL')
+                                                    {
+                                                        echo $unit_name = $obj->encode_decode("decrypt",$unit_name);
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="unit_type[]" class="form-control shadow-none" value="<?php if(!empty($unit_types[$i])) { echo $unit_types[$i]; } ?>">
+                                                    <input type="hidden" name="unit_id[]" class="form-control shadow-none" value="<?php if(!empty($unit_id)) { echo $unit_ids[$i]; } ?>">
+                                                    <input type="hidden" name="unit_name[]" class="form-control shadow-none" value="<?php if(!empty($unit_name)) { echo $unit_name; } ?>" >
+                                                    <input type="hidden" name="subunit_need[]" class="form-control shadow-none" value="<?php if(!empty($subunit_needs[$i])) { echo $subunit_needs[$i]; } ?>" >
                                                 </th>
-                                            
+                                                <th class="text-center px-2 py-2">
+                                                    <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity[$i])) { echo $quantity[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);" <?php if(!empty($ds_product_ids) && in_array($product_ids[$i], $ds_product_ids)) { ?> readonly <?php } ?>>
+                                                </th>
+                                                <th class="text-center px-2 py-2">
+                                                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
+
+                                                    <?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>
+                                                </th>
                                                 <td>
                                                     <div class="form-group mb-1">
                                                         <div class="form-label-group in-border">
-                                                            <input type="text" id="name" name="rate[]" onkeyup="ProductRowCheck(this);" class="form-control shadow-none" style="width:65px;" value="<?php if(!empty($rates[$i])){ echo $rates[$i]; }?>" required>
+                                                            <input type="text" id="name" name="rate[]" onkeyup="ProductRowCheck(this);" class="form-control shadow-none" style="width:65px;" value="<?php if(!empty($rate[$i])){ echo $rate[$i]; }?>" required>
                                                         </div>
                                                     </div> 
                                                 </td>
                                                 <td>
-                                                    <div class="form-group">
-                                                        <div class="form-label-group in-border">
-                                                            <div class="input-group">
-                                                                <input type="text" id="" name="per[]" value="<?php if(!empty($per[$i])){ echo $per[$i]; }?>" class="form-control shadow-none" onkeyup="ProductRowCheck(this);">
-                                                                <label>Per</label>
-                                                                <div class="input-group-append" style="width:50%!important;">
-                                                                    <select name="per_type[]" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="ProductRowCheck(this);">
-                                                                        <option value="1" <?php if(!empty($per_type[$i]) && $per_type[$i] == '1'){ ?>selected<?php } ?>>Unit</option>
-                                                                        <option value="2" <?php if(!empty($per_type[$i]) && $per_type[$i] == '2'){ ?>selected<?php } ?>>Sub Unit</option>
-                                                                    </select>
-                                                                </div>
+                                                    <?php
+                                                        $per_unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
+                                                        $per_subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
+                                                    ?>
+                                                    <input type="hidden" id="" name="per[]" value="<?php if(!empty($per[$i])){ echo $per[$i]; }?>" class="form-control shadow-none" onkeyup="ProductRowCheck(this);">
+                                                    <input type="hidden" id="" name="per_type[]" value="<?php if(!empty($per_type[$i])){ echo $per_type[$i]; }?>">
+                                                    <?php if(!empty($per[$i]) && !empty($per_type[$i])){
+                                                        echo $per[$i]." ".$obj->encode_decode("decrypt", $per_unit_name);
+                                                    } ?>
+                                                </td>
+                                                <?php if(!empty($product_tax[$i])) { ?>
+                                                    <td class="tax_element d-none">
+                                                        <div class="form-group">
+                                                            <div class="form-label-group in-border mb-0">
+                                                                <select class="select2 select2-danger" name="product_tax[]" data-dropdown-css-class="select2-danger" style="width: 100%;"  onchange="ProductRowCheck(this);">
+                                                                    <option value="">Select Tax</option>
+                                                                    <option value="0%" <?php if($product_tax[$i] == "0%") {?> selected <?php } ?> >0%</option>
+                                                                    <option value="5%" <?php if($product_tax[$i] == "5%") {?> selected <?php } ?> >5%</option>
+                                                                    <option value="12%" <?php if($product_tax[$i] == "12%") {?> selected <?php } ?> >12%</option>
+                                                                    <option value="18%" <?php if($product_tax[$i] == "18%") {?> selected <?php } ?> >18%</option>
+                                                                    <option value="28%" <?php if($product_tax[$i] == "28%") {?> selected <?php } ?> >28%</option>
+                                                                </select>
+                                                                <label>Select Tax</label>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="tax_element d-none">
-                                                    <div class="form-group">
-                                                        <div class="form-label-group in-border mb-0">
-                                                            <select class="select2 select2-danger" name="product_tax[]" data-dropdown-css-class="select2-danger" style="width: 100%;"  onchange="ProductRowCheck(this);">
-                                                                <option value="">Select Tax</option>
-                                                                <option value="0%" <?php if(isset($product_tax[$i])){ if($product_tax[$i] == '0%'){ ?>selected<?php } } ?>>0%</option>
-                                                                <option value="5%" <?php if(isset($product_tax[$i])){ if($product_tax[$i] == '5%'){ ?>selected<?php } } ?>>5%</option>
-                                                                <option value="12%" <?php if(isset($product_tax[$i])){ if($product_tax[$i] == '12%'){ ?>selected<?php } } ?>>12%</option>
-                                                                <option value="18%" <?php if(isset($product_tax[$i])){ if($product_tax[$i] == '18%'){ ?>selected<?php } } ?>>18%</option>
-                                                                <option value="28%" <?php if(isset($product_tax[$i])){ if($product_tax[$i] == '28%'){ ?>selected<?php } } ?>>28%</option>
-                                                            </select>
-                                                            <label>Select Tax</label>
-                                                        </div>
-                                                    </div> 
-                                                </td>
+                                                        </div> 
+                                                    </td>
+                                                <?php } ?>
                                                 <td>
-                                                    <p class="final_rate"><?php if(!empty($final_rate[$i])){ echo number_format($final_rate[$i],2); }?></p>
+                                                    <p class="final_rate"><?php if(!empty($final_rate[$i])){ echo $final_rate[$i]; }?></p>
                                                     <input type="hidden" id="final_rate[]" name="final_rate[]" value="<?php if(!empty($final_rate[$i])){ echo $final_rate[$i]; }?>" class="form-control shadow-none">
                                                 </td>
                                                 <td>
-                                                    <p class="amount"><?php if(!empty($product_amount[$i])){ echo number_format($product_amount[$i],2); } ?></p>
-                                                    <input type="hidden" id="amount[]" name="amount[]" value="<?php if(!empty($product_amount[$i])){ echo $product_amount[$i]; }?>" class="form-control shadow-none">
+                                                    <p class="amount"><?php if(!empty($amount[$i])){ echo $amount[$i]; }?></p>
+                                                    <input type="hidden" id="amount[]" name="amount[]" value="<?php if(!empty($amount[$i])){ echo $amount[$i]; }?>" class="form-control shadow-none">
                                                 </td>
-                                                <?php if($conversion_update == '' || $received_slip_id == ''){?>
-                                                    <td class="text-center px-2 py-2">
-                                                        <button class="btn btn-danger" type="button" onclick="Javascript:DeletePurchaseRow('<?php if(!empty($product_count)) { echo $product_count; } ?>', 'product_row');"><i class="fa fa-trash"></i></button>
-                                                    </td>
-                                                <?php } ?>
-                                            </tr>
+                                                <th class="text-center px-2 py-2" style="<?php if(!empty($ds_product_ids) && in_array($product_ids[$i], $ds_product_ids)) { echo "pointer-events: none; background-color: #e9ecef;"; } ?>">
+                                                    <button class="btn btn-danger" type="button" onclick="Javascript:DeletePurchaseRow('<?php echo $i;?>', 'product_row');"><i class="fa fa-trash"></i></button>
+                                                </th>
+                                            </tr>       
+                                            <script src="include/select2/js/select2.min.js"></script>
+                                            <script src="include/select2/js/select.js"></script>
                                             <?php
-                                            $product_count --;
                                         }
                                     }
                                 ?>
@@ -633,122 +619,120 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end sub_tot"> Total : </td>
                                     <td colspan="1" class="text-end sub_total"></td>
                                 </tr>
-                                <input type="hidden" name="charges_count" value="<?php if(!empty($charges_count)) { echo $charges_count-1; } else { echo '0'; } ?>">
+                                <input type="hidden" name="charges_count" value="<?php if(!empty($charges_count)) { echo $charges_count - 1; } else { echo '0'; } ?>">
                                 <?php 
-                                $count = 1;
-                                if(!empty($other_charges_id) && !empty($show_purchase_bill_id)) {
-                                    for($i=0; $i < count($other_charges_id); $i++) {
-                                        ?>
-                                            <tr class="smallfnt1 charges_row" id="charges_row_<?php if(!empty($count)) { echo $count; } else { echo '0'; } ?>">
-                                                <td class="charges_head" colspan="6"></td>
-                                                <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>4<?php }else{ ?>3<?php }?>">
-                                                    <div class="form-group">
-                                                        <div class="form-label-group in-border mb-0">
-                                                            <select name="other_charges_id[]" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetChargesType(this);">
-                                                                <option value="">Select Charges</option>
-                                                                <?php 
-                                                                    if(!empty($other_charges_list)) {
-                                                                        foreach($other_charges_list as $data) {
-                                                                            if(!empty($data['charges_id']) && $data['charges_id'] != $GLOBALS['null_value']) {
-                                                                                ?>
-                                                                                <option value="<?php echo $data['charges_id']; ?>" <?php if(!empty($other_charges_id[$i]) && $other_charges_id[$i] == $data['charges_id']) { ?>selected<?php } ?>>
-                                                                                    <?php
-                                                                                        if(!empty($data['charges_name']) && $data['charges_name'] != $GLOBALS['null_value']) {
-                                                                                            echo $obj->encode_decode('decrypt', $data['charges_name']);
-                                                                                            if($obj->encode_decode('decrypt',$data['action'] ) == 'minus') {
-                                                                                                echo " (-)";
-                                                                                            }
-                                                                                        }
+                                    $count = 1;
+                                    if(!empty($other_charges_id) && !empty($show_proforma_invoice_id)) {
+                                        for($i=0; $i < count($other_charges_id); $i++) {
+                                            ?>
+                                                <tr class="smallfnt1 charges_row" id="charges_row_<?php if(!empty($count)) { echo $count; } else { echo '0'; } ?>">
+                                                    <td class="charges_head" colspan="6"></td>
+                                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>4<?php }else{ ?>3<?php }?>">
+                                                        <div class="form-group">
+                                                            <div class="form-label-group in-border mb-0">
+                                                                <select name="other_charges_id[]" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetChargesType(this);">
+                                                                    <option value="">Select Charges</option>
+                                                                    <?php 
+                                                                        if(!empty($other_charges_list)) {
+                                                                            foreach($other_charges_list as $data) {
+                                                                                if(!empty($data['charges_id']) && $data['charges_id'] != $GLOBALS['null_value']) {
                                                                                     ?>
-                                                                                </option>
-                                                                                <?php
+                                                                                    <option value="<?php echo $data['charges_id']; ?>" <?php if(!empty($other_charges_id[$i]) && $other_charges_id[$i] == $data['charges_id']) { ?>selected<?php } ?>>
+                                                                                        <?php
+                                                                                            if(!empty($data['charges_name']) && $data['charges_name'] != $GLOBALS['null_value']) {
+                                                                                                echo $obj->encode_decode('decrypt', $data['charges_name']);
+                                                                                                if($data['action'] == 'minus') {
+                                                                                                    echo " (-)";
+                                                                                                }
+                                                                                            }
+                                                                                        ?>
+                                                                                    </option>
+                                                                                    <?php
+                                                                                }
                                                                             }
                                                                         }
-                                                                    }
-                                                                ?>
-                                                            </select>
-                                                            <label>Select Charges</label>
+                                                                    ?>
+                                                                </select>
+                                                                <label>Select Charges</label>
+                                                            </div>
+                                                            <input type="hidden" name="charges_type[]" value="<?php if(!empty($charges_type[$i]) && $charges_type[$i] != "NULL") { echo $charges_type[$i]; } ?>">
+                                                        </div> 
+                                                    </td>
+                                                    <td colspan="1"> 
+                                                        <div class="d-flex">
+                                                            <input type="text" class="form-control me-2" style="width: 85px;" name="other_charges_value[]" value="<?php if(!empty($other_charges_value[$i]) && $other_charges_value[$i] != "NULL") { echo $other_charges_value[$i]; } ?>" placeholder="Value" onkeyup="Javascript:CheckCharges();"> 
+                                                            <?php if($i == '0') { ?>
+                                                                <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:AddChargesRow(this);"><i class="bi bi-plus fw-bold text-white"></i></button>
+                                                            <?php } else { ?>
+                                                                <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:DeleteChargesRow(this,'<?php echo $count; ?>');"><i class="bi bi-trash fw-bold text-white"></i></button>
+                                                            <?php } ?>
                                                         </div>
-                                                        <input type="hidden" name="charges_type[]" value="<?php if(!empty($charges_type[$i])) { echo $charges_type[$i]; } ?>">
-                                                    </div> 
-                                                </td>
-                                                <td colspan="1"> 
-                                                    <div class="d-flex">
-                                                        <input type="text" class="form-control me-2" style="width: 85px;" name="other_charges_value[]" value="<?php if(!empty($other_charges_value[$i])) { echo $other_charges_value[$i]; } ?>" placeholder="Value" onkeyup="Javascript:CheckCharges();"> 
-                                                        <?php if($i == '0') { ?>
-                                                            <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:AddChargesRow(this);"><i class="bi bi-plus fw-bold text-white"></i></button>
-                                                        <?php } else { ?>
-                                                            <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:DeleteChargesRow(this,'<?php echo $count; ?>');"><i class="bi bi-trash fw-bold text-white"></i></button>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
-                                                <td colspan="1">
-                                                    <div class="text-end"><span class="other_charges_total text-end"></span></div>
-                                                </td>
-                                                <td></td>
-                                            </tr>
-                                            <tr class="charges_row" id="charges_row_total_<?php if(!empty($count)) { echo $count; } else { echo '0'; } ?>">
-                                                <td colspan="10" class="text-end charges_sub">Total :</td>
-                                                <td colspan="1" class="text-end charges_sub_total"></td>
-                                            </tr>
-                                        <?php
-                                        $charges_count --;
-                                        $count++;
-
-                                    }
-                                }
-                                else
-                                {
-                                    ?>
-                                    <tr class="smallfnt1 charges_row" id="charges_row_1">  
-                                        <td class="charges_head" colspan="4"></td>
-                                        <td colspan="3">
-                                            <div class="form-group">
-                                                <div class="form-label-group in-border mb-0">
-                                                    <select name="other_charges_id[]" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetChargesType(this);">
-                                                        <option value="">Select Charges</option>
-                                                        <?php 
-                                                            if(!empty($other_charges_list)) {
-                                                                foreach($other_charges_list as $data) {
-                                                                    if(!empty($data['charges_id']) && $data['charges_id'] != $GLOBALS['null_value']) {
-                                                                        ?>
-                                                                        <option value="<?php echo $data['charges_id']; ?>">
-                                                                            <?php
-                                                                                if(!empty($data['charges_name']) && $data['charges_name'] != $GLOBALS['null_value']) {
-                                                                                    echo $obj->encode_decode('decrypt', $data['charges_name']);
-                                                                                    if($data['action'] == 'minus') {
-                                                                                        echo " (-)";
-                                                                                    }
-                                                                                }
+                                                    </td>
+                                                    <td colspan="1">
+                                                        <div class="text-end"><span class="other_charges_total text-end"></span></div>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr class="charges_row" id="charges_row_total_<?php if(!empty($count)) { echo $count; } else { echo '0'; } ?>">
+                                                    <td colspan="10" class="text-end charges_sub">Total :</td>
+                                                    <td colspan="1" class="text-end charges_sub_total"></td>
+                                                </tr>
+                                            <?php
+                                            $charges_count --;
+                                            $count++;
+                                        }
+                                    } else {
+                                        ?>
+                                        <tr class="smallfnt1 charges_row" id="charges_row_1">  
+                                            <td class="charges_head" colspan="4"></td>
+                                            <td colspan="3">
+                                                <div class="form-group">
+                                                    <div class="form-label-group in-border mb-0">
+                                                        <select name="other_charges_id[]" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetChargesType(this);">
+                                                            <option value="">Select Charges</option>
+                                                            <?php 
+                                                                if(!empty($other_charges_list)) {
+                                                                    foreach($other_charges_list as $data) {
+                                                                        if(!empty($data['charges_id']) && $data['charges_id'] != $GLOBALS['null_value']) {
                                                                             ?>
-                                                                        </option>
-                                                                        <?php
+                                                                            <option value="<?php echo $data['charges_id']; ?>">
+                                                                                <?php
+                                                                                    if(!empty($data['charges_name']) && $data['charges_name'] != $GLOBALS['null_value']) {
+                                                                                        echo $obj->encode_decode('decrypt', $data['charges_name']);
+                                                                                        if($data['action'] == 'minus') {
+                                                                                            echo " (-)";
+                                                                                        }
+                                                                                    }
+                                                                                ?>
+                                                                            </option>
+                                                                            <?php
+                                                                        }
                                                                     }
                                                                 }
-                                                            }
-                                                        ?>
-                                                    </select>
-                                                    <label>Select Charges</label>
+                                                            ?>
+                                                        </select>
+                                                        <label>Select Charges</label>
+                                                    </div>
+                                                    <input type="hidden" name="charges_type[]" value="">
+                                                </div> 
+                                            </td>
+                                            <td colspan="1"> 
+                                                <div class="d-flex">
+                                                    <input type="text" class="form-control me-2" style="width: 85px;" id="" name="other_charges_value[]" value="" placeholder="Value" onkeyup="Javascript:CheckCharges();"> 
+                                                    <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:AddChargesRow(this);"><i class="bi bi-plus fw-bold text-white"></i></button>
                                                 </div>
-                                                <input type="hidden" name="charges_type[]" value="">
-                                            </div> 
-                                        </td>
-                                        <td colspan="1"> 
-                                            <div class="d-flex">
-                                                <input type="text" class="form-control me-2" style="width: 85px;" id="" name="other_charges_value[]" value="" placeholder="Value" onkeyup="Javascript:CheckCharges();"> 
-                                                <button type="button" class="bg-danger border-0 px-3" onclick="Javascript:AddChargesRow(this);"><i class="bi bi-plus fw-bold text-white"></i></button>
-                                            </div>
-                                        </td>
-                                        <td colspan="1">
-                                            <div class="other_charges_total text-end"></div>
-                                        </td>
-                                    </tr>
-                                    <tr class="charges_row" id="charges_row_total_1">
-                                        <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end charges_sub">Total :</td>
-                                        <td colspan="1" class="text-end charges_sub_total"></td>
-                                    </tr>
-                                    <?php
-                                }?>
+                                            </td>
+                                            <td colspan="1">
+                                                <div class="other_charges_total text-end"></div>
+                                            </td>
+                                        </tr>
+                                        <tr class="charges_row" id="charges_row_total_1">
+                                            <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end charges_sub">Total :</td>
+                                            <td colspan="1" class="text-end charges_sub_total"></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                ?>
                                 <tr class="d-none">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end cgst">CGST :</td>
                                     <td class="text-end cgst_value"></td>
@@ -765,7 +749,7 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end total_tax">Total Tax :</td>
                                     <td class="text-end total_tax_value"></td>
                                 </tr>
-                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id)){ ?>d-none<?php } ?>">
+                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
                                         Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
                                     </td>
@@ -780,7 +764,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end grand_total">Total :</td>
-                                    <td colspan="2" class="text-end "><i class="bi bi-currency-rupee text-danger me-2"></i><span class="overall_total"></span></td>
+                                    <td colspan="2" class="text-end"><i class="bi bi-currency-rupee text-danger me-2"></i><span class="overall_total"></span></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -795,13 +779,13 @@
         </form>       
         <script>
             jQuery(document).ready(function(){
-                <?php if(!empty($show_purchase_bill_id)) { ?>calTotal(); <?php }?>
+                <?php if(!empty($show_proforma_invoice_id)) { ?> calTotal(); <?php }?>
             });
         </script>                    
         <script src="include/select2/js/select2.min.js"></script>
         <script src="include/select2/js/select.js"></script>
     <?php 
-    } 
+    }
 
     if(isset($_POST['edit_id'])) {
         // Strings
@@ -1103,6 +1087,9 @@
                     $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
                     $unit_names[$i] = $unit_name; 
                     $quantity[$i] = trim($quantity[$i]);
+
+                    $sub_unit_id = "";
+                    $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'subunit_id');
                     
                     if(!empty($quantity[$i])) {
                         if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999){
@@ -1110,9 +1097,9 @@
                             if(!empty($unit_types[$i])) {
                                 $contents[$i] = trim($contents[$i]);
 
-                                if(!empty($contents[$i])) {
-                                    if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $contents[$i]) && $contents[$i] <= 99999) {
-                                        if($unit_types[$i] == '1') {
+                                if(!empty($contents[$i]) || (empty($sub_unit_id) || $sub_unit_id == "NULL")) {
+                                    // if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $contents[$i]) && $contents[$i] <= 99999) {
+                                        if($unit_types[$i] == '1' && $sub_unit_id != "NULL") {
                                             $total_qty[$i] = $quantity[$i] * $contents[$i];
                                         } else {
                                             $total_qty[$i] = $quantity[$i];
@@ -1174,9 +1161,9 @@
                                         } else {
                                             $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
                                         }     
-                                    } else {
-                                        $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                    }
+                                    // } else {
+                                    //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    // }
                                 } else {
                                     $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
                                 } 
@@ -1378,53 +1365,105 @@
                     $customer_name_mobile_city = $GLOBALS['null_value'];
                     $customer_details = $GLOBALS['null_value'];
                 }
+
+                //'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount',
                
                 if(!empty($product_ids)) {
                     $product_ids = array_reverse($product_ids);
                     $product_ids = implode(",", $product_ids);
-                }else{
+                } else {
                     $product_ids = $GLOBALS['null_value'];
                 }
                
                 if(!empty($product_names)) {
                     $product_names = array_reverse($product_names);
                     $product_names = implode(",", $product_names);
-                }else{
+                } else {
                     $product_names = $GLOBALS['null_value'];
                 }
     
+                if(!empty($unit_types)) {
+                    $unit_types = array_reverse($unit_types);
+                    $unit_types = implode(",", $unit_types);
+                } else {
+                    $unit_types = $GLOBALS['null_value'];
+                }
+
+                if(!empty($subunit_need)) {
+                    $subunit_need = array_reverse($subunit_need);
+                    $subunit_need = implode(",", $subunit_need);
+                } else {
+                    $subunit_need = $GLOBALS['null_value'];
+                }
+
+                if(!empty($contents)) {
+                    $contents = array_reverse($contents);
+                    $contents = implode(",", $contents);
+                } else {
+                    $contents = $GLOBALS['null_value'];
+                }
+
                 if(!empty($unit_ids)) {
                     $unit_ids = array_reverse($unit_ids);
                     $unit_ids = implode(",", $unit_ids);
-                }else{
+                } else {
                     $unit_ids = $GLOBALS['null_value'];
                 }
 
                 if(!empty($unit_names)) {
                     $unit_names = array_reverse($unit_names);
                     $unit_names = implode(",", $unit_names);
-                }else{
+                } else {
                     $unit_names = $GLOBALS['null_value'];
                 }
 
                 if(!empty($quantity)) {
                     $quantity = array_reverse($quantity);
                     $quantity = implode(",", $quantity);
-                }else{
+                } else {
                     $quantity = $GLOBALS['null_value'];
                 }
-                if(!empty($unit_types)) {
-                    $unit_types = array_reverse($unit_types);
-                    $unit_types = implode(",", $unit_types);
-                }else{
-                    $unit_types = $GLOBALS['null_value'];
+                
+                if(!empty($rates)) {
+                    $rates = array_reverse($rates);
+                    $rates = implode(",", $rates);
+                } else {
+                    $rates = $GLOBALS['null_value'];
+                }
+                
+                if(!empty($per)) {
+                    $per = array_reverse($per);
+                    $per = implode(",", $per);
+                } else {
+                    $per = $GLOBALS['null_value'];
                 }
 
-                if(!empty($contents)) {
-                    $contents = array_reverse($contents);
-                    $contents = implode(",", $contents);
-                }else{
-                    $contents = $GLOBALS['null_value'];
+                if(!empty($per_type)) {
+                    $per_type = array_reverse($per_type);
+                    $per_type = implode(",", $per_type);
+                } else {
+                    $per_type = $GLOBALS['null_value'];
+                }
+
+                if(!empty($product_tax)) {
+                    $product_tax = array_reverse($product_tax);
+                    $product_tax = implode(",", $product_tax);
+                } else {
+                    $product_tax = $GLOBALS['null_value'];
+                }
+
+                if(!empty($final_rate)) {
+                    $final_rate = array_reverse($final_rate);
+                    $final_rate = implode(",", $final_rate);
+                } else {
+                    $final_rate = $GLOBALS['null_value'];
+                }
+
+                if(!empty($amount)) {
+                    $amount = array_reverse($amount);
+                    $amount = implode(",", $amount);
+                } else {
+                    $amount = $GLOBALS['null_value'];
                 }
 
                 // if(!empty($indv_magazine_id)) {
@@ -1434,103 +1473,34 @@
                 //     $indv_magazine_id = $GLOBALS['null_value'];
                 // }
 
-                if(!empty($total_qty)) {
-                    $total_qty = array_reverse($total_qty);
-                    $total_qty = implode(",", $total_qty);
-                }else{
-                    $total_qty = $GLOBALS['null_value'];
-                }
-
-                if(!empty($rates)) {
-                    $rates = array_reverse($rates);
-                    $rates = implode(",", $rates);
-                }else{
-                    $rates = $GLOBALS['null_value'];
-                }
-
-                if(!empty($per)) {
-                    $per = array_reverse($per);
-                    $per = implode(",", $per);
-                }else{
-                    $per = $GLOBALS['null_value'];
-                }
-
-                if(!empty($per_type)) {
-                    $per_type = array_reverse($per_type);
-                    $per_type = implode(",", $per_type);
-                }else{
-                    $per_type = $GLOBALS['null_value'];
-                }
-
-                if(!empty($final_rate)) {
-                    $final_rate = array_reverse($final_rate);
-                    $final_rate = implode(",", $final_rate);
-                }else{
-                    $final_rate = $GLOBALS['null_value'];
-                }
-
-                if(!empty($product_amount)) {
-                    $product_amount = array_reverse($product_amount);
-                    $product_amount = implode(",", $product_amount);
-                }else{
-                    $product_amount = $GLOBALS['null_value'];
-                }
-
-                if(!empty($product_tax)) {
-                    $product_tax = array_reverse($product_tax);
-                    $product_tax = implode(",", $product_tax);
-                }else{
-                    $product_tax = $GLOBALS['null_value'];
-                }
-
-                if(!empty($rate_per_unit)) {
-                    $rate_per_unit = array_reverse($rate_per_unit);
-                    $rate_per_unit = implode(",", $rate_per_unit);
-                }else{
-                    $rate_per_unit = $GLOBALS['null_value'];
-                }
-
                 if(!empty(array_filter($other_charges_id, fn($value) => $value !== ""))) {
                     $other_charges_id = implode(",", $other_charges_id);
-                }
-                else {
+                } else {
                     $other_charges_id = $GLOBALS['null_value'];
                 }
+
                 if(!empty(array_filter($charges_type, fn($value) => $value !== ""))) {
                     $charges_type = implode(",", $charges_type);
-                }
-                else {
+                } else {
                     $charges_type = $GLOBALS['null_value'];
                 }
+
                 if(!empty(array_filter($other_charges_values, fn($value) => $value !== ""))) {
                     $other_charges_values = implode(",", $other_charges_values);
-                }
-                else {
+                } else {
                     $other_charges_values = $GLOBALS['null_value'];
                 }
+                
                 if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
                     $other_charges_total = implode(",", $other_charges_total);
-                }
-                else {
+                } else {
                     $other_charges_total = $GLOBALS['null_value'];
                 }
                      
                 if(!empty($charges_total_amounts)) {
                     $charges_total_amounts = implode(",", $charges_total_amounts);
-                }else{
+                } else {
                     $charges_total_amounts = $GLOBALS['null_value'];
-                }
-
-                if(!empty($subunit_need)) {
-                    $subunit_need = implode(",", $subunit_need);
-                }else{
-                    $subunit_need = $GLOBALS['null_value'];
-                }
-
-                if(!empty($amount)) {
-                    $amount = implode(",", $amount);
-                }else{
-                    $amount = $GLOBALS['null_value'];
                 }
 
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
@@ -1541,13 +1511,13 @@
 
                 if(empty($edit_id)) {
                     $action = "";
-                    if(!empty($party_name_mobile_city) && $party_name_mobile_city != $GLOBALS['null_value']) {
-                        $action = "New proforma invoice Created. Party - ".($obj->encode_decode('decrypt', $party_name_mobile_city));
+                    if(!empty($customer_name_mobile_city) && $customer_name_mobile_city != $GLOBALS['null_value']) {
+                        $action = "New proforma invoice Created. Party - ".($obj->encode_decode('decrypt', $customer_name_mobile_city));
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  ' 	customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$null_value."'", "'".$proforma_invoice_number."'", "'".$proforma_invoice_date."'", "'".$customer_id."'", "'".$customer_name_mobile_city."'", "'".$customer_details."'","'".$agent_id."'", "'".$agent_name_mobile_city."'", "'".$agent_details."'", "'".$transport_id."'" , "'".$bank_id."'" , "'".$gst_option."'" , "'".$address."'" , "'".$tax_option."'" ,"'".$tax_type."'", "'".$overall_tax."'" ,"'".$company_state."'" ,"'".$party_state."'" ,"'".$product_ids."'" , "'".$product_names."'", "'".$unit_types."'","'".$subunit_need."'","'".$contents."'","'".$unit_ids."'","'".$unit_names."'","'".$quantity."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$product_tax."'","'".$final_rate."'","'".$amount."'","'".$other_charges_id."'","'".$charges_type."'","'".$other_charges_values."'","'".$agent_commission."'","'".$total_amount."'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'", "'0'", "'0'");
 
                     $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_table'], $columns, $values, 'proforma_invoice_id', 'proforma_invoice_number', $action);
 
@@ -1562,160 +1532,21 @@
                     $getUniqueID = "";
                     $getUniqueID = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $edit_id, 'id');
                     $proforma_invoice_number = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $edit_id, 'proforma_invoice_number');
-                    if (empty($draft) || $draft == '0') {
-                        if (empty($proforma_invoice_number) || $proforma_invoice_number == $null_value) {
-                            $proforma_invoice_number = $obj->automate_number($GLOBALS['proforma_invoice_table'], 'proforma_invoice_number');
-                        }
-                    }
-                    if (empty($proforma_invoice_number)) {
-                        $proforma_invoice_number = $null_value;
-                    }
+
                     if(preg_match("/^\d+$/", $getUniqueID)) {
                         $action = "";
-                        if(!empty($party_name_mobile_city) && $party_name_mobile_city != $GLOBALS['null_value']) {
-                            $action = "proforma_invoice Updated. Party - ".($obj->encode_decode('decrypt', $party_name_mobile_city));
+                        if(!empty($customer_name_mobile_city) && $customer_name_mobile_city != $GLOBALS['null_value']) {
+                            $action = "Proforma invoice Updated. Customer - ".($obj->encode_decode('decrypt', $customer_name_mobile_city));
                         }
 
                         $columns = array(); $values = array();		
-                        $columns = array('creator_name', 'proforma_invoice_number', 'proforma_invoice_date', 'party_id', 'party_name_mobile_city', 'party_details','agent_id', 'agent_name_mobile_city', 'agent_details',  'product_id', 'product_name', 'brand_id', 'brand_name', 'content', 'unit_id', 'unit_name','subunit_id', 'subunit_name', 'product_quantity', 'unit_type', 'product_rate', 'per', 'per_type', 'product_amount', 'rate_per_unit', 'sub_total', 'charges_id', 'charges_type', 'charges_value', 'charges_total',  'total_amount', 'round_off', 'grand_total', 'total_unit_qty', 'total_subunit_qty', 'total_quantity', 'total_qty','grand_qty', 'drafted');
-                        $values = array("'".$creator_name."'", "'".$proforma_invoice_number."'", "'".$proforma_invoice_date."'",  "'".$party_id."'", "'".$party_name_mobile_city."'", "'".$party_details."'", "'".$agent_id."'", "'".$agent_name_mobile_city."'", "'".$agent_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$brand_ids."'", "'".$brand_names."'", "'".$subunit_contains."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$subunit_ids."'", "'".$subunit_names."'", "'".$product_quantity."'", "'".$unit_types."'", "'".$product_rate."'", "'".$per."'", "'".$per_type."'", "'".$product_amount."'", "'".$rate_per_unit."'", "'".$sub_total."'", "'".$charges_id."'", "'".$charges_type."'", "'".$charges_values."'", "'".$charges_total."'", "'".$total_amount."'", "'".$round_off."'", "'".$grand_total."'", "'".$total_unit_qty."'", "'".$total_subunit_qty."'",  "'".$total_quantity."'", "'".$total_subunit_quantity."'", "'".$grand_qty."'", "'".$draft."'");
+                        $columns = array('proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total');
+                        $values = array("'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'");
 
                         $proforma_invoice_update_id = $obj->UpdateSQL($GLOBALS['proforma_invoice_table'], $getUniqueID, $columns, $values, $action);
 
                         if(preg_match("/^\d+$/", $proforma_invoice_update_id)) {
-                            if ($draft != "1") {
-                                $proforma_invoice_id = $edit_id;
-                                $proforma_invoice_number = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $edit_id, 'proforma_invoice_number');
-                                if(!empty($product_ids)) {
-                                    $product_ids = explode(",", $product_ids);
-                                }
-                                else {
-                                    $product_ids = $GLOBALS['null_value'];
-                                }
-                                if(!empty($product_names)) {
-                                    $product_names = explode(",", $product_names);
-                                }
-                                else {
-                                    $product_names = $GLOBALS['null_value'];
-                                }
-                                if(!empty($brand_ids)) {
-                                    $brand_ids = explode(",", $brand_ids);
-                                }
-                                else {
-                                    $brand_ids = $GLOBALS['null_value'];
-                                }
-                                if(!empty($brand_names)) {
-                                    $brand_names = explode(",", $brand_names);
-                                }
-                                else {
-                                    $brand_names = $GLOBALS['null_value'];
-                                }
-                                if(!empty($unit_ids)) {
-                                    $unit_ids = explode(",", $unit_ids);
-                                }
-                                else {
-                                    $unit_ids = $GLOBALS['null_value'];
-                                }
-                                if(!empty($unit_names)) {
-                                    $unit_names = explode(",", $unit_names);
-                                }
-                                else {
-                                    $unit_names = $GLOBALS['null_value'];
-                                }
-                                if(!empty($subunit_ids)) {
-                                    $subunit_ids = explode(",", $subunit_ids);
-                                }
-                                else {
-                                    $subunit_ids = $GLOBALS['null_value'];
-                                }
-                                if(!empty($subunit_names)) {
-                                    $subunit_names = explode(",", $subunit_names);
-                                }
-                                else {
-                                    $subunit_names = $GLOBALS['null_value'];
-                                }
-                                if(!empty($unit_types)) {
-                                    $unit_types = explode(",", $unit_types);
-                                }
-                                else {
-                                    $unit_types = $GLOBALS['null_value'];
-                                }
-                                if(!empty($subunit_contains)) {
-                                    $subunit_contains = explode(",", $subunit_contains);
-                                }
-                                else {
-                                    $subunit_contains = $GLOBALS['null_value'];
-                                }
-                                if(!empty($product_quantity)) {
-                                    $product_quantity = explode(",", $product_quantity);
-                                }
-                                else {
-                                    $product_quantity = $GLOBALS['null_value'];
-                                }
-                                if(!empty($product_rate)) {
-                                    $product_rate = explode(",", $product_rate);
-                                }
-                                else {
-                                    $product_rate = $GLOBALS['null_value'];
-                                }
-                                if(!empty($per)) {
-                                    $per = explode(",", $per);
-                                }
-                                else {
-                                    $per = $GLOBALS['null_value'];
-                                }
-                                if(!empty($per_type)) {
-                                    $per_type = explode(",", $per_type);
-                                }
-                                else {
-                                    $per_type = $GLOBALS['null_value'];
-                                }
-                                if(!empty($rate_per_unit)) {
-                                    $rate_per_unit = explode(",", $rate_per_unit);
-                                }
-                                else {
-                                    $rate_per_unit = $GLOBALS['null_value'];
-                                }
-                                if(!empty($product_amount)) {
-                                    $product_amount = explode(",", $product_amount);
-                                }
-                                else {
-                                    $product_amount = $GLOBALS['null_value'];
-                                }
-                                if(!empty($product_ids) && $product_ids != $GLOBALS['null_value']) {
-                                    $proforma_invoice_product_list = $obj->getTableRecords($GLOBALS['proforma_invoice_product_table'], 'proforma_invoice_number', $proforma_invoice_number, '');
-                                    $proforma_invoice_product_all_id =[];
-                                    for($i=0; $i < count($product_ids); $i++) {
-                                        // $getUniqueID = "";
-                                        // $getUniqueID = $obj->getTableproforma_invoiceProduct($proforma_invoice_number,$product_ids[$i],$brand_ids[$i],$unit_types[$i]);
-                                        // $columns = array(); $values = array();
-                                        // $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'proforma_invoice_number', 'product_id', 'product_name', 'brand_id', 'brand_name', 'subunit_contains', 'unit_id', 'unit_name', 'subunit_id', 'subunit_name', 'product_quantity','balance_qty', 'unit_type', 'product_rate', 'per', 'per_type', 'product_amount',  'deleted');
-                                        // $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$proforma_invoice_number."'", "'".$product_ids[$i]."'", "'".$product_names[$i]."'", "'".$brand_ids[$i]."'", "'".$brand_names[$i]."'", "'".$subunit_contains[$i]."'", "'".$unit_ids[$i]."'", "'".$unit_names[$i]."'",  "'".$subunit_ids[$i]."'", "'".$subunit_names[$i]."'", "'".$product_quantity[$i]."'","'".$product_quantity[$i]."'", "'".$unit_types[$i]."'",  "'".$product_rate[$i]."'", "'".$per[$i]."'", "'".$per_type[$i]."'", "'".$product_amount[$i]."'", "'0'");
-                                        // if($getUniqueID == $GLOBALS['null_value']) {
-                                        //     $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_product_table'], $columns, $values,'', '', $action);
-                                        // } else {
-                                        //     $proforma_invoice_update_id = $obj->UpdateSQL($GLOBALS['proforma_invoice_product_table'], $getUniqueID, $columns, $values, $action);
-                                        // }
-                                        // $proforma_invoice_product_all_id[] = $getUniqueID;
-                                    }
-                                }
-                                $filtered_ids = array_column(array_filter($proforma_invoice_product_list, function($item) use ($proforma_invoice_product_all_id) {
-                                    return !in_array($item['id'], $proforma_invoice_product_all_id);
-                                }), 'id');
-                                
-                                if(!empty($filtered_ids)) {
-                                    for($i = 0; $i< count($filtered_ids); $i++) {
-                                        $columns = array(); $values = array();
-                                        $columns = array('deleted');
-                                        $values = array("'1'");
-                                        $proforma_invoice_update_id = $obj->UpdateSQL($GLOBALS['proforma_invoice_product_table'], $filtered_ids[$i], $columns, $values, $action);
-                                    }
-                                }
-                                $result = array('number' => '1', 'msg' => 'Updated Successfully','redirection_page' =>'proforma_invoice.php');
-                            } else {
-
-                                $result = array('number' => '1', 'msg' => 'Draft Updated Successfully');
-                            }
+                            $result = array('number' => '1', 'msg' => 'Proforma Invoice Updated Successfully','redirection_page'=> 'proforma_invoice.php');
                         }
                         else {
                             $result = array('number' => '2', 'msg' => $proforma_invoice_update_id);
@@ -1743,11 +1574,8 @@
     }
 
     if(isset($_POST['page_number'])) {
-		$page_number = $_POST['page_number'];
-		$page_limit = $_POST['page_limit'];
-		$page_title = $_POST['page_title']; 
-        $from_date = ""; $to_date = ""; $search_text = "";
-        $show_bill = 0;$show_draft_bill = 0;
+		$page_number = $_POST['page_number']; $page_limit = $_POST['page_limit']; $page_title = $_POST['page_title'];
+        $from_date = ""; $to_date = ""; $search_text = ""; $show_bill = 0;
         $customer_id = "";
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
@@ -1767,26 +1595,14 @@
         }
 
         $total_records_list = array();
-        $total_records_list = $obj->getProfomaInvoiceList($from_date, $to_date, $search_text, $show_bill);
+        $total_records_list = $obj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill);
         
-        if(!empty($customer_id)) {
-            $list = array();
-            if(!empty($total_records_list)) {
-                foreach($total_records_list as $val) {
-                    if( (strpos($val['customer_id'], $customer_id) !== false) ) {
-                        $list[] = $val;
-                    }
-                }
-            }
-            $total_records_list = $list;
-        }
-
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
             $list = array();
             if(!empty($total_records_list)) {
                 foreach($total_records_list as $val) {
-                    if( (strpos(strtolower($val['profoma_invoice_number']), $search_text) !== false) ) {
+                    if( (strpos(strtolower($val['proforma_invoice_number']), $search_text) !== false) ) {
                         $list[] = $val;
                     }
                 }
@@ -1901,41 +1717,54 @@
                             </td>
 
                             <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                        <?php 
-                                            $access_error = "";
-                                            if(!empty($loginner_id)) {
-                                                $permission_action = $edit_action;
-                                                include('permission_action.php');
-                                            }
-                                            if(empty($access_error) && empty($list['cancelled'])) {
-                                            ?> 
-                                            <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Edit</a></li>
-                                            <?php } ?>
-                                            <?php 
-                                                $access_error = "";
-                                                if(!empty($loginner_id)) {
-                                                    $permission_action = $delete_action;
-                                                    include('permission_action.php');
-                                                }
-                                                if(empty($access_error) && empty($list['cancelled'])) {
-                                            ?>     
-                                        <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Delete</a></li>
-                                        <?php } ?>
-                                    </ul>
-                                </div> 
+                                <?php 
+                                    $proforma_actions = array();
+                                    $proforma_actions = $obj->getProformaInvoiceActions($list['proforma_invoice_id']);
+
+                                    if(!empty($proforma_actions)) {
+                                        ?>
+                                            <div class="dropdown">
+                                                <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                                    <?php
+                                                        if(in_array("convert", $proforma_actions)){
+                                                            ?>
+                                                            <li>
+                                                                <a class="dropdown-item" href="Javascript:ShowConversion('<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>', '<?php if(!empty($page_title)) { echo $page_title; } ?>');">Convert To Delivery Slip</a>
+                                                            </li>
+                                                            <?php
+                                                        }
+
+                                                        if(in_array("edit", $proforma_actions)){
+                                                            ?>
+                                                            <li>
+                                                                <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Edit</a>
+                                                            </li>
+                                                            <?php
+                                                        }
+
+                                                        if(in_array("delete", $proforma_actions)){
+                                                            ?>
+                                                            <li>
+                                                                <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Delete</a>
+                                                            </li>
+                                                            <?php
+                                                        }
+                                                    ?>
+                                                </ul>
+                                            </div>
+                                        <?php
+                                    }
+                                ?>
                             </td>
                         </tr>
                         
                         <?php
                     }
-                }
-                else {
-                    ?>
+                } else {
+                ?>
                     <tr>
                         <td colspan="7" class="text-center">Sorry! No records found</td>
                     </tr>
@@ -2011,8 +1840,8 @@
         $selected_amount = $_REQUEST['selected_amount'];
         $subunit_need = $_REQUEST['subunit_need'];
 
-        $magazine_list =array();
-        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+        // $magazine_list = array();
+        // $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
 
         ?>
             <tr class="product_row" id="product_row<?php if(!empty($product_row_index)) { echo $product_row_index; } ?>">
@@ -2035,7 +1864,7 @@
                 <th class="text-center px-2 py-2 indv_magazine d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="indv_magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                            <select class="select2 select2-danger" name="indv_magazine_id[]" data-dropdown-css-class="select2-danger" style="width: 100%;">
                                 <option value="">Select Magazine</option>
                                 <?php if (!empty($magazine_list)) {
                                     foreach ($magazine_list as $list) { ?>
@@ -2080,7 +1909,8 @@
                     <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($selected_quantity)) { echo $selected_quantity; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
                 </th>
                 <th class="text-center px-2 py-2">
-                    <input type="text" name="content[]" class="form-control shadow-none" value="<?php if(!empty($selected_content)) { echo $selected_content; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
+                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($selected_content)) { echo $selected_content; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
+                    <?php if(!empty($selected_content)) { echo $selected_content; } ?>
                 </th>
                 
                 <td>
@@ -2090,11 +1920,17 @@
                         </div>
                     </div> 
                 </td>
-                <td>
+                <td class="text-center px-2 py-2">
                     <?php
                         $per_unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_id,'unit_name');
                         $per_subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_id,'subunit_name');
                     ?>
+                     <input type="hidden" id="" name="per[]" value="<?php if(!empty($selected_per)){ echo $selected_per; }?>" class="form-control shadow-none" onkeyup="ProductRowCheck(this);">
+                    <input type="hidden" id="" name="per_type[]" value="<?php if(!empty($selected_per_type)){ echo $selected_per_type; }?>">
+                    <?php if(!empty($selected_per) && !empty($selected_per_type)){
+                        echo $selected_per." ".$obj->encode_decode("decrypt", $per_unit_name);
+                    } ?>
+                    <?php /*
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
@@ -2109,6 +1945,7 @@
                             </div>
                         </div>
                     </div>
+                    */ ?>
                 </td>
                 <td class="tax_element d-none">
                     <div class="form-group">
@@ -2283,7 +2120,7 @@
             <td></td>
         </tr>
         <tr class="charges_row" id="charges_row_total_<?php if(!empty($charges_count)) { echo $charges_count; } ?>">
-            <td colspan="10" class="text-end ">Total :</td>
+            <td colspan="8" class="text-end">Total :</td>
             <td colspan="1" class="text-end charges_sub_total"></td>
         </tr>
         <script>
@@ -2305,5 +2142,44 @@
                 echo $charges_type;
             }
         }
+    }
+
+    if(isset($_REQUEST['party_change_state'])) {
+        $customer_id = $_REQUEST['party_change_state'];
+        $customer_id = trim($customer_id);
+
+        $party_state = "";
+        if(!empty($customer_id)) {
+            $party_state = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'state');
+            if(!empty($party_state) && $party_state != $GLOBALS['null_value']) {
+                echo $obj->encode_decode('decrypt', $party_state);
+            }
+        }
+    }
+
+    if(isset($_REQUEST['delete_proforma_invoice_id'])) {
+        $delete_proforma_invoice_id = $_REQUEST['delete_proforma_invoice_id'];
+        $msg = "";
+        if(!empty($delete_proforma_invoice_id)) {
+            $proforma_invoice_unique_id = "";
+            $proforma_invoice_unique_id = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $delete_proforma_invoice_id, 'id');
+            if(preg_match("/^\d+$/", $proforma_invoice_unique_id)) {
+                $proforma_invoice_number = "";
+                $proforma_invoice_number = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $delete_proforma_invoice_id, 'proforma_invoice_number');
+    
+                $action = "";
+                if(!empty($proforma_invoice_number)) {
+                    $action = "Proforma Invoice Deleted. Name - " . $proforma_invoice_number;
+                }
+
+                $columns = array();
+                $values = array();
+                $columns = array('deleted');
+                $values = array("'1'");
+                $msg = $obj->UpdateSQL($GLOBALS['proforma_invoice_table'], $proforma_invoice_unique_id, $columns, $values, $action);
+            }
+        }
+        echo $msg;
+        exit;
     }
 ?>

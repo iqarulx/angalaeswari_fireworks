@@ -84,6 +84,8 @@
 	// $GLOBALS['receipt_table'] = $GLOBALS['table_prefix'].'receipt'; 
 	// $GLOBALS['expense_category_table'] = $GLOBALS['table_prefix'].'expense_category'; 
 	// $GLOBALS['expense_table'] = $GLOBALS['table_prefix'].'expense'; 
+	$GLOBALS['delivery_slip_table'] = $GLOBALS['table_prefix'].'delivery_slip';
+	$GLOBALS['estimate_table'] = $GLOBALS['table_prefix'].'estimate';
 
 	// Session variables
 	if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
