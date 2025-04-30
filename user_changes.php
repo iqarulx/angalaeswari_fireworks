@@ -5,7 +5,7 @@
         $show_user_id = $_REQUEST['show_user_id'];
         $show_user_id = trim($show_user_id);
 
-        $name = ""; $mobile_number = ""; $username = ""; $password = ""; $type = ""; $access_pages = ""; $access_page_actions = ""; $admin = 0; 
+        $name = ""; $mobile_number = ""; $username = ""; $password = ""; $type = ""; $access_pages = ""; $access_page_actions = ""; $admin = 0; $role_id = "";
         if(!empty($show_user_id)) {
             $user_list = array();
             $user_list = $obj->getTableRecords($GLOBALS['user_table'], 'user_id', $show_user_id,'');
@@ -29,6 +29,9 @@
                     if(!empty($data['type']) && $data['type'] != $GLOBALS['null_value']) {
                         $type = $data['type'];
                     }
+                    if(!empty($data['role_id']) && $data['role_id'] != $GLOBALS['null_value']) {
+                        $role_id = $data['role_id'];
+                    }
                     if(!empty($data['access_pages']) && $data['access_pages'] != $GLOBALS['null_value']) {
 						$access_pages = explode(",", $data['access_pages']);
 					}
@@ -50,6 +53,8 @@
         // else {
         //     $access_pages_list = $GLOBALS['access_pages_list'];     
         // }  
+        $role_list = array();
+        $role_list = $obj->getTableRecords($GLOBALS['role_table'], '', '', '');
 ?>
         <form class="poppins pd-20 redirection_form" name="user_form" method="POST">
 			<div class="card-header">
@@ -143,16 +148,19 @@
                                         if(!empty($role_list)) {
                                             foreach($role_list as $data) {
                                                 if(!empty($data['role_id'])) {
-                                    ?>
-                                                    <option value="<?php echo $data['role_id']; ?>" <?php if(!empty($role_id) && $data['role_id'] == $role_id) { ?>selected="selected"<?php } ?>>
-                                                        <?php
-                                                            if(!empty($data['role_name'])) {
-                                                                $data['role_name'] = $obj->encode_decode('decrypt', $data['role_name']);
-                                                                echo($data['role_name']);
-                                                            }
-                                                        ?>
-                                                    </option>
-                                    <?php
+                                                    if(!empty($data['incharger']) != '1') {
+
+                                        ?>
+                                                        <option value="<?php echo $data['role_id']; ?>" <?php if(!empty($role_id) && $data['role_id'] == $role_id) { ?>selected="selected"<?php } ?>>
+                                                            <?php
+                                                                if(!empty($data['role_name'])) {
+                                                                    $data['role_name'] = $obj->encode_decode('decrypt', $data['role_name']);
+                                                                    echo($data['role_name']);
+                                                                }
+                                                            ?>
+                                                        </option>
+                                        <?php
+                                                    }
                                                 }
                                             }
                                         }
@@ -373,9 +381,9 @@
 		}
 
         $access_permission_error = "";
-		if(empty($module_selected) && $type != $GLOBALS['admin_user_type']) {
-			$access_permission_error = "Select the access permission";
-		}
+		// if(empty($module_selected) && $type != $GLOBALS['admin_user_type']) {
+		// 	$access_permission_error = "Select the access permission";
+		// }
     
         $result = "";
         
@@ -681,6 +689,7 @@
         if(!empty($page_number) && !empty($page_limit)) {
             $prefix = ($page_number * $page_limit) - $page_limit;
         } 
+       
         ?>
 
         <?php if($total_pages > $page_limit) { ?>
@@ -704,6 +713,7 @@
                     foreach($show_records_list as $key => $data) {
                             $index = $key + 1;
                             if(!empty($prefix)) { $index = $index + $prefix; } 
+                            $incharger = ""; $role_name = "";
                              ?>
                         <tr>
                             <td style="cursor:default;"><?php echo $index; ?></td>
@@ -717,8 +727,19 @@
                             </td>
                             <td>
                                 <?php
-                                    if(!empty($data['type'])) {
-                                        echo $data['type'];
+                                    if(!empty($data['role_id'])) {
+                                        $role_name = $obj->getTableColumnValue($GLOBALS['role_table'],'role_id',$data['role_id'],'role_name');
+                                        $role_name = $obj->encode_decode('decrypt',$role_name);
+                                        $incharger = $obj->getTableColumnValue($GLOBALS['role_table'],'role_id',$data['role_id'],'incharger');
+                                    }
+                                    if(!empty($incharger) == 1) {
+                                        if(!empty($data['type'])) {
+                                            echo $data['type'];
+                                        }
+                                    }else{
+                                        if(!empty($role_name)) {
+                                            echo $role_name;
+                                        }
                                     }
                                 ?>
                             </td>

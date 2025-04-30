@@ -586,12 +586,14 @@
                                         $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$role_name."'", "'".$lower_case_name."'", "'1'","'0'");
                                         $role_insert_id = $obj->InsertSQL($GLOBALS['role_table'], $columns, $values,'role_id','', $action);
                                     }
-
+                                    
+                                    $role_id = "";
+                                    $role_id = $obj->getTableColumnValue($GLOBALS['role_table'], 'role_name', $role_name,'role_id');
 
                                     $columns = array(); $values = array();
-                                    $columns = array('created_date_time', 'creator', 'creator_name', 'user_id', 'name', 'mobile_number', 'name_mobile', 'login_id', 'lower_case_login_id', 'password', 'admin', 'type', 'factory_id', 'godown_id', 'magazine_id', 'deleted');
+                                    $columns = array('created_date_time', 'creator', 'creator_name', 'user_id', 'name', 'mobile_number', 'name_mobile', 'login_id', 'lower_case_login_id', 'password', 'admin', 'type', 'factory_id', 'godown_id', 'magazine_id', 'role_id','deleted');
         
-                                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$incharge_name."'", "'".$mobile_number."'", "'".$incharge_name_mobile."'", "'".$user_id."'", "'".$lower_case_user_id."'", "'".$password."'", "'".$admin."'", "'".$type."'", "'".$null_value."'", "'".$null_value."'", "'".$magazine_id."'", "'0'");
+                                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$incharge_name."'", "'".$mobile_number."'", "'".$incharge_name_mobile."'", "'".$user_id."'", "'".$lower_case_user_id."'", "'".$password."'", "'".$admin."'", "'".$type."'", "'".$null_value."'", "'".$null_value."'", "'".$magazine_id."'", "'".$role_id."'","'0'");
                                     $user_insert_id = $obj->InsertSQL($GLOBALS['user_table'], $columns, $values,'user_id', '', $action);
 
                                     if(preg_match("/^\d+$/", $user_insert_id)) {
