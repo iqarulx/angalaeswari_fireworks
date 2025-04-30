@@ -461,20 +461,10 @@ if(isset($_POST['page_number'])) {
                                                 <i class="bi bi-three-dots-vertical"></i>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"><?php
-                                                $edit_access_error = "";
-                                                if(!empty($login_staff_id)) {
-                                                    $permission_action = $edit_action;
-                                                    include('permission_action.php');
-                                                }
                                                 if(empty($edit_access_error)) { 
                                                     ?>
                                                 <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['charges_id'])) { echo $list['charges_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                                 <?php } 
-                                                $delete_access_error = "";
-                                                if(!empty($login_staff_id)) {
-                                                    $permission_action = $delete_action;
-                                                    include('permission_action.php');
-                                                }
                                                 if(empty($delete_access_error)) {
                                                     $linked_count = 0;
                                                     // $linked_count = $obj->GetChargesLinkedCount($list['charges_id']);

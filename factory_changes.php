@@ -1,9 +1,9 @@
 <?php
-	include("include_files.php");
-    $loginner_id = "";
+	include("include.php");
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['factory_module'];
         }
     }
@@ -758,7 +758,7 @@
         <?php } ?>
 <?php
         $view_access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
@@ -775,7 +775,7 @@
                 </tr>
             </thead>
             <tbody>
-            <?php
+                <?php
                     if(!empty($show_records_list)) {
                         foreach($show_records_list as $key => $list) {
                             $index = $key + 1;
@@ -813,44 +813,29 @@
                                     ?>
                                 </td> 
                                 <?php 
-                                        $edit_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            
-                                            $permission_action = $edit_action;
-                                            
-                                            include('permission_action.php');
-                                        }
-
-                                        $delete_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            $permission_action = $delete_action;
-                                            include('permission_action.php');
-                                        }
-
-                                        
-                                    ?>
-                                    <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
-
-                                        <td>
-                                            <div class="dropdown">
-                                                <a href="#" role="button" class="btn btn-dark show-button"  id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </a>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                    $edit_access_error = "";
+                                    if(!empty($login_staff_id)) {
+                                        $permission_action = $edit_action;
+                                        include('permission_action.php');
+                                    }
+                                    $delete_access_error = "";
+                                    if(!empty($login_staff_id)) {
+                                        $permission_action = $delete_action;
+                                        include('permission_action.php');
+                                    }
+                                ?>
+                                <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" role="button" class="btn btn-dark show-button"  id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                 <?php
-                                                    $edit_access_error = "";
-                                                    if(!empty($login_staff_id)) {
-                                                        $permission_action = $edit_action;
-                                                        include('permission_action.php');
-                                                    }
                                                     if(empty($edit_access_error)) { 
                                                         ?>
-                                                    <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['factory_id'])) { echo $list['factory_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
-                                                    <?php } 
-                                                    $delete_access_error = "";
-                                                    if(!empty($login_staff_id)) {
-                                                        $permission_action = $delete_action;
-                                                        include('permission_action.php');
+                                                        <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['factory_id'])) { echo $list['factory_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
+                                                        <?php 
                                                     }
                                                     if(empty($delete_access_error)) {
                                                         $linked_count = 0;
@@ -858,15 +843,19 @@
                                                         if(!empty($linked_count)) {
                                                             ?>
                                                             <li><a style="cursor:pointer;" class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-                                                    <?php }else{ ?>
-                                                        <li><a style="cursor:pointer;" class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['factory_id'])) { echo $list['factory_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-                                                        <?php } 
-                                                            }
-                                                        ?>
-                                                </ul>
-                                            </div> 
-                                        </td>
-                                    <?php } ?>
+                                                            <?php 
+                                                        }
+                                                        else { 
+                                                            ?>
+                                                            <li><a style="cursor:pointer;" class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['factory_id'])) { echo $list['factory_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                            <?php 
+                                                        } 
+                                                    }
+                                                ?>
+                                            </ul>
+                                        </div> 
+                                    </td>
+                                <?php } ?>
                             </tr>
                             <?php
                         }

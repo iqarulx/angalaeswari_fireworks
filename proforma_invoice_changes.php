@@ -1,9 +1,9 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 	if(isset($_REQUEST['show_proforma_invoice_id'])) { 
         $show_proforma_invoice_id = $_REQUEST['show_proforma_invoice_id'];
 
-        $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
+        $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0;$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
         $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $ds_product_ids = array();
 
         if(!empty($show_proforma_invoice_id)) {
@@ -172,7 +172,7 @@
         $bank_list =array();
         $bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '', '', '');
         $product_list =array();
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794d7a4e664d44453d', '');
         $country = "India"; $state = "";
 		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
         if(!empty($company_state)) {
@@ -331,7 +331,7 @@
                     </div> 
                 </div>
                 */ ?>
-                <div class="col-lg-2 col-md-3 col-6 py-2">
+                <div class="col-lg-2 col-md-3 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
@@ -349,8 +349,8 @@
                         </div>
                     </div>
                 </div>
-            
-                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 <?php if($gst_option !='1'){?>d-none<?php } ?> tax_cover1" id="tax_option_div">
+                <?php /* <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 <?php if($gst_option !='1'){?>d-none<?php } ?> tax_cover1" id="tax_option_div"> */ ?>
+                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 d-none tax_cover1" id="tax_option_div">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" name="tax_option" data-dropdown-css-class="select2-danger" style="width: 100%!important;"  onchange="Javascript:getRateByTaxOption();">
@@ -362,7 +362,8 @@
                         </div>
                     </div> 
                 </div> 
-                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 tax_cover <?php if($gst_option !='1'){?>d-none<?php } ?>"">
+                <?php /* <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 tax_cover <?php if($gst_option !='1'){?>d-none<?php } ?>"> */ ?>
+                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 tax_cover d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" name="tax_type" style="width: 100%;" onchange="Javascript:ShowGST(this,this.value);">
@@ -374,7 +375,8 @@
                         </div>
                     </div> 
                 </div> 
-                <div class="col-lg-2 col-md-3 col-6 py-2 <?php if($tax_type !='2'){ ?>d-none <?php } ?> tax_cover2">
+                <?php /* <div class="col-lg-2 col-md-3 col-6 py-2 <?php if($tax_type !='2'){ ?>d-none <?php } ?> tax_cover2"> */ ?>
+                <div class="col-lg-2 col-md-3 col-6 py-2 d-none tax_cover2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" name="overall_tax" style="width: 100%;" onchange="Javascript:ShowGST(this,this.value);">
@@ -435,8 +437,16 @@
                 </div>
                 <div class="col-lg-1 col-md-3 col-6 px-lg-1 py-2 content_td">
                         <div class="form-group">
+                            <?php /*
                             <div class="form-label-group in-border">
-                                <input type="text" name="selected_content"  onkeyup="CalProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
+                                <input type="text" name="selected_content" onkeyup="CalProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
+                                <label>Content</label>
+                            </div>
+                            */ ?>
+                            <div class="form-label-group in-border">
+                                <select class="select2 select2-danger" onchange="CalProductAmount();" name="selected_content" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                    <option value="">Select</option>
+                                </select>
                                 <label>Content</label>
                             </div>
                         </div>  
@@ -795,7 +805,7 @@
         $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array();$other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
        
         // Doubles
-        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0; $sub_total = 0; $total_tax_value = 0;
+        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0; $sub_total = 0; $total_tax_value = 0; $cgst_value = 0; $sgst_value = 0; $igst_value = 0;
        
         // Statics
         $form_name = "proforma_invoice_form"; $current_date = date('Y-m-d'); 
@@ -1247,6 +1257,12 @@
             }
         }
     
+        if(!empty($other_charges_total)) {
+            $other_charges_total = array_sum($other_charges_total);
+        } else {
+            $other_charges_total = 0;
+        }
+
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
 
@@ -1255,7 +1271,6 @@
             if($tax_type == '1') {
                 for ($a = 0; $a < count($product_ids); $a++) {
                     $tax = trim(str_replace("%", "",$product_tax[$a]));
-
                     if ($product_tax[$a] != '' && $tax != '%') {
                         $tax_plus_value = ($product_amount[$a] * $tax) / 100;
                         
@@ -1265,10 +1280,10 @@
                         $tax_error = "Select tax for product - ".($obj->encode_decode('decrypt', $product_names[$a]));
                     }
                     if (!empty($tax_error)) {
-                        if (!empty($proforma_invoice_error)) {
-                            $proforma_invoice_error = $proforma_invoice_error . "<br>" . $tax_error;
+                        if (!empty($purchase_entry_error)) {
+                            $purchase_entry_error = $purchase_entry_error . "<br>" . $tax_error;
                         } else {
-                            $proforma_invoice_error = $tax_error;
+                            $purchase_entry_error = $tax_error;
                         }
                     }
                 }
@@ -1278,11 +1293,11 @@
                 $tax = trim($tax);
                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $tax)) {
                     $total_tax_value = ($tax * $grand_total) / $percentage;
-                }
-                else {
+                } else {
                     $product_error = "Invalid Overall tax";
                 }
             }
+
             if(!empty($total_tax_value)) {
                 $total_tax_value = number_format($total_tax_value, 2);
                 $total_tax_value = str_replace(",", "", $total_tax_value);
@@ -1293,7 +1308,8 @@
                     $sgst_value = $total_tax_value / 2;
                     $sgst_value = number_format($sgst_value, 2);
                     $sgst_value = str_replace(",", "", $sgst_value);
-                } else {
+                }
+                else {
                     $igst_value = $total_tax_value;
                     $igst_value = number_format($igst_value, 2);
                     $igst_value = str_replace(",", "", $igst_value);
@@ -1490,24 +1506,14 @@
                 } else {
                     $other_charges_values = $GLOBALS['null_value'];
                 }
-                
-                if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
-                    $other_charges_total = implode(",", $other_charges_total);
-                } else {
-                    $other_charges_total = $GLOBALS['null_value'];
-                }
-                     
-                if(!empty($charges_total_amounts)) {
-                    $charges_total_amounts = implode(",", $charges_total_amounts);
-                } else {
-                    $charges_total_amounts = $GLOBALS['null_value'];
-                }
 
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
                 $bill_company_id = $GLOBALS['bill_company_id'];
                 $null_value = $GLOBALS['null_value'];
                 $proforma_invoice_number = $null_value;
+                $proforma_invoice_insert_id = $null_value;
+                $stock_conversion = 1;
 
                 if(empty($edit_id)) {
                     $action = "";
@@ -1516,19 +1522,19 @@
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'", "'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
 
                     $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_table'], $columns, $values, 'proforma_invoice_id', 'proforma_invoice_number', $action);
 
                     if(preg_match("/^\d+$/", $proforma_invoice_insert_id)) {
+                        $stock_conversion = 1;
                         $result = array('number' => '1', 'msg' => 'Proforma Invoice Successfully Created','redirection_page'=>'proforma_invoice.php');
                     }
                     else {
                         $result = array('number' => '2', 'msg' => $proforma_invoice_insert_id);
                     }
-                }
-                else {
+                } else {
                     $getUniqueID = "";
                     $getUniqueID = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $edit_id, 'id');
                     $proforma_invoice_number = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $edit_id, 'proforma_invoice_number');
@@ -1540,18 +1546,33 @@
                         }
 
                         $columns = array(); $values = array();		
-                        $columns = array('proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total');
-                        $values = array("'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'");
+                        $columns = array('proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total');
+                        $values = array("'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'",  "'" . $total_amount . "'");
 
                         $proforma_invoice_update_id = $obj->UpdateSQL($GLOBALS['proforma_invoice_table'], $getUniqueID, $columns, $values, $action);
 
                         if(preg_match("/^\d+$/", $proforma_invoice_update_id)) {
+                            $stock_conversion = 1;
                             $result = array('number' => '1', 'msg' => 'Proforma Invoice Updated Successfully','redirection_page'=> 'proforma_invoice.php');
                         }
                         else {
                             $result = array('number' => '2', 'msg' => $proforma_invoice_update_id);
                         }							
                     }
+                }
+
+                if (!empty($stock_conversion) && $stock_conversion == 1) {
+                    $proforma_invoice_id = "";
+                    if(empty($edit_id)){
+                        if(!empty($proforma_invoice_insert_id)) {
+                            $proforma_invoice_id = "";
+                            $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['proforma_invoice_table'], 'id', $proforma_invoice_insert_id, 'proforma_invoice_id');
+                        }
+                    } else {
+                        $proforma_invoice_id = $edit_id;
+                    }
+
+                    $obj->UpdateConversionStock($proforma_invoice_id, "Proforma Invoice");
                 }
             }
             else {
@@ -1693,24 +1714,22 @@
                                 <?php
                                     if(!empty($list['customer_name_mobile_city']) && $list['customer_name_mobile_city'] != $GLOBALS['null_value']) {
                                         echo ($obj->encode_decode('decrypt', $list['customer_name_mobile_city']));
-                                    }
-                                    else {
+                                    } else {
                                         echo '-';
                                     }
                                 
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                            <br><span style="color: red;">Cancelled</span>
+                                    <br><span style="color: red;">Cancelled</span>
                                     <?php	
-                                }	 ?>
+                                } ?>
                             </td>
                             
                             <td>
                                 <?php
                                     if(!empty($list['bill_total'])) {
                                         echo number_format($list['bill_total'],2);
-                                    }
-                                    else {
+                                    } else {
                                         echo '-';
                                     }
                                 ?>
@@ -1721,13 +1740,16 @@
                                     $proforma_actions = array();
                                     $proforma_actions = $obj->getProformaInvoiceActions($list['proforma_invoice_id']);
 
-                                    if(!empty($proforma_actions)) {
+                                    if(!empty($proforma_actions) && ($show_bill == 0)) {
                                         ?>
                                             <div class="dropdown">
                                                 <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                                    <li>
+                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_performa_invoice_a4.php?performa_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')">PDF</a>
+                                                    </li>
                                                     <?php
                                                         if(in_array("convert", $proforma_actions)){
                                                             ?>
@@ -1760,7 +1782,6 @@
                                 ?>
                             </td>
                         </tr>
-                        
                         <?php
                     }
                 } else {
@@ -1769,7 +1790,7 @@
                         <td colspan="7" class="text-center">Sorry! No records found</td>
                     </tr>
                 <?php 
-                    } 
+                } 
                 ?>
             </tbody>
         </table>              
@@ -1779,38 +1800,47 @@
     if(isset($_REQUEST['change_product_id'])) {
         $product_id =$_REQUEST['change_product_id'];
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_id, '');
-        $sales_rate = $unit_id = $subunit_id = $per = $per_type = $subunit_need = "0"; $unit_name =""; $subunit_name ="";
+        $sales_rate = $unit_id = $subunit_id = $per = $per_type = $subunit_need = ""; $unit_name =""; $subunit_name ="";
         if (!empty($product_list)) {
-            foreach ($product_list as $P_list) {
-                if (!empty($P_list['unit_id'])) {
-                    $unit_id = $P_list['unit_id'];
+            foreach ($product_list as $pl) {
+                if (!empty($pl['unit_id'])) {
+                    $unit_id = $pl['unit_id'];
                 }
-                if (!empty($P_list['subunit_id'])) {
-                    $subunit_id = $P_list['subunit_id'];
+                if (!empty($pl['subunit_id'])) {
+                    $subunit_id = $pl['subunit_id'];
                 }
-                if (!empty($P_list['unit_name'])) {
-                    $unit_name = $P_list['unit_name'];
+                if (!empty($pl['unit_name'])) {
+                    $unit_name = $pl['unit_name'];
                     $unit_name = $obj->encode_decode("decrypt",$unit_name);
                 }
-                if (!empty($P_list['subunit_name'])) {
-                    $subunit_name = $P_list['subunit_name'];
-                    $subunit_name = $obj->encode_decode("decrypt",$subunit_name);
+                if (!empty($pl['subunit_name'])) {
+                    $subunit_name = $pl['subunit_name'];
+                    if(!empty($subunit_name) && $subunit_name != "NULL"){
+                        $subunit_name = $obj->encode_decode("decrypt",$subunit_name);
+                    }
                 }
-                if (!empty($P_list['sales_rate'])) {
-                    $sales_rate = $P_list['sales_rate'];
+                if (!empty($pl['sales_rate'])) {
+                    $sales_rate = $pl['sales_rate'];
                 }
-                if (!empty($P_list['per'])) {
-                    $per = $P_list['per'];
+                if (!empty($pl['per'])) {
+                    $per = $pl['per'];
                 }
-                if (!empty($P_list['per_type'])) {
-                    $per_type = $P_list['per_type'];
+                if (!empty($pl['per_type'])) {
+                    $per_type = $pl['per_type'];
                 }
-                if (!empty($P_list['subunit_need'])) {
-                    $subunit_need = $P_list['subunit_need'];
+                if (!empty($pl['subunit_need'])) {
+                    $subunit_need = $pl['subunit_need'];
                 }
             }
         }
     
+        $case_contents_list = array();
+        if(!empty($subunit_need) && $subunit_need == "1") {
+            $case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_by_magazine_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
+
+            $case_contents_list = $obj->getQueryRecords('', $case_contents_query);
+        }
+
         $type_option = "";
     
         ?>
@@ -1824,7 +1854,21 @@
             <?php } ?>
         <?php
         
-        echo "$$$" . $sales_rate . "$$$" . $per . "$$$" . "$$$" . $subunit_need . "$$$". $unit . "$$$" . $subunit ;
+        echo "$$$" . $sales_rate . "$$$" . $per . "$$$" . "$$$" . $subunit_need . "$$$". $unit_id . "$$$" . $subunit_id . "$$$";
+
+        if(!empty($case_contents_list)) {
+            ?>
+                <option value="">Select</option>
+                <?php
+                    foreach($case_contents_list as $case_contents) {
+                        ?>
+                        <option value="<?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?>"><?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?></option>
+                        <?php
+                    }    
+                ?>
+            <?php
+        }
+
     }
 
     if(isset($_REQUEST['product_row_index'])){
@@ -2170,6 +2214,15 @@
                 $action = "";
                 if(!empty($proforma_invoice_number)) {
                     $action = "Proforma Invoice Deleted. Name - " . $proforma_invoice_number;
+                }
+
+                $stock_conversion_records = $obj->getTableRecords($GLOBALS['stock_conversion_table'], 'bill_id', $delete_proforma_invoice_id, '');
+                if(!empty($stock_conversion_records)) {
+                    foreach($stock_conversion_records as $sc) {
+                        $columns = array(); $values = array();
+                        $columns = array('deleted'); $values = array("'1'");
+                        $obj->UpdateSQL($GLOBALS['stock_conversion_table'], $sc['id'], $columns, $values, $action);
+                    }
                 }
 
                 $columns = array();

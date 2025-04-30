@@ -2,12 +2,11 @@
 	$page_title = "Factory";
 	include("include_user_check.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
-
     
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['factory_module'];
             include("permission_check.php");
         }
@@ -19,7 +18,6 @@
     if(!empty($factory_list)) {
         $factory_count = count($factory_list);
     }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,9 +48,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-4">
-                                            <?php
+                                                <?php
                                                     $add_access_error = "";
-                                                    if(!empty($loginner_id)) {
+                                                    if(!empty($login_staff_id)) {
                                                         $permission_action = $add_action;
                                                         include('permission_action.php');
                                                     }

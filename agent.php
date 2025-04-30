@@ -1,12 +1,12 @@
 <?php 
 	$page_title = "Agent";
-	include("include_user_check_and_files.php");
+	include("include_user_check.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
 
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['agent_module'];
             include("permission_check.php");
         }
@@ -45,7 +45,7 @@
                                             <div class="row justify-content-end p-2">
                                                 <div class="col-lg-3 col-md-4 col-6">
                                                     <div class="input-group">
-                                                        <input type="text" class="form-control" name="search_text" style="height:34px;" placeholder="Search By Agent Name / Mobile Number" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();" >
+                                                        <input type="text" class="form-control" name="search_text" style="height:34px;" placeholder="Search By Name / Mbl No" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();" >
                                                         <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                                     </div>
                                                 </div>
@@ -56,12 +56,12 @@
                                             } ?> 
                                                 <div class="col-lg-2 col-md-2 col-3"> 
                                                     <div class="ps-2"><?php
-                                                        $access_error = "";
-                                                        if(!empty($loginner_id)) {
+                                                        $add_access_error = "";
+                                                        if(!empty($login_staff_id)) {
                                                             $permission_action = $add_action;
                                                             include('permission_action.php');
                                                         }
-                                                        if(empty($access_error)) { ?>
+                                                        if(empty($add_access_error)) { ?>
                                                             <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button> <?php 
                                                         } ?>
                                                     </div>

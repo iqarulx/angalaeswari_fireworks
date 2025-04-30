@@ -1,10 +1,10 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['transport_module'];
         }
     }
@@ -62,7 +62,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="transport_name" name="transport_name" class="form-control shadow-none" value="<?php if(!empty($transport_name)){echo $transport_name;} ?>"  required>
-                            <label>Transport Name(*)</label>
+                            <label>Transport Name <span class="text-danger">*</span></label>
                         </div>
                         <div class="new_smallfnt">Contains Text, Symbols &amp;, -,',.(Max 25 char)</div>
                     </div>
@@ -71,7 +71,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="mobile_number" name="mobile_number" class="form-control shadow-none" required value="<?php if(!empty($mobile_number)){echo $mobile_number;} ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'mobile_number',10,'');">
-                            <label>Phone Number</label>
+                            <label>Phone Number <span class="text-danger">*</span></label>
                         </div>
                         <div class="new_smallfnt">Numbers Only (only 10 digits)</div>
                     </div>
@@ -89,7 +89,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="location" name="location" class="form-control shadow-none" required value="<?php if(!empty($location)){echo $location;} ?>" class="form-control shadow-none">
-                            <label>Location</label>
+                            <label>Location <span class="text-danger">*</span></label>
                         </div>
                     </div>
                 </div>
@@ -408,7 +408,7 @@
         <?php } ?>
         <?php
             $access_error = "";
-            if(!empty($loginner_id)) {
+            if(!empty($login_staff_id)) {
                 $permission_action = $view_action;
                 include('permission_action.php');
             }
@@ -469,7 +469,7 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                             <?php 
                                                 $access_error = "";
-                                                if(!empty($loginner_id)) {
+                                                if(!empty($login_staff_id)) {
                                                     $permission_action = $edit_action;
                                                     include('permission_action.php');
                                                 }
@@ -479,7 +479,7 @@
                                                 <?php } ?>  
                                                 <?php 
                                                     $access_error = "";
-                                                    if(!empty($loginner_id)) {
+                                                    if(!empty($login_staff_id)) {
                                                         $permission_action = $delete_action;
                                                         include('permission_action.php');
                                                     }

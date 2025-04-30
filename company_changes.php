@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 
     if(isset($_REQUEST['show_company_id'])) { 
         $show_company_id = $_REQUEST['show_company_id'];
@@ -392,7 +392,7 @@
             $gst_number = $_POST['gst_number'];
             $gst_number = trim($gst_number);
            
-            $gst_number_error = $valid->valid_gst_number($gst_number, "GST Number", '0');
+            $gst_number_error = $valid->valid_gst_number($gst_number, "GST Number", '1');
             if(!empty($gst_number_error)) {
                 if(!empty($valid_company)) {
                     $valid_company = $valid_company." ".$valid->error_display($form_name, "gst_number", $gst_number_error, 'text');
@@ -554,6 +554,10 @@
                                             
                         if(preg_match("/^\d+$/", $company_insert_id)) {
                             $image_copy = 1;
+                            $company_id = $obj->getTableColumnValue($GLOBALS['company_table'], 'id', $company_insert_id, 'company_id');
+                            if(empty($company_count) && !empty($company_id)) {
+                                $_SESSION['bill_company_id'] = $company_id;
+                            }
                             $result = array('number' => '1', 'msg' => 'Company Successfully Created');
                         }
                         else {

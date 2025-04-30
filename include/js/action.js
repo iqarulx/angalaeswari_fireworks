@@ -1,42 +1,47 @@
 // Product , contractor, purchase Entry, Consumption Entry screens js
-
-function GetProdetails() {
-	var product = $("select[name='product']").val();
+var price_regex = /^(\d*\.)?\d+$/;
+function GetContractorProdetails() {
+    if(jQuery("select[name='product']").length > 0){
+        var product = jQuery("select[name='product']").val();
+    }
 	var check_login_session = 1;
 	var post_url = "dashboard_changes.php?check_login_session=1";
 	jQuery.ajax({
 		url: post_url, success: function (check_login_session) {
 			if (check_login_session == 1) {
-				post_url = "action_changes.php?change_product_id="+product;
+                if(jQuery("select[name='godown']").length > 0){
+                    var godown = jQuery("select[name='godown']").val();
+                }
+                post_url = "action_changes.php?change_product_id="+product+"&godown_id="+godown;
 				jQuery.ajax({
 					url: post_url, success: function (result) {
 						if(result != "") {
                             result = result.split("$$");
-							if($("select[name='selected_unit_type']").length > 0) {
-								$("select[name='selected_unit_type']").empty().append(result[0]);
+							if(jQuery("select[name='selected_unit_type']").length > 0) {
+								jQuery("select[name='selected_unit_type']").empty().append(result[0]);
 							}
-							if($("select[name='purchase_per_type']").length > 0) {
-								$("select[name='purchase_per_type']").empty().append(result[0]);
+							if(jQuery("select[name='purchase_per_type']").length > 0) {
+								jQuery("select[name='purchase_per_type']").empty().append(result[0]);
 							}
 							window.globalVar = result[1].split("%%");
 							if(result[2] != "") {
-								if($("select[name='selected_consumption_content']").length > 0) {
-									$("#contents_div").removeClass("d-none");
-									$("select[name='selected_consumption_content']").empty().append(result[2]);
+								if(jQuery("select[name='selected_consumption_content']").length > 0) {
+									jQuery("#contents_div").removeClass("d-none");
+									jQuery("select[name='selected_consumption_content']").empty().append(result[2]);
                                     GetStockLimit();
 								}
 							} else {
-								if($("select[name='selected_consumption_content']").length > 0) {
-									$("#contents_div").addClass("d-none");
+								if(jQuery("select[name='selected_consumption_content']").length > 0) {
+									jQuery("#contents_div").addClass("d-none");
 								}
 							}
                             if(result[3] != "") {
-                                if($("input[name = 'stock_negative']").length > 0) {
-                                    $("input[name = 'stock_negative']").val(result[3]);
+                                if(jQuery("input[name = 'stock_negative']").length > 0) {
+                                    jQuery("input[name = 'stock_negative']").val(result[3]);
                                 }
                             } else {
-                                if($("input[name = 'stock_negative']").length > 0) {
-                                    $("input[name = 'stock_negative']").val(0);
+                                if(jQuery("input[name = 'stock_negative']").length > 0) {
+                                    jQuery("input[name = 'stock_negative']").val(0);
                                 }
                             }
 						}
@@ -47,21 +52,86 @@ function GetProdetails() {
 	});
 }
 
-function CalculateTotalRate() {
-	var total_rate = 0;
-	$('input[name="rate[]"]').each(function() {
-		var val = parseFloat($(this).val());
-		if (!isNaN(val)) {
-			total_rate += val;
-		}
-	});
 
-	if(jQuery('input[name="total_rate"]').length > 0) {
-		jQuery('input[name="total_rate"]').val(total_rate);
-	}
-	if(jQuery('#total_rate_td').length > 0) {
-		jQuery('#total_rate_td').html(total_rate.toFixed(2));
-	}
+function GetProdetails() {
+    if(jQuery('.current_stock_div').length > 0) {
+        jQuery('.current_stock_div').html('');
+    }
+    if(jQuery('.contains_div').length > 0) {
+        jQuery('.contains_div').addClass('d-none');
+    }
+    
+    if(jQuery("select[name='product']").length > 0){
+        var product_id = jQuery("select[name='product']").val();
+    }
+
+    
+    if(jQuery('select[name="godown_type"]').length > 0) {
+        godown_type = jQuery('select[name="godown_type"]').val();
+    }
+ 
+    var godown_id = "";
+    if(godown_type == 1){
+        if(jQuery('select[name="overall_godown"]').length > 0) {
+            godown_id = jQuery('select[name="overall_godown"]').val();
+            godown_id = jQuery.trim(godown_id);
+        }else{
+            if(jQuery('input[name="overall_godown"]').length > 0) {
+                godown_id = jQuery('input[name="overall_godown"]').val();
+                godown_id = jQuery.trim(godown_id);
+            } 
+        }
+    }else{
+        if(jQuery('select[name="indv_godown"]').length > 0) {
+            godown_id = jQuery('select[name="indv_godown"]').val();
+            godown_id = jQuery.trim(godown_id);
+        }
+    }
+    var post_url = "consumption_entry_changes.php?get_unit="+product_id+"&product_godown_id="+godown_id;
+    jQuery.ajax({
+        url: post_url, success: function (result) {
+            result = result.trim();
+            result = result.split("$$$");
+            if(jQuery('select[name="selected_unit_type"]').length > 0) {
+                jQuery('select[name="selected_unit_type"]').html(result[0]);
+            }
+            if(jQuery('.current_stock_div').length > 0) {
+                jQuery('.current_stock_div').html(result[1]);
+            }
+            if(result[2] != ""){
+                if(jQuery('.contains_div').length > 0) {
+                    jQuery('.contains_div').removeClass('d-none');
+                }
+                
+                if(jQuery('select[name="selected_content"]').length > 0) {
+                    jQuery('select[name="selected_content"]').html(result[2]);
+                }
+            }
+        
+            if(product_id != "" && typeof product_id != "undefined" && product_id != null) {
+                if(jQuery('input[name="selected_quantity"]').length > 0) {
+                    jQuery('input[name="selected_quantity"]').focus();
+                }
+            }
+        }
+    });
+}
+
+function CalculateTotalRate() {
+    var total_rate = 0;
+    $('input[name="rate[]"]').each(function () {
+        var val = parseFloat($(this).val());
+        if (!isNaN(val)) {
+            total_rate += val;
+        }
+    });
+
+    if (jQuery('input[name="total_rate"]').length > 0) {
+        jQuery('input[name="total_rate"]').val(total_rate);
+    }
+    if (jQuery('#total_rate_td').length > 0) {
+        jQuery('#total_rate_td').html(total_rate.toFixed(2));
+    }
 }
 
 function CalculateTotalQuantity() {
@@ -1293,6 +1363,451 @@ function GetStockLimit() {
                             }
                             if(jQuery('#qty_limit').length > 0) {
                                 jQuery('#qty_limit').html("stock Balance : <span class='text-danger'>"+ result + "</span>" );
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
+function GetStockProduct()
+{
+    if(jQuery('select[name="product"]').length >0)
+    {
+        jQuery('select[name="product"]').html('');
+    }
+    var godown_type ="";
+    if(jQuery('select[name="godown_type"]').length >0)
+    {
+        godown_type = jQuery('select[name="godown_type"]').val();
+    }
+    var godown ="";
+    if(godown_type == '1')
+    {
+        if(jQuery('select[name="overall_godown"]').length >0)
+        {
+            godown = jQuery('select[name="overall_godown"]').val();
+        }
+    }
+    else if(godown_type == '2')
+    {
+        if(jQuery('select[name="indv_godown"]').length >0)
+        {
+            godown = jQuery('select[name="indv_godown"]').val();
+        }
+    }
+    if(jQuery('select[name="contractor"]').length >0)
+    {
+        contractor_id = jQuery('select[name="contractor"]').val();
+    }
+    var check_login_session =1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url:post_url,success:function(check_login_session){
+            if(check_login_session == 1)
+            {
+                var post_url = "action_changes.php?get_stock_product=1&godown_id="+godown+"&contractor_id="+contractor_id;
+                jQuery.ajax({url:post_url,success:function(result){
+                    if(jQuery('select[name="product"]').length >0)
+                    {
+                        jQuery('select[name="product"]').html(result);
+                    }
+                }});
+            }
+        }
+    });
+}
+
+function getGodownType(godown_type)
+{
+    jQuery('.indv_godown').addClass('d-none');
+    jQuery('.overall_godown').addClass('d-none');
+    if(godown_type =='1')
+    {
+        jQuery('.overall_godown').removeClass('d-none');
+    }
+    else if(godown_type == '2')
+    {
+        jQuery('.indv_godown').removeClass('d-none');
+    }
+}
+
+function AddConsumptionProducts() {
+    var check_login_session = 1; var all_errors_check = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+
+				if (jQuery('.infos').length > 0) {
+					jQuery('.infos').each(function() { jQuery(this).remove(); });
+				}
+         
+                var godown_type = "";
+                if(jQuery('select[name="godown_type"]').length > 0) {
+                    godown_type = jQuery('select[name="godown_type"]').val();
+                    godown_type = jQuery.trim(godown_type);
+                    if(typeof godown_type == "undefined" || godown_type == "" || godown_type == 0) {
+                        all_errors_check = 0;
+                    }
+                }
+
+                if(godown_type == 1){
+                    if(jQuery('select[name="overall_godown"]').length > 0){
+                        godown_id = jQuery('select[name="overall_godown"]').val();
+                        godown_id = jQuery.trim(godown_id);
+                        if(typeof godown_id == "undefined" || godown_id == "" || godown_id == 0) {
+                            all_errors_check = 0;
+                        }
+                    }
+                }else{
+                    if(jQuery('select[name="indv_godown"]').length > 0){
+                        godown_id = jQuery('select[name="indv_godown"]').val();
+                        godown_id = jQuery.trim(godown_id);
+                        if(typeof godown_id == "undefined" || godown_id == "" || godown_id == 0) {
+                            all_errors_check = 0;
+                        }
+                    }
+                }
+
+                var contractor_id = "";
+                if(jQuery('select[name="contractor"]').is(":visible")) {
+                    if(jQuery('select[name="contractor"]').length > 0) {
+                        contractor_id = jQuery('select[name="contractor"]').val();
+                        contractor_id = jQuery.trim(contractor_id);
+                        if(typeof contractor_id == "undefined" || contractor_id == "" || contractor_id == 0) {
+                            all_errors_check = 0;
+                        }
+                    }
+                }
+
+                var selected_product_id = "";
+                if(jQuery('select[name="product"]').is(":visible")) {
+                    if(jQuery('select[name="product"]').length > 0) {
+                        selected_product_id = jQuery('select[name="product"]').val();
+                        selected_product_id = jQuery.trim(selected_product_id);
+                        if(typeof selected_product_id == "undefined" || selected_product_id == "" || selected_product_id == 0) {
+                            all_errors_check = 0;
+                        }
+                    }
+                }
+           
+                var selected_unit_id = "";
+                if(jQuery('select[name="selected_unit_type"]').length > 0) {
+                    selected_unit_id = jQuery('select[name="selected_unit_type"]').val();
+                    selected_unit_id = jQuery.trim(selected_unit_id);
+                    if(typeof selected_unit_id == "undefined" || selected_unit_id == "" || selected_unit_id == 0) {
+                        all_errors_check = 0;
+                    }
+                }
+
+                var selected_content = "";
+                if(jQuery('select[name="selected_content"]').is(":visible")) {
+                    if(jQuery('select[name="selected_content"]').length > 0) {
+                        selected_content = jQuery('select[name="selected_content"]').val();
+                        selected_content = jQuery.trim(selected_content);
+                        if(typeof selected_content == "undefined" || selected_content == "" || selected_content == 0) {
+                            all_errors_check = 0;
+                        }
+                    }
+                }
+
+                var selected_quantity = "";
+                if(jQuery('input[name="selected_quantity"]').length > 0) {
+                    selected_quantity = jQuery('input[name="selected_quantity"]').val();
+                    selected_quantity = jQuery.trim(selected_quantity);
+                    if(typeof selected_quantity == "undefined" || selected_quantity == "" || selected_quantity == 0) {
+                        all_errors_check = 0;
+                    }
+                    else if(price_regex.test(selected_quantity) == false) {
+                        all_errors_check = 0;
+                    }
+                    else if(parseFloat(selected_quantity) > 99999) {
+                        all_errors_check = 0;
+                    }
+                }
+
+                if(parseFloat(all_errors_check) == 1) {
+                    var add = 1;
+                    if(selected_product_id != "") {
+                        if(jQuery('input[name="product_id[]"]').length > 0) {
+                            jQuery('.consumption_product_table tbody').find('tr').each(function () {
+                                var prev_product_id = ""; var prev_unit_id = ""; var prev_contains = ""; var prev_godown_id = "";
+                                    prev_product_id = jQuery(this).find('input[name="product_id[]"]').val();
+                                    if(jQuery(this).find('input[name="unit_id[]"]').length > 0) {
+                                        prev_unit_id = jQuery(this).find('input[name="unit_id[]"]').val();
+                                    }
+                                    if(jQuery(this).find('input[name="contains[]"]').length > 0) {
+                                        prev_contains = jQuery(this).find('input[name="contains[]"]').val();
+                                    }
+                                    if(jQuery(this).find('input[name="godown_id[]"]').length > 0) {
+                                        prev_godown_id = jQuery(this).find('input[name="godown_id[]"]').val();
+                                    }
+                                    if(godown_type == 1){
+                                        if(jQuery('select[name="selected_content"]').is(":visible")) {
+                                            if (prev_product_id == selected_product_id && prev_unit_id == selected_unit_id && prev_contains == selected_content) {
+                                                add = 0;
+                                            }
+                                        }else{
+                                            if (prev_product_id == selected_product_id && prev_unit_id == selected_unit_id) {
+                                                add = 0;
+                                            }
+                                        }
+                                    }else{
+                                        if(jQuery('select[name="selected_content"]').is(":visible")) {
+                                            if (prev_product_id == selected_product_id && prev_unit_id == selected_unit_id && prev_contains == selected_content && prev_godown_id == godown_id) {
+                                                add = 0;
+                                            }
+                                        }else{
+                                            if (prev_product_id == selected_product_id && prev_unit_id == selected_unit_id  && prev_godown_id == godown_id) {
+                                                add = 0;
+                                            }
+                                        }
+                                    }
+                            });
+                        }
+                    }
+                    if(parseFloat(add) == 1) {
+                        var product_count = 0;
+                        product_count = jQuery('input[name="product_count"]').val();
+                        product_count = parseInt(product_count) + 1;
+                        jQuery('input[name="product_count"]').val(product_count);
+
+                        var post_url = "consumption_entry_changes.php?product_row_index="+product_count+"&selected_product_id="+selected_product_id+"&selected_unit_id="+selected_unit_id+"&selected_quantity="+selected_quantity+"&selected_content="+selected_content+"&godown_type="+godown_type+"&godown_id="+godown_id;
+
+                        jQuery.ajax({
+                            url: post_url, success: function (result) {
+                                if (jQuery('.consumption_product_table tbody').find('tr').length > 0) {
+                                    jQuery('.consumption_product_table tbody').find('tr:first').before(result);
+                                }
+                                else {
+                                    jQuery('.consumption_product_table tbody').append(result);
+                                }
+                                if(godown_type == 1){
+                                    if(jQuery('select[name="overall_godown"]').length > 0) {
+                                        jQuery('select[name="overall_godown"]').attr('disabled', true);
+                                    }
+                                    if(jQuery('input[name="overall_godown"]').length > 0) {
+                                        jQuery('input[name="overall_godown"]').attr('disabled', false);
+                                        jQuery('input[name="overall_godown"]').val(godown_id);
+                                    }
+                                }
+                                if(jQuery('select[name="godown_type"]').length > 0) {
+                                    jQuery('select[name="godown_type"]').attr('disabled', true);
+                                    if(jQuery('input[name="godown_type"]').length > 0) {
+                                        if(godown_type != "") {
+                                            jQuery('input[name="godown_type"]').attr('disabled', false);
+                                            jQuery('input[name="godown_type"]').val(godown_type);
+                                        }
+                                    }
+                                }
+                             
+                                if(jQuery('select[name="product"]').length > 0) {
+                                    jQuery('select[name="product"]').val('').trigger('change');
+                                }
+                                if(jQuery('select[name="selected_unit_type"]').length > 0) {
+                                    jQuery('select[name="selected_unit_type"]').val('').trigger('change');
+                                }
+                                if(jQuery('select[name="selected_content"]').length > 0) {
+                                    jQuery('select[name="selected_content"]').val('').trigger('change');
+                                }
+                                if(jQuery('input[name="selected_quantity"]').length > 0) {
+                                    jQuery('input[name="selected_quantity"]').val('');
+                                }
+                                if(jQuery('.current_stock_div').length > 0) {
+                                    jQuery('.current_stock_div').html('');
+                                }
+                                if(jQuery('select[name="indv_godown"]').length > 0) {
+                                    jQuery('select[name="indv_godown"]').val('').trigger('change');
+                                }
+                                calQtyTotal();
+                            }
+                        });
+                    }
+                    else {
+                        if(jQuery('select[name="selected_content"]').is(":visible")) {
+                            jQuery('.consumption_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product ,Unit, Contains Already Exists</span>');
+                        }else{
+                            jQuery('.consumption_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product ,Unit Already Exists</span>');
+                        }
+                    }
+                }
+                else {
+                    jQuery('.consumption_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">Check Product Details</span>');
+                }
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}
+function SnoCalculation(){
+    if (jQuery('.sno').length > 0) {
+		var row_count = 0;
+		row_count = jQuery('.sno').length;
+		if (typeof row_count != "undefined" && row_count != null && row_count != 0 && row_count != "") {
+			var j = 1;
+			var sno = document.getElementsByClassName('sno');
+			for (var i = row_count - 1; i >= 0; i--) {
+				sno[i].innerHTML = j;
+				j = parseInt(j) + 1;
+			}
+		}
+	}
+}
+
+function calQtyTotal() {
+    SnoCalculation();
+    
+    if(jQuery('.overall_qty').length > 0) {
+        jQuery('.overall_qty').html('');
+    }
+	var quantity_total = 0;
+	if(jQuery('.product_row').length > 0) {
+		jQuery('.product_row').each(function(){
+            var quantity = 0;
+            if(jQuery(this).find('input[name="quantity[]"]').length > 0) {
+                quantity = jQuery(this).find('input[name="quantity[]"]').val();
+                quantity = jQuery.trim(quantity);
+            }
+            if (typeof quantity != "undefined" && quantity != "" && quantity != 0 && price_regex.test(quantity) == true) {
+                quantity_total = parseFloat(quantity_total) + parseFloat(quantity);
+			}
+		});
+        if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
+            quantity_total = quantity_total.toFixed(2);
+            if(jQuery('.overall_qty').length > 0) {
+                jQuery('.overall_qty').html(quantity_total);
+            }
+		}
+	}
+}
+
+function GetCurrentStock(){
+    if(jQuery('.current_stock_div').length > 0) {
+        jQuery('.current_stock_div').html('');
+    }
+     var product_id = "";   var godown_type = ""; var selected_unit_id = ""; var selected_content = "";
+    if(jQuery('select[name="product"]').length > 0) {
+        product_id = jQuery('select[name="product"]').val();
+    }
+    if(jQuery('select[name="godown_type"]').length > 0) {
+        godown_type = jQuery('select[name="godown_type"]').val();
+    }
+    if(jQuery('select[name="selected_unit_type"]').length > 0) {
+        selected_unit_id = jQuery('select[name="selected_unit_type"]').val();
+    }
+    if(jQuery('select[name="selected_content"]').length > 0) {
+        selected_content = jQuery('select[name="selected_content"]').val();
+    }
+    var godown_id = "";
+    if(godown_type == 1){
+        if(jQuery('select[name="overall_godown"]').length > 0) {
+            godown_id = jQuery('select[name="overall_godown"]').val();
+            godown_id = jQuery.trim(godown_id);
+        }else{
+            if(jQuery('input[name="overall_godown"]').length > 0) {
+                godown_id = jQuery('input[name="overall_godown"]').val();
+                godown_id = jQuery.trim(godown_id);
+            } 
+        }
+    }else{
+        if(jQuery('select[name="indv_godown"]').length > 0) {
+            godown_id = jQuery('select[name="indv_godown"]').val();
+            godown_id = jQuery.trim(godown_id);
+        }
+    }
+    
+    var post_url = "consumption_entry_changes.php?get_current_stock_product_id="+product_id+"&selected_unit_id="+selected_unit_id+"&selected_content="+selected_content+"&godown_id="+godown_id;
+
+    jQuery.ajax({
+        url: post_url, success: function (result) {
+            if(jQuery('.current_stock_div').length > 0) {
+                jQuery('.current_stock_div').html(result);
+            }
+        }
+    });
+}
+
+
+function DeleteConsumptionRow(row_index,id_name){
+    var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				if (jQuery('#'+id_name+row_index).length > 0) {
+					jQuery('#'+id_name+row_index).remove();
+				}
+			
+                if(id_name == 'product_row') {
+					if(jQuery('.product_row').length == 0) {
+						if(jQuery('select[name="godown_type"]').length > 0) {
+							if(jQuery('input[name="godown_type"]').length > 0) {
+								jQuery('input[name="godown_type"]').val('');
+								jQuery('input[name="godown_type"]').attr('disabled', true);
+							}
+							jQuery('select[name="godown_type"]').attr('disabled', false);
+						}
+                        if(jQuery('select[name="overall_godown"]').length > 0) {
+							if(jQuery('input[name="overall_godown"]').length > 0) {
+								jQuery('input[name="overall_godown"]').val('');
+								jQuery('input[name="overall_godown"]').attr('disabled', true);
+							}
+							jQuery('select[name="overall_godown"]').attr('disabled', false);
+						}
+					}
+                }
+				SnoCalculation();
+				calQtyTotal();
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}
+
+function show_godown_magazine(product_group) {
+    if (product_group == "1") {
+        if ($(".div_selected_godown").length > 0) {
+            $(".div_selected_godown").removeClass("d-none")
+        }
+        if ($(".div_selected_magazine").length > 0) {
+            $(".div_selected_magazine").addClass("d-none")
+        }
+        if ($("select[name='selected_magazine_id']").length > 0) {
+            $("select[name='selected_magazine_id']").val("").trigger("change")
+        }
+    }
+    else if (product_group == "2") {
+        if ($(".div_selected_magazine").length > 0) {
+            $(".div_selected_magazine").removeClass("d-none")
+        }
+        if ($(".div_selected_godown").length > 0) {
+            $(".div_selected_godown").addClass("d-none")
+        }
+        if ($("select[name='selected_godown_id']").length > 0) {
+            $("select[name='selected_godown_id']").val("").trigger("change")
+        }
+    }
+}
+
+function show_product(product_group) {
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                post_url = "action_changes.php?show_purchase_product=1&selected_product_group=" + product_group;
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (result != "") {
+                            if ($("select[name='product']").length > 0) {
+                                $("select[name='product']").html(result);
                             }
                         }
                     }

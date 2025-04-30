@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 	if(isset($_REQUEST['show_purchase_entry_id'])) { 
         $bill_date = ""; $bill_number = ""; $supplier_id = ""; $Vehicle_name = ""; $godown_id = ""; $gst_option = 0; $product_id = "";
         $tax_type = 0; $tax_option = 0; $overall_tax = "";
@@ -9,8 +9,8 @@
 
         $purchase_entry_date = date('Y-m-d'); $current_date = date('Y-m-d');$purchase_entry_number = "";$gst_option = 0; $tax_type = 0; $tax_option = 0; $overall_tax = "";$purchase_godown_ids = "";
         $godown_ids = array();$brand_ids = array();$product_id = array(); $product_names = array();$cases = array();$piece_per_cases = array();$rate_per_piece = array();$rate_per_cases = array(); $product_amount = array();$discount = ""; $discount_value = "";$extra_charges = ""; $extra_charges_value = "";$hsn_codes=array(); $round_off = "";$total_amount = "";
-        $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array();
-
+        $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array(); $product_group = ""; $location_type = ""; $location_id = array();
+        $cancelled = 0;
         $purchase_entry_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $show_purchase_entry_id, '');
         if(!empty($purchase_entry_list)) {
             foreach($purchase_entry_list as $data) {
@@ -30,6 +30,12 @@
                 
                 if(!empty($data['supplier_id']) && $data['supplier_id'] != $GLOBALS['null_value']) {
                     $supplier_id = $data['supplier_id'];
+                }
+                if(!empty($data['product_group']) && $data['product_group'] != $GLOBALS['null_value']) {
+                    $product_group = $data['product_group'];
+                }
+                if(!empty($data['location_type']) && $data['location_type'] != $GLOBALS['null_value']) {
+                    $location_type = $data['location_type'];
                 }
                 if(!empty($data['vehicle']) && $data['vehicle'] != $GLOBALS['null_value']) {
                     $Vehicle_name = $data['vehicle'];
@@ -52,35 +58,52 @@
                 if(!empty($data['stockupdate']) && $data['stockupdate'] != $GLOBALS['null_value']) {
                     $stockupdate = $data['stockupdate'];
                 }
+                if(!empty($data['location_id']) && $data['location_id'] != $GLOBALS['null_value']) {
+                    $location_id = $data['location_id'];
+                    $location_id = explode(",", $location_id);
+                    $location_id = array_reverse($location_id);
+                }
+                if(!empty($data['location_name']) && $data['location_name'] != $GLOBALS['null_value']) {
+                    $location_name = $data['location_name'];
+                    $location_name = explode(",", $location_name);
+                    $location_name = array_reverse($location_name);
+                }
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_id = $data['product_id'];
                     $product_id = explode(",", $product_id);
+                    $product_id = array_reverse($product_id);
                     $product_count = count($product_id);
                 }
                 if(!empty($data['product_name']) && $data['product_name'] != $GLOBALS['null_value']) {
                     $product_name = $data['product_name'];
                     $product_name = explode(",", $product_name);
+                    $product_name = array_reverse($product_name);
                 }
                 if(!empty($data['cases']) && $data['cases'] != $GLOBALS['null_value']) {
                     $cases = $data['cases'];
                     $cases = explode(",", $cases);
+                    $cases = array_reverse($cases);
                 }
                 if(!empty($data['unit_id']) && $data['unit_id'] != $GLOBALS['null_value']) {
                     $unit_id = $data['unit_id'];
                     $unit_id = explode(",", $unit_id);
+                    $unit_id = array_reverse($unit_id);
                 }
                 if(!empty($data['unit_name']) && $data['unit_name'] != $GLOBALS['null_value']) {
                     $unit_name = $data['unit_name'];
                     $unit_name = explode(",", $unit_name);
+                    $unit_name = array_reverse($unit_name);
                 }
                
                 if(!empty($data['per_type']) && $data['per_type'] != $GLOBALS['null_value']) {
                     $per_type = $data['per_type'];
                     $per_type = explode(",", $per_type);
+                    $per_type = array_reverse($per_type);
                 }
                 if(!empty($data['product_amount']) && $data['product_amount'] != $GLOBALS['null_value']) {
                     $product_amount = $data['product_amount'];
                     $product_amount = explode(",", $product_amount);
+                    $product_amount = array_reverse($product_amount);
                 }
                 if(!empty($data['discount']) && $data['discount'] != $GLOBALS['null_value']) {
                     $discount = $data['discount'];
@@ -106,38 +129,47 @@
                 if(!empty($data['unit_type']) && $data['unit_type'] != $GLOBALS['null_value']) {
                     $unit_type = $data['unit_type'];
                     $unit_type = explode(",", $unit_type);
+                    $unit_type = array_reverse($unit_type);
                 }
                 if(!empty($data['content']) && $data['content'] != $GLOBALS['null_value']) {
                     $content = $data['content'];
                     $content = explode(",", $content);
+                    $content = array_reverse($content);
                 }
                 if(!empty($data['total_qty']) && $data['total_qty'] != $GLOBALS['null_value']) {
                     $total_qty = $data['total_qty'];
                     $total_qty = explode(",", $total_qty);
+                    $total_qty = array_reverse($total_qty);
                 }
                 if(!empty($data['quantity']) && $data['quantity'] != $GLOBALS['null_value']) {
                     $quantity = $data['quantity'];
                     $quantity = explode(",", $quantity);
+                    $quantity = array_reverse($quantity);
                 }
                 if(!empty($data['rate']) && $data['rate'] != $GLOBALS['null_value']) {
                     $rate = $data['rate'];
                     $rate = explode(",", $rate);
+                    $rate = array_reverse($rate);
                 }
                 if(!empty($data['per']) && $data['per'] != $GLOBALS['null_value']) {
                     $per = $data['per'];
                     $per = explode(",", $per);
+                    $per = array_reverse($per);
                 }
                 if(!empty($data['final_rate']) && $data['final_rate'] != $GLOBALS['null_value']) {
                     $final_rate = $data['final_rate'];
                     $final_rate = explode(",", $final_rate);
+                    $final_rate = array_reverse($final_rate);
                 }
                 if(!empty($data['product_amount']) && $data['product_amount'] != $GLOBALS['null_value']) {
                     $product_amount = $data['product_amount'];
                     $product_amount = explode(",", $product_amount);
+                    $product_amount = array_reverse($product_amount);
                 }
                 if(!empty($data['product_tax']) && $data['product_tax'] != $GLOBALS['null_value']) {
                     $product_tax = $data['product_tax'];
                     $product_tax = explode(",", $product_tax);
+                    $product_tax = array_reverse($product_tax);
                 }
                 if(!empty($data['other_charges_id']) && $data['other_charges_id'] != $GLOBALS['null_value']) {
                     $other_charges_id = $data['other_charges_id'];
@@ -156,18 +188,41 @@
                 {
                     $overall_tax =$data['overall_tax'];
                 }
+                if(!empty($data['cancelled']) && $data['cancelled'] != $GLOBALS['null_value']) {
+                    $cancelled = $data['cancelled'];
+                }
             }
         }
 
+        $supplier_list = array();
         $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
-        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+        $godown_list = array(); $magazine_list = array();
+        if(!empty($show_purchase_entry_id)){
+            if($product_group == "1" && $location_type == "1"){
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $location_id[0], '');
+            }
+            else if($product_group == "2" && $location_type == "1"){
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $location_id[0], '');
+            }
+        }
+        else{
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+
+            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+        }
+        $product_list = array();
+        if(!empty($edit_id)){
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+        }
+        
+        $charges_list = array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $company_state = "";$country = "India"; $state = "";
-		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
+		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'state');
         if(!empty($company_state)) {
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
+        
         ?>
         <form class="poppins pd-20" name="purchase_entry_form" method="POST">
 			<div class="card-header">
@@ -187,8 +242,7 @@
             <div class="row p-3">
                 <input type="hidden" name="edit_id" value="<?php if(!empty($show_purchase_entry_id)) { echo $show_purchase_entry_id; } ?>">
                 <input type="hidden" name="company_state" value="<?php if(!empty($company_state)) { echo $company_state; } ?>">
-                <input type="hidden" name="party_state" value="<?php if(!empty($party_state)) { echo $party_state; } else { echo "Tamil Nadu"; } ?>">
-                <input type="hidden" id="stockupdation" name="stockupdation" value="<?php if(!empty($stockupdate)){ echo $stockupdate; }else{ echo "0"; } ?>">    
+                <input type="hidden" name="party_state" value="<?php if(!empty($party_state)) { echo $party_state; } else { echo "Tamil Nadu"; } ?>">   
 
                 <div class="col-lg-2 col-md-3 col-12 py-2">
                     <div class="form-group">
@@ -229,21 +283,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-12 py-2">
+                <div class="col-lg-2 col-md-3 col-12 div_product_group">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="godown_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                <option value="">Select Godown</option>
-                                <?php if(!empty($godown_list)) {
-                                    foreach($godown_list as $godown) { ?>
-                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
-                                <?php }
-                                } ?>
+                            <select class="select2 select2-danger" name="product_group" data-dropdown-css-class="select2-danger" style="width: 100%!important;" onchange="Javascript:show_godown_magazine(this.value);Javascript:show_product(this.value)" <?php if(!empty($show_purchase_entry_id)){ ?> disabled <?php } ?>>
+                                <option value="">Select</option>
+                                <option value="1" <?php if(!empty($product_group) && $product_group =='1'){ ?>selected <?php } ?>>UnFinished</option>
+                                <option value="2"  <?php if(!empty($product_group) && $product_group =='2'){ ?>selected <?php } ?>>Finished</option>
                             </select>
-                            <label>Godown <span class="text-danger">*</span></label>
+                            <label>Product Group <span class="text-danger">*</span></label>
                         </div>
-                    </div>        
+                    </div>  
                 </div>
+                <div class="col-lg-2 col-md-3 col-12 div_location_type">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="location_type" data-dropdown-css-class="select2-danger" style="width: 100%!important;" <?php if(!empty($show_purchase_entry_id)) {?>disabled <?php } ?>>
+                                <option value="">Select</option>
+                                <option value="1" <?php if(!empty($location_type) && $location_type =='1'){ ?>selected <?php } ?>>Single</option>
+                                <option value="2"  <?php if(!empty($location_type) && $location_type =='2'){ ?>selected <?php } ?>>Multiple</option>
+                            </select>
+                            <label>Type <span class="text-danger">*</span></label>
+                        </div>
+                    </div>  
+                </div>
+                
                 <div class="col-lg-3 col-md-2 col-12">
                     <div class="form-group mb-1">
                         <div class="flex-shrink-0">
@@ -295,6 +359,36 @@
             </div>
             </div>
             <div class="row justify-content-center pt-3">
+                <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_godown">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="selected_godown_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select Godown</option>
+                                <?php if(!empty($godown_list)) {
+                                    foreach($godown_list as $godown) { ?>
+                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                <?php }
+                                } ?>
+                            </select>
+                            <label>Godown <span class="text-danger">*</span></label>
+                        </div>
+                    </div>        
+                </div>
+                <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_magazine">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="selected_magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select Magazine</option>
+                                <?php if(!empty($magazine_list)) {
+                                    foreach($magazine_list as $magazine) { ?>
+                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($magazine_id) && $magazine_id == $magazine['magazine_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
+                                <?php }
+                                } ?>
+                            </select>
+                            <label>Magazine <span class="text-danger">*</span></label>
+                        </div>
+                    </div>        
+                </div>
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -329,7 +423,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-1 col-md-3 col-6 px-lg-1 py-2">
+                <div class="col-lg-1 col-md-3 col-6 px-lg-1 py-2" id="contents_div">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" name="content" onkeyup="CalcPurchaseProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
@@ -383,6 +477,7 @@
                         <thead class="bg-dark">
                             <tr>
                                 <th style="width:40px;">#</th>
+                                <th style="width:180px;">Location</th>
                                 <th style="width:180px;">Product</th>
                                 <th style="width:70px;">QTY</th>
                                 <th style="width:100px;">Unit</th>
@@ -398,10 +493,19 @@
                         <?php
                                 if(!empty($product_id)) {
                                     for($i=0; $i < count($product_id); $i++) {    
+                                        $unit_display = "";
+                                        $unit_display = $obj->encode_decode('decrypt', $unit_name[$i]);
                                         ?>
                                         <tr class="purchase_product_row" id="purchase_product_row<?php echo $i; ?>">
                                             <td class="sno text-center px-2 py-2"><?php echo $i+1; ?></td>
-
+                                            <td class="text-center px-2 py-2">
+                                                <?php
+                                                if ($location_name[$i] != $GLOBALS['null_value']) {
+                                                    echo $obj->encode_decode('decrypt', $location_name[$i]);
+                                                }
+                                                ?>
+                                                <input type="hidden" name="location_id[]" id="location_id_<?php echo $i;?>" value="<?php echo $location_id[$i]; ?>">
+                                            </td>
                                             <td class="text-center px-2 py-2">
                                                 <?php
                                                 if ($product_name[$i] != $GLOBALS['null_value']) {
@@ -425,7 +529,8 @@
                                             </td>
 
                                             <td class="text-center px-2 py-2">
-                                                <input type="text" name="entry_content[]" id="entry_content_<?php echo $i;?>" class="form-control shadow-none" value="<?php echo $content[$i]; ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calcToalPurchaseProductAmount('<?php echo $i;?>');">
+                                                <input type="hidden" name="entry_content[]" id="entry_content_<?php echo $i;?>" class="form-control shadow-none" value="<?php if(!empty($content[$i])){ echo $content[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calcToalPurchaseProductAmount('<?php echo $i;?>');">
+                                                <?php if(!empty($content[$i])){ echo $content[$i]; } ?>
                                             </td>
 
                                             <td class="text-center px-2 py-2">
@@ -433,7 +538,7 @@
                                             </td>          
 
                                             <td class="text-center px-2 py-2">
-                                                <div class="input-group">
+                                                <div class="input-group d-none">
                                                     <input type="text"  name="entry_per[]" id="entry_per_<?php echo $i;?>" onkeyup="calcToalPurchaseProductAmount('<?php echo $i;?>');" value="<?php echo $per[$i]; ?>" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
                                                     <div class="input-group-append" style="width:50%!important;">
                                                         <select name="entry_per_type[]" id="entry_per_type_<?php echo $i;?>" onchange="calcToalPurchaseProductAmount('<?php echo $i;?>');" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;"  <?php if(!empty($show_purchase_entry_id)) {  echo "readonly"; }?>>
@@ -442,6 +547,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <?php echo $per[$i].' '.$unit_display; ?>
                                             </td>
 
                                             <td class="tax_element d-none tax_cover">
@@ -641,11 +747,13 @@
             </div>
             <script src="include/select2/js/select2.min.js"></script>
             <script src="include/select2/js/select.js"></script>
-            <script type="text/javascript" src="include/js/action.js"></script>
+            <script type="text/javascript" src="include/js/purchase_entry.js"></script>
             <script type="text/javascript" src="include/js/creation_modules.js"></script>
             <script>
                 $(document).ready(function() {
                   <?php if(!empty($show_purchase_entry_id)) { ?>
+                    show_product("<?php echo $product_group; ?>")
+                    show_godown_magazine("<?php echo $product_group; ?>")
                     calcPurchaseEntrySubTotal();
                     CheckCharges();
                     getRateByTaxOption();
@@ -747,7 +855,7 @@
         <?php } ?>
         <?php
         $access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
@@ -796,11 +904,19 @@
                                     }
                                     else {
                                         echo '-';
-                                    }
-                                
+                                    } ?>
+                                    <div class="w-100 py-2">
+                                    <?php
+                                        if(!empty($list['creator_name'])) {
+                                            $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
+                                            echo " Creator : ". $list['creator_name'];
+                                        }
+                                    ?>                                        
+                                </div>
+                                <?php
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                            <br><span style="color: red;">Cancelled</span>
+                                            <span style="color: red;">Cancelled</span>
                                     <?php	
                                 }	 ?>
                             </td>
@@ -831,17 +947,20 @@
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                         <?php 
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $edit_action;
                                                 include('permission_action.php');
                                             }
+                                            ?>
+                                            <li><a class="dropdown-item" target="_blank" href="reports/rpt_purchase_entry_a4.php?view_purchase_entry_id=<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>">Print</a></li>
+                                            <?php
                                             if(empty($access_error) && empty($list['cancelled'])) {
                                             ?> 
                                             <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>');">Edit</a></li>
                                             <?php } ?>
                                             <?php 
                                                 $access_error = "";
-                                                if(!empty($loginner_id)) {
+                                                if(!empty($login_staff_id)) {
                                                     $permission_action = $delete_action;
                                                     include('permission_action.php');
                                                 }
@@ -873,11 +992,38 @@
 
     if(isset($_REQUEST['edit_id'])) 
     {
+
+        function combineAndSumUp ($myArray) {
+            $finalArray = Array ();
+            foreach ($myArray as $nkey => $nvalue) {
+                $has = false;
+                $fk = false;
+                foreach ($finalArray as $fkey => $fvalue) {
+                    if(($fvalue['location_id'] == $nvalue['location_id']) && ($fvalue['product_id'] == $nvalue['product_id']) && ($fvalue['subunit_contains'] == $nvalue['subunit_contains'])) {
+                        $has = true;
+                        $fk = $fkey;
+                        break;
+                    }
+                }
+    
+                if($has === false) {
+                    $finalArray[] = $nvalue;
+                } else {
+                    $finalArray[$fk]['product_id'] = $nvalue['product_id'];
+                    $finalArray[$fk]['location_id'] = $nvalue['location_id'];
+                    $finalArray[$fk]['subunit_contains'] = $nvalue['subunit_contains'];
+                    $finalArray[$fk]['quantity'] += $nvalue['quantity'];
+                }
+            }
+            return $finalArray;
+            // print_r($final_array);
+        }
+
         $bill_date = ""; $bill_date_error = ""; $purchase_entry_number = ""; $purchase_entry_number_error = "";$supplier_id = ""; $supplier_id_error = ""; $godown_id = array(); $godown_id_error = "";  $gst_option = ""; $gst_option_error = ""; $tax_type = ""; $tax_type_error = "";$tax_option = ""; $tax_option_error = ""; $product_ids = array(); $quantity = array(); $types = array();$contents = array();$total_qty = array();$rates = array(); $per = array(); $per_type =array(); $final_rate =array(); $product_amount =array();  $product_error = ""; $product_names = array();  $cgst_value = 0; $sgst_value = 0; $igst_value = 0; $round_off = ""; $sub_total = 0; $total_amount = 0; $total_tax_value = 0; $overall_tax ="";$unit_id = "";$unit_ids = array(); $unit_id_error =""; $selected_per =""; $selected_per_type =""; $selected_per_error =""; $selected_per_type_error =""; $gst_option =""; $product_tax =array();
-        $company_state = ""; $party_state = ""; $stock_unique_ids = array();$stockupdation = 0;
-        $per_rate =array();$other_charges_id = array(); $other_charges_names = array();
+        $company_state = ""; $party_state = ""; $stock_unique_ids = array();
+        $per_rate =array();$other_charges_id = array(); $other_charges_names = array(); $location_ids = ""; $location_names = array();
         $other_charges_values = array(); $charges_type = array(); $other_charges_total = array(); 
-        $valid_purchase = ""; $form_name = "purchase_entry_form"; $edit_id = "";
+        $valid_purchase = ""; $form_name = "purchase_entry_form"; $edit_id = ""; $product_group = ""; $product_group_error = ""; $location_type = ""; $location_type_error = "";
         $Vehicle_name = "";
         if(isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
@@ -888,6 +1034,9 @@
             $Vehicle_name = $_POST['Vehicle_name'];
             $Vehicle_name = trim($Vehicle_name);
         }
+        // if(strlen($Vehicle_name) > 15){
+
+        // }
         $Vehicle_name_error = $valid->valid_address($Vehicle_name, 'Vehicle_name', '');
         if(!empty($Vehicle_name_error)) {
             if(!empty($valid_purchase)) {
@@ -897,10 +1046,6 @@
                 $valid_purchase = $valid->error_display($form_name, 'Vehicle_name', $Vehicle_name_error, 'text');
             }
         }
-
-        if(isset($_POST['stockupdation'])){
-			$stockupdation = $_POST['stockupdation'];
-		}
 
         $bill_date = $_POST['bill_date'];
         $bill_date = trim($bill_date);
@@ -948,7 +1093,33 @@
             }
         }
 
-        if(isset($_POST['gst_option'])){
+        $product_group = $_POST['product_group'];
+        $product_group = trim($product_group);
+        $product_group_error = $valid->common_validation($product_group, 'Product Group', 'select');
+        
+        if(!empty($product_group_error)) {
+            if(!empty($valid_purchase)) {
+                $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'product_group', $product_group_error, 'select');
+            }
+            else {
+                $valid_purchase = $valid->error_display($form_name, 'product_group', $product_group_error, 'select');
+            }
+        }
+
+        $location_type = $_POST['location_type'];
+        $location_type = trim($location_type);
+        $location_type_error = $valid->common_validation($location_type, 'Location Type', 'select');
+        if(!empty($location_type_error)) {
+            if(!empty($valid_purchase)) {
+                $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'location_type', $location_type_error, 'select');
+            }
+            else {
+                $valid_purchase = $valid->error_display($form_name, 'location_type', $location_type_error, 'select');
+            }
+        }
+
+        if(isset($_POST['gst_option']))
+        {
             $gst_option = $_POST['gst_option'];
             $gst_option = trim($gst_option);
             $gst_option_error = $valid->common_validation($gst_option, 'GST option', 'select');
@@ -1013,29 +1184,29 @@
             $overall_tax = $GLOBALS['null_value']; 
         }
 
-        if(empty($edit_id)){
-            if(isset($_POST['godown_id']))
-            {
-                $godown_id = $_POST['godown_id'];
-                $godown_id = trim($godown_id);
-            }
+        // if(empty($edit_id)){
+        //     if(isset($_POST['godown_id']))
+        //     {
+        //         $godown_id = $_POST['godown_id'];
+        //         $godown_id = trim($godown_id);
+        //     }
           
-            $godown_id_error = $valid->common_validation($godown_id, 'godown', 'select');
+        //     $godown_id_error = $valid->common_validation($godown_id, 'godown', 'select');
 
-            if(!empty($godown_id_error)) {
-                if(!empty($valid_purchase)) {
-                    $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
-                }
-                else {
-                    $valid_purchase = $valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
-                }
-            }
-        }else{
-            if(isset($_POST['godown_id'])) {
-                $godown_id = $_POST['godown_id'];
-                $godown_id = trim($godown_id);
-            }
-        }
+        //     if(!empty($godown_id_error)) {
+        //         if(!empty($valid_purchase)) {
+        //             $valid_purchase = $valid_purchase." ".$valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
+        //         }
+        //         else {
+        //             $valid_purchase = $valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
+        //         }
+        //     }
+        // }else{
+        //     if(isset($_POST['godown_id'])) {
+        //         $godown_id = $_POST['godown_id'];
+        //         $godown_id = trim($godown_id);
+        //     }
+        // }
 
         if(isset($_POST['company_state'])) {
             $company_state = $_POST['company_state'];
@@ -1044,6 +1215,9 @@
         if(isset($_POST['party_state'])) {
             $party_state = $_POST['party_state'];
             $party_state = trim($party_state);
+        }
+        if(isset($_POST['location_id'])) {
+            $location_ids = $_POST['location_id'];
         }
         if(isset($_POST['product_id'])) {
             $product_ids = $_POST['product_id'];
@@ -1077,7 +1251,7 @@
         {
             $per_type = $_POST['entry_per_type'];
         }
-        $rate_per_cases =array(); $rate_per_pieces =array(); $final_rate =array(); $rate_per_unit =array();
+        $rate_per_cases =array(); $rate_per_pieces =array(); $final_rate =array(); $rate_per_unit =array(); $individual_stock = array();
         if(!empty($product_ids)) {
             for($i=0; $i < count($product_ids); $i++) {
                 $product_ids[$i] = trim($product_ids[$i]);
@@ -1087,134 +1261,158 @@
                     $product_name = "";
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'product_name');
                     $product_names[$i] = $product_name;
+
+                    if($product_group == "1"){
+                        $location_name = "";
+                        $location_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_ids[$i], 'godown_name');
+                        $location_names[$i] = $location_name;
+                    }
+                    else if($product_group == "2"){
+                        $location_name = "";
+                        $location_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
+                        $location_names[$i] = $location_name;
+                    }
                     // $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'unit_id');
                     $unit_ids[$i] = trim($unit_ids[$i]);
                     $unit_name = "";
                     $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
+                    $sub_unit_id = "";
+                    $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'subunit_id');
                     $unit_names[$i] = $unit_name; 
-                            if(!empty($edit_id) && $stockupdation =='1') {
-                                $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $godown_id,$brand_ids[$i],$product_ids[$i], $unit_ids[$i],'');
-                            }
-                            $quantity[$i] = trim($quantity[$i]);
-                            if(!empty($quantity[$i])) {
-                                if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) 
-                                {
-                                    $unit_types[$i] = trim($unit_types[$i]);
-                                    if(!empty($unit_types[$i])) {
-                                        $contents[$i] = trim($contents[$i]);
-                                        if(!empty($contents[$i])) {
-                                            if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $contents[$i]) && $contents[$i] <= 99999) 
+                    if(!empty($edit_id)) {
+                        if($product_group == "1"){
+                            $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $location_ids[$i],'',$product_ids[$i], $unit_ids[$i],'');
+                        }
+                        else if($product_group == "2"){
+                            $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, '', $location_ids[$i],$product_ids[$i], $unit_ids[$i],'');
+                        }
+                    }
+                    $quantity[$i] = trim($quantity[$i]);
+                    if(!empty($quantity[$i])) {
+                        if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) 
+                        {
+                            $unit_types[$i] = trim($unit_types[$i]);
+                            if(!empty($unit_types[$i])) {
+                                $contents[$i] = trim($contents[$i]);
+                                if(!empty($contents[$i]) || (empty($sub_unit_id) || $sub_unit_id == "NULL")) {
+                                    // if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $contents[$i]) && $contents[$i] <= 99999) 
+                                    // {
+                                        if($unit_types[$i] == '1' && $sub_unit_id != "NULL")
+                                        {
+                                            $total_qty[$i] = $quantity[$i] * $contents[$i];
+                                        }
+                                        else
+                                        {
+                                            $total_qty[$i] = $quantity[$i];
+                                        }
+
+                                        $rates[$i] = trim($rates[$i]);
+                                        if(!empty($rates[$i])) {
+                                            if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $rates[$i]) && $rates[$i] <= 99999) 
                                             {
-                                                if($unit_types[$i] == '1')
-                                                {
-                                                    $total_qty[$i] = $quantity[$i] * $contents[$i];
-                                                }
-                                                else
-                                                {
-                                                    $total_qty[$i] = $quantity[$i];
-                                                }
-    
-                                                $rates[$i] = trim($rates[$i]);
-                                                if(!empty($rates[$i])) {
-                                                    if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $rates[$i]) && $rates[$i] <= 99999) 
+                                                $per[$i] = trim($per[$i]);
+                                                if(!empty($per[$i])) {
+                                                    if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $per[$i]) && $per[$i] <= 99999) 
                                                     {
-                                                        $per[$i] = trim($per[$i]);
-                                                        if(!empty($per[$i])) {
-                                                            if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $per[$i]) && $per[$i] <= 99999) 
+                                                        $per_type[$i] = trim($per_type[$i]);
+                                                        if(!empty($per_type[$i])) {
+                                                            
+                                                            if($unit_types[$i] == '1')
                                                             {
-                                                                $per_type[$i] = trim($per_type[$i]);
-                                                                if(!empty($per_type[$i])) {
-                                                                    
-                                                                    if($unit_types[$i] == '1')
-                                                                    {
-                                                                        if($per_type[$i] == '1')
-                                                                        {
-                                                                            $rate_per_cases[$i] = $rates[$i]/$per[$i];
-                                                                            $final_rate[$i] = $rate_per_cases[$i];
-                                                                        }
-                                                                        elseif($per_type[$i] == '2')
-                                                                        {
-                                                                            $rate_per_pieces[$i] = $rates[$i]/$per[$i];
-                                                                            $final_rate[$i] = $rate_per_pieces[$i] * $contents[$i];
-                                                                        }
-                                                                    }
-                                                                    elseif($unit_types[$i] =='2')
-                                                                    {
-                                                                        if($per_type[$i] == '1')
-                                                                        {
-                                                                            $rate_per_cases[$i] = $rates[$i]/$per[$i];
-                                                                            $final_rate[$i] = $rate_per_cases[$i]/$contents[$i];
-                                                                        }
-                                                                        elseif($per_type[$i] == '2')
-                                                                        {
-                                                                            $final_rate[$i] = $rates[$i]/$per[$i];
-                                                                        }
-                                                                    }
-                                                                    if($gst_option == '1')
-                                                                    {
-                                                                        if($tax_option == '2')
-                                                                        {
-                                                                            $tax ="";
-                                                                            if($tax_type == '1')
-                                                                            {
-                                                                                $tax= $product_tax[$i];
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $tax = $overall_tax;
-                                                                            }
-                                                                            $tax = trim(str_replace("%", "",$tax));
-                                                                            $final_rate[$i] = $final_rate[$i]-($final_rate[$i] * $tax)/($tax + 100);
-                                                                        }
-                                                                    }
-                                                                    // echo $final_rate[$i];
-                                                                    if(!empty($final_rate[$i]) && !empty($quantity[$i]))
-                                                                    {
-                                                                        $rate_per_unit[$i] = $final_rate[$i];
-                                                                        $product_amount[$i] = $final_rate[$i] * $quantity[$i];
-                                                                    }
-                                                                    $sub_total += $product_amount[$i];
+                                                                if($per_type[$i] == '1')
+                                                                {
+                                                                    $rate_per_cases[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_cases[$i];
                                                                 }
-                                                                else {
-                                                                    $product_error = "Empty Per Type in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                                elseif($per_type[$i] == '2')
+                                                                {
+                                                                    $rate_per_pieces[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_pieces[$i] * $contents[$i];
                                                                 }
                                                             }
-                                                            else {
-                                                                $product_error = "Invalid per in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                            elseif($unit_types[$i] =='2')
+                                                            {
+                                                                if($per_type[$i] == '1')
+                                                                {
+                                                                    $rate_per_cases[$i] = $rates[$i]/$per[$i];
+                                                                    $final_rate[$i] = $rate_per_cases[$i]/$contents[$i];
+                                                                }
+                                                                elseif($per_type[$i] == '2')
+                                                                {
+                                                                    $final_rate[$i] = $rates[$i]/$per[$i];
+                                                                }
                                                             }
+                                                            if($gst_option == '1')
+                                                            {
+                                                                if($tax_option == '2')
+                                                                {
+                                                                    $tax ="";
+                                                                    if($tax_type == '1')
+                                                                    {
+                                                                        $tax= $product_tax[$i];
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        $tax = $overall_tax;
+                                                                    }
+                                                                    $tax = trim(str_replace("%", "",$tax));
+                                                                    if($tax == ""){
+                                                                        $tax = 0;
+                                                                    }
+                                                                    if($tax != ""){
+                                                                        $final_rate[$i] = $final_rate[$i]-($final_rate[$i] * $tax)/($tax + 100);
+                                                                    }
+                                                                }
+                                                            }
+                                                            // echo $final_rate[$i];
+                                                            if(!empty($final_rate[$i]) && !empty($quantity[$i]))
+                                                            {
+                                                                $rate_per_unit[$i] = $final_rate[$i];
+                                                                $product_amount[$i] = $final_rate[$i] * $quantity[$i];
+                                                            }
+                                                            $sub_total += $product_amount[$i];
                                                         }
                                                         else {
-                                                            $product_error = "Empty Per in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                            $product_error = "Empty Per Type in Product - ".($obj->encode_decode('decrypt', $product_name));
                                                         }
                                                     }
                                                     else {
-                                                        $product_error = "Invalid rate in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                        $product_error = "Invalid per in Product - ".($obj->encode_decode('decrypt', $product_name));
                                                     }
                                                 }
                                                 else {
-                                                    $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                                } 
-                                                
+                                                    $product_error = "Empty Per in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                }
                                             }
                                             else {
-                                                $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                                $product_error = "Invalid rate in Product - ".($obj->encode_decode('decrypt', $product_name));
                                             }
                                         }
                                         else {
-                                            $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                            $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
                                         } 
-                                    }
-                                    else {
-                                        $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                    }  
+                                        
+                                    // }
+                                    // else {
+                                    //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    // }
                                 }
                                 else {
-                                    $product_error = "Invalid quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                }
+                                    $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                } 
                             }
                             else {
-                                $product_error = "Empty quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
-                            }    
+                                $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
+                            }  
+                        }
+                        else {
+                            $product_error = "Invalid quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
+                        }
+                    }
+                    else {
+                        $product_error = "Empty quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
+                    }
+                    $individual_stock[] = array( 'location_id' => $location_ids[$i],'product_id' => $product_ids[$i],'subunit_contains' => $contents[$i],'quantity' => $quantity[$i]); 
                 }
                 else {
                     $product_error = "Invalid Product";
@@ -1296,6 +1494,7 @@
                 }
             }
         }
+     
     
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
@@ -1388,6 +1587,7 @@
         $result = "";
     
         
+    
         for($i=0;$i<count($product_ids);$i++)
         {
             for($j=$i+1;$j<count($product_ids);$j++)
@@ -1415,8 +1615,103 @@
 				}
             }
         }
+
+        if (!empty($edit_id) && empty($product_error)) {
+            $prev_stock_list = array();
+            $prev_stock_list = $obj->PrevStockList($edit_id);
+            if (!empty($prev_stock_list)) {
+                foreach ($prev_stock_list as $data) {
+                    $stock_id = "";
+                    $stock_godown_id = "";
+                    $stock_magazine_id = "";
+                    $stock_product_id = "";
+                    $stock_type = "";
+                    $inward_unit = 0;
+                    $inward_subunit = 0;
+                    $outward_unit = 0;
+                    $outward_subunit = 0;
+                    $stock_case_contains = 0;
+                    if (!empty($data['id']) && $data['id'] != $GLOBALS['null_value']) {
+                        $stock_id = $data['id'];
+                    }
+                    if (!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
+                        $stock_godown_id = $data['godown_id'];
+                    }
+                    if (!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
+                        $stock_case_contains = $data['case_contains'];
+                    }
+                    if (!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value']) {
+                        $stock_magazine_id = $data['magazine_id'];
+                    }
+                    if (!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                        $stock_product_id = $data['product_id'];
+                    }
+                    if (!empty($data['inward_unit']) && $data['inward_unit'] != $GLOBALS['null_value']) {
+                        $inward_unit = $data['inward_unit'];
+                    }
+                    if (!empty($data['inward_subunit']) && $data['inward_subunit'] != $GLOBALS['null_value']) {
+                        $inward_subunit = $data['inward_subunit'];
+                    }
+                    if(!empty($data['outward_unit']) && $data['outward_unit'] != $GLOBALS['null_value']) {
+                        $outward_unit = $data['outward_unit'];
+                    }
+                    if(!empty($data['outward_subunit']) && $data['outward_subunit'] != $GLOBALS['null_value']) {
+                        $outward_subunit = $data['outward_subunit'];
+                    }
+                  
+                    $current_stock_unit = 0;
+                    $current_stock_subunit = 0;
+                    $stock_table_unique_id = "";
+                    $stock_unique_table = "";
+                    // if($data['godown_id'] != $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']) {
+                        $stock_unique_table = $GLOBALS['stock_by_godown_table'];
+                    // } else if($data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] != $GLOBALS['null_value']) {
+                    //     $stock_unique_table = $GLOBALS['stock_by_magazine_table'];
+                    // }
+
+                    if($product_group == "1"){
+                        $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                        $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                        $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                    }
+                    else if($product_group == "2"){
+                        $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                        $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                        $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                    }
+
+                    // echo $stock_table_unique_id."/".$stock_unique_ids."*";
+                    if (!empty($current_stock_unit) && $current_stock_unit != $GLOBALS['null_value']) {
+                        $current_stock_unit = $current_stock_unit - $inward_unit;
+                    } else {
+                        $current_stock_unit = 0;
+                    }
+                    if (!empty($current_stock_subunit) && $current_stock_subunit != $GLOBALS['null_value']) {
+                        $current_stock_subunit = $current_stock_subunit - $inward_subunit;
+                    } else {
+                        $current_stock_subunit = $GLOBALS['null_value'];
+                    }
     
-        
+                    if (!in_array($stock_id, $stock_unique_ids)) {
+                        $columns = array();
+                        $values = array();
+                        $columns = array('deleted');
+                        $values = array('"1"');
+                        $stock_update_id = $obj->UpdateSQL($GLOBALS['stock_table'], $stock_id, $columns, $values, '');
+    
+                        if (preg_match("/^\d+$/", $stock_update_id)) {
+                            if (preg_match("/^\d+$/", $stock_table_unique_id)) {
+                                $columns = array(); $values = array();
+                                $columns = array('current_stock_unit', 'current_stock_subunit');
+                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
+                                $stock_table_update_id = $obj->UpdateSQL($GLOBALS['stock_by_godown_table'], $stock_table_unique_id, $columns, $values, '');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if(empty($valid_purchase) && empty($product_error) && empty($purchase_entry_error)) {
             $check_user_id_ip_address = 0;
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
@@ -1444,6 +1739,20 @@
                     $supplier_name = $GLOBALS['null_value'];
                     $supplier_name_mobile_city = $GLOBALS['null_value'];
                     $supplier_details = $GLOBALS['null_value'];
+                }
+
+                if(!empty($location_ids)) {
+                    $location_ids = array_reverse($location_ids);
+                    $location_ids = implode(",", $location_ids);
+                }else{
+                    $location_ids = $GLOBALS['null_value'];
+                }
+
+                if(!empty($location_names)) {
+                    $location_names = array_reverse($location_names);
+                    $location_names = implode(",", $location_names);
+                }else{
+                    $location_names = $GLOBALS['null_value'];
                 }
              
                 if(!empty($product_ids)) {
@@ -1614,13 +1923,13 @@
                     $received_slip_id = $GLOBALS['null_value'];
                 }
 
-                if(!empty($godown_id))
-                {
-                    $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id,'godown_name');
-                }
+                // if(!empty($godown_id))
+                // {
+                //     $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id,'godown_name');
+                // }
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
-                $stock_update = 0; $balance =0;
+                $stock_update = 0; $balance =0; $stockupdation = 1;
                 if(empty($edit_id)) {
                     if(empty($prev_bill_id)) {
                         $action = "";
@@ -1629,8 +1938,8 @@
                         }
                         $null_value = $GLOBALS['null_value'];
                         $columns = array(); $values = array();
-                        $columns = array('created_date_time', 'creator', 'creator_name','bill_company_id', 'bill_company_details', 'purchase_entry_id', 'purchase_entry_number', 'purchase_entry_date','supplier_id', 'supplier_name_mobile_city', 'supplier_details', 'vehicle', 'gst_option', 'tax_type', 'tax_option', 'company_state', 'supplier_state','godown_id','godown_name','product_id', 'product_name','quantity', 'unit_type', 'content', 'total_qty', 'rate','per','per_type','final_rate', 'product_amount','overall_tax', 'sub_total',  'other_charges_id', 'charges_type', 'other_charges_value', 'other_charges_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'total_amount','stockupdate','received_slip_id','unit_id','unit_name','product_tax','rate_per_unit', 'cancelled', 'deleted');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'","'".$bill_company_details."'",  "'".$null_value."'", "'".$purchase_entry_number."'", "'".$bill_date."'","'".$supplier_id."'", "'".$supplier_name_mobile_city."'", "'".$supplier_details."'", "'".$Vehicle_name."'",  "'".$gst_option."'", "'".$tax_type."'", "'".$tax_option."'", "'".$company_state."'", "'".$party_state."'","'".$godown_id."'","'".$godown_name."'", "'".$product_ids."'", "'".$product_names."'","'".$quantity."'", "'".$unit_types."'",  "'".$contents."'", "'".$total_qty."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$final_rate."'", "'".$product_amount."'","'".$overall_tax."'", "'".$sub_total."'",  "'".$other_charges_id."'", "'".$charges_type."'", "'".$other_charges_values."'", "'".$other_charges_total."'", "'".$cgst_value."'", "'".$sgst_value."'", "'".$igst_value."'", "'".$total_tax_value."'", "'".$round_off."'", "'".$total_amount."'", "'".$stockupdation."'","'".$received_slip_id."'","'".$unit_ids."'","'".$unit_names."'","'".$product_tax."'","'".$rate_per_unit."'", "'0'", "'0'");
+                        $columns = array('created_date_time', 'creator', 'creator_name','bill_company_id', 'bill_company_details', 'purchase_entry_id', 'purchase_entry_number', 'purchase_entry_date','supplier_id', 'supplier_name_mobile_city', 'supplier_details', 'vehicle', 'gst_option', 'tax_type', 'tax_option', 'company_state', 'supplier_state','product_id', 'product_name','quantity', 'unit_type', 'content', 'total_qty', 'rate','per','per_type','final_rate', 'product_amount','overall_tax', 'sub_total',  'other_charges_id', 'charges_type', 'other_charges_value', 'other_charges_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'total_amount','stockupdate','received_slip_id','unit_id','unit_name','product_tax','rate_per_unit', 'cancelled', 'deleted', 'location_id', 'location_type', 'product_group', 'location_name');
+                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'","'".$bill_company_details."'",  "'".$null_value."'", "'".$purchase_entry_number."'", "'".$bill_date."'","'".$supplier_id."'", "'".$supplier_name_mobile_city."'", "'".$supplier_details."'", "'".$Vehicle_name."'",  "'".$gst_option."'", "'".$tax_type."'", "'".$tax_option."'", "'".$company_state."'", "'".$party_state."'", "'".$product_ids."'", "'".$product_names."'","'".$quantity."'", "'".$unit_types."'",  "'".$contents."'", "'".$total_qty."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$final_rate."'", "'".$product_amount."'","'".$overall_tax."'", "'".$sub_total."'",  "'".$other_charges_id."'", "'".$charges_type."'", "'".$other_charges_values."'", "'".$other_charges_total."'", "'".$cgst_value."'", "'".$sgst_value."'", "'".$igst_value."'", "'".$total_tax_value."'", "'".$round_off."'", "'".$total_amount."'", "'".$stockupdation."'","'".$received_slip_id."'","'".$unit_ids."'","'".$unit_names."'","'".$product_tax."'","'".$rate_per_unit."'", "'0'", "'0'", "'".$location_ids."'", "'".$location_type."'", "'".$product_group."'", "'".$location_names."'");
                         $purchase_insert_id = $obj->InsertSQL($GLOBALS['purchase_entry_table'], $columns, $values,'purchase_entry_id', '', $action);
                         
                         if(preg_match("/^\d+$/", $purchase_insert_id)) {
@@ -1679,8 +1988,8 @@
                             }
                         
                             $columns = array(); $values = array();						
-                            $columns = array('creator_name','bill_company_details', 'purchase_entry_date','supplier_id', 'supplier_name_mobile_city', 'supplier_details', 'vehicle', 'gst_option', 'tax_type', 'tax_option', 'company_state', 'supplier_state','godown_id','godown_name','product_id', 'product_name','quantity', 'unit_type', 'content', 'total_qty','rate','per','per_type','final_rate','product_amount', 'overall_tax',  'sub_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'total_amount','unit_id','unit_name','other_charges_id', 'charges_type', 'other_charges_value', 'other_charges_total','product_tax','rate_per_unit');
-                            $values = array("'".$creator_name."'", "'".$bill_company_details."'", "'".$bill_date."'","'".$supplier_id."'", "'".$supplier_name_mobile_city."'", "'".$supplier_details."'", "'".$Vehicle_name."'", "'".$gst_option."'", "'".$tax_type."'", "'".$tax_option."'", "'".$company_state."'", "'".$party_state."'","'".$godown_id."'","'".$godown_name."'", "'".$product_ids."'", "'".$product_names."'","'".$quantity."'", "'".$unit_types."'",  "'".$contents."'", "'".$total_qty."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$final_rate."'", "'".$product_amount."'","'".$overall_tax."'", "'".$sub_total."'",  "'".$cgst_value."'", "'".$sgst_value."'", "'".$igst_value."'", "'".$total_tax_value."'", "'".$round_off."'", "'".$total_amount."'","'".$unit_ids."'","'".$unit_names."'", "'".$other_charges_id."'", "'".$charges_type."'", "'".$other_charges_values."'", "'".$other_charges_total."'","'".$product_tax."'","'".$rate_per_unit."'");   
+                            $columns = array('creator_name','bill_company_details', 'purchase_entry_date','supplier_id', 'supplier_name_mobile_city', 'supplier_details', 'vehicle', 'gst_option', 'tax_type', 'tax_option', 'company_state', 'supplier_state','product_id', 'product_name','quantity', 'unit_type', 'content', 'total_qty','rate','per','per_type','final_rate','product_amount', 'overall_tax',  'sub_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'total_amount','unit_id','unit_name','other_charges_id', 'charges_type', 'other_charges_value', 'other_charges_total','product_tax','rate_per_unit', 'location_id', 'location_type', 'product_group', 'location_name');
+                            $values = array("'".$creator_name."'", "'".$bill_company_details."'", "'".$bill_date."'","'".$supplier_id."'", "'".$supplier_name_mobile_city."'", "'".$supplier_details."'", "'".$Vehicle_name."'", "'".$gst_option."'", "'".$tax_type."'", "'".$tax_option."'", "'".$company_state."'", "'".$party_state."'","'".$product_ids."'", "'".$product_names."'","'".$quantity."'", "'".$unit_types."'",  "'".$contents."'", "'".$total_qty."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$final_rate."'", "'".$product_amount."'","'".$overall_tax."'", "'".$sub_total."'",  "'".$cgst_value."'", "'".$sgst_value."'", "'".$igst_value."'", "'".$total_tax_value."'", "'".$round_off."'", "'".$total_amount."'","'".$unit_ids."'","'".$unit_names."'", "'".$other_charges_id."'", "'".$charges_type."'", "'".$other_charges_values."'", "'".$other_charges_total."'","'".$product_tax."'","'".$rate_per_unit."'", "'".$location_ids."'", "'".$location_type."'", "'".$product_group."'", "'".$location_names."'");
                             $purchase_update_id = $obj->UpdateSQL($GLOBALS['purchase_entry_table'], $getUniqueID, $columns, $values, $action);
 
                             if(preg_match("/^\d+$/", $purchase_update_id)) {
@@ -1723,12 +2032,13 @@
                 }
 
                 if (!empty($stock_update) && $stock_update == 1) {
-                    if (!empty($godown_id) && !empty($product_ids) && !empty($quantity)) {
+                    if (!empty($location_ids) && !empty($product_ids) && !empty($quantity)) {
                         $product_id = explode(",", $product_ids);
                         $unit_type = explode(",", $unit_types);
                         $quantity = explode(",", $quantity);
                         $contents = explode(",", $contents);
-                        $remarks = $obj->encode_decode("encrypt", "Purchase Entry Stock");
+                        $location_id = explode(",", $location_ids);
+                        $remarks = $obj->encode_decode("encrypt", $purchase_entry_number);
                         for($i = 0; $i < count($product_id); $i++) {
                             $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_id[$i], '');
                             if(!empty($product_list)) {
@@ -1750,7 +2060,12 @@
                                 $unit_sub = $subunit_id;
                             }
 
-                            $stock_update_id = $obj->StockUpdate($GLOBALS['purchase_entry_table'], "In", $purchase_entry_id, '', $product_id[$i], $remarks, date('Y-m-d'), $godown_id, $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 1);
+                            if($product_group == "1"){
+                                $stock_update_id = $obj->StockUpdate($GLOBALS['purchase_entry_table'], "In", $purchase_entry_id, '', $product_id[$i], $remarks, date('Y-m-d'), $location_id[$i], $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 1);
+                            }
+                            else if($product_group == "2"){
+                                $stock_update_id = $obj->StockUpdate($GLOBALS['purchase_entry_table'], "In", $purchase_entry_id, '', $product_id[$i], $remarks, date('Y-m-d'), $location_id[$i], $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
+                            }
                         }
                     }
                 }
@@ -1775,5 +2090,123 @@
         }
         echo $result; exit;
 
+    }
+
+    if (isset($_REQUEST['delete_purchase_entry_id'])) {
+        $delete_purchase_entry_id = $_REQUEST['delete_purchase_entry_id'];
+        $msg = "";
+        if (!empty($delete_purchase_entry_id)) {
+            $purchase_unique_id = "";
+            $purchase_unique_id = $obj->getTableColumnValue($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $delete_purchase_entry_id, 'id');
+
+            $product_group = "";
+            $product_group = $obj->getTableColumnValue($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $delete_purchase_entry_id, 'product_group');
+
+            if (preg_match("/^\d+$/", $purchase_unique_id)) {
+                $action = "Purchase Entry Deleted. ";
+                
+                $prev_stock_list = array();
+                $tables = "";
+                $prev_stock_list = $obj->PrevStockList($delete_purchase_entry_id);
+                if (!empty($prev_stock_list)) {
+                    foreach ($prev_stock_list as $data) {
+                        $stock_godown_id = "";
+                        $stock_magazine_id = "";
+                        $stock_case_contains = "";
+                        $stock_purchase_entry_id = $delete_purchase_entry_id;
+                        $stock_id = "";
+                        if (!empty($data['id'])) {
+                            $stock_id = $data['id'];
+                        }
+                        if (!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
+                            $stock_godown_id = $data['godown_id'];
+                        }
+                        if (!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value']) {
+                            $stock_magazine_id = $data['magazine_id'];
+                        }
+                        if (!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
+                            $stock_case_contains = $data['case_contains'];
+                        }
+                        if (!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                            $stock_product_id = $data['product_id'];
+                        }
+                        if (!empty($data['inward_unit']) && $data['inward_unit'] != $GLOBALS['null_value']) {
+                            $inward_unit = $data['inward_unit'];
+                        }
+                        if (!empty($data['inward_subunit']) && $data['inward_subunit'] != $GLOBALS['null_value']) {
+                            $inward_subunit = $data['inward_subunit'];
+                        }
+                        if(!empty($data['outward_unit']) && $data['outward_unit'] != $GLOBALS['null_value']) {
+                            $outward_unit = $data['outward_unit'];
+                        }
+                        if(!empty($data['outward_subunit']) && $data['outward_subunit'] != $GLOBALS['null_value']) {
+                            $outward_subunit = $data['outward_subunit'];
+                        }
+                        if($data['godown_id'] != $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']) {
+                            $tables = $GLOBALS['stock_by_godown_table'];
+                        } else if($data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] != $GLOBALS['null_value']) {
+                            $tables = $GLOBALS['stock_by_magazine_table'];
+                        }
+                        $current_stock_unit = 0;
+                        $current_stock_subunit = 0;
+                        if($product_group == "1"){
+                            $current_stock_unit = $obj->getCurrentStockUnit($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                            $current_stock_subunit = $obj->getCurrentStockSubunit($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                            $stock_table_unique_id = "";
+                            $stock_table_unique_id = $obj->getStockTablesUniqueID($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                        }
+                        else if($product_group == "2"){
+                            $current_stock_unit = $obj->getCurrentStockUnit($tables, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                            $current_stock_subunit = $obj->getCurrentStockSubunit($tables, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                            $stock_table_unique_id = "";
+                            $stock_table_unique_id = $obj->getStockTablesUniqueID($tables, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                        }
+
+                        if(!empty($current_stock_unit) && $current_stock_unit != $GLOBALS['null_value']) {
+                            $current_stock_unit = $current_stock_unit - $inward_unit;
+                        }
+                        else {
+                            $current_stock_unit = 0;
+                        }
+                        if(!empty($current_stock_subunit) && $current_stock_subunit != $GLOBALS['null_value']) {
+                            $current_stock_subunit = $current_stock_subunit - $inward_subunit;
+                        }
+                        else {
+                            $current_stock_subunit = $GLOBALS['null_value'];
+                        }
+
+                        if (empty($current_stock_unit) && $current_stock_unit == $GLOBALS['null_value']) {
+                            $current_stock_unit = 0;
+                        }
+                        if (empty($current_stock_subunit) && $current_stock_subunit == $GLOBALS['null_value']) {
+                            $current_stock_subunit = $GLOBALS['null_value'];
+                        }
+                   
+                        $columns = array();
+                        $values = array();
+                        $columns = array('deleted');
+                        $values = array('"1"');
+                        $stock_update_id = $obj->UpdateSQL($GLOBALS['stock_table'], $stock_id, $columns, $values, '');
+
+                        if (preg_match("/^\d+$/", $stock_update_id)) {
+                            if (preg_match("/^\d+$/", $stock_table_unique_id)) {
+                                $columns = array(); $values = array();
+                                $columns = array('current_stock_unit', 'current_stock_subunit');
+                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
+                                $stock_table_update_id = $obj->UpdateSQL($GLOBALS['stock_by_godown_table'], $stock_table_unique_id, $columns, $values, '');
+                            }
+                        }
+                    }
+                }
+                $columns = array();
+                $values = array();
+                $columns = array('cancelled');
+                $values = array("'1'");
+                $msg = $obj->UpdateSQL($GLOBALS['purchase_entry_table'], $purchase_unique_id, $columns, $values, $action);
+               
+            }
+        }
+        echo $msg;
+        exit;
     }
     ?>

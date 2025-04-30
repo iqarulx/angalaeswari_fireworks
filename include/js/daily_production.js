@@ -686,11 +686,7 @@ function DeleteSemiFinishedInwardRow(row_index, id_name) {
 				if (jQuery('#'+id_name+row_index).length > 0) {
 					jQuery('#'+id_name+row_index).remove();
 				}
-				if (jQuery('#'+id_name+row_index).length == 0) {
-					if(jQuery('.Product_Fix_field').length > 0) {
-						jQuery('.Product_Fix_field').attr('disabled', false);
-					}
-				}
+			
                 if(id_name == 'product_row') {
 					if(jQuery('.product_row').length == 0) {
 						if(jQuery('select[name="category_id"]').length > 0) {
@@ -711,4 +707,3 @@ function DeleteSemiFinishedInwardRow(row_index, id_name) {
 		}
 	});
 }
-

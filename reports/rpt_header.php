@@ -10,9 +10,8 @@
     $company_list = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'company_details');
     if(!empty($company_list)){
         $company_details = $obj->encode_decode('decrypt',$company_list);
-        $company_details = explode("<br>", $company_details);
+        $company_details = explode("$$$", $company_details);
     }
-
     $bill_company_id = $GLOBALS['bill_company_id'];
     
     $pdf->SetY(10);
@@ -46,7 +45,7 @@
                     // $pdf->sety($rt);
                     $pdf->SetX(50);
                     $pdf->MultiCell(110, 4, $company_details[$i], 0, 'C');
-                    $end_y =$pdf->GetY();
+                      $end_y =$pdf->GetY();
                 }
             }
         }

@@ -419,7 +419,9 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
         $quantity_values[$p] = trim($quantity_values[$p]);
         $product_names[$p] = trim($product_names[$p]);
         $unit_names[$p] = trim($unit_names[$p]);
-        $case_contains[$p] = trim($case_contains[$p]);
+        if(!empty($case_contains[$p])) {
+            $case_contains[$p] = trim($case_contains[$p]);
+        }
 
     
         if (!empty($unit_names[$p])) {
@@ -441,7 +443,7 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
            
             $pdf->SetY($y);
             $pdf->SetX(98);
-            if($case_contains[$p] != $GLOBALS['null_value']){
+            if(!empty($case_contains[$p]) && $case_contains[$p] != $GLOBALS['null_value']){
 
                 $pdf->MultiCell(20, 6,$case_contains[$p], 0, 'R');
 

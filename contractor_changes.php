@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 	if(isset($_REQUEST['show_contractor_id'])) { 
 
         $show_contractor_id = $_REQUEST['show_contractor_id'];
@@ -28,7 +28,14 @@
                 }
             }
         }
-        $product_list = $obj->getProductWithGroup('semi finished', 'finished', '');
+        // $product_list = $obj->getProductWithGroup('semi finished', 'finished', '');
+        $rawmaterial_group_name = "raw material";
+        $rawmaterial_group_name = $obj->encode_decode('encrypt', $rawmaterial_group_name);
+        $rawmaterial_group_id = "";
+        if(!empty($rawmaterial_group_name)){
+            $rawmaterial_group_id = $obj->getTableColumnValue($GLOBALS['group_table'],'lower_case_name',$rawmaterial_group_name,'group_id');
+        }
+        $product_list = $obj->GetFinishedSemiFinishedProductList($rawmaterial_group_id);
         ?>
         <form class="poppins pd-20" name="contractor_form" method="POST">
 			<div class="card-header">
@@ -82,8 +89,8 @@
                                 <label>Opening Balance</label>
                                 <div class="input-group-append" style="width:40%!important;">
                                     <select name="opening_balance_type" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                        <option value="1" <?php if($opening_balance_type == '1') { echo "selected"; } ?>>Credit</option>
-                                        <option value="2" <?php if($opening_balance_type == '2') { echo "selected"; } ?>>Debit</option>
+                                        <option value="Credit" <?php if($opening_balance_type == 'Credit') { echo "selected"; } ?>>Credit</option>
+                                        <option value="Debit" <?php if($opening_balance_type == 'Debit') { echo "selected"; } ?>>Debit</option>
                                     </select>
                                 </div>
                             </div>
@@ -95,7 +102,7 @@
                 <div class="col-lg-3 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="product" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="GetProdetails();">
+                            <select class="select2 select2-danger" name="product" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="GetContractorProdetails();">
                                 <option value="">Select Product</option>
                                 <?php if (!empty($product_list)) {
                                     foreach ($product_list as $Pro_list) { ?>
@@ -375,6 +382,9 @@
                 $quantity[$i] = trim($quantity[$i]);
                 $rate[$i] = trim($rate[$i]);
 
+                if(!empty($edit_id)){
+                    $contractor_product_unique_ids[$i] = $obj->getContractorProductUniqueIds($edit_id, $product_id[$i], $unit_type[$i]);
+                }
                 if(empty($quantity[$i]) || $quantity[$i] == 0) {
                     $quantity_error = "";
                     $quantity_error = $valid->common_validation($quantity[$i], 'quantity', 'text');
@@ -421,17 +431,18 @@
         if (!empty($edit_id) && empty($product_error)) {
             $prev_product_list = array();
             $prev_product_list = $obj->getTableRecords($GLOBALS['contractor_product_table'],'contractor_id', $edit_id, '');
+
             if (!empty($prev_product_list)) {
                 foreach ($prev_product_list as $data) {
+                     $prev_id = "";  $prev_product_id = "";
                     if (!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                         $prev_product_id = $data['product_id'];
                     }
                     if (!empty($data['id']) && $data['id'] != $GLOBALS['null_value']) {
                         $prev_id = $data['id'];
                     }
-                   
-    
-                    if (!in_array($prev_product_id, $product_id)) {
+             
+                    if (!in_array($prev_id, $contractor_product_unique_ids)) {
                         $columns = array();
                         $values = array();
                         $columns = array('deleted');
@@ -444,7 +455,7 @@
     
 
         if(empty($valid_contractor) && empty($product_error)) {
-            $check_user_id_ip_address = "";
+            $check_user_id_ip_address = ""; $name_location = ""; $lowercase_name_location = "";
             $check_user_id_ip_address = $obj->check_user_id_ip_address();
 
             if (preg_match("/^\d+$/", $check_user_id_ip_address)) {
@@ -453,6 +464,7 @@
                 if (!empty($contractor_name)) {
                     $name_mobile_city = $contractor_name;        
                     $contractor_details = $name_mobile_city;
+                    $name_location = $contractor_name;
 
                     $lower_case_name = strtolower($contractor_name);
                     $contractor_name = $obj->encode_decode('encrypt', $contractor_name);
@@ -476,6 +488,10 @@
                     if(!empty($name_mobile_city)) {
                         $name_mobile_city = $name_mobile_city." (".$location.")";                       
                     }
+                    if(!empty($name_location)) {
+                        $name_location = $name_location." - ".$location;
+                        $lowercase_name_location = strtolower($name_location); 
+                    }
                     if(!empty($contractor_details)) {
                         $contractor_details = $contractor_details."$$$". $location;
                     }
@@ -487,7 +503,9 @@
                 if(!empty($contractor_details)) {
                     $contractor_details = $obj->encode_decode('encrypt', $contractor_details);
                 }
-
+                if(!empty($lowercase_name_location)) {
+                    $lowercase_name_location = $obj->encode_decode('encrypt', $lowercase_name_location);
+                }
                 if(!empty($name_mobile_city)) {
                     $name_mobile_city = $obj->encode_decode('encrypt',$name_mobile_city);                       
                 }
@@ -498,14 +516,30 @@
                     $opening_balance_type = $GLOBALS['null_value'];
                 }
 
-                $prev_contractor_id = "";
+                $prev_contractor_id = ""; $prev_mbl_contractor_id = ""; $prev_contractor_name = ""; $contractor_mbl_error = "";
                 $contractor_error = "";
-                if (!empty($lower_case_name)) {
-                    $prev_contractor_id = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'lower_case_name', $lower_case_name, 'contractor_id');
-                    if (!empty($prev_contractor_id)) {
-                        $contractor_error = "This contractor name already exists";
+                // if (!empty($lower_case_name)) {
+                //     $prev_contractor_id = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'lower_case_name', $lower_case_name, 'contractor_id');
+                //     if (!empty($prev_contractor_id)) {
+                //         $contractor_error = "This contractor name already exists";
+                //     }
+                
+                if(!empty($lowercase_name_location)) {
+                    $prev_contractor_id = $obj ->CheckContractorAlreadyExist($lowercase_name_location);
+                    if(!empty($prev_contractor_id)) {
+                        $contractor_error = "This Contractor already exists";
                     }
                 }
+
+                if(!empty($mobile)) {
+                    $prev_mbl_contractor_id = $obj ->CheckContractorMobileNoAlreadyExist($mobile);
+                    if(!empty($prev_mbl_contractor_id)) {
+                            $prev_contractor_name = $obj->getTableColumnValue($GLOBALS['contractor_table'],'contractor_id',$prev_mbl_contractor_id,'contractor_name');
+						    $prev_contractor_name = $obj->encode_decode("decrypt",$prev_contractor_name);
+                        $contractor_mbl_error =  "This mobile number is already exist in ".$prev_contractor_name;
+                    }
+                }
+
 
                 $bill_company_id = $GLOBALS['bill_company_id'];
                 $created_date_time = $GLOBALS['create_date_time_label'];
@@ -513,14 +547,14 @@
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
 
                 if (empty($edit_id)) {
-                    if (empty($prev_contractor_id)) {
+                    if (empty($prev_contractor_id) && empty($prev_mbl_contractor_id)) {
                         $action = "";
                         if (!empty($contractor_name)) {
                             $action = "New contractor Created - " . $obj->encode_decode("decrypt", $contractor_name);
                         }
                         $null_value = $GLOBALS['null_value'];
-                        $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'contractor_id', 'contractor_name', 'lower_case_name','mobile', 'location', 'name_mobile_city', 'opening_balance', 'opening_balance_type', 'contractor_details', 'deleted');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$null_value."'", "'".$contractor_name."'", "'".$lower_case_name."'", "'".$mobile."'", "'".$location."'",  "'".$name_mobile_city."'",  "'".$opening_balance."'",  "'".$opening_balance_type."'", "'".$contractor_details."'","'0'");
+                        $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'contractor_id', 'contractor_name', 'lower_case_name','mobile', 'location', 'name_mobile_city', 'opening_balance', 'opening_balance_type', 'contractor_details', 'lowercase_name_location','deleted');
+                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$null_value."'", "'".$contractor_name."'", "'".$lower_case_name."'", "'".$mobile."'", "'".$location."'",  "'".$name_mobile_city."'",  "'".$opening_balance."'",  "'".$opening_balance_type."'", "'".$contractor_details."'", "'".$lowercase_name_location."'","'0'");
                         $contractor_insert_id = $obj->InsertSQL($GLOBALS['contractor_table'], $columns, $values, 'contractor_id', '', $action);
                         if (preg_match("/^\d+$/", $contractor_insert_id)) {
                             $contractor_id = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'id', $contractor_insert_id, 'contractor_id');
@@ -586,99 +620,113 @@
                     } else {
                         if (!empty($contractor_error)) {
                             $result = array('number' => '2', 'msg' => $contractor_error);
+                        }else if(!empty($contractor_mbl_error)) {
+                            $result = array('number' => '2', 'msg' => $contractor_mbl_error);
                         }
                     }
                 } else {
-                    $getUniqueID = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $edit_id, 'id');
-                    if(preg_match("/^\d+$/", $getUniqueID)) {
-                        $action = "";
-                        if(!empty($name_mobile_city)) {
-                            $action = "contractor Updated. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
-                        }
-                    
-                        $columns = array(); $values = array();			
-                        $columns = array('contractor_name', 'lower_case_name','mobile', 'location', 'name_mobile_city', 'opening_balance', 'opening_balance_type', 'contractor_details','deleted');	
-                        $values = array("'".$contractor_name."'", "'".$lower_case_name."'", "'".$mobile."'", "'".$location."'", "'".$name_mobile_city."'", "'".$opening_balance."'", "'".$opening_balance_type."'", "'".$contractor_details."'","'0'");
+                    if(empty($prev_contractor_id) || $prev_contractor_id == $edit_id) {
+                        if(empty($prev_mbl_contractor_id) || $prev_mbl_contractor_id == $edit_id){
 
-                        $contractor_update_id = $obj->UpdateSQL($GLOBALS['contractor_table'], $getUniqueID, $columns, $values, $action);
-                        if(preg_match("/^\d+$/", $contractor_update_id)) {	
-                            for($i = 0; $i < count($product_id); $i++) {
+                            $getUniqueID = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $edit_id, 'id');
+                            if(preg_match("/^\d+$/", $getUniqueID)) {
+                                $action = "";
+                                if(!empty($name_mobile_city)) {
+                                    $action = "contractor Updated. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
+                                }
+                            
+                                $columns = array(); $values = array();			
+                                $columns = array('contractor_name', 'lower_case_name','mobile', 'location', 'name_mobile_city', 'opening_balance', 'opening_balance_type', 'contractor_details', 'lowercase_name_location','deleted');	
+                                $values = array("'".$contractor_name."'", "'".$lower_case_name."'", "'".$mobile."'", "'".$location."'", "'".$name_mobile_city."'", "'".$opening_balance."'", "'".$opening_balance_type."'", "'".$contractor_details."'", "'".$lowercase_name_location."'","'0'");
 
-                                if(empty($product_id[$i])) {
-                                    $product_id = $GLOBALS['null_value'];
-                                }
-                                if(empty($unit_id[$i])) {
-                                    $unit_id = $GLOBALS['null_value'];
-                                }
-                                if(empty($unit_name[$i])) {
-                                    $unit_name = $GLOBALS['null_value'];
-                                }
-                                if(empty($subunit_id[$i])) {
-                                    $subunit_id = $GLOBALS['null_value'];
-                                }
-                                if(empty($subunit_name[$i])) {
-                                    $subunit_name = $GLOBALS['null_value'];
-                                }
-                                if(empty($unit_type[$i])) {
-                                    $unit_type = $GLOBALS['null_value'];
-                                }
-                                if(empty($quantity[$i])) {
-                                    $quantity = $GLOBALS['null_value'];
-                                }
-                                if(empty($rate[$i])) {
-                                    $rate = $GLOBALS['null_value'];
-                                }
-                                $getUniqueID = $obj->getContractorKuliId( $edit_id, $product_id[$i], $unit_type[$i]);
-                                $rate_per_unit = 0; $rate_per_subunit = 0; 
-                                if($unit_type[$i] == 1){
-                                    $rate_per_unit = $rate[$i] / $quantity[$i];
-                                }else if($unit_type[$i] == 2){
-                                    $rate_per_subunit = $rate[$i] / $quantity[$i];
-                                }
-                                $group_id = "";
-                                $group_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_id[$i],'group_id');
+                                $contractor_update_id = $obj->UpdateSQL($GLOBALS['contractor_table'], $getUniqueID, $columns, $values, $action);
+                                if(preg_match("/^\d+$/", $contractor_update_id)) {	
+                                    for($i = 0; $i < count($product_id); $i++) {
 
-                                if(empty($getUniqueID)) {
-                                    $column = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'contractor_id', 'product_id', 'group_id','unit_id', 'subunit_id', 'unit_name', 'subunit_name', 'unit_type', 'quantity', 'rate',  'rate_per_unit', 'rate_per_subunit','deleted');
-                                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$edit_id."'", "'".$product_id[$i]."'", "'".$group_id."'", "'".$unit_id[$i]."'", "'".$subunit_id[$i]."'", "'".$unit_name[$i]."'", "'".$subunit_name[$i]."'", "'".$unit_type[$i]."'", "'".$quantity[$i]."'", "'".$rate[$i]."'", "'".$rate_per_unit."'", "'".$rate_per_subunit."'","'0'");
-                                    $contractor_product_update_id = $obj->InsertSQL($GLOBALS['contractor_product_table'], $column, $values, '', '', $action);
-                                } else {
-                                    $columns = array('product_id', 'group_id','unit_id', 'subunit_id', 'unit_name', 'subunit_name', 'unit_type', 'quantity', 'rate', 'rate_per_unit', 'rate_per_subunit', 'deleted');
+                                        if(empty($product_id[$i])) {
+                                            $product_id = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($unit_id[$i])) {
+                                            $unit_id = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($unit_name[$i])) {
+                                            $unit_name = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($subunit_id[$i])) {
+                                            $subunit_id = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($subunit_name[$i])) {
+                                            $subunit_name = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($unit_type[$i])) {
+                                            $unit_type = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($quantity[$i])) {
+                                            $quantity = $GLOBALS['null_value'];
+                                        }
+                                        if(empty($rate[$i])) {
+                                            $rate = $GLOBALS['null_value'];
+                                        }
+                                        $getUniqueID = $obj->getContractorKuliId( $edit_id, $product_id[$i], $unit_type[$i]);
+                                        $rate_per_unit = 0; $rate_per_subunit = 0; 
+                                        if($unit_type[$i] == 1){
+                                            $rate_per_unit = $rate[$i] / $quantity[$i];
+                                        }else if($unit_type[$i] == 2){
+                                            $rate_per_subunit = $rate[$i] / $quantity[$i];
+                                        }
+                                        $group_id = "";
+                                        $group_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_id[$i],'group_id');
 
-                                    $values = array("'" . $product_id[$i] . "'", "'".$group_id."'","'" . $unit_id[$i] . "'", "'" . $subunit_id[$i] . "'","'" . $unit_name[$i] . "'", "'" . $subunit_name[$i] . "'", "'" . $unit_type[$i] . "'", "'" . $quantity[$i] . "'", "'" . $rate[$i] . "'", "'".$rate_per_unit."'", "'".$rate_per_subunit."'","'0'"
-                                    );
-                                    $contractor_product_update_id = $obj->UpdateSQL($GLOBALS['contractor_product_table'], $getUniqueID, $columns, $values, $action);
+                                        if(empty($getUniqueID)) {
+                                            $column = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'contractor_id', 'product_id', 'group_id','unit_id', 'subunit_id', 'unit_name', 'subunit_name', 'unit_type', 'quantity', 'rate',  'rate_per_unit', 'rate_per_subunit','deleted');
+                                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$edit_id."'", "'".$product_id[$i]."'", "'".$group_id."'", "'".$unit_id[$i]."'", "'".$subunit_id[$i]."'", "'".$unit_name[$i]."'", "'".$subunit_name[$i]."'", "'".$unit_type[$i]."'", "'".$quantity[$i]."'", "'".$rate[$i]."'", "'".$rate_per_unit."'", "'".$rate_per_subunit."'","'0'");
+                                            $contractor_product_update_id = $obj->InsertSQL($GLOBALS['contractor_product_table'], $column, $values, '', '', $action);
+                                        } else {
+                                            $columns = array('product_id', 'group_id','unit_id', 'subunit_id', 'unit_name', 'subunit_name', 'unit_type', 'quantity', 'rate', 'rate_per_unit', 'rate_per_subunit', 'deleted');
+
+                                            $values = array("'" . $product_id[$i] . "'", "'".$group_id."'","'" . $unit_id[$i] . "'", "'" . $subunit_id[$i] . "'","'" . $unit_name[$i] . "'", "'" . $subunit_name[$i] . "'", "'" . $unit_type[$i] . "'", "'" . $quantity[$i] . "'", "'" . $rate[$i] . "'", "'".$rate_per_unit."'", "'".$rate_per_subunit."'","'0'"
+                                            );
+                                            $contractor_product_update_id = $obj->UpdateSQL($GLOBALS['contractor_product_table'], $getUniqueID, $columns, $values, $action);
+                                        }
+                                    }
+                                    if(preg_match("/^\d+$/", $contractor_product_update_id)) {	
+                                        $update_payment = 1;
+                                        $result = array('number' => '1', 'msg' => 'Updated Successfully');
+                                    }	
                                 }
+                                else {
+                                    $result = array('number' => '2', 'msg' => $contractor_update_id);
+                                }	
                             }
-                            if(preg_match("/^\d+$/", $contractor_product_update_id)) {	
-                                $update_payment = 1;
-                                $result = array('number' => '1', 'msg' => 'Updated Successfully');
-                            }	
+                        }else {
+                            if(!empty($contractor_mbl_error)) {
+                                $result = array('number' => '2', 'msg' => $contractor_mbl_error);
+                            }
                         }
-                        else {
-                            $result = array('number' => '2', 'msg' => $contractor_update_id);
-                        }		
-
+                    }else{
+                        if (!empty($contractor_error)) {
+                            $result = array('number' => '2', 'msg' => $contractor_error);
+                        }
                     }
                 }
 
                 if ($update_payment == 1) {
                     $bill_date = date("Y-m-d");
                     $bill_number = $GLOBALS['null_value'];
-                    $bill_type = "Contractor Opening Stock";
-                    $party_id = $GLOBALS['null_value'];
-                    $party_name = $GLOBALS['null_value'];
-                    $party_type = $GLOBALS['null_value'];
+                    $bill_type = "Contractor Opening Balance";
+                    $party_id = $contractor_id;
+                    $party_name = $contractor_name;
+                    $party_type = "Contractor";
                     $payment_mode_id = $GLOBALS['null_value'];
                     $payment_mode_name = $GLOBALS['null_value'];
                     $bank_id = $GLOBALS['null_value'];
                     $bank_name = $GLOBALS['null_value'];
                     $credit  = 0; $debit = 0; 
                     $balance_type = $GLOBALS['null_value'];
-                    if($opening_balance_type =='1'){
+                    if($opening_balance_type =='Credit'){
                         $credit  = $opening_balance; 
                         $balance_type = 'Credit';
-                    }else if($opening_balance_type =='2'){
+                    }else if($opening_balance_type =='Debit'){
                         $debit  = $opening_balance; 
                         $balance_type = 'Debit';
                     }
@@ -694,8 +742,22 @@
                     if(empty($opening_balance_type)){
                         $opening_balance_type = $GLOBALS['null_value'];
                     }
-                    $update_balance ="";
-                    $update_balance = $obj->UpdateBalance($contractor_id,$bill_number,$bill_date,$bill_type,$GLOBALS['null_value'],$GLOBALS['null_value'], $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$balance_type);
+                    if(!empty($opening_balance) && $opening_balance != $GLOBALS['null_value'] && !empty($opening_balance_type) && $open_balance_type != $GLOBALS['null_value']){
+
+                        $update_balance ="";
+                        $update_balance = $obj->UpdateBalance($contractor_id,$bill_number,$bill_date,$bill_type,$GLOBALS['null_value'],$GLOBALS['null_value'], $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$balance_type);
+                    }else{
+                        $payment_unique_id = "";
+                        $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
+                        if(preg_match("/^\d+$/", $payment_unique_id)) {
+                            $action = "Payment Deleted.";
+                        
+                            $columns = array(); $values = array();						
+                            $columns = array('deleted');
+                            $values = array("'1'");
+                            $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
+                        }
+                    }
                 }
             } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
@@ -778,7 +840,7 @@
         <?php } ?>
         <?php
             $access_error = "";
-            if(!empty($loginner_id)) {
+            if(!empty($login_staff_id)) {
                 $permission_action = $view_action;
                 include('permission_action.php');
             }
@@ -837,7 +899,7 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                 <?php 
                                                     $access_error = "";
-                                                    if(!empty($loginner_id)) {
+                                                    if(!empty($login_staff_id)) {
                                                         $permission_action = $edit_action;
                                                         include('permission_action.php');
                                                     }
@@ -847,7 +909,7 @@
                                                 <?php } ?>
                                                     <?php 
                                                         $access_error = "";
-                                                        if(!empty($loginner_id)) {
+                                                        if(!empty($login_staff_id)) {
                                                             $permission_action = $delete_action;
                                                             include('permission_action.php');
                                                         }

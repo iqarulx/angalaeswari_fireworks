@@ -1,10 +1,10 @@
 <?php
 	include("include.php");
 
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['agent_module'];
         }
     }
@@ -27,7 +27,7 @@
 		}
 
         $country = "India";$state = "";$district = "";$city = "";$agent_name = "";$mobile_number = "";$address = "";$pincode = "";$product_id="";$product_name="";$pincode = ""; $identification = ""; $opening_balance = "";$opening_balance_type = ""; $commission = "";
-    
+        $state = "Tamil Nadu";
         if(!empty($show_agent_id)){
             $agent_list = array();
             $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'agent_id',$show_agent_id,'');
@@ -390,7 +390,7 @@
                 }
             }
 			if(!empty($commission)) {
-				$commission_error = $valid->valid_number($commission, "commission", "1");
+				$commission_error = $valid->valid_percentage($commission, "commission", "1");
 
                 if($commission > 99) {
                     $commission_error = "Commission allowed lessthan 100%";
@@ -514,7 +514,12 @@
                         
                     }
                 }
-        
+                if(!empty($commission)){
+                    if(strpos($commission, "%") === false) {
+                        $commission = $commission.'%';
+                    }
+                }
+                
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);                
                 $balance = 0;
@@ -526,7 +531,7 @@
                         }
                         $null_value = $GLOBALS['null_value'];
                         $columns = array('created_date_time', 'creator', 'creator_name', 'agent_id', 'agent_name', 'mobile_number', 'name_mobile_city', 'address', 'state', 'district', 'city', 'agent_details','lower_case_name', 'others_city','opening_balance','opening_balance_type', 'commission', 'deleted');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$name."'", "'".$mobile_number."'", "'".$name_mobile_city."'", "'".$address."'", "'".$state."'", "'".$district."'", "'".$city."'", "'".$agent_details."'","'".$lower_case_name."'", "'".$others_city."'", "'".$opening_balance."'","'".$opening_balance_type."'", "'".$commission."%'","'0'");
+                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$name."'", "'".$mobile_number."'", "'".$name_mobile_city."'", "'".$address."'", "'".$state."'", "'".$district."'", "'".$city."'", "'".$agent_details."'","'".$lower_case_name."'", "'".$others_city."'", "'".$opening_balance."'","'".$opening_balance_type."'", "'".$commission."'","'0'");
                         $agent_insert_id = $obj->InsertSQL($GLOBALS['agent_table'], $columns, $values, 'agent_id', '', $action);
                         if(preg_match("/^\d+$/", $agent_insert_id)) {	
                             $balance = 1;
@@ -578,7 +583,7 @@
                     $bill_id = $agent_id; 
                     $bill_date = date("Y-m-d");
                     $bill_number = $GLOBALS['null_value'];
-                    $bill_type = "Agent Opening Stock";
+                    $bill_type = "Agent Opening Balance";
                     $party_id = $GLOBALS['null_value'];
                     $party_name = $GLOBALS['null_value'];
                     $party_type = 'Agent';
@@ -606,8 +611,22 @@
                     if(empty($opening_balance_type)){
                         $opening_balance_type = $GLOBALS['null_value'];
                     }
-                    $update_balance ="";
-                    $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
+                    if(!empty($opening_balance) && !empty($opening_balance_type)){
+
+                        $update_balance ="";
+                        $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
+                    }else{
+                        $payment_unique_id = "";
+                        $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
+                        if(preg_match("/^\d+$/", $payment_unique_id)) {
+                            $action = "Payment Deleted.";
+                        
+                            $columns = array(); $values = array();						
+                            $columns = array('deleted');
+                            $values = array("'1'");
+                            $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
+                        }
+                    }
                         
                 }
             }
@@ -691,12 +710,12 @@
             </div> <?php 
         }
 
-        $access_error = "";
-        if(!empty($loginner_id)) {
+        $view_access_error = "";
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
-        if(empty($access_error)) {  ?>
+        if(empty($view_access_error)) {  ?>
 
             <table class="table nowrap cursor text-center smallfnt">
                 <thead class="bg-light">
@@ -743,34 +762,43 @@
                                     } ?>
                                 </td>
                                 <td>
-                                    <div class="dropdown">
-                                        <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
-                                            $access_error = "";
-                                            if(!empty($loginner_id)) {
-                                                $permission_action = $edit_action;
-                                                include('permission_action.php');
-                                            }
-                                            if(empty($access_error)) { ?> 
-                                                <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>');"> <i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
-                                            } 
-                                            $access_error = "";
-                                            if(!empty($loginner_id)) {
-                                                $permission_action = $delete_action;
-                                                include('permission_action.php');
-                                            }
-                                            if(empty($access_error)) { 
-                                                $linked_count = 0;
-                                                if($linked_count > 0) { ?>
-                                                    <li><a class="dropdown-item"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php
-                                                } else { ?>
-                                                    <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php
-                                                }
-                                            } ?>
-                                        </ul>
-                                    </div> 
+                                    <?php
+                                        $edit_access_error = "";
+                                        if(!empty($login_staff_id)) {
+                                            $permission_action = $edit_action;
+                                            include('permission_action.php');
+                                        }
+                                        $delete_access_error = "";
+                                        if(!empty($login_staff_id)) {
+                                            $permission_action = $delete_action;
+                                            include('permission_action.php');
+                                        }
+                                        if(empty($edit_access_error) || empty($delete_access_error)) {
+                                            ?>
+                                            <div class="dropdown">
+                                                <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> 
+                                                    <?php 
+                                                        if(empty($edit_access_error)) { ?> 
+                                                            <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>');"> <i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
+                                                        } 
+                                                        if(empty($delete_access_error)) { 
+                                                            $linked_count = 0;
+                                                            if($linked_count > 0) { ?>
+                                                                <li><a class="dropdown-item"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php
+                                                            } 
+                                                            else { ?>
+                                                                <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php
+                                                            }
+                                                        } 
+                                                    ?>
+                                                </ul>
+                                            </div>
+                                            <?php
+                                        }
+                                    ?> 
                                 </td>
                             </tr> <?php 
                         } 

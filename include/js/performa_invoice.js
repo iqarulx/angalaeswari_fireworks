@@ -1258,8 +1258,8 @@ function AddproformaProducts(event) {
 
                 var selected_content = 0;
                 if (subunit_need == '1') {
-                    if (jQuery('input[name="selected_content"]').length > 0) {
-                        selected_content = jQuery('input[name="selected_content"]').val();
+                    if (jQuery('select[name="selected_content"]').length > 0) {
+                        selected_content = jQuery('select[name="selected_content"]').val();
                         selected_content = jQuery.trim(selected_content);
                         if (typeof selected_content == "undefined" || selected_content == "" || selected_content == 0) {
                             all_errors_check = (all_errors_check != '') ? all_errors_check + ", Content" : "Content";
@@ -1345,8 +1345,8 @@ function AddproformaProducts(event) {
                                 if (jQuery('input[name="selected_unit_type"]').length > 0) {
                                     jQuery('input[name="selected_unit_type"]').val('').trigger('change');
                                 }
-                                if (jQuery('input[name="selected_content"]').length > 0) {
-                                    jQuery('input[name="selected_content"]').val('');
+                                if (jQuery('select[name="selected_content"]').length > 0) {
+                                    jQuery('select[name="selected_content"]').val('').trigger('change');
                                 }
                                 if (jQuery('input[name="selected_subunit_need"]').length > 0) {
                                     jQuery('input[name="selected_subunit_need"]').val('');
@@ -1443,7 +1443,7 @@ function AddproformaProducts(event) {
 
 function CalProductAmount() {
     var quantity = jQuery('input[name="selected_quantity"]').val() || 0;
-    var content = jQuery('input[name="selected_content"]').val();
+    var content = jQuery('select[name="selected_content"]').val();
     var rate = jQuery('input[name="selected_sales_rate"]').val() || 0;
     var per = jQuery('input[name="selected_per"]').val() || 1;
     var unit_type = jQuery('select[name="selected_unit_type"]').val();
@@ -1897,6 +1897,7 @@ function GetProdetails() {
                     url: post_url, success: function (result) {
                         if (result != "") {
                             result = result.split("$$$");
+
                             if ($("select[name='selected_unit_type']").length > 0) {
                                 $("select[name='selected_unit_type']").html(result[0]);
                             }
@@ -1912,17 +1913,22 @@ function GetProdetails() {
                             if ($("input[name='selected_subunit_need']").length > 0) {
                                 $("input[name='selected_subunit_need']").val(result[4]);
                             }
+
                             if (result[4] == '1') {
                                 if (jQuery('.content_td').length > 0) {
                                     jQuery('.content_td').removeClass('d-none');
+
+                                    if (jQuery('select[name="selected_content"]').length > 0) {
+                                        if (result[7] != '') {
+                                            jQuery('select[name="selected_content"]').html(result[7])
+                                        }
+                                    }
                                 }
-                            }
-                            else {
+                            } else {
                                 if (jQuery('.content_td').length > 0) {
                                     jQuery('.content_td').addClass('d-none');
                                 }
                             }
-                            // window.globalVar = result[5].split("%%");
                         }
                     }
                 });

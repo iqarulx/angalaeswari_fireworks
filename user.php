@@ -49,7 +49,7 @@
                                             <div class="col-lg-2 col-md-2 col-3">
                                             <?php
                                                 $access_error = "";
-                                                if(!empty($loginner_id)) {
+                                                if(!empty($login_staff_id)) {
                                                     $permission_action = $add_action;
                                                     include('permission_action.php');
                                                 }

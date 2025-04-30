@@ -27,8 +27,8 @@
                 }
             }
         }
-
-        $access_pages_list = $GLOBALS['access_pages_list'];          
+        
+        $access_pages_list = $GLOBALS['access_pages_list'];     
 ?>
         <form class="poppins pd-20 redirection_form" name="role_form" method="POST">
 			<div class="card-header">
@@ -66,9 +66,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr class="bg-dark text-white text-center">
-                                    <td colspan="2">Creation</td>
-                                </tr> -->
                                 <?php				
                                     if(!empty($access_pages_list)) {
                                         foreach($access_pages_list as $module) {
@@ -78,7 +75,7 @@
                                                 $lower_case_module = str_replace(" ", "_", $lower_case_module);
                                                 $module_encrypted = "";
                                                 $module_encrypted = $obj->encode_decode('encrypt', $module);
-                                                $view_checkbox_value = 2; $add_checkbox_value = 2; $edit_checkbox_value = 2; $delete_checkbox_value = 2;
+                                                $view_checkbox_value = 2; $add_checkbox_value = 2; $edit_checkbox_value = 2; $delete_checkbox_value = 2; $convert_checkbox_value = 2;
                                                 $select_all_checkbox_value = 2;
 
                                                 $module_selected = 0; $module_action = array();
@@ -107,6 +104,10 @@
                                                             $delete_checkbox_value = 1;
                                                             $module_selected++;
                                                         }
+                                                        if(in_array($convert_action, $module_action)) {
+                                                            $convert_checkbox_value = 1;
+                                                            $module_selected++;
+                                                        }
                                                         if($module_selected == 4) {
                                                             $select_all_checkbox_value = 1;
                                                         }
@@ -133,6 +134,12 @@
                                                                 <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>" value="<?php if(!empty($add_checkbox_value)) { echo $add_checkbox_value; } ?>" <?php if(!empty($add_checkbox_value) && $add_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>');">
                                                                 <label class="form-check-label checkbox">
                                                                     Add
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check pe-3">
+                                                                <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>" value="<?php if(!empty($convert_checkbox_value)) { echo $convert_checkbox_value; } ?>" <?php if(!empty($convert_checkbox_value) && $convert_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>');">
+                                                                <label class="form-check-label checkbox">
+                                                                    Convert
                                                                 </label>
                                                             </div>
                                                             <div class="form-check pe-3">
@@ -209,9 +216,9 @@
 					$module_encrypted = "";
 					$module_encrypted = $obj->encode_decode('encrypt', $module);
 					$module_action = array(); 
-					$view_checkbox_value = 2; $add_checkbox_value = 2; $edit_checkbox_value = 2; $delete_checkbox_value = 2;
+					$view_checkbox_value = 2; $add_checkbox_value = 2; $convert_checkbox_value = 2; $edit_checkbox_value = 2; $delete_checkbox_value = 2;
 
-					$view_field = $module_encrypted."_view"; $add_field = $module_encrypted."_add"; $edit_field = $module_encrypted."_edit"; 
+					$view_field = $module_encrypted."_view"; $add_field = $module_encrypted."_add"; $convert_field = $module_encrypted."_convert"; $edit_field = $module_encrypted."_edit"; 
 					$delete_field = $module_encrypted."_delete";
 
 					if(isset($_POST[$view_field])) {
@@ -230,6 +237,14 @@
 					if($add_checkbox_value != 1 && $add_checkbox_value != 2) { $add_checkbox_value = 2; }
 					if($add_checkbox_value == 1) { 
 						$module_action[] = $add_action;
+					}
+                    if(isset($_POST[$convert_field])) {
+						$convert_checkbox_value = $_POST[$convert_field];
+						$convert_checkbox_value = trim($convert_checkbox_value);
+					}
+					if($convert_checkbox_value != 1 && $convert_checkbox_value != 2) { $convert_checkbox_value = 2; }
+					if($convert_checkbox_value == 1) { 
+						$module_action[] = $convert_action;
 					}
 					if(isset($_POST[$edit_field])) {
 						$edit_checkbox_value = $_POST[$edit_field];

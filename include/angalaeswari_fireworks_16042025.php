@@ -4,9 +4,9 @@
 		public $con;		
 		public function connect() {			
 			$servername = "localhost";
-			$username = "root";
-			$password = "";					
-			$this->db_name = "angalaeswari_fireworks_16042025";
+			$username = "subha2022";
+			$password = "TI8y[W360]^_";					
+			$this->db_name = "subha2022";
 			
 			try {
 			  $con = new PDO("mysql:host=$servername;dbname=".$this->db_name.";charset=utf8", $username, $password);
@@ -17,6 +17,7 @@
 			catch(PDOException $e) {
 			  echo "Connection failed: " . $e->getMessage();
 			}
+			
 		}	
 	}
 ?>

@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {

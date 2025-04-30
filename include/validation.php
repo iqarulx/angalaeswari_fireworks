@@ -90,24 +90,24 @@
 			return $result;
 		}
 				
-		public function valid_name_text($field_value, $field_name, $required) {
-			$result = "";
-			$field_value = trim($field_value);
-			if(!empty($field_value)) {
-				$result = $this->common_validation($field_value, $field_name, '');
-				if(empty($result)) {
-					if(!preg_match("/^[a-zA-Z][a-z A-Z\s\&\.]+$/", $field_value)) {
-						$result = "Invalid ".$field_name;
-					}
-				}
-			}
-			else {
-				if($required == 1) {
-					$result = "Enter the ".$field_name;
-				}
-			}
-			return $result;
-		}
+		// public function valid_name_text($field_value, $field_name, $required) {
+		// 	$result = "";
+		// 	$field_value = trim($field_value);
+		// 	if(!empty($field_value)) {
+		// 		$result = $this->common_validation($field_value, $field_name, '');
+		// 		if(empty($result)) {
+		// 			if(!preg_match("/^[a-zA-Z][a-z A-Z\s\&\.]+$/", $field_value)) {
+		// 				$result = "Invalid ".$field_name;
+		// 			}
+		// 		}
+		// 	}
+		// 	else {
+		// 		if($required == 1) {
+		// 			$result = "Enter the ".$field_name;
+		// 		}
+		// 	}
+		// 	return $result;
+		// }
 
 
 		public function valid_name($field_value, $field_name, $required) {
@@ -640,7 +640,26 @@
 			}
 			return $result;
 		}	
-		
+
+		public function valid_name_text($field_value, $field_name, $required) {
+			$result = "";
+			$field_value = trim($field_value);
+			if(!empty($field_value)) {
+				$result = $this->common_validation($field_value, $field_name, '');
+				if(empty($result)) {
+                    if(!preg_match("/^[a-zA-Z][a-zA-Z\s\&\.\,\'\-]+$/", $field_value)) {
+						$result = "Invalid ".$field_name;
+					}
+				}
+			}
+			else {
+				if($required == 1) {
+					$result = "Enter the ".$field_name;
+				}
+			}
+			return $result;
+		}
+
 		public function error_display($form_name, $field, $error, $type) {
 			$result = "";
 			if(!empty($error)) {

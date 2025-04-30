@@ -2,7 +2,23 @@
 	$page_title = "Contractor";
 	include("include_user_check.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
+
+    $login_staff_id = "";
+    if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
+        if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $permission_module = $GLOBALS['contractor_module'];
+            include("permission_check.php");
+        }
+    }
+
+    $contractor_list = array(); $contractor_count = 0;
+    $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+    if(!empty($contractor_list)){
+        $contractor_count = count($contractor_list);
+    }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,12 +42,28 @@
                                         <div class="row justify-content-end p-2">
                                             <div class="col-lg-3 col-md-4 col-6">
                                                 <div class="input-group">
-                                                    <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" onkeyup="table_listing_records_filter();">
+                                                    <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search By Name / Mbl No" aria-label="Search" aria-describedby="basic-addon2" onkeyup="table_listing_records_filter();">
                                                     <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                                 </div>
                                             </div>
+                                            <?php if($contractor_count > 0) { ?>
+                                                    <button class="btn btn-success py-2mx-2" style="font-size:12px; width:140px;" type="button" onclick="Javascript:ExcelDownload();"> <i class="fa fa-cloud-download"></i> Excel Download </button>
+                                                    <button class="btn btn-primary py-2 mx-2" style="font-size:12px; width:75px;" type="button" onclick="Javascript:PrintAgent('');"> <i class="fa fa-print"></i> Print </button>
+                                                <?php
+                                                } ?>
                                             <div class="col-lg-2 col-md-2 col-4">
-                                                <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
+                                                <?php
+                                                    $add_access_error = "";
+                                                    if(!empty($login_staff_id)) {
+                                                        $permission_action = $add_action;
+                                                        include('permission_action.php');
+                                                    }
+                                                    if(empty($add_access_error)) { 
+                                                        ?>
+                                                        <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
+                                                        <?php 
+                                                    }
+                                                ?>
                                             </div>
                                                 <div class="col-sm-6 col-xl-8">
                                                     <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
@@ -56,4 +88,20 @@
         $("#contractor").addClass("active");
         table_listing_records_filter();
     });
+</script>
+
+<script type="text/javascript">
+    function ExcelDownload() {
+        var search_text = ""; var url = ""; 
+        search_text = jQuery('input[name="search_text"]').val();
+        url = "contractor_download.php?search_text="+search_text;
+        window.open(url,'_blank');
+    }
+    
+    function PrintAgent(from) {
+        var search_text = ""; var url = ""; 
+        search_text = jQuery('input[name="search_text"]').val();
+        url = "reports/rpt_contractor_a5.php?search_text="+search_text+"&from="+from;
+        window.open(url,'_blank');
+    }
 </script>

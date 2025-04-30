@@ -1,4 +1,5 @@
 // JavaScript Document
+var price_regex = /^(\d*\.)?\d+$/;
 function CheckPassword(field_name) {
 
 	var password = "";
@@ -83,11 +84,12 @@ function CustomCheckboxToggle(obj, toggle_id) {
 					toggle_id = toggle_id.replace('add', '');
 					toggle_id = toggle_id.replace('edit', '');
 					toggle_id = toggle_id.replace('delete', '');
+					toggle_id = toggle_id.replace('convert', '');
 					toggle_id = jQuery.trim(toggle_id);
 					var checkbox_cover = toggle_id + "cover";
 					//console.log('checkbox_cover - '+checkbox_cover+', checbox count - '+jQuery('#'+checkbox_cover).find('input[type="checkbox"]').length);
 					if (jQuery('#' + checkbox_cover).find('input[type="checkbox"]').length > 0) {
-						var view_checkbox = toggle_id + "view"; var add_checkbox = toggle_id + "add"; var edit_checkbox = toggle_id + "edit";
+						var view_checkbox = toggle_id + "view"; var add_checkbox = toggle_id + "add"; var edit_checkbox = toggle_id + "edit"; var convert_checkbox = toggle_id + "convert";
 						var delete_checkbox = toggle_id + "delete"; var select_count = 0; var select_all_checkbox = toggle_id + "select_all";
 						//console.log('add_checkbox - '+add_checkbox+', edit_checkbox - '+edit_checkbox+', delete_checkbox - '+delete_checkbox+', select_all_checkbox - '+select_all_checkbox);
 						var view_count = 0;
@@ -104,6 +106,10 @@ function CustomCheckboxToggle(obj, toggle_id) {
 							view_count = parseInt(view_count) + 1;
 						}
 						if (jQuery('#' + delete_checkbox).prop('checked') == true) {
+							select_count = parseInt(select_count) + 1;
+							view_count = parseInt(view_count) + 1;
+						}
+						if (jQuery('#' + convert_checkbox).prop('checked') == true) {
 							select_count = parseInt(select_count) + 1;
 							view_count = parseInt(view_count) + 1;
 						}
@@ -167,7 +173,6 @@ function SelectAllModuleActionToggle(obj, toggle_id) {
 	});
 }
 function FormSubmit(event, form_name, submit_page, redirection_page) {
-
 	event.preventDefault();
 	if (jQuery('div.alert').length > 0) {
 		jQuery('div.alert').remove();
@@ -353,6 +358,14 @@ function SaveModalContent(event, form_name, post_send_file, redirection_file) {
 		jQuery.ajax({
 			url: post_url, success: function (check_login_session) {
 				if (check_login_session == 1) {
+					if ($(".purchase_entry_table tbody").find("tr").length > 0) {
+						if ($("select[name='location_type']").length > 0) {
+							$("select[name='location_type']").attr("disabled", false)
+						}
+						if ($("select[name='product_group']").length > 0) {
+							$("select[name='product_group']").attr("disabled", false)
+						}
+					}
 					SendModalContent(form_name, post_send_file, redirection_file);
 				}
 				else {
@@ -416,22 +429,40 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 				}, 1000);
 			}
 			if (x.number == '2') {
-				if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
-					if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
-						jQuery('.Product_Fix_field').attr('disabled', true);
+				// if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
+				// 	if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
+				// 		jQuery('.Product_Fix_field').attr('disabled', true);
+				// 	}
+				// }
+				if ($(".purchase_entry_table tbody").find("tr").length > 0) {
+					if ($("select[name='location_type']").length > 0) {
+						$("select[name='location_type']").attr("disabled", true)
+					}
+					if ($("select[name='product_group']").length > 0) {
+						$("select[name='product_group']").attr("disabled", true)
 					}
 				}
+
 				jQuery('form[name="' + form_name + '"]').find('.row:first').before('<div class="alert alert-danger"> ' + x.msg + ' </div>');
 				if (jQuery('form[name="' + form_name + '"]').find('.submit_button').length > 0) {
 					jQuery('form[name="' + form_name + '"]').find('.submit_button').attr('disabled', false);
 				}
 			}
 			if (x.number == '3') {
-				if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
-					if (jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
-						jQuery('.Product_Fix_field').attr('disabled', true);
+				// if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').length > 0) {
+				// 	if(jQuery('form[name="' + form_name + '"]').find('input[name="Product_Fix_field"]').val() != "") {
+				// 		jQuery('.Product_Fix_field').attr('disabled', true);
+				// 	}
+				// }
+				if ($(".purchase_entry_table tbody").find("tr").length > 0) {
+					if ($("select[name='location_type']").length > 0) {
+						$("select[name='location_type']").attr("disabled", true)
+					}
+					if ($("select[name='product_group']").length > 0) {
+						$("select[name='product_group']").attr("disabled", true)
 					}
 				}
+
 				jQuery('form[name="' + form_name + '"]').append('<div class="valid_error"> <script type="text/javascript"> ' + x.msg + ' </script> </div>');
 				if (jQuery('form[name="' + form_name + '"]').find('.submit_button').length > 0) {
 					jQuery('form[name="' + form_name + '"]').find('.submit_button').attr('disabled', false);

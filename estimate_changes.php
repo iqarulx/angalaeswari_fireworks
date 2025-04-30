@@ -1,5 +1,5 @@
 <?php
-    include("include_files.php");
+    include("include.php");
 
     if(isset($_REQUEST['show_estimate_id'])) { 
         $show_estimate_id = $_REQUEST['show_estimate_id'];
@@ -365,7 +365,7 @@
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
                                 <label for="FormSelectDefault" class="form-label text-muted smallfnt">GST  ON / OFF</label>
-                                <input id="gst_option" class="form-check-input code-switcher" name="gst_option" value="<?php if($gst_option == '1'){ echo $gst_option; } ?>" <?php if($gst_option == '1'){ ?>checked<?php } ?> type="checkbox" id="FormSelectDefault">
+                                <input id="gst_option" class="form-check-input code-switcher" name="gst_option" onchange="Javascript:ShowGST(this,this.value);" value="<?php if($gst_option == '1'){ echo $gst_option; } ?>" <?php if($gst_option == '1'){ ?>checked<?php } ?> type="checkbox" id="FormSelectDefault">
                             </div>
                         </div>
                     </div> 
@@ -389,7 +389,7 @@
                             <label>Tax Option</label>
                         </div>
                     </div> 
-                </div> 
+                </div>
                 <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2 tax_cover <?php if($gst_option !='1'){?>d-none<?php } ?>">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -490,15 +490,12 @@
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
                                                     }
-                                                    elseif($unit_types[$i] == '2')
-                                                    {
+                                                    elseif($unit_types[$i] == '2') {
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
-                                                        
                                                     }
 
-                                                    if(!empty($unit_name) && $unit_name !='NULL')
-                                                    {
+                                                    if(!empty($unit_name) && $unit_name !='NULL') {
                                                         echo $unit_name = $obj->encode_decode("decrypt",$unit_name);
                                                     }
                                                     ?>
@@ -512,8 +509,8 @@
                                                     <input type="hidden" name="old_quantity[]" class="form-control shadow-none" value="<?php if(!empty($old_quantity[$i])) { echo $old_quantity[$i]; } ?>">
                                                     </th>
                                                 <th class="text-center px-2 py-2">
-                                                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
-                                                    <?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>
+                                                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i]) && $contents[$i] != "NULL") { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
+                                                    <?php if(!empty($contents[$i]) && $contents[$i] != "NULL") { echo $contents[$i]; } ?>
                                                 </th>
                                                 <td>
                                                     <div class="form-group mb-1">
@@ -544,6 +541,22 @@
                                                                     <option value="12%" <?php if($product_tax[$i] == "12%") {?> selected <?php } ?> >12%</option>
                                                                     <option value="18%" <?php if($product_tax[$i] == "18%") {?> selected <?php } ?> >18%</option>
                                                                     <option value="28%" <?php if($product_tax[$i] == "28%") {?> selected <?php } ?> >28%</option>
+                                                                </select>
+                                                                <label>Select Tax</label>
+                                                            </div>
+                                                        </div> 
+                                                    </td>
+                                                <?php } else { ?>
+                                                    <td class="tax_element d-none">
+                                                        <div class="form-group">
+                                                            <div class="form-label-group in-border mb-0">
+                                                                <select class="select2 select2-danger" name="product_tax[]" data-dropdown-css-class="select2-danger" style="width: 100%;"  onchange="ProductRowCheck(this);">
+                                                                    <option value="">Select Tax</option>
+                                                                    <option value="0%">0%</option>
+                                                                    <option value="5%">5%</option>
+                                                                    <option value="12%">12%</option>
+                                                                    <option value="18%">18%</option>
+                                                                    <option value="28%">28%</option>
                                                                 </select>
                                                                 <label>Select Tax</label>
                                                             </div>
@@ -751,7 +764,7 @@
         $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $old_quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array(); $other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
        
         // Doubles
-        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0; $sub_total = 0; $total_tax_value = 0;
+        $total_amount = 0; $round_off = 0; $grand_total = 0; $total_unit_qty = 0; $sub_total = 0; $total_tax_value = 0; $cgst_value = 0; $sgst_value = 0; $igst_value = 0;
        
         // Statics
         $form_name = "estimate_form"; $current_date = date('Y-m-d'); 
@@ -1082,13 +1095,19 @@
                                                                     }
                                                                 }
                                                                 if($gst_option == '1') {
-                                                                    if($tax_option == '2') {
-                                                                        $tax ="";
-                                                                        if($tax_type == '1') {
-                                                                            $tax= $product_tax[$i];
+                                                                    
+                                                                    $tax = "";
+                                                                    if($tax_type == '1') {
+                                                                        if(!empty($product_tax[$i])) {
+                                                                            $tax = $product_tax[$i];
                                                                         } else {
-                                                                            $tax = $overall_tax;
+                                                                            $product_error = "Select Tax for product - ".($obj->encode_decode('decrypt', $product_name));
                                                                         }
+                                                                    } else {
+                                                                        $tax = $overall_tax;
+                                                                    }
+
+                                                                    if($tax_option == '2') {
                                                                         $tax = trim(str_replace("%", "",$tax));
                                                                         $final_rate[$i] = $final_rate[$i]-($final_rate[$i] * $tax)/($tax + 100);
                                                                     }
@@ -1200,6 +1219,12 @@
                     }
                 }
             }
+        }
+
+        if(!empty($other_charges_total)) {
+            $other_charges_total = array_sum($other_charges_total);
+        } else {
+            $other_charges_total = 0;
         }
     
         $total_amount = number_format((float)$total_amount, 2, '.', '');
@@ -1442,12 +1467,6 @@
                 } else {
                     $other_charges_values = $GLOBALS['null_value'];
                 }
-                
-                if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
-                    $other_charges_total = implode(",", $other_charges_total);
-                } else {
-                    $other_charges_total = $GLOBALS['null_value'];
-                }
                      
                 if(!empty($charges_total_amounts)) {
                     $charges_total_amounts = implode(",", $charges_total_amounts);
@@ -1455,10 +1474,7 @@
                     $charges_total_amounts = $GLOBALS['null_value'];
                 }
 
-                $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
-                $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
-                $bill_company_id = $GLOBALS['bill_company_id'];
-                $null_value = $GLOBALS['null_value'];
+                $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator']; $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']); $bill_company_id = $GLOBALS['bill_company_id']; $null_value = $GLOBALS['null_value']; $balance = 0; $estimate_insert_id = "";
 
                 if(empty($edit_id)) {
                     $action = "";
@@ -1467,12 +1483,13 @@
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'estimate_id', 'estimate_number', 'estimate_date', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $estimate_date . "'", "'" . $delivery_slip_id . "'", "'" . $delivery_slip_number . "'", "'" . $delivery_slip_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'", "'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'estimate_id', 'estimate_number', 'estimate_date', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $estimate_date . "'", "'" . $delivery_slip_id . "'", "'" . $delivery_slip_number . "'", "'" . $delivery_slip_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'", "'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'", "'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
 
                     $estimate_insert_id = $obj->InsertSQL($GLOBALS['estimate_table'], $columns, $values, 'estimate_id', 'estimate_number', $action);
 
                     if(preg_match("/^\d+$/", $estimate_insert_id)) {
+                        $balance = 1;
                         $result = array('number' => '1', 'msg' => 'Estimate Successfully Created','redirection_page'=> 'estimate.php');
                     } else {
                         $result = array('number' => '2', 'msg' => $estimate_insert_id);
@@ -1489,19 +1506,89 @@
                         }
 
                         $columns = array(); $values = array();		
-                        $columns = array('estimate_date', 'gst_option', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total');
-                        $values = array("'" . $estimate_date . "'", "'" . $gst_option . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'");
-
+                        $columns = array('estimate_date', 'gst_option', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission','sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total');
+                        $values = array("'" . $estimate_date . "'", "'" . $gst_option . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'", "'" . $agent_commission . "'", "'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'");
                         $estimate_update_id = $obj->UpdateSQL($GLOBALS['estimate_table'], $getUniqueID, $columns, $values, $action);
 
                         if(preg_match("/^\d+$/", $estimate_update_id)) {
+                            $balance = 1;
                             $result = array('number' => '1', 'msg' => 'Estimate Updated Successfully','redirection_page'=> 'estimate.php');
-                        }
-                        else {
+                        } else {
                             $result = array('number' => '2', 'msg' => $estimate_update_id);
                         }							
                     }
                 }
+
+                $balance = 1;
+                if(!empty($balance) && $balance == 1) {
+                    $bill_id = ""; $bill_number = ""; $bill_date = date('Y-m-d'); $credit  = 0; $debit = 0; $bill_type = "Estimate";
+
+                    $debit = $total_amount; 
+                    $opening_balance_type = 'Debit';
+                    if(empty($credit)){
+                        $credit = 0;
+                    }
+                    if(empty($debit)) {
+                        $debit = 0;
+                    }
+                    if(empty($opening_balance)){
+                        $opening_balance = 0;
+                    }
+                    if(empty($opening_balance_type)){
+                        $opening_balance_type = $GLOBALS['null_value'];
+                    }
+
+                    if(empty($edit_id)){
+                        if(!empty($estimate_insert_id)) {
+                            $estimate_number = "";
+                            $estimate_number = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'id', $estimate_insert_id, 'estimate_number');
+
+                            $estimate_id = "";
+                            $estimate_id = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'id', $estimate_insert_id, 'estimate_id');   
+                            
+                            if(!empty($estimate_id)) {
+                                $bill_id = $estimate_id;
+                            }
+                            if(!empty($estimate_number)) {
+                                $bill_number = $estimate_number;
+                            }
+                        }
+                    } else {
+                        $estimate_number = "";
+                        $estimate_number = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'estimate_id', $edit_id, 'estimate_number');
+                        if(!empty($edit_id)) {
+                            $bill_id = $edit_id;
+                        }
+                        if(!empty($estimate_number)) {
+                            $bill_number = $estimate_number;
+                        }
+                    }
+
+                    $customer_name = "";
+                    $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'customer_name');
+
+                    if(!empty($agent_id)) {
+                        $agent_name = "";
+                        $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_name');
+
+                        $agent_commission = "";
+                        $agent_commission = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'commission');
+
+                        if(!empty($agent_commission)) {
+                            $commission_percent = str_replace("%", "", $agent_commission);
+                            $commission_percent = floatval($commission_percent);
+                            $commission_amount = ($total_amount * $commission_percent) / 100;
+
+                            if(!empty($commission_amount)) {
+                                $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type,  $agent_id, $agent_name, $GLOBALS['null_value'], $GLOBALS['null_value'],'Agent', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $commission_amount, $opening_balance_type);
+                            }
+                        }
+                    }
+
+                    $update_balance = "";                    
+                    $update_balance = $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type, $GLOBALS['null_value'], $GLOBALS['null_value'], $customer_id, $customer_name, 'Customer', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $debit, $opening_balance_type);
+                }
+
             } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
@@ -1666,20 +1753,29 @@
                             </td>
 
                             <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                        <li>
-                                            <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Edit</a>
-                                        </li>
-                                            
-                                        <li>
-                                            <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Delete</a>
-                                        </li>  
-                                    </ul>
-                                </div>
+                                <?php 
+                                    if($show_bill == 0){
+                                        ?>
+                                        <div class="dropdown">
+                                            <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_estimate_a4.php?estimate_id=<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>')">PDF</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Edit</a>
+                                                </li>
+                                                    
+                                                <li>
+                                                    <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Delete</a>
+                                                </li>  
+                                            </ul>
+                                        </div>
+                                        <?php
+                                    }
+                                ?>
                             </td>
                         </tr>
                         
@@ -1708,6 +1804,13 @@
                 $estimate_number = "";
                 $estimate_number = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'estimate_id', $delete_estimate_id, 'estimate_number');
     
+                $payment_unique_id = "";
+                $payment_unique_id = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $delete_estimate_id, 'id');
+
+                if(!empty($payment_unique_id)) {
+                    $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, array('deleted'), array("'1'"), "Payment Deleted");
+                }
+
                 $action = "";
                 if(!empty($estimate_number)) {
                     $action = "Estimate Deleted. Name - " . $estimate_number;

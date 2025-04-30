@@ -1,17 +1,19 @@
 <?php
-    if(!empty($loginner_id) && !empty($permission_module) && !empty($permission_action)) {
+    if(!empty($login_staff_id) && !empty($permission_module) && !empty($permission_action)) {
+        $check_role_id = "";
+        $check_role_id = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $login_staff_id, 'role_id');
         $access_page_permission = 0;
-        $access_page_permission = $obj->CheckStaffAccessPage($loginner_id, $permission_module);
+        $access_page_permission = $obj->CheckRoleAccessPage($check_role_id, $permission_module);
         if(!empty($access_page_permission) && $access_page_permission == 1) {
-            $user_list = array();
-            $user_list = $obj->getTableRecords($GLOBALS['user_table'], 'user_id', $loginner_id, '');
-            if(!empty($user_list)) {
-                foreach($user_list as $user) {
-                    if(!empty($user['access_pages'])) {
-                        $access_pages = explode(",", $user['access_pages']);
+            $role_list = array();
+            $role_list = $obj->getTableRecords($GLOBALS['role_table'], 'role_id', $check_role_id, '');
+            if(!empty($role_list)) {
+                foreach($role_list as $role) {
+                    if(!empty($role['access_pages'])) {
+                        $access_pages = explode(",", $role['access_pages']);
                     }
-                    if(!empty($user['access_page_actions'])) {
-                        $access_page_actions = explode(",", $user['access_page_actions']);
+                    if(!empty($role['access_page_actions'])) {
+                        $access_page_actions = explode(",", $role['access_page_actions']);
                     }
                 }
             }
@@ -33,6 +35,9 @@
                     }
                     else if($permission_action == $add_action) {
                         $add_access_error = "You don't get permission to add ".strtolower($permission_module);
+                    }
+                    else if($permission_action == $convert_action) {
+                        $convert_access_error = "You don't get permission to convert ".strtolower($permission_module);
                     }
                     else if($permission_action == $edit_action) {
                         $edit_access_error = "You don't get permission to edit ".strtolower($permission_module);

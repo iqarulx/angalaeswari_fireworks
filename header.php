@@ -16,64 +16,76 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<?php
-    $sidebar_admin_user = 0; $login_user_id = ""; $login_user_name = ""; $login_type = "";
-    $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_category = 0; $sidebar_unit = 0; $sidebar_group = 0;
-    $sidebar_product = 0; $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_supplier = 0; $sidebar_contractor = 0;
-    $sidebar_outsourceparty = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_expense_category = 0; $sidebar_expense = 0; 
-    $sidebar_inward_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0;
-    // $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_estimate = 0;
-    $sidebar_sales_invoice = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_report = 0; 
-    if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'])) {
-        $login_user_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
-        $login_user_name = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $login_user_id, 'name');
-        $login_type = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'];
-        if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] == $GLOBALS['admin_user_type']) {
-            $sidebar_admin_user = 1;
+    <?php
+        $company_count = 0;
+        $company_count = $obj->CompanyCount();
+
+        $sidebar_admin_user = 0;
+        $login_user_name = ""; $login_user_type = ""; $login_role_id = ""; $login_role_name = "";
+        $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_group = 0; $sidebar_unit = 0; $sidebar_product = 0; $sidebar_supplier = 0; $sidebar_contractor = 0; $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_transport = 0; $sidebar_charges = 0; $sidebar_purchase_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0; $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_delivery_slip = 0; $sidebar_estimate = 0; $sidebar_expense_category = 0; $sidebar_expense_entry = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_reports = 0;
+        if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
+            $login_user_name = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'], 'name');
+            if(!empty($login_user_name) && $login_user_name != $GLOBALS['null_value']) {
+                $login_user_name = $obj->encode_decode('decrypt', $login_user_name);
+            }
+            $login_role_id = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'], 'role_id');
+            if(!empty($login_role_id) && $login_role_id != $GLOBALS['null_value']) {
+                $login_role_name = $obj->getTableColumnValue($GLOBALS['role_table'], 'role_id', $login_role_id, 'role_name');
+                if(!empty($login_role_name) && $login_role_name != $GLOBALS['null_value']) {
+                    $login_role_name = $obj->encode_decode('decrypt', $login_role_name);
+                }
+            }
+            else {
+                $login_role_name = "Super Admin";
+            }
         }
-        else {
-            // if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['magazine_user_type'] && $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['godown_user_type']) {
-            //     $sidebar_factory = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['factory_module']);
-            // }
-            // if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['magazine_user_type']) {
-            //     $sidebar_godown = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['godown_module']);
-            // }
-            // if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['godown_user_type']) {
-            //     $sidebar_magazine = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['magazine_module']);
-            // }
-            $sidebar_category = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['category_module']);
-            $sidebar_unit = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['unit_module']);
-            $sidebar_group = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['group_module']);
-            $sidebar_product = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['product_module']);
-            $sidebar_transport = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['transport_module']);
-            $sidebar_agent = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['agent_module']);
-            $sidebar_customer = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['customer_module']);
-            $sidebar_supplier = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['supplier_module']);
-            $sidebar_contractor = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['contractor_module']);
-            // $sidebar_outsourceparty = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['outsourceparty_module']);
-            $sidebar_payment_mode = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['payment_mode_module']);
-            $sidebar_bank = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['bank_module']);
-            // $sidebar_expense_category = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['expense_category_module']);
-            // $sidebar_expense = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['expense_module']);
-            // if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['magazine_user_type']) {
-            //     $sidebar_inward_entry = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['inward_entry_module']);
-            //     $sidebar_consumption_entry = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['consumption_entry_module']);
-                $sidebar_semifinished_inward = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['semifinished_inward_module']);
-            // }
-            // if($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] != $GLOBALS['godown_user_type']) {
-                $sidebar_daily_production = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['daily_production_module']);
-                $sidebar_proforma_invoice = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['proforma_invoice_module']);
-            //     $sidebar_estimate = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['estimate_module']);
-            //     $sidebar_sales_invoice = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['sales_invoice_module']);
-            // }
-            // $sidebar_stock_adjustment = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['stock_adjustment_module']);
-            // $sidebar_material_transfer = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['material_transfer_module']);
-            // $sidebar_voucher = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['voucher_module']);
-            // $sidebar_receipt = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['receipt_module']);
-            // $sidebar_report = $obj->CheckStaffAccessPage($login_user_id, $GLOBALS['report_module']);
+        if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'])) {
+            $login_user_type = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'];
         }
-    }
-?>
+        if($company_count > 0) {
+            if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'])) {
+                if($login_user_type == $GLOBALS['admin_user_type']) {
+                    $sidebar_admin_user = 1;
+                }
+                else if($login_user_type == $GLOBALS['staff_user_type']) {
+                    $staff_id = "";
+                    if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
+                        $staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+                    }
+                    if(!empty($staff_id)) {
+                        $sidebar_factory = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['factory_module']);
+                        $sidebar_godown = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['godown_module']);
+                        $sidebar_magazine = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['magazine_module']);
+                        $sidebar_group = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['group_module']);
+                        $sidebar_unit = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['unit_module']);
+                        $sidebar_product = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['product_module']);
+                        $sidebar_supplier = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['supplier_module']);
+                        $sidebar_contractor = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['contractor_module']);
+                        $sidebar_agent = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['agent_module']);
+                        $sidebar_customer = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['customer_module']);
+                        $sidebar_payment_mode = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['payment_mode_module']);
+                        $sidebar_bank = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['bank_module']);
+                        $sidebar_transport = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['transport_module']);
+                        $sidebar_charges = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['charges_module']);
+                        $sidebar_purchase_entry = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['purchase_entry_module']);
+                        $sidebar_consumption_entry = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['consumption_entry_module']);
+                        $sidebar_daily_production = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['daily_production_module']);
+                        $sidebar_stock_adjustment = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['stock_adjustment_module']);
+                        $sidebar_semifinished_inward = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['semifinished_inward_module']);
+                        $sidebar_material_transfer = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['material_transfer_module']);
+                        $sidebar_proforma_invoice = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['proforma_invoice_module']);
+                        $sidebar_delivery_slip = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['delivery_slip_module']);
+                        $sidebar_estimate = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['estimate_module']);
+                        $sidebar_expense_category = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['expense_category_module']);
+                        $sidebar_expense_entry = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['expense_entry_module']);
+                        $sidebar_voucher = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['voucher_module']);
+                        $sidebar_receipt = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['receipt_module']);
+                        $sidebar_reports = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['reports_module']);
+                    }
+                }
+            }
+        }
+    ?>
 <div id="layout-wrapper">
     <header id="page-topbar">
         <div class="layout-width">
@@ -138,18 +150,18 @@
                             </form>
                         </div>
                     </div> -->
-                    <div class="ms-1 header-item d-none d-sm-flex">
+                    <div class="ms-1 header-item d-none">
                         <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-toggle="fullscreen">
                             <i class='bi bi-fullscreen fs-18'></i>
                         </button>
                     </div>
 
-                    <div class="ms-1 header-item d-none d-sm-flex">
+                    <div class="ms-1 header-item d-none">
                         <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
                             <i class='bi bi-moon-stars fs-18'></i>
                         </button>
                     </div>
-                    <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
+                    <div class="dropdown topbar-head-dropdown ms-1 header-item d-none" id="notificationDropdown">
                         <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                             <i class='bi bi-bell-fill fs-18'></i>
                             <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
@@ -274,20 +286,24 @@
                                 <img class="rounded-circle header-profile-user" src="images/avatar-1.jpg" alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
                                     <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text smallfnt">
-                                        <?php 
-                                            if(!empty($login_user_name) && ($login_user_name != $GLOBALS['null_value'])) {
-                                                echo $obj->encode_decode('decrypt', $login_user_name);
-                                            } 
+                                        <?php
+                                            if(!empty($login_user_name) && $login_user_name != $GLOBALS['null_value']) {
+                                                echo $login_user_name;
+                                            }
                                         ?>
                                     </span>
-                                    <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text"><?php echo $login_type; ?></span>
+                                    <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
+                                        <?php
+                                            if(!empty($login_role_name) && $login_role_name != $GLOBALS['null_value']) {
+                                                echo $login_role_name;
+                                            }
+                                        ?>
+                                    </span>
                                 </span>
                             </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <!-- item-->
-                            <h6 class="dropdown-header">Welcome Anna!</h6>
-                            <a class="dropdown-item" href="#"><i class="bi bi-person-circle text-muted fs-14 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
                             <a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right text-muted fs-14 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
                         </div>
                     </div>
@@ -351,34 +367,31 @@
                             <i class="bi bi-speedometer"></i> <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#admin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="creation">
-                            <i class="bi bi-person-circle"></i> <span>Admin</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="admin">
-                            <ul class="nav nav-lg flex-column">
-                            <?php
-                            $company_count = 0;
-                            $company_count = $obj->CompanyCount();
-                             if(!empty($sidebar_admin_user) && $sidebar_admin_user == '1') {
-                                if(!empty($company_count) && $company_count > 0) { ?>
-                                    <li class="nav-item" id="role">
-                                        <a href="role.php" class="nav-link"><i class="bi bi-dash"></i> Role </a>
-                                    </li>
-                                <?php } ?>
-                                <li class="nav-item" id="company">
-                                    <a href="company.php" class="nav-link"><i class="bi bi-dash"></i> Company </a>
-                                </li>
-                                <li class="nav-item" id="user">
-                                    <a href="user.php" class="nav-link"><i class="bi bi-dash"></i> User </a>
-                                </li>
-                            <?php } ?>
-                            </ul>
-                        </div>
-                    </li>
-                    <?php 
-                      if(!empty($company_count) && $company_count > 0 ){
-                         if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1')) { ?>
+                    <?php if($login_user_type == $GLOBALS['admin_user_type']) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#admin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="admin">
+                                <i class="bi bi-person-circle"></i> <span>Admin</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="admin">
+                                <ul class="nav nav-sm flex-column">
+                                    <?php if($login_user_type == $GLOBALS['admin_user_type']) { ?>
+                                        <li class="nav-item" id="company">
+                                            <a href="company.php" class="nav-link"><i class="bi bi-dash"></i> Company </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1')){ ?>
+                                        <li class="nav-item" id="role">
+                                            <a href="role.php" class="nav-link"><i class="bi bi-dash"></i> Role </a>
+                                        </li>
+                                        <li class="nav-item" id="user">
+                                            <a href="user.php" class="nav-link"><i class="bi bi-dash"></i> User </a>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php } ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1') || (!empty($sidebar_group) && $sidebar_group == '1') || (!empty($sidebar_unit) && $sidebar_unit == '1') || (!empty($sidebar_product) && $sidebar_product == '1') || (!empty($sidebar_supplier) && $sidebar_supplier == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1') || (!empty($sidebar_agent) && $sidebar_agent == '1') || (!empty($sidebar_customer) && $sidebar_customer == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#creation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="company">
                                 <i class="bi bi-folder-plus"></i> <span>Creation</span>
@@ -400,20 +413,9 @@
                                             <a href="magazine.php" class="nav-link"><i class="bi bi-dash"></i><span>Magazine</span></a>
                                         </li>
                                     <?php } ?>
-                                 
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_group) && $sidebar_group == '1')) { ?>
                                         <li class="nav-item" id="group">
                                             <a href="group.php" class="nav-link"><i class="bi bi-dash"></i><span>Group</span></a>
-                                        </li>
-                                    <?php } ?>
-                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1')) { ?>
-                                        <li class="nav-item" id="payment_mode">
-                                            <a href="payment_mode.php" class="nav-link"><i class="bi bi-dash"></i><span>Payment Mode</span></a>
-                                        </li>
-                                    <?php } ?>
-                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1')) { ?>
-                                        <li class="nav-item" id="bank">
-                                            <a href="bank.php" class="nav-link"><i class="bi bi-dash"></i><span>Bank</span></a>
                                         </li>
                                     <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_unit) && $sidebar_unit == '1')) { ?>
@@ -421,17 +423,6 @@
                                             <a href="unit.php" class="nav-link"><i class="bi bi-dash"></i><span>Unit</span></a>
                                         </li>
                                     <?php } ?>
-                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
-                                        <li class="nav-item" id="charges">
-                                            <a href="charges.php" class="nav-link"><i class="bi bi-dash"></i><span>Charges</span></a>
-                                        </li>
-                                    <?php } ?>
-                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1')) { ?>
-                                    <li class="nav-item" id="transport">
-                                        <a href="transport.php" class="nav-link"><i class="bi bi-dash"></i><span>Transport</span></a>
-                                    </li>
-                                    <?php } ?>
-
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_product) && $sidebar_product == '1')) { ?>
                                         <li class="nav-item" id="product">
                                             <a href="product.php" class="nav-link"><i class="bi bi-dash"></i><span>Product</span></a>
@@ -457,91 +448,131 @@
                                             <a href="customer.php" class="nav-link"><i class="bi bi-dash"></i><span>Customer</span></a>
                                         </li>
                                     <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1')) { ?>
+                                        <li class="nav-item" id="payment_mode">
+                                            <a href="payment_mode.php" class="nav-link"><i class="bi bi-dash"></i><span>Payment Mode</span></a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1')) { ?>
+                                        <li class="nav-item" id="bank">
+                                            <a href="bank.php" class="nav-link"><i class="bi bi-dash"></i><span>Bank</span></a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1')) { ?>
+                                    <li class="nav-item" id="transport">
+                                        <a href="transport.php" class="nav-link"><i class="bi bi-dash"></i><span>Transport</span></a>
+                                    </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
+                                        <li class="nav-item" id="charges">
+                                            <a href="charges.php" class="nav-link"><i class="bi bi-dash"></i><span>Charges</span></a>
+                                        </li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </li>
-                    <?php } 
-                    }?>
-                  <?php  if(!empty($company_count) && $company_count > 0 ){ ?>
+                    <?php } ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_purchase_entry) && $sidebar_purchase_entry == '1') || (!empty($sidebar_consumption_entry) && $sidebar_consumption_entry == '1') || (!empty($sidebar_daily_production) && $sidebar_daily_production == '1') || (!empty($sidebar_stock_adjustment) && $sidebar_stock_adjustment == '1') || (!empty($sidebar_semifinished_inward) && $sidebar_semifinished_inward == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#factoryentry" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="creation">
                                 <i class="bi bi-cart-plus-fill"></i> <span>Factory Entry</span>
                             </a>
                             <div class="collapse menu-dropdown" id="factoryentry">
                                 <ul class="nav nav-lg flex-column">
-                                    <li class="nav-item" id="purchaseentry">
-                                        <a href="purchase_entry.php" class="nav-link"><i class="bi bi-dash"></i>Purchase Entry </a>
-                                    </li>
-                                    <li class="nav-item" id="consumptionentry">
-                                        <a href="consumption_entry.php" class="nav-link"><i class="bi bi-dash"></i>Consumption Entry</a>
-                                    </li>
-                                    <li class="nav-item" id="dailyproduction">
-                                        <a href="daily_production.php" class="nav-link"><i class="bi bi-dash"></i>Daily Production</a>
-                                    </li>
-                                    <li class="nav-item" id="stockadjustment">
-                                        <a href="stock_adjustment.php" class="nav-link"><i class="bi bi-dash"></i>Stock Adjustment </a>
-                                    </li>
-                                    <li class="nav-item" id="semifinishedinward">
-                                        <a href="semifinished_inward.php" class="nav-link"><i class="bi bi-dash"></i>Semi Finished Inward </a>
-                                    </li>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_purchase_entry) && $sidebar_purchase_entry == '1')) { ?>
+                                        <li class="nav-item" id="purchaseentry">
+                                            <a href="purchase_entry.php" class="nav-link"><i class="bi bi-dash"></i>Purchase Entry </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_consumption_entry) && $sidebar_consumption_entry == '1')) { ?>
+                                        <li class="nav-item" id="consumptionentry">
+                                            <a href="consumption_entry.php" class="nav-link"><i class="bi bi-dash"></i>Consumption Entry</a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_daily_production) && $sidebar_daily_production == '1')) { ?>
+                                        <li class="nav-item" id="dailyproduction">
+                                            <a href="daily_production.php" class="nav-link"><i class="bi bi-dash"></i>Daily Production</a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_stock_adjustment) && $sidebar_stock_adjustment == '1')) { ?>
+                                        <li class="nav-item" id="stockadjustment">
+                                            <a href="stock_adjustment.php" class="nav-link"><i class="bi bi-dash"></i>Stock Adjustment </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_semifinished_inward) && $sidebar_semifinished_inward == '1')) { ?>
+                                        <li class="nav-item" id="semifinishedinward">
+                                            <a href="semifinished_inward.php" class="nav-link"><i class="bi bi-dash"></i>Semi Finished Inward </a>
+                                        </li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </li>
                     <?php } ?>
-                  <?php  if(!empty($company_count) && $company_count > 0 ){ ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_material_transfer) && $sidebar_material_transfer == '1')) { ?>
                         <li class="nav-item" id="materialtransfer">
                             <a class="nav-link menu-link" href="material_transfer.php">
                                 <i class="bi bi-arrow-left-right"></i><span>Material Transfer</span>
                             </a>
                         </li>
                     <?php } ?>
-                    <?php  if(!empty($company_count) && $company_count > 0 ){ ?>
-
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_proforma_invoice) && $sidebar_proforma_invoice == '1') || (!empty($sidebar_delivery_slip) && $sidebar_delivery_slip == '1') || (!empty($sidebar_estimate) && $sidebar_estimate == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#billing" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="creation">
                                 <i class="bi bi-tag"></i> <span>Billing</span>
                             </a>
                             <div class="collapse menu-dropdown" id="billing">
                                 <ul class="nav nav-lg flex-column">
-                                    <li class="nav-item" id="proformainvoice">
-                                        <a href="proforma_invoice.php" class="nav-link"><i class="bi bi-dash"></i>Proforma Invoice</a>
-                                    </li>
-                                    <li class="nav-item" id="deliveryslip">
-                                        <a href="delivery_slip.php" class="nav-link"><i class="bi bi-dash"></i>Delivery Slip </a>
-                                    </li>
-                                    <li class="nav-item" id="estimate">
-                                        <a href="estimate.php" class="nav-link"><i class="bi bi-dash"></i> Estimate </a>
-                                    </li> 
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_proforma_invoice) && $sidebar_proforma_invoice == '1')) { ?>
+                                        <li class="nav-item" id="proformainvoice">
+                                            <a href="proforma_invoice.php" class="nav-link"><i class="bi bi-dash"></i>Proforma Invoice</a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_delivery_slip) && $sidebar_delivery_slip == '1')) { ?>
+                                        <li class="nav-item" id="deliveryslip">
+                                            <a href="delivery_slip.php" class="nav-link"><i class="bi bi-dash"></i>Delivery Slip </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_estimate) && $sidebar_estimate == '1')) { ?>
+                                        <li class="nav-item" id="estimate">
+                                            <a href="estimate.php" class="nav-link"><i class="bi bi-dash"></i> Estimate </a>
+                                        </li> 
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </li>
-                    <?php  } ?>
-                    <?php  if(!empty($company_count) && $company_count > 0 ){ ?>
-
+                    <?php } ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_expense_category) && $sidebar_expense_category == '1') || (!empty($sidebar_expense_entry) && $sidebar_expense_entry == '1') || (!empty($sidebar_voucher) && $sidebar_voucher == '1') || (!empty($sidebar_receipt) && $sidebar_receipt == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#payment" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="creation">
                                 <i class="bi bi-currency-rupee"></i> <span>Payment</span>
                             </a>
                             <div class="collapse menu-dropdown" id="payment">
                                 <ul class="nav nav-lg flex-column">
-                                    <li class="nav-item" id="expensecategory">
-                                        <a href="expense_category.php" class="nav-link"><i class="bi bi-dash"></i> Expense Category </a>
-                                    </li>
-                                    <li class="nav-item" id="expenseentry">
-                                        <a href="expense_entry.php" class="nav-link"><i class="bi bi-dash"></i> Expense Entry </a>
-                                    </li>
-                                    <li class="nav-item" id="voucher">
-                                        <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i> Voucher </a>
-                                    </li>
-                                    <li class="nav-item" id="receipt">
-                                        <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i> Receipt </a>
-                                    </li>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_expense_category) && $sidebar_expense_category == '1')) { ?>
+                                        <li class="nav-item" id="expensecategory">
+                                            <a href="expense_category.php" class="nav-link"><i class="bi bi-dash"></i> Expense Category </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_expense_entry) && $sidebar_expense_entry == '1')) { ?>
+                                        <li class="nav-item" id="expenseentry">
+                                            <a href="expense_entry.php" class="nav-link"><i class="bi bi-dash"></i> Expense Entry </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_voucher) && $sidebar_voucher == '1')) { ?>
+                                        <li class="nav-item" id="voucher">
+                                            <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i> Voucher </a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_receipt) && $sidebar_receipt == '1')) { ?>
+                                        <li class="nav-item" id="receipt">
+                                            <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i> Receipt </a>
+                                        </li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </li>
                     <?php } ?>
-                    <?php  if(!empty($company_count) && $company_count > 0 ){ ?>
-
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_reports) && $sidebar_reports == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#report" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="creation">
                                 <i class="bi bi-database"></i> <span>Report</span>
@@ -563,11 +594,8 @@
                                     <li class="nav-item" id="daybookledgerreport">
                                         <a href="daybook_ledger_report.php" class="nav-link"><i class="bi bi-dash"></i> Daybook Ledger Report </a>
                                     </li>
-                                    <li class="nav-item" id="outsourceparty">
-                                        <a href="outsource_party.php" class="nav-link"><i class="bi bi-dash"></i> Outsource party Report</a>
-                                    </li>
                                     <li class="nav-item" id="agentcustomer">
-                                        <a href="agent_customer.php" class="nav-link"><i class="bi bi-dash"></i> Agent - Customer Report </a>
+                                        <a href="agent_customer_report.php" class="nav-link"><i class="bi bi-dash"></i> Agent - Customer Report </a>
                                     </li>
                                     <li class="nav-item" id="salesreport">
                                         <a href="sales_report.php" class="nav-link"><i class="bi bi-dash"></i> Sales Report </a>
@@ -580,6 +608,9 @@
                                     </li>
                                     <li class="nav-item" id="pendingorderreport">
                                         <a href="pending_order_report.php" class="nav-link"><i class="bi bi-dash"></i> Pending Order Reports </a>
+                                    </li>
+                                    <li class="nav-item" id="paymentreport">
+                                        <a href="payment_report.php" class="nav-link"><i class="bi bi-dash"></i> Payment Report </a>
                                     </li>
                                 </ul>
                             </div>

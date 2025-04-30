@@ -1,13 +1,13 @@
 <?php 
 	$page_title = "Charges";
-	include("include_user_check_and_files.php");
+	include("include_user_check.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
 
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
             $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
-            $permission_module = $GLOBALS['unit_module'];
+            $permission_module = $GLOBALS['charges_module'];
             include("permission_check.php");
         }
     }
@@ -42,12 +42,12 @@
                                         </div>
                                         <div class="col-lg-2 col-md-2 col-3">
                                             <?php
-                                                $access_error = "";
+                                                $add_access_error = "";
                                                 if(!empty($login_staff_id)) {
                                                     $permission_action = $add_action;
                                                     include('permission_action.php');
                                                 }
-                                                if(empty($access_error)) { 
+                                                if(empty($add_access_error)) { 
                                                     ?>
                                                     <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
                                                     <?php 

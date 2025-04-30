@@ -87,42 +87,42 @@
 		public function automate_number($table, $column) {
             $last_number = 0; $next_number = ""; $last_id_number = "";
             $prefix = "";
-            // if(!empty($table) && $table == $GLOBALS['inward_entry_table']) {
-            //     $prefix = 'INW';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['expense_table']) {
-            //     $prefix = 'EXP';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
-            //     $prefix = 'VOC';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
-            //     $prefix = 'RCT';
-            // }
+            if(!empty($table) && $table == $GLOBALS['purchase_entry_table']) {
+                $prefix = 'PE';
+            }
+			else if(!empty($table) && $table == $GLOBALS['expense_table']) {
+                $prefix = 'EXP';
+            }
+			else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
+                $prefix = 'VC';
+            }
+			else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
+                $prefix = 'RC';
+            }
 			if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
                 $prefix = 'CON';
-            } else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
+            }
+			else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                 $prefix = 'DAP';
-            } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+            }
+			else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
+                $prefix = 'STA';
+            }
+			else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
+                $prefix = 'SMI';
+            }
+			else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
+                $prefix = 'MAT';
+            }
+			else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                 $prefix = 'PI';
-            } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
+            }
+			else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
                 $prefix = 'DS';
-            } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+            }
+			else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
                 $prefix = 'EST';
             }
-			
-			// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
-            //     $prefix = 'SMI';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
-            //     $prefix = 'MAT';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['performa_invoice_table']) {
-            //     $prefix = 'PI';
-            // }
-			// else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
-            //     $prefix = 'EST';
-            // }
 			// else if(!empty($table) && $table == $GLOBALS['sales_invoice_table']) {
             //     $prefix = 'SI';
             // }
@@ -151,55 +151,54 @@
                 $last_number = $last_number_array[0];
 				$last_number = trim($last_number);
                 if(!empty($prefix)){
-					// if(!empty($table) && $table == $GLOBALS['inward_entry_table']) {
-                    //     $last_number = str_replace("INW","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-                    // else if(!empty($table) && $table == $GLOBALS['expense_table']) {
-                    //     $last_number = str_replace("EXP","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					// else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
-                    //     $last_number = str_replace("VOC","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					// else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
-                    //     $last_number = str_replace("RCT","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
+					if(!empty($table) && $table == $GLOBALS['purchase_entry_table']) {
+                        $last_number = str_replace("PE","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['expense_table']) {
+                        $last_number = str_replace("EXP","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
+                        $last_number = str_replace("VC","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
+                        $last_number = str_replace("RC","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
                         $last_number = str_replace("CON","",$last_number);
                         $last_number = trim($last_number);
                     }
 					else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                         $last_number = str_replace("DAP","",$last_number);
                         $last_number = trim($last_number);
-                    } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+                    }
+					else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
+                        $last_number = str_replace("STA","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
+                        $last_number = str_replace("SMI","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
+                        $last_number = str_replace("MAT","",$last_number);
+                        $last_number = trim($last_number);
+                    }
+					else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                         $last_number = str_replace("PI","",$last_number);
                         $last_number = trim($last_number);
-                    } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
-                        $last_number = str_replace("DS","",$last_number);
-                        $last_number = trim($last_number);
-                    } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+                    }
+					else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
                         $last_number = str_replace("EST","",$last_number);
                         $last_number = trim($last_number);
                     }
-					// else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
-                    //     $last_number = str_replace("SMI","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					// else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
-                    //     $last_number = str_replace("MAT","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					// else if(!empty($table) && $table == $GLOBALS['performa_invoice_table']) {
-                    //     $last_number = str_replace("PI","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
-					// else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
-                    //     $last_number = str_replace("EST","",$last_number);
-                    //     $last_number = trim($last_number);
-                    // }
+					else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+                        $last_number = str_replace("EST","",$last_number);
+                        $last_number = trim($last_number);
+                    }
 					// else if(!empty($table) && $table == $GLOBALS['sales_invoice_table']) {
                     //     $last_number = str_replace("SI","",$last_number);
                     //     $last_number = trim($last_number);
@@ -853,11 +852,10 @@
 			$res = $mailin->send();
 			return $res;
 		}
-	
-		public function CheckStaffAccessPage($login_id,$permission_page) {
+		public function CheckRoleAccessPage($role_id, $permission_page) {
 			$list = array(); $select_query = ""; $acccess_permission = 0;
-			$select_query = "SELECT * FROM ".$GLOBALS['user_table']." WHERE user_id = '".$login_id."' AND deleted = '0'";
-			$list = $this->getQueryRecords($GLOBALS['user_table'], $select_query);
+			$select_query = "SELECT * FROM ".$GLOBALS['role_table']." WHERE role_id = '".$role_id."' AND deleted = '0'";
+			$list = $this->getQueryRecords($GLOBALS['role_table'], $select_query);
 			if(!empty($list)) {
 				$access_pages = "";
 				foreach($list as $data) {

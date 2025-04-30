@@ -13,6 +13,7 @@
 
     $view_action = $obj->encode_decode('encrypt', 'View'); $add_action = $obj->encode_decode('encrypt', 'Add');
     $edit_action = $obj->encode_decode('encrypt', 'Edit'); $delete_action = $obj->encode_decode('encrypt', 'Delete');
+    $convert_action = $obj->encode_decode('encrypt', 'Convert');
 
     // Staff Login
     $login_staff_id = "";

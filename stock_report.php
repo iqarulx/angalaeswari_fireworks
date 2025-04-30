@@ -1,6 +1,6 @@
 <?php 
 	$page_title = "Stock Report";
-	include("include_user_check.php");
+	include("include_user_check_and_files.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
 ?>
 <!DOCTYPE html>

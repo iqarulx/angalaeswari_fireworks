@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
     $loginner_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
@@ -370,6 +370,32 @@
 		<?php
     } 
     if(isset($_POST['edit_id'])) {
+
+        function combineAndSumUp ($myArray) {
+            $finalArray = Array ();
+            foreach ($myArray as $nkey => $nvalue) {
+                $has = false;
+                $fk = false;
+                foreach ($finalArray as $fkey => $fvalue) {
+                    if(($fvalue['godown_id'] == $nvalue['godown_id']) && ($fvalue['product_id'] == $nvalue['product_id'])  && ($fvalue['subunit_content'] == $nvalue['subunit_content'])) {    
+                        $has = true;
+                        $fk = $fkey;
+                        break;
+                    }
+                }
+    
+                if($has === false) {
+                    $finalArray[] = $nvalue;
+                } else {
+                    $finalArray[$fk]['product_id'] = $nvalue['product_id'];
+                    $finalArray[$fk]['subunit_content'] = $nvalue['subunit_content'];
+                    $finalArray[$fk]['quantity'] += $nvalue['quantity'];
+                }
+            }
+            return $finalArray;
+            // print_r($final_array);
+        }
+
         $entry_date = ""; $entry_date_error = ""; $bill_date = ""; $bill_date_error = "";
         $godown_id = ""; $godown_id_error = ""; $contractor_id = ""; $contractor_id_error = "";
         $product_ids = array(); $unit_ids = array(); $quantity = array(); $cooly_per_qty = array(); $total_cooly = array(); $product_error = ""; $product_names = array(); $unit_names = array(); $total_quantity = 0; $total_amount = 0; $stock_unique_ids = array();
@@ -476,6 +502,13 @@
                     }
                     $unit_ids[$i] = trim($unit_ids[$i]);
                     if(!empty($unit_ids[$i])) {
+                        if($unit_ids[$i] == $product_unit_id) {
+                            $unit_type = 1; 
+                        }  else if ($unit_ids[$i] == $product_subunit_id) {
+                            $unit_type = 2;
+                        } else {
+                            $unit_type = ""; 
+                        }
                         $unit_unique_id = "";
                         $unit_unique_id = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'id');
                         if(preg_match("/^\d+$/", $unit_unique_id)) {
@@ -494,26 +527,32 @@
                                         $overall_cooly_total += $cooly_amount[$i];
                                     }
 
-
-                                    $negative_stock_allowed = "";
-                                    $negative_stock_allowed = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'negative_stock');
-                                    $inward_quantity = 0; $outward_quantity = 0; $current_stock_unit = 0;
-                                    $inward_quantity = $obj->getInwardQty($edit_id, $godown_id, '', $product_ids[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardQty('', $godown_id, '', $product_ids[$i], $case_contains[$i]);
-
-                                    if($unit_ids[$i] == $product_subunit_id && !empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) {
-                                        $inward_quantity = $inward_quantity * $case_contains[$i];
-                                        $outward_quantity = $outward_quantity * $case_contains[$i];
+                                    if ($unit_type == '1') {
+                                        $product_qty = $quantity[$i];
+                                    } else if ($unit_type == '2') {
+                                        $product_qty = $quantity[$i] / $case_contains[$i];
                                     }
-                                    $comparable_qty = 0;
-                                    $comparable_qty = $inward_quantity + $quantity[$i];
-                                    if(empty($negative_stock_allowed)){
-                                        if($comparable_qty < $outward_quantity) {
-                                            $accurate_qty = 0;
-                                            $accurate_qty = $outward_quantity - $inward_quantity;
-                                            $product_error = "Max Qty:  ".$accurate_qty." in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                        }
-                                    }
+
+                                    $individual_product_detail[] = array('godown_id' => $godown_id,'product_id' => $product_ids[$i],'subunit_content' => $case_contains[$i],'quantity' => $product_qty); 
+                                    // $negative_stock_allowed = "";
+                                    // $negative_stock_allowed = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'negative_stock');
+                                    // $inward_quantity = 0; $outward_quantity = 0; $current_stock_unit = 0;
+                                    // $inward_quantity = $obj->getInwardQty($edit_id, $godown_id, '', $product_ids[$i], $case_contains[$i]);
+                                    // $outward_quantity = $obj->getOutwardQty('', $godown_id, '', $product_ids[$i], $case_contains[$i]);
+
+                                    // if($unit_ids[$i] == $product_subunit_id && !empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) {
+                                    //     $inward_quantity = $inward_quantity * $case_contains[$i];
+                                    //     $outward_quantity = $outward_quantity * $case_contains[$i];
+                                    // }
+                                    // $comparable_qty = 0;
+                                    // $comparable_qty = $inward_quantity + $quantity[$i];
+                                    // if(empty($negative_stock_allowed)){
+                                    //     if($comparable_qty < $outward_quantity) {
+                                    //         $accurate_qty = 0;
+                                    //         $accurate_qty = $outward_quantity - $inward_quantity;
+                                    //         $product_error = "Max Qty:  ".$accurate_qty." in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    //     }
+                                    // }
                             
                                 }
                                 else {
@@ -535,12 +574,66 @@
                 else {
                     $product_error = "Invalid Product";
                 }
+                array_multisort(array_column($individual_product_detail, "godown_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, $individual_product_detail);
+
+                if(empty($valid_semifinished_inward))
+                {
+                    $final_array = combineAndSumUp($individual_product_detail);
+                }
             }
         }
         else {
             $product_error = "Add Products";
         }
+        $stock_error = 0; $valid_stock = "";
+        if(!empty($final_array) && empty($valid_semifinished_inward))
+        {
+            foreach($final_array as $data)
+            {
+                $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
+                $subunit_need = 0; $product ="";
+                $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
+                
+                $inward_unit = $obj->getInwardQty($edit_id,$data['godown_id'],'',$data['product_id'],$data['subunit_content']);
+                $outward_unit = $obj->getOutwardQty('',$data['godown_id'],'',$data['product_id'],$data['subunit_content']); 
 
+                $inward_subunit = $obj->getInwardSubunitQty($edit_id,$data['godown_id'],'',$data['product_id'],$data['subunit_content']);
+                $outward_subunit = $obj->getOutwardSubunitQty('',$data['godown_id'],'',$data['product_id'],$data['subunit_content']); 
+                $available_stock_unit = $inward_unit - $outward_unit;
+                $available_stock_subunit = $inward_subunit - $outward_subunit;
+
+                $inward_unit += $data['quantity'];
+                if(!empty($data['subunit_content']) && $data['subunit_content'] != $GLOBALS['null_value']){
+
+                    $inward_subunit += ($data['quantity'] * $data['subunit_content']);
+                }
+
+                $current_stock_unit = $inward_unit - $outward_unit;
+
+                $current_stock_subunit = $inward_subunit - $outward_subunit;
+
+                if($data['quantity'] > $current_stock_unit) {
+                    $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
+                    $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need'); 
+
+                    if(!empty($product))
+                    {
+                        $product = $obj->encode_decode("decrypt",$product);
+                    }
+                   
+                    $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
+                    if($negative_stock !='1')
+                    {
+                        if($subunit_need == 1){
+                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit." ,  Subunit => ".$available_stock_subunit ;
+                        }else{
+                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit;
+                        }            
+                        $stock_error = 1;
+                    }
+                }
+            }
+        }
         if(!empty($overall_cooly_total)) { 
             $overall_cooly_total = number_format($overall_cooly_total,2); 
             $overall_cooly_total = trim(str_replace(",", "", $overall_cooly_total));
@@ -735,6 +828,7 @@
                     $columns = array(); $values = array();
                     $columns = array('created_date_time', 'creator', 'creator_name', 'semifinished_inward_id', 'semifinished_inward_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'godown_id', 'godown_name_location', 'godown_details', 'contractor_id', 'contractor_name_mobile_city', 'contractor_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate','total_quantity', 'overall_cooly_total','cancelled', 'deleted');
                     $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$godown_id."'", "'".$godown_name_location."'", "'".$godown_details."'", "'".$contractor_id."'", "'".$contractor_name_mobile_city."'",  "'".$contractor_details."'","'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'","'0'", "'0'");
+                    // print_r($values);
                     $semifinished_inward_insert_id = $obj->InsertSQL($GLOBALS['semifinished_inward_table'], $columns, $values,'semifinished_inward_id', 'semifinished_inward_number', $action);
 
                     if(preg_match("/^\d+$/", $semifinished_inward_insert_id)) {

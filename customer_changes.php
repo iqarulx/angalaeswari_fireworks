@@ -1,10 +1,10 @@
 <?php
 	include("include.php");
 
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['agent_module'];
         }
     }
@@ -15,7 +15,7 @@
         $show_customer_id = trim($show_customer_id);
 
         $country = "India";$state = "";$district = "";$city = "";$customer_name = "";$mobile_number = "";$address = "";$pincode = "";$product_id="";$product_name="";$pincode = ""; $identification = ""; $opening_balance = "";$opening_balance_type = ""; $commission = ""; $agent_id = "";
-    
+        $state = "Tamil Nadu";
         if(!empty($show_customer_id)){
             $customer_list = array();
             $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'customer_id',$show_customer_id,'');
@@ -428,7 +428,7 @@
                
                 if(!empty($address)) {
                     if(!empty($customer_details)) {
-                        $customer_details = $customer_details."<br>".str_replace("\r\n", "<br>", $address);
+                        $customer_details = $customer_details."$$$".str_replace("\r\n", "$$$", $address);
                     }
                     $address = $obj->encode_decode('encrypt', $address);
                 }
@@ -438,19 +438,19 @@
 
                 if(!empty($city)) {
                     if(!empty($customer_details)) {
-                        $customer_details = $customer_details."<br>".$city;
+                        $customer_details = $customer_details."$$$".$city;
                     }
                 }
 
                 if(!empty($district)) {
                     if(!empty($customer_details)) {
-                        $customer_details = $customer_details."<br>".$district."(Dist.)";
+                        $customer_details = $customer_details."$$$".$district."(Dist.)";
                     }
                 }
 
                 if(!empty($state)) {
                     if(!empty($customer_details)) {
-                        $customer_details = $customer_details."<br>".$state;
+                        $customer_details = $customer_details."$$$".$state;
                     }
                     $state = $obj->encode_decode('encrypt', $state);
                 }
@@ -459,7 +459,7 @@
                     $mobile_number = str_replace(" ", "", $mobile_number);
 
                     if(!empty($customer_details)) {
-                        $customer_details = $customer_details."<br> Mobile : ".$mobile_number;
+                        $customer_details = $customer_details."$$$ Mobile : ".$mobile_number;
                     }
                     if(!empty($name_mobile_city)) {
                         $name_mobile_city = $name_mobile_city." (".$mobile_number.")";
@@ -509,7 +509,7 @@
                     // $obj->CustomerMobileExists($mobile_number);
                     $prev_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'mobile_number', $mobile_number, 'customer_id');
                     if(!empty($prev_customer_id) && $prev_customer_id != $edit_id) {
-                    // echo $prev_customer_id . "cust<br>";
+                    // echo $prev_customer_id . "cust$$$";
 
                         $prev_customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$prev_customer_id,'customer_name');
 						$prev_customer_name = $obj->encode_decode("decrypt",$prev_customer_name);
@@ -518,24 +518,20 @@
                 }
 
                 $prev_iden_customer_id = ""; $iden_customer_error = "";	$prev_iden_customer_name ="";
-
-                if(!empty($identification) && $identification != $GLOBALS['null_value']) {
-                    // $prev_customer_id = $obj->customeridentificationExists($identification);
-                    $prev_iden_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'identification', $identification, 'customer_id');
-                    if(!empty($prev_iden_customer_id) && $prev_iden_customer_id != $edit_id) {
-                        $prev_iden_customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$prev_iden_customer_id,'customer_name');
-                        if(!empty($prev_iden_customer_name)){
-                            $prev_iden_customer_name = $obj->encode_decode("decrypt",$prev_iden_customer_name);
-                            $iden_customer_error = "This Identification number is already exist in ".$prev_iden_customer_name;
-                        }
-                    }
-                }
+                // if(!empty($identification)) {
+                //     $prev_iden_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'identification', $identification, 'customer_id');
+                //     if(!empty($prev_iden_customer_id) && $prev_iden_customer_id != $edit_id) {
+                //         $prev_iden_customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$prev_iden_customer_id,'customer_name');
+				// 		$prev_iden_customer_name = $obj->encode_decode("decrypt",$prev_iden_customer_name);
+                //         $iden_customer_error = "This Mobile number is already exist in ".$prev_iden_customer_name;
+                //     }
+                // }
         
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);                
                 
                 if(empty($edit_id)) {
-                    if(empty($prev_customer_id) && empty($prev_iden_customer_id)) {
+                    if(empty($prev_customer_id)) {
                         $action = "";
                         if(!empty($name_mobile_city)) {
                             $action = "New customer Created. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
@@ -549,7 +545,7 @@
                             $customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'id', $customer_insert_id, 'customer_id');
                            	
                             $balance = 1;
-                            $result = array('number' => '1', 'msg' => 'Customer Successfully Created','customer_id' => $customer_id);
+                            $result = array('number' => '1', 'msg' => 'customer Successfully Created','customer_id' => $customer_id);
                             				
                         }
                         else {
@@ -567,7 +563,7 @@
                     }
                 }
                 else {
-                    if(empty($prev_customer_id) || $prev_customer_id == $edit_id && empty($prev_iden_customer_id) || $prev_iden_customer_id == $edit_id) {
+                    if(empty($prev_customer_id) || $prev_customer_id == $edit_id) {
 
                         $getUniqueID = ""; $customer_id =$edit_id;
                         $getUniqueID = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $edit_id, 'id');
@@ -605,7 +601,7 @@
                     $bill_id = $customer_id; 
                     $bill_date = date("Y-m-d");
                     $bill_number = $GLOBALS['null_value'];
-                    $bill_type = "Customer Opening Stock";
+                    $bill_type = "Customer Opening Balance";
                     if(!empty($agent_id)) {
                         $agent_id = $agent_id;
                         $agent_name = $agent_name;
@@ -641,8 +637,22 @@
                     if(empty($opening_balance_type)){
                         $opening_balance_type = $GLOBALS['null_value'];
                     }
-                    $update_balance ="";
-                    $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name,$credit,$debit,$opening_balance_type);
+                    if(!empty($opening_balance) && !empty($opening_balance_type)){
+
+                        $update_balance ="";
+                        $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name,$credit,$debit,$opening_balance_type);
+                    }else{
+                        $payment_unique_id = "";
+                        $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
+                        if(preg_match("/^\d+$/", $payment_unique_id)) {
+                            $action = "Payment Deleted.";
+                        
+                            $columns = array(); $values = array();						
+                            $columns = array('deleted');
+                            $values = array("'1'");
+                            $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
+                        }
+                    }
                         
                 }  
             }
@@ -739,7 +749,7 @@
             </div> <?php 
         } 
         $access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
@@ -789,6 +799,8 @@
                                         $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $data['agent_id'], 'agent_name');
                                         $data['agent_name'] = $obj->encode_decode('decrypt', $agent_name);
                                         echo $data['agent_name'];
+                                    }else{
+                                        echo " - ";
                                     } ?>
                                 </td>
                                 <td> <?php 
@@ -804,7 +816,7 @@
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $edit_action;
                                                 include('permission_action.php');
                                             }
@@ -812,7 +824,7 @@
                                                 <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
                                             }
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $delete_action;
                                                 include('permission_action.php');
                                             }

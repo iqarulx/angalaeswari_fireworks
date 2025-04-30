@@ -1,0 +1,9 @@
+[30-Apr-2025 16:22:38 Asia/Calcutta] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include/basic_functions.php:536
+Stack trace:
+#0 /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include/functions.php(50): Basic_Functions->getTableColumnValue()
+#1 /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include/basic_functions.php(14): billing->getTableColumnValue()
+#2 /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include/functions.php(17): Basic_Functions->getProjectTitle()
+#3 /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include.php(12): billing->getProjectTitle()
+#4 /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/index.php(3): include('/home/h2pil1aoo...')
+#5 {main}
+  thrown in /home/h2pil1aoovs5/public_html/subha2022/angalaeswari_fireworks/include/basic_functions.php on line 536

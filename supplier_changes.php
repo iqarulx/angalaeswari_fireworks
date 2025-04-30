@@ -1,10 +1,10 @@
 <?php
 	include("include.php");
 
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['supplier_module'];
         }
     }
@@ -158,6 +158,7 @@
                             <input type="text" id="gst_number" name="gst_number" class="form-control shadow-none" value="<?php if(!empty($gst_number)){echo $gst_number;} ?>">
                             <label>GST Number</label>
                         </div>
+                        <div class="new_smallfnt">Format : 22AAAAA0000A1Z5</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-4 col-12 py-2">
@@ -395,7 +396,7 @@
                
                 if(!empty($address)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."<br>".str_replace("\r\n", "<br>", $address);
+                        $supplier_details = $supplier_details."$$$".str_replace("\r\n", "$$$", $address);
                     }
                     $address = $obj->encode_decode('encrypt', $address);
                 }
@@ -405,19 +406,19 @@
 
                 if(!empty($city)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."<br>".$city;
+                        $supplier_details = $supplier_details."$$$".$city;
                     }
                 }
 
                 if(!empty($district)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."<br>".$district."(Dist.)";
+                        $supplier_details = $supplier_details."$$$".$district."(Dist.)";
                     }
                 }
 
                 if(!empty($state)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."<br>".$state;
+                        $supplier_details = $supplier_details."$$$".$state;
                     }
                     $state = $obj->encode_decode('encrypt', $state);
                 }
@@ -426,7 +427,7 @@
                     $mobile_number = str_replace(" ", "", $mobile_number);
 
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."<br> Mobile : ".$mobile_number;
+                        $supplier_details = $supplier_details."$$$ Mobile : ".$mobile_number;
                     }
                     if(!empty($name_mobile_city)) {
                         $name_mobile_city = $name_mobile_city." (".$mobile_number.")";
@@ -559,41 +560,54 @@
                 }  
                 if(!empty($balance) && $balance == 1) {
                     
-                    $bill_id = $supplier_id; 
-                    $bill_date = date("Y-m-d");
-                    $bill_number = $GLOBALS['null_value'];
-                    $bill_type = "Supplier Opening Stock";
-                    $agent_id = $GLOBALS['null_value'];
-                    $agent_name = $GLOBALS['null_value'];
-                    $party_id = $supplier_id;
-                    $party_name = $supplier_name;
-                    $party_type = 'Supplier';
-                    $payment_mode_id = $GLOBALS['null_value'];
-                    $payment_mode_name = $GLOBALS['null_value'];
-                    $bank_id = $GLOBALS['null_value'];
-                    $bank_name = $GLOBALS['null_value'];
-                    $imploded_amount = $GLOBALS['null_value'];
-                    $credit  = 0; $debit = 0; 
+                        $bill_id = $supplier_id; 
+                        $bill_date = date("Y-m-d");
+                        $bill_number = $GLOBALS['null_value'];
+                        $bill_type = "Supplier Opening Balance";
+                        $agent_id = $GLOBALS['null_value'];
+                        $agent_name = $GLOBALS['null_value'];
+                        $party_id = $supplier_id;
+                        $party_name = $supplier_name;
+                        $party_type = 'Supplier';
+                        $payment_mode_id = $GLOBALS['null_value'];
+                        $payment_mode_name = $GLOBALS['null_value'];
+                        $bank_id = $GLOBALS['null_value'];
+                        $bank_name = $GLOBALS['null_value'];
+                        $imploded_amount = $GLOBALS['null_value'];
+                        $credit  = 0; $debit = 0; 
 
-                    if($opening_balance_type =='Credit'){
-                        $credit  = $opening_balance; 
-                    }else if($opening_balance_type =='Debit'){
-                        $debit  = $opening_balance; 
-                    }
-                    if(empty($credit)){
-                        $credit = 0;
-                    }
-                    if(empty($debit)){
-                        $debit = 0;
-                    }
-                    if(empty($opening_balance)){
-                        $opening_balance = 0;
-                    }
-                    if(empty($opening_balance_type)){
-                        $opening_balance_type = $GLOBALS['null_value'];
-                    }
-                    $update_balance ="";
-                    $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
+                        if($opening_balance_type =='Credit'){
+                            $credit  = $opening_balance; 
+                        }else if($opening_balance_type =='Debit'){
+                            $debit  = $opening_balance; 
+                        }
+                        if(empty($credit)){
+                            $credit = 0;
+                        }
+                        if(empty($debit)){
+                            $debit = 0;
+                        }
+                        if(empty($opening_balance)){
+                            $opening_balance = 0;
+                        }
+                        if(empty($opening_balance_type)){
+                            $opening_balance_type = $GLOBALS['null_value'];
+                        }
+                        if(!empty($opening_balance) && !empty($opening_balance_type)){
+                            $update_balance ="";
+                            $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
+                        }else{
+                            $payment_unique_id = "";
+                            $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
+                            if(preg_match("/^\d+$/", $payment_unique_id)) {
+                                $action = "Payment Deleted.";
+                            
+                                $columns = array(); $values = array();						
+                                $columns = array('deleted');
+                                $values = array("'1'");
+                                $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
+                            }
+                        }
                         
                 }  
             }
@@ -681,7 +695,7 @@
             </div> <?php 
         } 
         $access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
@@ -731,7 +745,7 @@
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $edit_action;
                                                 include('permission_action.php');
                                             }
@@ -739,7 +753,7 @@
                                                 <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
                                             }
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $delete_action;
                                                 include('permission_action.php');
                                             }

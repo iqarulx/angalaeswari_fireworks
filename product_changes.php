@@ -1,9 +1,9 @@
 <?php
-	include("include_files.php");
+	include("include_user_check.php");
 	if(isset($_REQUEST['show_product_id'])) { 
         $show_product_id = $_REQUEST['show_product_id'];
         $show_product_id = trim($show_product_id);
-        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";
+        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";$hsn_code = "";$group_lowercase ="";
 
         if (!empty($show_product_id)) {
             $product_list = array();
@@ -45,6 +45,7 @@
                     }
                     if (!empty($data['location_id']) && $data['location_id'] != $GLOBALS['null_value']) {
                         $location_ids = explode(",", $data['location_id']);
+                        $product_count = count($location_ids);
                     }
                     if (!empty($data['location_name']) && $data['location_name'] != $GLOBALS['null_value']) {
                         $location_names = explode(",", $data['location_name']);
@@ -61,12 +62,31 @@
                     if (!empty($data['negative_stock'])) {
                         $negative_stock = $data['negative_stock'];
                     }
+                    if(!empty($data['hsn_code']) && $data['hsn_code'] != $GLOBALS['null_value']) {
+                        $hsn_code = $data['hsn_code'];
+                    }
     
                 }
             }
         }
         $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
         $unit_list = $obj->getTableRecords($GLOBALS['unit_table'], '', '', '');
+
+        $linked_count = 0;
+        if(!empty($show_product_id)) {
+            // $linked_count = $obj->GetProductLinkedCount($show_product_id);
+        }
+
+        $opening_stock_count = 0;
+        if(!empty($show_product_id)) {
+            $opening_stock_count = $obj->getOpeningStockCount($show_product_id);
+        }
+
+        if(!empty($group_id)){
+            $group_lowercase = $obj->getTableColumnValue($GLOBALS['group_table'],'group_id',$group_id,'lower_case_name');
+            $group_lowercase = $obj->encode_decode('decrypt',$group_lowercase);
+        } 
+
         ?>
         <form class="poppins pd-20" name="product_form" method="POST">
 			<div class="card-header">
@@ -89,7 +109,7 @@
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger Product_Fix_field" name="group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="ChangeLocation()">
+                            <select class="select2 select2-danger Product_Fix_field" name="group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="ChangeLocation();getSalesRate();" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                                 <option value="">Select Group</option>
                                 <?php
                                     if($group_list) {
@@ -101,15 +121,16 @@
                                     }
                                 ?>
                             </select>
-                            <label>Select Group</label>
+                            <label>Select Group <span class="text-danger">*</span></label>
                         </div>
                     </div>
                 </div>
+                <input type="hidden" name="group" value="<?php if(!empty($group_id)) { echo $group_id; } ?>" <?php if(empty($linked_count) && empty($opening_stock_count)) { ?>disabled<?php } ?>>
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="name" name="product_name" class="form-control shadow-none" value="<?php if (!empty($product_name)) { echo $product_name; } ?>"  onkeyup="Javascript:InputBoxColor(this,'text');">
-                            <label>Product Name</label>
+                            <label>Product Name <span class="text-danger">*</span></label>
                         </div>
                         <div class="new_smallfnt">Contains Text Only</div>
                     </div>
@@ -117,7 +138,16 @@
                 <div class="col-lg-3 col-md-4 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger Product_Fix_field" name="unit_id" data-dropdown-css-class="select2-danger" onchange="AddUnitForStock();" style="width: 100%;">
+                           <input type="number" name="hsn_code" value="<?php if (!empty($hsn_code)) { echo $hsn_code; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',8,'');">
+                            <label>HSN Code <span class="text-danger">*</span></label>
+                        </div>
+                        <div class="new_smallfnt">Contains Number Only</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger Product_Fix_field" name="unit_id" data-dropdown-css-class="select2-danger" onchange="AddUnitForStock();" style="width: 100%;" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                                 <option value="">Select Unit</option>
                                 <?php
                                     if (!empty($unit_list)) {
@@ -139,24 +169,29 @@
                                     }
                                 ?>
                             </select>
-                            <label>Select Unit</label>
+                            <label>Select Unit <span class="text-danger">*</span></label>
                         </div>
                     </div>     
-                    <div class="form-group mb-1">
-                        <div class="flex-shrink-0">
-                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                <label for="FormSelectDefault" class="form-label text-muted smallfnt">Need Sub Unit  YES / NO</label>
-                                <input name="subunit_need" class="form-check-input code-switcher Product_Fix_field" type="checkbox" id="subunit_need" onchange="Javascript:subunitNeed();AddUnitForStock();per_type_change();" value="<?php if ($subunit_need == '1') { echo '1';} else { echo '0'; } ?>" <?php if ($subunit_need == '1') { ?>checked="checked" <?php } ?>>
+                    <input type="hidden" name="unit_id" value="<?php if(!empty($unit_id)) { echo $unit_id; } ?>" <?php if(empty($linked_count) && empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                    
+                        <div class="form-group mb-1">
+                            <div class="flex-shrink-0">
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <label for="FormSelectDefault" class="form-label text-muted smallfnt">Need Sub Unit  YES / NO</label>
+                                    <input name="subunit_need"  id="subunit_need"class="form-check-input code-switcher Product_Fix_field" type="checkbox"  onchange="Javascript:subunitNeed();AddUnitForStock();per_type_change();" value="<?php if ($subunit_need == '1') { echo '1';} else { echo '0'; } ?>" <?php if ($subunit_need == '1') { ?>checked="checked" <?php } ?> <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                                </div>
                             </div>
-                        </div>
-                    </div>    
-                </div>
+                        </div>    
+                    
+                    </div>
+
+                    <input type="hidden" name="subunit_need" id="subunit_input" value="<?php if($subunit_need == '1'){echo '1';}else{echo '0';} ?>" <?php if(empty($linked_count) && empty($opening_stock_count)) { ?>disabled<?php } ?>>
                 <div id="subunit_need_fields_div" class="col-lg-3 col-md-4 col-6 py-2 <?php if (empty($subunit_need)) { ?>d-none<?php } ?>">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
                                 <div class="input-group-append" style="width:100%;">
-                                    <select name="subunit_id" class="select2 select2-danger select2-hidden-accessible Product_Fix_field" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="AddUnitForStock()" >
+                                    <select name="subunit_id" class="select2 select2-danger select2-hidden-accessible Product_Fix_field" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="AddUnitForStock()" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?> >
                                     <option value="">Select SubUnit</option>
                                     <?php
                                         if (!empty($unit_list)) {
@@ -178,35 +213,38 @@
                                         }
                                     ?>
                                     </select>
-                                    <label>Sub Unit</label>
+                                    <label>Sub Unit <span class="text-danger">*</span></label>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-12 py-2">
+                <input type="hidden" name="subunit_id" value="<?php if(!empty($subunit_id)) { echo $subunit_id; } ?>" <?php if(empty($linked_count) && empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                 
+                <div class="col-lg-3 col-md-4 col-12 py-2 sales_rate_div <?php if($group_lowercase !='finished'){ ?>d-none<?php }?>">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" class="form-control shadow-none " id="sales_rate" name="sales_rate" value="<?php if (!empty($sales_rate)) { echo $sales_rate; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',8,'');">
-                            <label>Sales Rate</label>
+                            <label>Sales Rate <span class="text-danger">*</span></label>
                         </div>
                         <div class="new_smallfnt">Contains Number Only</div>
                     </div>
                 </div>
+              
                 <input type="hidden" name="rate_per_case">
                 <input type="hidden" name="rate_per_piece">
-                <div class="col-lg-3 col-md-4 col-12 py-2">
+                <div class="col-lg-3 col-md-4 col-12 py-2 per_div <?php if($group_lowercase !='finished'){ ?>d-none<?php }?>">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
                             <input type="text" id="per" name="per" class="form-control shadow-none " value="<?php if (!empty($per)) { echo $per; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',7,'');" onkeyup="Javascript:InputBoxColor(this,'text');">
-                            <label>Per</label>
+                            <label>Per <span class="text-danger">*</span></label>
                             <div class="input-group-append" style="width:50%!important;">
                                 <select name="per_type" class="select2 select2-danger " data-dropdown-css-class="select2-danger" style="width: 100%;" >
-                                    <option value="1" <?php if ($per_type == '1') { ?>selected<?php } ?>>Unit</option>
-                                    <?php if ($subunit_need == '1') { ?>
-                                        <option value="2" <?php if ($per_type == '2') { ?>selected<?php } ?>>Subunit</option>
+                                    <option value="1" <?php if($per_type == '1') { ?>selected<?php } ?>>Unit</option>
+                                    
+                                    <?php if($subunit_need == '1') { ?>
+                                        <option value="2" <?php if($per_type == '2') { ?>selected<?php } ?>>Subunit</option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -219,7 +257,7 @@
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
                             <label for="negative_stock" class="form-label text-muted" style="font-size: 12px;">Allow Negative Stock YES / NO</label>
-                            <input name="negative_stock" class="form-check-input code-switcher" type="checkbox" id="negative_stock_button" onChange="Javascript:ShowNegativeStockDetails(this);" value="<?php if ($negative_stock == '1') { echo '1'; } else { echo '0'; } ?>" <?php if ($negative_stock == '1') { ?>checked="checked" <?php } ?>     <?php if (!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                            <input name="negative_stock" class="form-check-input code-switcher" type="checkbox" id="negative_stock_button" onChange="Javascript:ShowNegativeStockDetails(this);" value="<?php if ($negative_stock == '1') { echo '1'; } else { echo '0'; } ?>" <?php if ($negative_stock == '1') { ?>checked="checked" <?php } ?> <?php if (!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                             </div>
                         </div>
                     </div>     
@@ -277,7 +315,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                         <input type="number" name="selected_total_qty" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="FindTotalQty()">
-                            <label>Total QTY</label>
+                            <label class="px-0">Total Qty</label>
                         </div>
                     </div> 
                 </div>
@@ -286,7 +324,8 @@
                 </div>
                 <div class="col-lg-10">
                     <div class="table-responsive text-center">
-                    <input type="hidden" name="godown_count" value="<?php if (!empty($product_row_index)) { echo $product_row_index; } else { echo "0"; } ?>">
+                    <input type="hidden" name="godown_count" value="<?php if (!empty($product_count)) { echo $product_count; } else { echo "0"; } ?>">
+
                         <table class="table nowrap cursor smallfnt w-100 table-bordered product_stock_table">
                             <thead class="bg-dark smallfnt">
                                 <tr style="white-space:pre;">
@@ -294,7 +333,7 @@
                                     <th>Location Name</th>
                                     <th>Unit Type</th>
                                     <th>Stock Date</th>
-                                    <th>Opening Stock</th>
+                                    <th style="width:150px;">Opening Stock</th>
                                     <th class="<?php if (empty($subunit_need)) { ?>d-none<?php } ?>" id="subunit_need_fields_th">Content</th>
                                     <th>Action</th>
                                 </tr>
@@ -325,7 +364,7 @@
                                                 $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
                                                     echo $obj->encode_decode('decrypt', $unit_name);
                                                 } else {
-                                                    $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
+                                                     $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
                                                     echo $obj->encode_decode('decrypt', $subunit_name);
                                                 }
                                                 ?>
@@ -382,7 +421,7 @@
                     </div>
                 </div>
                 <div class="col-md-12 pt-3 text-center">
-                <button class="btn btn-danger " type="button" onClick="Formsubmit();">
+                <button class="btn btn-danger " type="button" onClick="SaveModalContent(event,'product_form', 'product_changes.php', 'product.php');">
                     Submit
                 </button>
                 </div>
@@ -390,6 +429,7 @@
             <script src="include/select2/js/select2.min.js"></script>
             <script src="include/select2/js/select.js"></script>
             <script type="text/javascript" src="include/js/action.js"></script>
+            <script type="text/javascript" src="include/js/product_upload.js"></script>
             <script>
                  jQuery(document).ready(function () {
                     AddUnitForStock();
@@ -398,188 +438,210 @@
                     per_type_change();     
                     ChangeLocation();
                     <?php if(count($location_ids) > 0) { ?>
-                        DisableProduct_Fix_field();
+                        // DisableProduct_Fix_field();
                     <?php } ?>
+                   
                     
                 });
-                function Formsubmit() {
-                    if(jQuery('.Product_Fix_field').length > 0) {
-                        jQuery('.Product_Fix_field').attr('disabled', false);
-                    }
-                    SaveModalContent(event,'product_form', 'product_changes.php', 'product.php');
-                }
+               
             </script>
         </form>
 		<?php
-    } 
+    }
+
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number'];
 		$page_limit = $_POST['page_limit'];
 		$page_title = $_POST['page_title']; 
         
-        $search_text = "";
+        $search_text = ""; $filter_group = "";
 
-    if (isset($_POST['search_text'])) {
-        $search_text = $_POST['search_text'];
-    }
+        if (isset($_POST['search_text'])) {
+            $search_text = $_POST['search_text'];
+        }
 
-    $total_records_list = array();
-    $total_records_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', 'DESC');
+        if (isset($_POST['filter_group'])) {
+            $filter_group = $_POST['filter_group'];
+        }
 
-    if (!empty($search_text)) {
-        $search_text = strtolower($search_text);
-        $list = array();
+        $total_records_list = array();
+        if(!empty($filter_group)) {
+            $total_records_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $filter_group, 'DESC');
+        } else {
+            $total_records_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', 'DESC');
+        }
+
+        if (!empty($search_text)) {
+            $search_text = strtolower($search_text);
+            $list = array();
+            if (!empty($total_records_list)) {
+                foreach ($total_records_list as $val) {
+                    if ((strpos(strtolower($obj->encode_decode('decrypt', $val['product_name'])), $search_text) !== false)) {
+                        $list[] = $val;
+                    }
+                }
+            }
+            $total_records_list = $list;
+        }
+
+        $total_pages = 0;
+        $total_pages = count($total_records_list);
+
+        $page_start = 0;
+        $page_end = 0;
+        if (!empty($page_number) && !empty($page_limit) && !empty($total_pages)) {
+            if ($total_pages > $page_limit) {
+                if ($page_number) {
+                    $page_start = ($page_number - 1) * $page_limit;
+                    $page_end = $page_start + $page_limit;
+                }
+            } else {
+                $page_start = 0;
+                $page_end = $page_limit;
+            }
+        }
+        $show_records_list = array();
         if (!empty($total_records_list)) {
-            foreach ($total_records_list as $val) {
-                if ((strpos(strtolower($obj->encode_decode('decrypt', $val['product_name'])), $search_text) !== false)) {
-                    $list[] = $val;
+            foreach ($total_records_list as $key => $val) {
+                if ($key >= $page_start && $key < $page_end) {
+                    $show_records_list[] = $val;
                 }
             }
         }
-        $total_records_list = $list;
-    }
 
-    $total_pages = 0;
-    $total_pages = count($total_records_list);
-
-    $page_start = 0;
-    $page_end = 0;
-    if (!empty($page_number) && !empty($page_limit) && !empty($total_pages)) {
-        if ($total_pages > $page_limit) {
-            if ($page_number) {
-                $page_start = ($page_number - 1) * $page_limit;
-                $page_end = $page_start + $page_limit;
-            }
-        } else {
-            $page_start = 0;
-            $page_end = $page_limit;
+        $prefix = 0;
+        if (!empty($page_number) && !empty($page_limit)) {
+            $prefix = ($page_number * $page_limit) - $page_limit;
         }
-    }
-    $show_records_list = array();
-    if (!empty($total_records_list)) {
-        foreach ($total_records_list as $key => $val) {
-            if ($key >= $page_start && $key < $page_end) {
-                $show_records_list[] = $val;
-            }
-        }
-    }
-
-    $prefix = 0;
-    if (!empty($page_number) && !empty($page_limit)) {
-        $prefix = ($page_number * $page_limit) - $page_limit;
-    }
-    if ($total_pages > $page_limit) { ?>
-        <div class="pagination_cover mt-3">
-            <?php
-            include("pagination.php");
-            ?>
-        </div>
-    <?php } ?>
-    <?php
-    $access_error = "";
-    if (!empty($loginner_id)) {
-        $permission_action = $view_action;
-        include('permission_action.php');
-    }
-    if (empty($access_error)) {
-    ?>
-        <table class="table nowrap cursor text-center smallfnt">
-            <thead class="bg-light">
-                <tr>
-                    <th>S.No</th>
-                    <th>Product Name</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
+        if ($total_pages > $page_limit) { ?>
+            <div class="pagination_cover mt-3">
                 <?php
-                if (!empty($show_records_list)) {
-                    foreach ($show_records_list as $key => $list) {
-                        $index = $key + 1;
-                        if (!empty($prefix)) {
-                            $index = $index + $prefix;
-                        }
-                        ?>
-                        <tr>
-                            <td>
-                                <?php echo $index; ?>
-                            </td>
-                            <td>
-                                <?php
-                                if (!empty($list['product_name']) && $list['product_name'] != $GLOBALS['null_value']) {
-                                    echo $obj->encode_decode('decrypt', $list['product_name']);
-                                }
-                                ?>
+                include("pagination.php");
+                ?>
+            </div>
+        <?php } ?>
+        <?php
+        $access_error = "";
+        if (!empty($loginner_id)) {
+            $permission_action = $view_action;
+            include('permission_action.php');
+        }
+        if (empty($access_error)) {
+        ?>
+            <table class="table nowrap cursor text-center smallfnt">
+                <thead class="bg-light">
+                    <tr>
+                        <th>S.No</th>
+                        <th>Group Name</th>
+                        <th>Product Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (!empty($show_records_list)) {
+                        foreach ($show_records_list as $key => $list) {
+                            $index = $key + 1;
+                            if (!empty($prefix)) {
+                                $index = $index + $prefix;
+                            }
+                            ?>
+                            <tr>
+                                <td>
+                                    <?php echo $index; ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    if (!empty($list['group_name']) && $list['group_name'] != $GLOBALS['null_value']) {
+                                        echo $obj->encode_decode('decrypt', $list['group_name']);
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    if (!empty($list['product_name']) && $list['product_name'] != $GLOBALS['null_value']) {
+                                        echo $obj->encode_decode('decrypt', $list['product_name']);
+                                    }
+                                    ?>
+                                        <div class="w-100 py-2">
+                                            
+                                            <?php
+                                                if(!empty($list['creator_name'])) {
+                                                    $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
+                                                    echo "Creator : ". $list['creator_name'];
+                                                }
+                                            ?>                                        
+                                        </div>
+                                </td>
 
-                            </td>
-
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                        <?php
-                                        $access_error = "";
-                                        if (!empty($loginner_id)) {
-                                            $permission_action = $edit_action;
-                                            include('permission_action.php');
-                                        }
-                                        if (empty($access_error)) {
-                                            ?>
-                                            <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if (!empty($page_title)) {
-                                                echo $page_title;
-                                            } ?>', '<?php if (!empty($list['product_id'])) {
-                                                echo $list['product_id'];
-                                            } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
-                                        <?php } ?>
-                                        <?php
-                                        $access_error = "";
-                                        if (!empty($loginner_id)) {
-                                            $permission_action = $delete_action;
-                                            include('permission_action.php');
-                                        }
-                                        if (empty($access_error)) {
-                                            $linked_count = 0;
-                                            // $linked_count = $obj->GetProductLinkedCount($list['product_id']); 
-                                            if ($linked_count > 0) { ?>
-                                                <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-                                                <?php
-                                            } else {
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-dark show-button poppins" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                            <?php
+                                            $access_error = "";
+                                            if (!empty($loginner_id)) {
+                                                $permission_action = $edit_action;
+                                                include('permission_action.php');
+                                            }
+                                            if (empty($access_error)) {
                                                 ?>
-                                                <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if (!empty($page_title)) {
+                                                <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if (!empty($page_title)) {
                                                     echo $page_title;
                                                 } ?>', '<?php if (!empty($list['product_id'])) {
                                                     echo $list['product_id'];
-                                                } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-
-                                                <?php
+                                                } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
+                                            <?php } ?>
+                                            <?php
+                                            $access_error = "";
+                                            if (!empty($loginner_id)) {
+                                                $permission_action = $delete_action;
+                                                include('permission_action.php');
                                             }
-                                        }
-                                        ?>
-                                    </ul>
-                                </div>
-                            </td>
+                                            if (empty($access_error)) {
+                                                $linked_count = 0;
+                                                // $linked_count = $obj->GetProductLinkedCount($list['product_id']); 
+                                                if ($linked_count > 0) { ?>
+                                                    <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                    <?php
+                                                } else {
+                                                    ?>
+                                                    <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if (!empty($page_title)) {
+                                                        echo $page_title;
+                                                    } ?>', '<?php if (!empty($list['product_id'])) {
+                                                        echo $list['product_id'];
+                                                    } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <tr>
+                            <td colspan="5" class="text-center">Sorry! No records found</td>
                         </tr>
                         <?php
                     }
-                } else {
                     ?>
-                    <tr>
-                        <td colspan="5" class="text-center">Sorry! No records found</td>
-                    </tr>
-                    <?php
-                }
-                ?>
-            </tbody>
-        </table>               
-		<?php	
-	}
-}
+                </tbody>
+            </table>               
+            <?php	
+        }
+    }
 
     if (isset($_REQUEST['unit_select_change'])) {
         $list = json_decode($_REQUEST['unit_select_change'], true);
-    
+        
+
         $option = "";
         foreach ($list as $option_list) {
             if ($option_list['subunit_need'] == '1') {
@@ -589,7 +651,13 @@
                 } else {
                     $case = "Unit";
                 }
-                $option = $option . "<option value = '1'>" . $case . "</option>";
+                  
+                $option .= "<option value='1'";
+                if ($option_list['per_type'] == '1') {
+                    $option .= " selected";
+                }
+                $option .= ">$case</option>";
+
     
                 if (!empty($option_list['subunit_id'])) {
                     $piece = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['subunit_id'], 'unit_name');
@@ -597,7 +665,13 @@
                 } else {
                     $piece = "SubUnit";
                 }
-                $option = $option . "<option value = '2'>" . $piece . "</option>";
+               
+                $option .= "<option value='2'";
+                if ($option_list['per_type'] == '2') {
+                    $option .= " selected";
+                }
+                $option .= ">$piece</option>";
+                
             } else {
                 if (!empty($option_list['unit_id'])) {
                     $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['unit_id'], 'unit_name');
@@ -616,12 +690,12 @@
         $group_id = $_REQUEST['group_change_get_location'];
         $option = "<option value=''>Select Location</option>";
         $location_list = "";
-        $getUniqueID = 2;
+        $getUniqueID = 1;
         $getUniquename = $obj->getTableColumnValue($GLOBALS['group_table'],'group_id',$group_id,'lower_case_name');
         $getUniquename = $obj->encode_decode('decrypt', $getUniquename);
         if(!empty($getUniquename)) {
             if ($getUniquename == 'finished') {
-                $getUniqueID = 1;
+                $getUniqueID = 2;
                 $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
                 if(!empty($location_list)) {
                     foreach($location_list as $list) {
@@ -637,11 +711,10 @@
                 }
             }
         }
-        
         echo $option . "$$$" .  $getUniqueID;
     }
 
-    if (isset($_REQUEST['product_row_index'])) {
+    if(isset($_REQUEST['product_row_index'])){
         $product_row_index = $_REQUEST['product_row_index'];
         $location_id = $_REQUEST['location'];
         $unit_type = $_REQUEST['selected_unit_type'];
@@ -660,9 +733,9 @@
                 <?php
                 $location_name = "";
                 if($godown_magazine == 1) {
-                    $location_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_id, 'magazine_name');
-                } else {
                     $location_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_id, 'godown_name');
+                } else {
+                    $location_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_id, 'magazine_name');
                 }
                 if ($location_name != $GLOBALS['null_value']) {
                     echo $obj->encode_decode('decrypt', $location_name);
@@ -719,7 +792,7 @@
 
     if (isset($_POST['edit_id'])) {
         $product_name = ""; $product_name_error = ""; $unit_id = ""; $unit_id_error = ""; $subunit_id = ""; $subunit_id_error = ""; $subunit_contains = ""; $subunit_contains_error = ""; $sales_rate = ""; $sales_rate_error = ""; $per = ""; $per_error = ""; $per_type = ""; $per_type = ""; $opening_stock = array(); $stock_unique_ids = array();
-        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();
+        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();$hsn_code = ""; $hsn_code_error = ""; $group_lowercase = "";
         if (isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
             $edit_id = trim($edit_id);
@@ -737,7 +810,12 @@
                 }
             }
         }
-    
+
+        if(!empty($group)){
+            $group_lowercase =$obj->getTableColumnValue($GLOBALS['group_table'],'group_id',$group,'lower_case_name');
+            $group_lowercase = $obj->encode_decode('decrypt',$group_lowercase);
+        } 
+
         if (isset($_POST['product_name'])) {
             $product_name = $_POST['product_name'];
             $product_name = trim($product_name);
@@ -748,6 +826,19 @@
                 } else {
                     $valid_product = $valid->error_display($form_name, 'product_name', $product_name_error, 'text');
                 }
+            }
+        }
+
+        if(isset($_POST['hsn_code'])) {
+            $hsn_code = $_POST['hsn_code'];
+            $hsn_code = trim($hsn_code);
+        }
+        $hsn_code_error = $valid->valid_number($hsn_code, "Hsn Code", "1", "8");
+        if (!empty($hsn_code_error)) {
+            if (!empty($valid_product)) {
+                $valid_product = $valid_product . " " . $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
+            } else {
+                $valid_product = $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
             }
         }
 
@@ -805,45 +896,55 @@
             }
         }
 
-        if (isset($_POST['sales_rate'])) {
-            $sales_rate = $_POST['sales_rate'];
-            $sales_rate = trim($sales_rate);
-            $sales_rate_error = $valid->valid_price($sales_rate, 'Sales Rate', 1, '99999');
-            if (empty($sales_rate_error) && !empty($sales_rate) && $sales_rate > 99999) {
-                $sales_rate_error = "Only 99999 is allowed";
+        if($group_lowercase =='finished'){ 
+
+            if (isset($_POST['sales_rate'])) {
+                $sales_rate = $_POST['sales_rate'];
+                $sales_rate = trim($sales_rate);
+                $sales_rate_error = $valid->valid_price($sales_rate, 'Sales Rate', 1, '99999');
+                if (empty($sales_rate_error) && !empty($sales_rate) && $sales_rate > 99999) {
+                    $sales_rate_error = "Only 99999 is allowed";
+                }
             }
-        }
-        if (isset($_POST['per'])) {
-            $per = $_POST['per'];
-            $per = trim($per);
-            $per_error = $valid->valid_price($per, 'Per Unit', 1, '99999');
-            if (empty($per_error) && !empty($per) && $per > 99999) {
-                $per_error = "Only 99999 is allowed";
+            if (isset($_POST['per'])) {
+                $per = $_POST['per'];
+                $per = trim($per);
+                $per_error = $valid->valid_price($per, 'Per Unit', 1, '99999');
+                if (empty($per_error) && !empty($per) && $per > 99999) {
+                    $per_error = "Only 99999 is allowed";
+                }
+                if (isset($_POST['per_type'])) {
+                    $per_type = $_POST['per_type'];
+                    $per_type = trim($per_type);
+                }
             }
-            if (isset($_POST['per_type'])) {
-                $per_type = $_POST['per_type'];
-                $per_type = trim($per_type);
+            if (empty($per) && !empty($sales_rate) && empty($per_error)) {
+                $per_error = "Enter per value (Sales Rate is given)";
             }
-        }
-        if (empty($per) && !empty($sales_rate) && empty($per_error)) {
-            $per_error = "Enter per value (Sales Rate is given)";
-        }
-        if (!empty($per) && empty($sales_rate) && empty($sales_rate_error)) {
-            $sales_rate_error = "Enter Sales Rate (Per is given)";
-        }
-        if (!empty($sales_rate_error)) {
-            if (!empty($valid_product)) {
-                $valid_product = $valid_product . " " . $valid->error_display($form_name, 'sales_rate', $sales_rate_error, 'text');
-            } else {
-                $valid_product = $valid->error_display($form_name, 'sales_rate', $sales_rate_error, 'text');
+            if (!empty($per) && empty($sales_rate) && empty($sales_rate_error)) {
+                $sales_rate_error = "Enter Sales Rate (Per is given)";
             }
-        }
-        if (!empty($per_error)) {
-            if (!empty($valid_product)) {
-                $valid_product = $valid_product . " " . $valid->error_display($form_name, 'per', $per_error, 'text');
-            } else {
-                $valid_product = $valid->error_display($form_name, 'per', $per_error, 'text');
+            if (!empty($sales_rate_error)) {
+                if (!empty($valid_product)) {
+                    $valid_product = $valid_product . " " . $valid->error_display($form_name, 'sales_rate', $sales_rate_error, 'text');
+                } else {
+                    $valid_product = $valid->error_display($form_name, 'sales_rate', $sales_rate_error, 'text');
+                }
             }
+            if (!empty($per_error)) {
+                if (!empty($valid_product)) {
+                    $valid_product = $valid_product . " " . $valid->error_display($form_name, 'per', $per_error, 'text');
+                } else {
+                    $valid_product = $valid->error_display($form_name, 'per', $per_error, 'text');
+                }
+            }
+
+        }else{
+            
+            $sales_rate = $GLOBALS['null_value'];
+            $per = $GLOBALS['null_value'];
+            $per_type = $GLOBALS['null_value'];
+            
         }
         if (isset($_POST['content'])) {
             $contents = $_POST['content'];
@@ -861,7 +962,7 @@
             $location_ids = $_POST['location_id'];
         }
         if (isset($_POST['godown_magazine'])) {
-            $godown_magazine = $_POST['godown_magazine'];
+             $godown_magazine = $_POST['godown_magazine'];
         }
 
         if (!empty($location_ids) && empty($location_error)) {
@@ -869,9 +970,9 @@
                 $location_ids[$i] = trim($location_ids[$i]);
                 if (!empty($location_ids[$i])) {
                     if($godown_magazine == 1) {
-                        $location_name[$i] = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
-                    } else {
                         $location_name[$i] = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_ids[$i], 'godown_name');
+                    } else {
+                        $location_name[$i] = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
                     }
                     if (!empty($unit_type[$i])) {
                         if ($unit_type[$i] == '1') {
@@ -886,9 +987,10 @@
                         if (!empty($edit_id)) {
                             if (!empty($location_ids[$i])) {
                                 if($godown_magazine == 1) {
-                                    $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $location_ids[$i], $GLOBALS['null_value'], $edit_id, $str_unit_id, '');
+                                    $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $location_ids[$i], $GLOBALS['null_value'], $edit_id, $str_unit_id, $contents[$i]);
                                 } else {
-                                    $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $GLOBALS['null_value'], $location_ids[$i], $edit_id, $str_unit_id, '');
+                                    $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $GLOBALS['null_value'], $location_ids[$i], $edit_id, $str_unit_id, $contents[$i]);
+
 
                                 }
                             }
@@ -959,14 +1061,26 @@
                     $current_stock_subunit = 0;
                     $stock_table_unique_id = "";
                     $stock_unique_table = "";
-                    if($data['godown_id'] != $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']) {
+                    // if($data['godown_id'] != $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']) {
+                    //     $stock_unique_table = $GLOBALS['stock_by_godown_table'];
+                    // } else if($data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] != $GLOBALS['null_value']) {
+                    //     $stock_unique_table = $GLOBALS['stock_by_magazine_table'];
+                    // }
+                    if($godown_magazine == '1'){
                         $stock_unique_table = $GLOBALS['stock_by_godown_table'];
-                    } else if($data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] != $GLOBALS['null_value']) {
+                    }else{
                         $stock_unique_table = $GLOBALS['stock_by_magazine_table'];
                     }
-                    $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, $stock_godown_id, $stock_magazine_id, $stock_product_id, $stock_case_contains);
-                    $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, $stock_godown_id, $stock_magazine_id, $stock_product_id, $stock_case_contains);
-                    $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, $stock_godown_id, $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                    if($godown_magazine == '1'){
+                        $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                        $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                        $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+                    }else{
+                        $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                        $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                        $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
+                    }
+                
 
                     if (!empty($current_stock_unit) && $current_stock_unit != $GLOBALS['null_value']) {
                         $current_stock_unit = $current_stock_unit - $inward_unit;
@@ -988,6 +1102,9 @@
     
                         if (preg_match("/^\d+$/", $stock_update_id)) {
                             if (preg_match("/^\d+$/", $stock_table_unique_id)) {
+                                $columns = array(); $values = array();
+                                $columns = array('current_stock_unit', 'current_stock_subunit');
+                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
                                 $stock_table_update_id = $obj->UpdateSQL($stock_unique_table, $stock_table_unique_id, $columns, $values, '');
                             }
                         }
@@ -1081,6 +1198,9 @@
             if (empty($rate_per_case)) {
                 $rate_per_case = $GLOBALS['null_value'];
             }
+            if (empty($hsn_code)) {
+                $hsn_code = $GLOBALS['null_value'];
+            }
             $prev_product_id = "";
             $product_error = "";
             if (!empty($lower_case_name)) {
@@ -1101,8 +1221,8 @@
                         $action = "New Product Created - " . $obj->encode_decode("decrypt", $product_name);
                     }
                     $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name','hsn_code', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'0'");
                     $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values, 'product_id', '', $action);
                     if (preg_match("/^\d+$/", $product_insert_id)) {
                         $product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'id', $product_insert_id, 'product_id');
@@ -1129,8 +1249,8 @@
 
                         $columns = array();
                         $values = array();
-                        $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece');
-                        $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'");
+                        $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name','hsn_code', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece');
+                        $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'");
                         $entry_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
                         if (preg_match("/^\d+$/", $entry_update_id)) {
                             $update_stock = 1;
@@ -1149,7 +1269,6 @@
             }
             if (!empty($update_stock) && $update_stock == 1) {
                 if (!empty($product_id) && !empty($unit_id)) {
-
                     $stock_date = explode(",", $stock_date);
                     $opening_stock = explode(",", $opening_stock);
                     $unit_type = explode(",", $unit_type);
@@ -1170,6 +1289,7 @@
                             }
                             if ($unit_type[$i] == '1') {
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $unit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
+
                             } else if ($unit_type[$i] == '2') {
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $subunit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
                             }
@@ -1285,5 +1405,26 @@
         exit;
     }
 
+    if(isset($_REQUEST['check_product_count'])){
+        $check_product_count = $_REQUEST['check_product_count'];
+       
+        $product_list = array();
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '','');
+        
+        if(!empty($product_list)){
+            echo $product_count = count($product_list);
+        }
+    }
+
+    if(isset($_REQUEST['clear_category_product_tables'])) {
+        $clear_category_product_tables = $_REQUEST['clear_category_product_tables'];
+        if(!empty($clear_category_product_tables) && $clear_category_product_tables == 1) {
+            $clear_records = 1;
+            $tables = array($GLOBALS['product_table']);
+            $clear_records = $obj->getClearTableRecords($tables);
+            echo $clear_records;
+            exit;
+        }
+    }
     
     ?>

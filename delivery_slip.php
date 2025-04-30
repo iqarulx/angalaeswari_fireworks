@@ -19,7 +19,7 @@
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');$current_date = date('Y-m-d');
 
     $cancelled_bill = ""; $cancelled_count = 0;
-    $cancelled_bill = $obj->getAllRecords($GLOBALS['delivery_slip_table'], 'cancelled', 1);
+    $cancelled_bill = $obj->getAllRecords($GLOBALS['delivery_slip_table'], 'deleted', 1);
     $cancelled_count = count($cancelled_bill);
 
     $customer_list =array();
@@ -65,7 +65,7 @@
                                                 </div>
                                             </div> 
                                         </div>
-                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
+                                        <div class="col-lg-3 col-md-4 col-6 mb-2">
                                             <div class="input-group">
                                                 <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
                                                     <option value="">Select Customer</option>

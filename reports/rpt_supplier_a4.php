@@ -34,7 +34,7 @@
     $pdf->AddPage();
     $pdf->SetAutoPageBreak(false);
     
-    $file_name="supplier List";
+    $file_name="Supplier List";
 
     include("rpt_header.php");
 

@@ -1,9 +1,9 @@
 <?php
 	include("include.php");
-    $loginner_id = "";
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['payment_mode_module'];
         }
     }
@@ -310,7 +310,7 @@
 			</div> 
 		<?php }
         $access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
@@ -349,7 +349,7 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                         <?php 
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $edit_action;
                                                 include('permission_action.php');
                                             }
@@ -357,7 +357,7 @@
                                                 <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['payment_mode_id'])) { echo $list['payment_mode_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                             <?php } 
                                             $access_error = "";
-                                            if(!empty($loginner_id)) {
+                                            if(!empty($login_staff_id)) {
                                                 $permission_action = $delete_action;
                                                 include('permission_action.php');
                                             }

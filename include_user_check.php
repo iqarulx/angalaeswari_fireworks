@@ -1,5 +1,6 @@
-<?php
+<?php    
     include("include.php");
+
     $login_user_id = "";
     if(!empty($_SESSION)) {
         $login_user_id = $obj->checkUser();

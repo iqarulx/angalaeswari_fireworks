@@ -19,7 +19,7 @@
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');$current_date = date('Y-m-d');
 
     $cancelled_bill = ""; $cancelled_count = 0;
-    $cancelled_bill = $obj->getAllRecords($GLOBALS['estimate_table'], 'cancelled', 1);
+    $cancelled_bill = $obj->getAllRecords($GLOBALS['estimate_table'], 'deleted', 1);
     $cancelled_count = count($cancelled_bill);
 
     $customer_list =array();
@@ -89,9 +89,11 @@
                                                 <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                             </div>
                                         </div>
+                                        <?php /*
                                         <div class="col-lg-2 col-md-2 col-6 text-end">
                                             <button class="btn btn-danger m-1 " style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>   
                                         </div>
+                                        */ ?>
                                         <div class="row justify-content-end inactive_btn_row p-2">
                                             <?php if(!empty($cancelled_count)) { ?>
                                                 <div class="col-lg-2 col-6">

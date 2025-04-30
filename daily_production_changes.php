@@ -1,9 +1,9 @@
 <?php
-	include("include_files.php");
-    $loginner_id = "";
+	include("include.php");
+    $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['daily_production_module'];
         }
     }
@@ -270,7 +270,7 @@
                                                             <th class="text-center px-2 py-2">
                                                                 <?php if(!empty($contains[$i])) { echo $contains[$i]; } ?>
                                                             </th>
-                                                        <?php }else{ ?>
+                                                        <?php } else { ?>
                                                             <th> <?php echo " - "; ?></th>
                                                             <?php
                                                         } ?>
@@ -303,7 +303,7 @@
                                                                 if($inward_quantity >= $outward_quantity){
                                                                     $show_button = 1;
                                                                 }
-                                                            }else if($negative_stock_allowed == 1){
+                                                            } else if($negative_stock_allowed == 1){
                                                                 $show_button = 1;
                                                             }
                                                             // if($inward_quantity >= $outward_quantity) {
@@ -370,6 +370,32 @@
 		<?php
     } 
     if(isset($_POST['edit_id'])) {
+
+        function combineAndSumUp ($myArray) {
+            $finalArray = Array ();
+            foreach ($myArray as $nkey => $nvalue) {
+                $has = false;
+                $fk = false;
+                foreach ($finalArray as $fkey => $fvalue) {
+                    if(($fvalue['magazine_id'] == $nvalue['magazine_id']) && ($fvalue['product_id'] == $nvalue['product_id'])  && ($fvalue['subunit_content'] == $nvalue['subunit_content'])) {    
+                        $has = true;
+                        $fk = $fkey;
+                        break;
+                    }
+                }
+    
+                if($has === false) {
+                    $finalArray[] = $nvalue;
+                } else {
+                    $finalArray[$fk]['product_id'] = $nvalue['product_id'];
+                    $finalArray[$fk]['subunit_content'] = $nvalue['subunit_content'];
+                    $finalArray[$fk]['quantity'] += $nvalue['quantity'];
+                }
+            }
+            return $finalArray;
+            // print_r($final_array);
+        }
+
         $entry_date = ""; $entry_date_error = ""; $bill_date = ""; $bill_date_error = "";
         $magazine_id = ""; $magazine_id_error = ""; $contractor_id = ""; $contractor_id_error = "";
         $product_ids = array(); $unit_ids = array(); $quantity = array(); $cooly_per_qty = array(); $total_cooly = array(); $product_error = ""; $product_names = array(); $unit_names = array(); $total_quantity = 0; $total_amount = 0; $stock_unique_ids = array();
@@ -396,7 +422,7 @@
         if(isset($_POST['selected_magazine_id'])) {
 
             $magazine_id = $_POST['selected_magazine_id'];
-            $magazine_id = trim($magazine_id);
+           echo $magazine_id = trim($magazine_id);
             $magazine_id_error = $valid->common_validation($magazine_id, 'Magazine', 'select');
             if(empty($magazine_id_error)) {
                 $magazine_unique_id = "";
@@ -476,6 +502,14 @@
                     }
                     $unit_ids[$i] = trim($unit_ids[$i]);
                     if(!empty($unit_ids[$i])) {
+                        $unit_type = ""; $product_qty = 0;
+                        if($unit_ids[$i] == $product_unit_id) {
+                            $unit_type = 1; 
+                        }  else if ($unit_ids[$i] == $product_subunit_id) {
+                            $unit_type = 2;
+                        } else {
+                            $unit_type = ""; 
+                        }
                         $unit_unique_id = "";
                         $unit_unique_id = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'id');
                         if(preg_match("/^\d+$/", $unit_unique_id)) {
@@ -483,37 +517,45 @@
                             $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
                             $unit_names[$i] = $unit_name;
                             if(!empty($edit_id)) {
-                                $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, '', $magazine_id, $product_ids[$i], $unit_ids[$i], $case_contains[$i]);
+                                $stock_unique_ids[] = $obj->getStockUniqueID($edit_id, '', $magazine_id, $product_ids[$i], $unit_ids[$i], $case_contains[$i]);
                             }
                             $quantity[$i] = trim($quantity[$i]);
                             if(!empty($quantity[$i])) {
                                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) {
-                                    $total_quantity += $quantity[$i];
+                                    // $total_quantity += $quantity[$i];
 
                                     if(!empty($cooly_amount[$i])){
                                         $overall_cooly_total += $cooly_amount[$i];
                                     }
 
 
-                                    $negative_stock_allowed = "";
-                                    $negative_stock_allowed = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'negative_stock');
-                                    $inward_quantity = 0; $outward_quantity = 0; $current_stock_unit = 0;
-                                    $inward_quantity = $obj->getInwardQty($edit_id, '', $magazine_id, $product_ids[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardQty('', '', $magazine_id, $product_ids[$i], $case_contains[$i]);
+                                    // $negative_stock_allowed = "";
+                                    // $negative_stock_allowed = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'negative_stock');
+                                    // $inward_quantity = 0; $outward_quantity = 0; $current_stock_unit = 0;
+                                    // $inward_quantity = $obj->getInwardQty($edit_id, '', $magazine_id, $product_ids[$i], $case_contains[$i]);
+                                    // $outward_quantity = $obj->getOutwardQty('', '', $magazine_id, $product_ids[$i], $case_contains[$i]);
 
-                                    if($unit_ids[$i] == $product_subunit_id && !empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) {
-                                        $inward_quantity = $inward_quantity * $case_contains[$i];
-                                        $outward_quantity = $outward_quantity * $case_contains[$i];
+                                    // if($unit_ids[$i] == $product_subunit_id && !empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) {
+                                    //     $inward_quantity = $inward_quantity * $case_contains[$i];
+                                    //     $outward_quantity = $outward_quantity * $case_contains[$i];
+                                    // }
+                                    // $comparable_qty = 0;
+                                    // $comparable_qty = $inward_quantity + $quantity[$i];
+                                    // if(empty($negative_stock_allowed)){
+                                    //     if($comparable_qty < $outward_quantity) {
+                                    //         $accurate_qty = 0;
+                                    //         $accurate_qty = $outward_quantity - $inward_quantity;
+                                    //         $product_error = "Max Qty:  ".$accurate_qty." in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    //     }
+                                    // }
+
+                                    if ($unit_type == '1') {
+                                        $product_qty = $quantity[$i];
+                                    } else if ($unit_type == '2') {
+                                        $product_qty = $quantity[$i] / $case_contains[$i];
                                     }
-                                    $comparable_qty = 0;
-                                    $comparable_qty = $inward_quantity + $quantity[$i];
-                                    if(empty($negative_stock_allowed)){
-                                        if($comparable_qty < $outward_quantity) {
-                                            $accurate_qty = 0;
-                                            $accurate_qty = $outward_quantity - $inward_quantity;
-                                            $product_error = "Max Qty:  ".$accurate_qty." in Product - ".($obj->encode_decode('decrypt', $product_name));
-                                        }
-                                    }
+
+                                    $individual_product_detail[] = array('magazine_id' => $magazine_id,'product_id' => $product_ids[$i],'subunit_content' => $case_contains[$i],'quantity' => $product_qty); 
                             
                                 }
                                 else {
@@ -534,6 +576,13 @@
                 }
                 else {
                     $product_error = "Invalid Product";
+                }
+
+                array_multisort(array_column($individual_product_detail, "magazine_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, $individual_product_detail);
+
+                if(empty($valid_material_transfer))
+                {
+                    $final_array = combineAndSumUp($individual_product_detail);
                 }
             }
         }
@@ -580,7 +629,55 @@
             $product_error = "Bill value cannot be 0";
         }
 
-        if(!empty($edit_id)) {
+        $stock_error = 0; $valid_stock = "";
+        if(!empty($final_array) && empty($valid_daily_production))
+        {
+            foreach($final_array as $data)
+            {
+                $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
+                $subunit_need =0;$subunit_need = 0; $product ="";
+                $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
+                
+                $inward_unit = $obj->getInwardQty($edit_id,'',$data['magazine_id'],$data['product_id'],$data['subunit_content']);
+                $outward_unit = $obj->getOutwardQty('','',$data['magazine_id'],$data['product_id'],$data['subunit_content']); 
+
+                $inward_subunit = $obj->getInwardSubunitQty($edit_id,'',$data['magazine_id'],$data['product_id'],$data['subunit_content']);
+                $outward_subunit = $obj->getOutwardSubunitQty('','',$data['magazine_id'],$data['product_id'],$data['subunit_content']); 
+                $available_stock_unit = $inward_unit - $outward_unit;
+                $available_stock_subunit = $inward_subunit - $outward_subunit;
+
+                $inward_unit += $data['quantity'];
+                if(!empty($data['subunit_content']) && $data['subunit_content'] != $GLOBALS['null_value']){
+                      $inward_subunit += ($data['quantity'] * $data['subunit_content']);
+                }
+
+                $current_stock_unit = $inward_unit - $outward_unit;
+                $current_stock_subunit = $inward_subunit - $outward_subunit;
+                // echo ($data['quantity'] ." / ". $current_stock_unit);
+                if($data['quantity'] > $current_stock_unit) {
+                    $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
+                    $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need'); 
+
+                    if(!empty($product))
+                    {
+                        $product = $obj->encode_decode("decrypt",$product);
+                    }
+                   
+                    $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
+                    if($negative_stock !='1')
+                    {
+                        if($subunit_need == 1){
+                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit." ,  Subunit => ".$available_stock_subunit ;
+                        }else{
+                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit;
+                        }            
+                        $stock_error = 1;
+                    }
+                }
+            }
+        }
+
+        if(!empty($edit_id)  && empty($product_error) && empty($valid_stock)) {
             $prev_stock_list = array();
             $prev_stock_list = $obj->PrevStockList($edit_id);
             if(!empty($prev_stock_list)) {
@@ -648,7 +745,8 @@
         }
 
         $result = "";
-        if(empty($valid_daily_production) && empty($product_error)) {
+        // echo $valid_stock .= "ki";
+        if(empty($valid_daily_production) && empty($product_error) && empty($valid_stock)) {
             $check_user_id_ip_address = 0;
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
             if(preg_match("/^\d+$/", $check_user_id_ip_address)) {
@@ -821,6 +919,9 @@
             else if(!empty($product_error)) {
                 $result = array('number' => '2', 'msg' => $product_error);
             }
+            else if(!empty($valid_stock)) {
+                $result = array('number' => '2', 'msg' => $valid_stock);
+            }
         }
         
         if(!empty($result)) {
@@ -917,7 +1018,7 @@
         <?php } ?>
         <?php
         $add_access_error = "";
-        if(!empty($loginner_id)) {
+        if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }

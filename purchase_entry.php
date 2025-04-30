@@ -15,17 +15,22 @@
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');$current_date = date('Y-m-d');
     $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
 
+    
+    $cancelled_bill = ""; $cancelled_count = 0;
+    $cancelled_bill = $obj->getAllRecords($GLOBALS['purchase_entry_table'], 'cancelled', 1);
+    $cancelled_count = count($cancelled_bill);
+
 ?>
 <!--Right Content-->
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
                 <div class="row">
-                    <form name="table_listing_form" method="post">
                         <div class="col-12">
                             <div class="card">
                                 <div class="border card-box d-none add_update_form_content" id="add_update_form_content" ></div>
                                 <div class="border card-box" id="table_records_cover">
+                                 <form name="table_listing_form" method="post">
                                     <div class="card-header align-items-center">
                                         <div class="row justify-content-end p-2">
                                             <div class="col-lg-2 col-md-3 col-6">
@@ -69,18 +74,30 @@
                                             <div class="col-lg-2 col-md-2 col-4">
                                                 <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
                                             </div>
+
+                                            <?php if(!empty($cancelled_count)) { ?>
+                                                    <div class="row justify-content-end p-2">
+
+                                                        <div class="col-lg-3 col-6 text-end">
+                                                            <button class="btn btn-dark float-end" id='show_button' style="font-size:11px;" type="button" onclick="Javascript:assign_bill_value();">Show Inactive Bill</button>
+                                                        </div>
+                                                    </div>
+
+                                                <?php } ?>
+
                                             <div class="col-sm-6 col-xl-8">
                                                 <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
                                                 <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
                                                 <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                                <input type="hidden" name='show_bill' value="0" id='show_bill'>
                                             </div>	
                                         </div>
                                     </div>
                                     <div id="table_listing_records"></div>
+                                </form>
                                 </div>
                             </div>   
                         </div>
-                    </form>
                 </div>  
             </div>
         </div>          
