@@ -9,7 +9,7 @@
     $company_list = array(); $company_details = "";
     $company_list = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'company_details');
     if(!empty($company_list)){
-        $company_details = $obj->encode_decode('decrypt',$company_list);
+        $company_details =html_entity_decode($obj->encode_decode('decrypt',$company_list));
         $company_details = explode("$$$", $company_details);
     }
     $bill_company_id = $GLOBALS['bill_company_id'];
@@ -33,7 +33,7 @@
                 
                 if ($i === 0) {  // Corrected comparison
                     $pdf->SetFont('Arial', 'B', 11);
-                    $pdf->MultiCell(110, 7, html_entity_decode($company_details[$i],ENT_QUOTES), 0, 'C');
+                    $pdf->MultiCell(110, 7, $company_details[$i], 0, 'C');
                     $rt = $pdf->gety();
                 } elseif (strpos($company_details[$i], "GST") !== false) {
                     $pdf->sety($y);
@@ -44,7 +44,7 @@
                     $pdf->SetFont('Arial', '', 8);
                     // $pdf->sety($rt);
                     $pdf->SetX(50);
-                    $pdf->MultiCell(110, 4, html_entity_decode($company_details[$i],ENT_QUOTES), 0, 'C');
+                    $pdf->MultiCell(110, 4, $company_details[$i], 0, 'C');
                       $end_y =$pdf->GetY();
                 }
             }

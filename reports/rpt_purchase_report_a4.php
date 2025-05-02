@@ -23,11 +23,16 @@ include("../include/number2words.php");
        $bill = $_REQUEST['bill'];
     }
 
+    $cancel_bill_btn = "";
+    if(isset($_REQUEST['cancel_bill_btn'])) {
+        $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
+    }
+
     $pdf_download_name ="";
     $pdf_download_name = "Purchase Report PDF -"." (".$from_date ." to ".$to_date .")";
 
     $total_records_list = array();
-    $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $filter_party_id);
+    $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $filter_party_id,$cancel_bill_btn);
     if(!empty($bill)) {
         $bill = strtolower($bill);
         $list = array();
@@ -150,13 +155,13 @@ include("../include/number2words.php");
                 $pdf->MultiCell(60,5,$data['purchase_entry_number']."\n".date('d-m-Y',strtotime($data['purchase_entry_date'])),0,'C',0);
             }
             $pdf->SetTextColor(255,0,0);
-            // if (($data['cancelled']) == '1') {
-            //     $pdf->SetX(30);
-            //     $pdf->Cell(60,5,'Cancelled',0,1,'C',0);   
-            // } else {
-            //     $pdf->Cell(60,0,'',0,1,'C',0);   
+            if (($data['cancelled']) == '1') {
+                $pdf->SetX(30);
+                $pdf->Cell(60,5,'Cancelled',0,1,'C',0);   
+            } else {
+                $pdf->Cell(60,0,'',0,1,'C',0);   
 
-            // }
+            }
             $pdf->SetTextColor(0,0,0);
             $date_end = $pdf->GetY();
 

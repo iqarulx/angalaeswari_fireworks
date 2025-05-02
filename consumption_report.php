@@ -70,6 +70,7 @@
         }
         $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, $contractor_id);
     }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,14 +91,14 @@
                     <form name="consumption_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
-                                <div class="col-lg-2 col-md-3 col-4">
-                                    <button class="btn btn-success float-end" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
-                                </div>
-                                <?php if(!empty($product_id)) { ?>
-                                    <div class="col-lg-1 col-md-3 col-4">
-                                        <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="window.open('consumption_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>
-                                    </div>
+                                <div class="col-lg-3 col-md-3 col-4">
+                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_consumption_report.php?filter_group_id=<?php echo $group_id; ?>&filter_godown_id=<?php echo $godown_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contractor_id=<?php echo $contractor_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                    <button class="btn btn-success" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
+                                    <?php if(!empty($product_id)) { ?>
+                                        <button class="btn btn-danger" style="font-size:11px;" type="button" onclick="window.open('consumption_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>
                                 <?php } ?>
+                                </div>
+                                
                             </div>
                             <div class="row px-2 mx-0 mt-3">
                                 <div class="col-lg-2 col-md-4 col-6">

@@ -85,22 +85,15 @@
                     <form name="godown_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
-                                <div class="col-lg-2 col-md-3 col-4">
-                                    <button class="btn btn-success float-end" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
-                                </div>
-                                <?php /* ?>
-                                <div class="col-lg-1 col-md-3 col-4">
-                                    <button class="btn btn-primary float-end" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_godown_report.php?filter_from_date=<?php echo $from_date; ?>&filter_to_date=<?php echo $to_date; ?>&filter_category_id=<?php echo $category_id; ?>&filter_group_id=<?php echo $group_id; ?>&filter_factory_id=<?php echo $factory_id; ?>&filter_godown_id=<?php echo $godown_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_supplier_id=<?php echo $supplier_id; ?>&filter_contractor_id=<?php echo $contractor_id; ?>&filter_outsourceparty_id=<?php echo $outsourceparty_id; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>&from=')"> <i class="fa fa-print"></i> Print </button>
-                                </div>
-                                <div class="col-lg-1 col-md-3 col-4">
-                                    <button class="btn btn-info float-end" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_godown_report.php?filter_from_date=<?php echo $from_date; ?>&filter_to_date=<?php echo $to_date; ?>&filter_category_id=<?php echo $category_id; ?>&filter_group_id=<?php echo $group_id; ?>&filter_factory_id=<?php echo $factory_id; ?>&filter_godown_id=<?php echo $godown_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_supplier_id=<?php echo $supplier_id; ?>&filter_contractor_id=<?php echo $contractor_id; ?>&filter_outsourceparty_id=<?php echo $outsourceparty_id; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>&from=D')"> <i class="fa fa-print"></i> PDF </button>
-                                </div>
-                                <?php */ ?>
-                                <?php if(!empty($product_id)) { ?>
-                                    <div class="col-lg-1 col-md-3 col-4">
-                                        <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="window.open('godown_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>
-                                    </div>
+                           
+                                <div class="col-lg-3 col-md-3 col-4">
+                                
+                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_godown_report.php?filter_group_id=<?php echo $group_id; ?>&filter_godown_id=<?php echo $godown_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                    <button class="btn btn-success " style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
+                                    <?php if(!empty($product_id)) { ?>
+                                        <button class="btn btn-danger " style="font-size:11px;" type="button" onclick="window.open('godown_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>
                                 <?php } ?>
+                                </div>
                             </div>
                             <div class="row px-2 mx-0 mt-3">
                                 <div class="col-lg-2 col-md-4 col-6">

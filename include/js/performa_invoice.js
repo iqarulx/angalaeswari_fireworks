@@ -452,6 +452,15 @@ function ProductRowCheck(obj) {
         else if (price_regex.test(selected_per_type) == false) {
             per_error = 0;
         }
+    } else if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
+        selected_per_type = jQuery(obj).closest('tr').find('select[name="per_type[]"]').val();
+        selected_per_type = jQuery.trim(selected_per_type);
+        if (typeof selected_per_type == "undefined" || selected_per_type == "" || selected_per_type == 0) {
+            per_check = 0;
+        }
+        else if (price_regex.test(selected_per_type) == false) {
+            per_error = 0;
+        }
     }
 
     if (parseFloat(rate_error) == 0) {
@@ -473,6 +482,8 @@ function ProductRowCheck(obj) {
     if (parseFloat(per_type_error) == 0) {
         if (jQuery(obj).closest('tr').find('input[name="per_type[]"]').length > 0) {
             jQuery(obj).closest('tr').find('input[name="per_type[]"]').after('<span class="infos">Invalid Per</span>');
+        } else if (jQuery(obj).closest('tr').find('select[name="per_type[]"]').length > 0) {
+            jQuery(obj).closest('tr').find('select[name="per_type[]"]').after('<span class="infos">Invalid Per</span>');
         }
     }
 
@@ -2056,20 +2067,20 @@ function changeState() {
     }
 }
 
-function ViewStatusDetails(proforma_invoice_id){
+function ViewStatusDetails(proforma_invoice_id) {
     var post_url = "proforma_invoice_changes.php?status_proforma_invoice_id=" + proforma_invoice_id;
     jQuery.ajax({
         url: post_url, success: function (result) {
             result = result.trim();
-            if(jQuery('.order_details_modal_button').length > 0) {
+            if (jQuery('.order_details_modal_button').length > 0) {
                 jQuery('.order_details_modal_button').trigger('click');
             }
 
-            if(jQuery('#ViewOrderDetailsModal').length > 0) {
-                if(jQuery('#ViewOrderDetailsModal').find('.modal-title').length > 0) {
+            if (jQuery('#ViewOrderDetailsModal').length > 0) {
+                if (jQuery('#ViewOrderDetailsModal').find('.modal-title').length > 0) {
                     jQuery('#ViewOrderDetailsModal').find('.modal-title').html('Proforma Invoice Details');
                 }
-                if(jQuery('#ViewOrderDetailsModal').find('.modal-body').length > 0) {
+                if (jQuery('#ViewOrderDetailsModal').find('.modal-body').length > 0) {
                     jQuery('#ViewOrderDetailsModal').find('.modal-body').html(result);
                 }
             }

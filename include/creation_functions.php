@@ -881,7 +881,7 @@
 			return $list;
 		}
 
-		public function getPurchaseReportList($from_date, $to_date, $supplier_id) {
+		public function getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn) {
 			$select_query = ""; $where = "";
 			
 			if(!empty($from_date)) {
@@ -903,6 +903,16 @@
 					$where = " supplier_id <='".$supplier_id."'";
 				}
 			}
+
+			if(empty($cancel_bill_btn)) {
+				$cancel_bill_btn = 0;
+				if(!empty($where)) {
+					$where = $where." AND cancelled = '0'";
+				}
+				else {
+					$where = "cancelled = '0'";
+				}
+			}
 			
 			if(!empty($where)) {
 				$select_query = " SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." AND deleted='0' ORDER BY id
@@ -919,7 +929,7 @@
 			return $list;
 		}
 			
-		public function getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id) {
+		public function getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn) {
 			$select_query = ""; $where = "";
 			
 			if(!empty($from_date)) {
@@ -955,12 +965,22 @@
 					$where = " transport_id='".$transport_id."'";
 				}
 			}
+
+			if(empty($cancel_bill_btn)) {
+				$cancel_bill_btn = 0;
+				if(!empty($where)) {
+					$where = $where." AND cancelled = '0'";
+				}
+				else {
+					$where = "cancelled = '0'";
+				}
+			}
 			
 			if(!empty($where)) {
-				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." AND deleted='0' ORDER BY id DESC";
+				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." AND  deleted='0' ORDER BY id DESC";
 			} 
 			else{ 
-				$select_query="SELECT * FROM " .$GLOBALS['estimate_table']." WHERE deleted='0' ORDER BY id DESC"; 
+				$select_query="SELECT * FROM " .$GLOBALS['estimate_table']." WHERE  deleted='0'   ORDER BY id DESC"; 
 			}
 			if(!empty($select_query)) { 
 				$list = $this->getQueryRecords($GLOBALS['estimate_table'],$select_query);
@@ -2146,7 +2166,7 @@
 			}
 
 			if(!empty($where)){
-				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Opening Balance' AND deleted = '0'";
+				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Contractor Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2158,6 +2178,65 @@
 			}
 			return $count;
 		}
+
+		public function PaymentlinkedSupplier($supplier_id){
+			$list = array(); $select_query = "";  $count = 0;
+			if(!empty($supplier_id)){
+				$where = " FIND_IN_SET('".$supplier_id."', party_id) AND ";
+			}
+
+			if(!empty($where)){
+				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Supplier Opening Balance' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		public function PaymentlinkedCustomer($customer_id){
+			$list = array(); $select_query = "";  $count = 0;
+			if(!empty($customer_id)){
+				$where = " FIND_IN_SET('".$customer_id."', party_id) AND ";
+			}
+
+			if(!empty($where)){
+				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Customer Opening Balance' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		public function PaymentlinkedAgent($agent_id){
+			$list = array(); $select_query = "";  $count = 0;
+			if(!empty($agent_id)){
+				$where = " FIND_IN_SET('".$agent_id."', party_id) AND ";
+			}
+
+			if(!empty($where)){
+				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Agent Opening Balance' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		
 		
     }
 ?>

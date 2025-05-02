@@ -3,8 +3,8 @@
 	include("../include_user_check.php");
 
     
-    $party_id = ""; $from = ""; $brand_id = "";
-    $product_id = ""; $group_id = ""; $godown_id = ""; $unit_type = ""; $stock_type = ""; $case_contains = "";
+    $product_id = ""; $group_id = ""; $godown_id = ""; $unit_type = ""; $stock_type = "Consumption Entry"; $case_contains = "";
+    $contractor_id = ""; $from = "";
     if(isset($_REQUEST['filter_group_id'])) {
         $group_id = $_REQUEST['filter_group_id'];
     }
@@ -14,11 +14,12 @@
     if(isset($_REQUEST['filter_product_id'])) {
         $product_id = $_REQUEST['filter_product_id'];
     }
+    if(isset($_REQUEST['filter_contractor_id'])) {
+        $contractor_id = $_REQUEST['filter_contractor_id'];
+    }
+
     if(isset($_REQUEST['unit_type'])) {
         $unit_type = $_REQUEST['unit_type'];
-    }
-    if(isset($_REQUEST['stock_type'])) {
-        $stock_type = $_REQUEST['stock_type'];
     }
     if(isset($_REQUEST['filter_contains'])) {
         $case_contains = $_REQUEST['filter_contains'];
@@ -26,43 +27,30 @@
     if(empty($unit_type)) {
         $unit_type = "Unit";
     }
+
     if(isset($_REQUEST['from'])) {
         $from = $_REQUEST['from'];
     }
-
-    $group_list = array();
-    $group_list = $obj->getGroupList('1');
-
-    $product_list = array();
-    if(!empty($group_id)) {
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $group_id, '');
-    }
-    else {
-        $product_list = $obj->getProducts('1');
-    }
-
-    $godown_list = array();
-    $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
 
     $product_subunit_id = ""; $subunit_hide = 1;
     if(!empty($product_id)) {
         $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
         if(empty($product_subunit_id) || $product_subunit_id == $GLOBALS['null_value']) {
             $subunit_hide = 0;
+            $unit_type = "Unit";
         }
     }
 
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
-        $total_records_list = $product_list;
+        $total_records_list = $obj->getConsumptionQtyList($contractor_id);
     }
     else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '');
+        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, $contractor_id);
     }
-
 
     require_once('../fpdf/AlphaPDF.php');
     $pdf = new AlphaPDF('P','mm','A4');
@@ -70,7 +58,7 @@
     $pdf->AddPage();
     $pdf->SetAutoPageBreak(false);
 
-    $file_name="Godown Report";
+    $file_name="Consumption Report";
     include("rpt_header.php");
     
     $pdf->SetY($header_end);
@@ -89,11 +77,11 @@
         
         $pdf->SetY($bill_to_y);
         $pdf->SetX(10);
-        $pdf->Cell(190,7,'Godown Report ',1,1,'C',0);
+        $pdf->Cell(190,7,'Consumption Report ',1,1,'C',0);
         $pdf->SetX(10);
-        $pdf->Cell(20,8,'#',1,0,'C',0);
-        $pdf->Cell(90,8,'Product',1,0,'C',0);
-        $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+        $pdf->Cell(20,10,'#',1,0,'C',0);
+        $pdf->Cell(90,10,'Product',1,0,'C',0);
+        $pdf->Cell(80,10,'Quantity',1,1,'C',0);
         $pdf->SetFont('Arial','',7);
         
         $y_axis=$pdf->GetY();
@@ -104,8 +92,8 @@
             $footer_height += 15;
         }
         if(!empty($total_records_list)) {
-           
-          
+            $total_quantity = 0;
+
             foreach($total_records_list as $key => $data) {
                 $inward_unit = 0; $outward_unit = 0; $unit_name = ""; $subunit_name = ""; $outward_unit = 0; $outward_subunit = 0;
                 $index = $key + 1; 
@@ -113,11 +101,11 @@
                     $y = $pdf->GetY();
                     $pdf->SetY($y_axis);
                     $pdf->SetX(10);
-                    $pdf->Cell(20,276-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(90,276-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(80,276-$y_axis,'',1,1,'C',0);
+                    $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(90,277-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(80,277-$y_axis,'',1,1,'C',0);
 
-                    $pdf->SetFont('Arial','B',10);
+                    // $pdf->SetFont('Arial','B',10);
                     // $next_page = $pdf->PageNo() +1;
                     // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
                     $pdf->SetFont('Arial','I',7);
@@ -130,7 +118,7 @@
                     $total_pages[] = $page_number;
                     $last_count = $l+1;
 
-                    $file_name="Godown Report";
+                    $file_name="Consumption Report";
                     include("rpt_header.php");
                     
                     $pdf->SetY($header_end);
@@ -138,56 +126,46 @@
                     $bill_to_y = $pdf->GetY();
                     $pdf->SetY($bill_to_y);
                     $pdf->SetX(10);
-                    $pdf->Cell(190,7,'Godown Report ',1,1,'C',0);
+                    $pdf->Cell(190,7,'Consumption Report ',1,1,'C',0);
                     $pdf->SetX(10);
                     $pdf->Cell(20,8,'#',1,0,'C',0);
                     $pdf->Cell(90,8,'Product',1,0,'C',0);
-                    $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                    $pdf->Cell(80,8,'Quantity',1,1,'C',0);
                     $pdf->SetFont('Arial','',7);
 
                     $y_axis=$pdf->GetY();
                 }
 
                 $pdf->SetX(10);
-                $pdf->Cell(20,6,$s_no,0,0,'C',0);
+                $pdf->Cell(20,6,$s_no,1,0,'C',0);
                 
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_name = "";
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
                     $product_name = $obj->encode_decode('decrypt', $product_name);
-                    $pdf->Cell(90,6,$product_name,0,0,'C',0);
+                    $pdf->Cell(90,6,$product_name,1,0,'C',0);
                 }
                 else{
-                    $pdf->Cell(90,6,' - ',0,0,'C',0);
+                    $pdf->Cell(90,6,' - ',1,0,'C',0);
                 }
 
-                $inward_unit = 0; $outward_unit = 0;
-                if($unit_type == "Unit") {
-                    $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
-                    $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
+                $consumption_qty = 0; $subunit_need = 0;
+                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                    $consumption_qty = $obj->getConsumptionQtyByProduct($data['product_id'], $unit_type);
                 }
-                else if($unit_type == "Subunit") {
-                    $inward_unit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                    $outward_unit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                }
-                $current_stock_unit = 0; $current_stock_subunit = 0;
-                $current_stock_unit = $inward_unit - $outward_unit;
-                $current_stock_unit = number_format($current_stock_unit, 2);
-                $current_stock_unit = str_replace(",", "", $current_stock_unit);
                 
-                $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
-                $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
-
                 
-                if(!empty($current_stock_unit)) {
-                    $pdf->Cell(80,6, $current_stock_unit,0,1,'R',0);
-                    $total_stock += $current_stock_unit;
+                if(!empty($consumption_qty)) {
+                    $pdf->Cell(80,6, $consumption_qty,1,1,'R',0);
+                    $total_quantity += $consumption_qty;
                 }
                 else {
-                    $pdf->Cell(80,6,' - ',0,1,'R',0);
+                    $pdf->Cell(80,6,' - ',1,1,'R',0);
                 }
                 $s_no++;
             }
+
+            
 
             
 
@@ -204,7 +182,7 @@
                 $pdf->Cell(90,270-$y_axis,'',1,0,'C',0);
                 $pdf->Cell(80,270-$y_axis,'',1,1,'C',0);
         
-                $pdf->SetFont('Arial','B',9);
+                // $pdf->SetFont('Arial','B',9);
         
                 // $next_page = $pdf->PageNo()+1;
         
@@ -216,7 +194,7 @@
                 $pdf->AddPage();
                 $pdf->SetAutoPageBreak(false);
 
-                $file_name="Godown Report";
+                $file_name="Consumption Report";
                 include("rpt_header.php");
                 
                 $pdf->SetY($header_end);
@@ -225,11 +203,11 @@
                 $pdf->SetFont('Arial','B',8);
                 $pdf->SetY($bill_to_y);
                 $pdf->SetX(10);
-                $pdf->Cell(190,7,'Godown Report )',1,1,'C',0);
+                $pdf->Cell(190,7,'Consumption Report )',1,1,'C',0);
                 $pdf->SetX(10);
                 $pdf->Cell(20,8,'#',1,0,'C',0);
                 $pdf->Cell(90,8,'Product',1,0,'C',0);
-                $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                $pdf->Cell(80,8,'Quantity',1,1,'C',0);
                 $pdf->SetFont('Arial','',7);
                 
                 $y_axis=$pdf->GetY();
@@ -255,25 +233,21 @@
             $pdf->SetFont('Arial','B',8);
         
             $pdf->SetX(10);
-            $pdf->Cell(110,8,'Total Stock',1,0,'R',0);
-            if(!empty($total_stock)){
+            $pdf->Cell(110,8,'Total',1,0,'R',0);
+            if(!empty($total_quantity)){
                 $pdf->SetX(120);
-                $pdf->Cell(80,8,$total_stock,1,1,'R',0);
+                $pdf->Cell(80,8,$total_quantity,1,1,'R',0);
             }
             else{
                 $pdf->SetX(120);
-                $pdf->Cell(80,8,' 0 ',1,1,'R',0);
+                $pdf->Cell(80,8,' 0 ',1,1,'C',0);
             }
 
-        }else{
-            $pdf->Cell(190,8,'Sorry! No records found',1,1,'C',0);
         }
-
         $pdf->SetFont('Arial','I',7);
         $pdf->SetY(285);
         $pdf->SetX(10);
         $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
-        
     }
     else if(!empty($product_id)) {
         $total_pages = array(1);
@@ -283,21 +257,8 @@
         
         $pdf->SetY($bill_to_y);
         
-        $inward_unit = 0; $outward_unit = 0;
-        if($unit_type == "Unit") {
-            $inward_unit = $obj->getInwardQty('', $godown_id, '', $product_id, $case_contains);
-            $outward_unit = $obj->getOutwardQty('', $godown_id, '', $product_id, $case_contains);
-        }
-        else if($unit_type == "Subunit") {
-            $inward_unit = $obj->getInwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
-            $outward_unit = $obj->getOutwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
-        }
-        $current_stock_unit = 0;
-        $current_stock_unit = $inward_unit - $outward_unit;
-        $current_stock_unit = number_format($current_stock_unit, 2);
-        $current_stock_unit = str_replace(",", "", $current_stock_unit);
-        $current_stock = 0; $unit_name = ""; $stock_unit_name = "";
-        $current_stock = $current_stock_unit;
+        $stock_unit_name = "";
+        
         if($unit_type == "Unit") {
             $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_name');
             if($unit_name != $GLOBALS['null_value']) {
@@ -318,24 +279,29 @@
 
         $pdf->SetY($bill_to_y);
         $pdf->SetX(10);
-        $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Current stock : '.$current_stock." ".$obj->encode_decode('decrypt', $unit_name).  ')',1,1,'C',0);
+        $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code),1,1,'C',0);
+        if(!empty($contractor_id)) {
+            $contractor_name = "";
+            $contractor_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city');
+            if(!empty($contractor_name) && $contractor_name != $GLOBALS['null_value']) {
+                $pdf->SetX(10);
+                $pdf->Cell(190,7,'Contractor - '.$obj->encode_decode('decrypt', $contractor_name),1,1,'C',0);
+            }
+        }
+
+       
         $product_start_y = $pdf->GetY();
         $pdf->SetX(10);
         $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);
         $pdf->Cell(20, 10, 'Date', 1, 0, 'C', 0);
-        $pdf->Cell(20, 10, 'Type ', 1, 0, 'C', 0);
+        $pdf->Cell(25, 10, 'Type ', 1, 0, 'C', 0);
         $pdf->Cell(20, 10, 'Remarks', 1, 0, 'C', 0);
-        $pdf->Cell(36, 10, 'Party', 1, 0, 'C', 0);
-        $pdf->Cell(20, 10, 'Godown', 1, 0, 'C', 0);
-        // $pdf->Cell(21, 10, 'Brand', 1, 0, 'C', 0);
-        $pdf->MultiCell(18, 5, 'Case Contains',0, 'C', 0);
-        $pdf->SetY($product_start_y);
-        $pdf->SetX(136);
-        $pdf->Cell(18,10,'',1,0,'C',0);
-        $pdf->SetY($product_start_y);
-        $pdf->SetX(154);
-        $pdf->Cell(23, 10, 'Inward', 1, 0, 'C', 0);
-        $pdf->Cell(23, 10, 'Outward', 1, 1, 'C', 0);
+        $pdf->Cell(35, 10, 'Contractor', 1, 0, 'C', 0);
+        $pdf->Cell(30, 10, 'Godown', 1, 0, 'C', 0);
+        // if($subunit_hide == '1') {
+            $pdf->Cell(20,10,'Contains',1,0,'C',0);
+        // }
+        $pdf->Cell(30, 10, 'Quantity in ( '.$stock_unit_name.' )', 1, 1, 'C', 0);
         $start_y = $pdf->GetY();
 
         $y_axis = $pdf->GetY();
@@ -346,6 +312,7 @@
             $footer_height += 15;
         }
         $pdf->SetFont('Arial','',7);
+
         if(!empty($total_records_list)) { 
             foreach($total_records_list as $data) {
                 $inward_unit = 0; $outward_unit = 0; $unit_name = ""; $subunit_name = ""; $outward_unit = 0; $outward_subunit = 0;
@@ -356,15 +323,14 @@
                     $pdf->SetX(10);
                     $pdf->Cell(10,277-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(25,277-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(35,277-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(30,277-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(36,277-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(18,277-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(23,277-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(23,277-$y_axis,'',1,1,'C',0);
+                    $pdf->Cell(30,277-$y_axis,'',1,1,'C',0);
                     
-                    $pdf->SetFont('Arial','B',10);
+                    // $pdf->SetFont('Arial','B',10);
                     // $next_page = $pdf->PageNo() +1;
                     // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
                     $pdf->SetFont('Arial','I',7);
@@ -376,7 +342,7 @@
                     $page_number += 1;
                     $total_pages[] = $page_number;
                     $last_count = $l+1;
-                    $file_name="Godown Report";
+                    $file_name="Consumption Report";
                     include("rpt_header.php");
                     
                     $pdf->SetY($header_end);
@@ -384,22 +350,18 @@
                     $bill_to_y = $pdf->GetY();
                     $pdf->SetY($bill_to_y);
                     $pdf->SetX(10);
-                    $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Current stock : '.$current_stock." ".$unit_name.  ')',1,1,'C',0);
+                    $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code),1,1,'C',0);
                     $pdf->SetX(10);
                     $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);
                     $pdf->Cell(20, 10, 'Date', 1, 0, 'C', 0);
-                    $pdf->Cell(20, 10, 'Type ', 1, 0, 'C', 0);
+                    $pdf->Cell(25, 10, 'Type ', 1, 0, 'C', 0);
                     $pdf->Cell(20, 10, 'Remarks', 1, 0, 'C', 0);
-                    $pdf->Cell(36, 10, 'Party', 1, 0, 'C', 0);
-                    $pdf->Cell(20, 10, 'Godown', 1, 0, 'C', 0);
-                    $pdf->MultiCell(18, 5, 'Case Contains',0, 'C', 0);
-                    $pdf->SetY($product_start_y);
-                    $pdf->SetX(136);
-                    $pdf->Cell(18,10,'',1,0,'C',0);
-                    $pdf->SetY($product_start_y);
-                    $pdf->SetX(154);
-                    $pdf->Cell(23, 10, 'Inward', 1, 0, 'C', 0);
-                    $pdf->Cell(23, 10, 'Outward', 1, 1, 'C', 0);
+                    $pdf->Cell(35, 10, 'Contractor', 1, 0, 'C', 0);
+                    $pdf->Cell(30, 10, 'Godown', 1, 0, 'C', 0);
+                    // if($subunit_hide == '1') {
+                        $pdf->Cell(20,10,'Contains',1,0,'C',0);
+                    // }
+                    $pdf->Cell(30, 10, 'Quantity in ( '.$stock_unit_name.' )', 1, 1, 'C', 0);
                     $start_y = $pdf->GetY();
                     $pdf->SetFont('Arial','',7);
                     $y_axis=$pdf->GetY();
@@ -408,22 +370,22 @@
 
                 $pdf->SetY($start_y);
                 $pdf->SetX(10);
-                $pdf->MultiCell(10, 5, $s_no, 0, 'C', 0);
+                $pdf->MultiCell(10, 7, $s_no, 0, 'C', 0);
                 
                 if(!empty($data['stock_date'])) {
                     $stock_date = "";
                     $stock_date = date('d-m-Y', strtotime($data['stock_date']));
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
-                    $pdf->MultiCell(20, 5, $stock_date, 0, 'C', 0);
-                    $date_y = $pdf->GetY();
+                    $pdf->MultiCell(20, 7, $stock_date, 0, 'C', 0);
                 }
                 else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
-                    $pdf->MultiCell(20, 5,'-', 0, 'C', 0);
-                    $date_y = $pdf->GetY();
+                    $pdf->MultiCell(20, 7,'-', 0, 'C', 0);
                 }
+
+                $date_y = $pdf->GetY() - $start_y;
 
                 
                 if(!empty($data['stock_type'])) {
@@ -431,119 +393,93 @@
                     $stock_type = $data['stock_type'];
                     $pdf->SetY($start_y);
                     $pdf->SetX(40);
-                    $pdf->MultiCell(20, 5, $stock_type, 0, 'C', 0);
-                    $type_y = $pdf->GetY();
+                    $pdf->MultiCell(25, 7, $stock_type, 0, 'C', 0);
                 }
                 else{
                     $pdf->SetY($start_y);
-                    $pdf->SetX(30);
-                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
-                    $type_y = $pdf->GetY();
+                    $pdf->SetX(40);
+                    $pdf->MultiCell(25, 7, '-', 0, 'C', 0);
                 }
+
+                $type_y = $pdf->GetY() - $start_y;
 
                 if(!empty($data['remarks']) && $data['remarks'] != $GLOBALS['null_value']) {
                     $remarks = "";
-                    $remarks= $data['remarks'];
+                    $remarks= $obj->encode_decode('decrypt', $data['remarks']);
                     $pdf->SetY($start_y);
-                    $pdf->SetX(60);
-                    $pdf->MultiCell(20, 5, $obj->encode_decode('decrypt', $remarks), 0,  'C', 0);
-                    $remarks_y = $pdf->GetY();
+                    $pdf->SetX(65);
+                    $pdf->MultiCell(20, 7, $remarks, 0,  'C', 0);
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(55);
-                    $pdf->MultiCell(20, 5, '-', 0,  'C', 0);
-                    $remarks_y = $pdf->GetY();
+                    $pdf->SetX(65);
+                    $pdf->MultiCell(20, 7, '-', 0,  'C', 0);
                 }
 
                 $remarks_y = $pdf->GetY() - $start_y;
 
                 if(!empty($data['party_id']) && $data['party_id'] != $GLOBALS['null_value']) {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(75);
-                    if(!empty($party_id)) {
-                        $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $data['party_id'], 'name_mobile_city');          
-                        if(empty($party_name) || $party_name == $GLOBALS['null_value']) {
-                            $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $data['party_id'], 'name_mobile_city');
-                            if(empty($party_name) || $party_name == $GLOBALS['null_value']) {
-                                $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $data['party_id'], 'name_mobile_city');
-                            }
-                        }              
-                        $party_name = $obj->encode_decode('decrypt', $party_name);
-                        $pdf->MultiCell(36, 5, $party_name, 0, 'C', 0);
-                        $party_y = $pdf->GetY();
-                    }
+                    $pdf->SetX(85);
+                    
+                    $party_name = "";
+                    $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $data['party_id'], 'name_mobile_city');          
+                    $party_name = $obj->encode_decode('decrypt', $party_name);
+                    $pdf->MultiCell(35, 7, $party_name, 0, 'C', 0);
+
+                    
                     
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(80);
-                    $party_y = $pdf->GetY();
-                    $pdf->MultiCell(36, 5, '-', 0, 'C', 0);
+                    $pdf->SetX(85);
+                    $pdf->MultiCell(35, 7, '-', 0, 'C', 0);
                 }
+
+                $party_y = $pdf->GetY() - $start_y;
         
                 if(!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
                     $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$data['godown_id'],'godown_name');
                     $godown_name = $obj->encode_decode('decrypt', $godown_name);
                     $pdf->SetY($start_y);
-                    $pdf->SetX(117);
-                    $pdf->MultiCell(20, 5,  $godown_name, 0, 'C', 0);
-                    $godown_y = $pdf->GetY();
+                    $pdf->SetX(120);
+                    $pdf->MultiCell(30, 7,  $godown_name, 0, 'C', 0);
                 }
                 else{
                     $pdf->SetY($start_y);
-                    $pdf->SetX(117);
-                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
-                    $godown_y = $pdf->GetY();
+                    $pdf->SetX(120);
+                    $pdf->MultiCell(30, 7, '-', 0, 'C', 0);
                 }
 
+                $godown_y = $pdf->GetY() - $start_y;
 
-                $godown_room_y = $pdf->GetY();
+                // if($subunit_hide == '1') {
 
-                if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
-                    $pdf->SetY($start_y);
-                    $pdf->SetX(129);
-                    $pdf->MultiCell(18, 5, $data['case_contains'], 0, 'R', 0);
-                    $case_y = $pdf->GetY();
-                }
-                else {
-                    $pdf->SetY($start_y);
-                    $pdf->SetX(129);
-                    $pdf->MultiCell(18, 5, '-', 0,  'R', 0);
-                    $case_y = $pdf->GetY();
-                }
-
-                if($unit_type == "Unit") {
-                    if($data['inward_unit'] != $GLOBALS['null_value']) {
-                        $total_inward += $data['inward_unit'];
-                        $inward_unit = $data['inward_unit'];
+                    if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
                         $pdf->SetY($start_y);
-                        $pdf->SetX(145);
-                        $pdf->MultiCell(23, 5,  $inward_unit , 0,  'R', 0);
-                        $inward_y = $pdf->GetY();
+                        $pdf->SetX(150);
+                        $pdf->MultiCell(20, 7,$data['case_contains'], 0, 'R', 0);
                     }
-                }
-                else if($unit_type == "Subunit") {
-                    if($data['inward_subunit'] != $GLOBALS['null_value']) {
-                        $total_inward += $data['inward_subunit'];
-                        $inward_subunit= $data['inward_subunit'];
+                    else {
                         $pdf->SetY($start_y);
-                        $pdf->SetX(145);
-                        $pdf->MultiCell(23, 5, $inward_subunit, 0,  'R', 0);
-                        $inward_y = $pdf->GetY();
+                        $pdf->SetX(150);
+                        $pdf->MultiCell(20, 7, '-', 0,  'C', 0);
                     }
-                }
+                // }
             
-                // $inward_y = $pdf->GetY() - $start_y;
+                $case_y = $pdf->GetY() - $start_y;
             
                 if($unit_type == "Unit") {
                     if($data['outward_unit'] != $GLOBALS['null_value']) {
                         $total_outward += $data['outward_unit'];
                         $outward = $data['outward_unit'];
                         $pdf->SetY($start_y);
-                        $pdf->SetX(168);
-                        $pdf->MultiCell(23, 5, $outward , 0,  'R', 0);
-                        $outward_y = $pdf->GetY();
+                        $pdf->SetX(170);
+                        $pdf->MultiCell(30, 7, $outward , 0,  'R', 0);
+                    }else {
+                        $pdf->SetY($start_y);
+                        $pdf->SetX(170);
+                        $pdf->MultiCell(30, 7, '-', 0,  'R', 0);
                     }
                 }
                 else if($unit_type == "Subunit") {
@@ -551,24 +487,36 @@
                         $total_outward += $data['outward_subunit'];
                         $outward_subunit = $data['outward_subunit'];
                         $pdf->SetY($start_y);
-                        $pdf->SetX(168);
-                        $pdf->MultiCell(23, 5, $outward_subunit , 0,  'R', 0);
-                        $outward_y = $pdf->GetY();
+                        $pdf->SetX(170);
+                        $pdf->MultiCell(30, 7, $outward_subunit , 0,  'R', 0);
+                    }
+                    else {
+                        $pdf->SetY($start_y);
+                        $pdf->SetX(170);
+                        $pdf->MultiCell(30, 7, '-', 0,  'R', 0);
                     }
                 }
 
-                // $outward_y = $pdf->GetY() - $start_y;
+                $outward_y = $pdf->GetY() - $start_y;
 
-                $max_y = max(array($date_y,$type_y,$remarks_y,$party_y,$godown_y,$case_y,$inward_y, $outward_y, $godown_room_y));
+                $max_y = max(array($date_y,$type_y,$remarks_y,$party_y,$godown_y,$case_y,$outward_y));
 
-                $pdf->SetY($max_y);
+                $pdf->SetY($start_y);                            
+                $pdf->SetX(10);
+                $pdf->Cell(10,$max_y,'',1,0,'C',0);
+                $pdf->Cell(20,$max_y,'',1,0,'C',0);
+                $pdf->Cell(25,$max_y,'',1,0,'C',0);
+                $pdf->Cell(20,$max_y,'',1,0,'C',0);
+                $pdf->Cell(35,$max_y,'',1,0,'C',0);
+                $pdf->Cell(30,$max_y,'',1,0,'C',0);
+                $pdf->Cell(20,$max_y,'',1,0,'C',0);
+                $pdf->Cell(30,$max_y,'',1,1,'C',0);
 
                 $s_no++;
                 $start_y = $pdf->GetY();
-            
+
             }
 
-          
 
             $end_y = $pdf->GetY();
 
@@ -581,20 +529,18 @@
                 $pdf->SetX(10);
                 $pdf->Cell(10,270 - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,270 - $y_axis,'',1,0,'C');
+                $pdf->Cell(25,270 - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,270 - $y_axis,'',1,0,'C');
+                $pdf->Cell(35,270 - $y_axis,'',1,0,'C');
+                $pdf->Cell(30,270 - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,270 - $y_axis,'',1,0,'C');
-                $pdf->Cell(36,270 - $y_axis,'',1,0,'C');
-                $pdf->Cell(20,270 - $y_axis,'',1,0,'C');
-                $pdf->Cell(18,270 - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,270 - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,270 - $y_axis,'',1,1,'C');
-                 
-                $pdf->SetFont('Arial','B',9);
+                $pdf->Cell(30,270 - $y_axis,'',1,1,'C');
+                
+                // $pdf->SetFont('Arial','B',9);
     
                 // $next_page = $pdf->PageNo()+1;
         
                 // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
-
                 $pdf->SetFont('Arial','I',7);
                 $pdf->SetY(285);
                 $pdf->SetX(10);
@@ -602,7 +548,7 @@
                 $pdf->AddPage();
                 $pdf->SetAutoPageBreak(false);
 
-                $file_name="Godown Report";
+                $file_name="Consumption Report";
                 include("rpt_header.php");
                 
                 $pdf->SetY($header_end);
@@ -611,22 +557,18 @@
                 $pdf->SetFont('Arial','B',8);
                 $pdf->SetY($bill_to_y);
                 $pdf->SetX(10);
-                $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Current stock : '.$current_stock." ".$unit_name.  ')',1,1,'C',0);
+                $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Quantity : '.$current_stock." ".$unit_name.  ')',1,1,'C',0);
                 $pdf->SetX(10);
                 $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);
                 $pdf->Cell(20, 10, 'Date', 1, 0, 'C', 0);
-                $pdf->Cell(20, 10, 'Type ', 1, 0, 'C', 0);
+                $pdf->Cell(25, 10, 'Type ', 1, 0, 'C', 0);
                 $pdf->Cell(20, 10, 'Remarks', 1, 0, 'C', 0);
-                $pdf->Cell(36, 10, 'Party', 1, 0, 'C', 0);
-                $pdf->Cell(20, 10, 'Godown', 1, 0, 'C', 0);
-                $pdf->MultiCell(18, 5, 'Case Contains',0, 'C', 0);
-                $pdf->SetY($product_start_y);
-                $pdf->SetX(136);
-                $pdf->Cell(18,10,'',1,0,'C',0);
-                $pdf->SetY($product_start_y);
-                $pdf->SetX(154);
-                $pdf->Cell(23, 10, 'Inward', 1, 0, 'C', 0);
-                $pdf->Cell(23, 10, 'Outward', 1, 1, 'C', 0);
+                $pdf->Cell(35, 10, 'Contractor', 1, 0, 'C', 0);
+                $pdf->Cell(30, 10, 'Godown', 1, 0, 'C', 0);
+                // if($subunit_hide == '1') {
+                    $pdf->Cell(20,10,'Contains',1,0,'C',0);
+                // }
+                $pdf->Cell(30, 10, 'Quantity in ( '.$stock_unit_name.' )', 1, 1, 'C', 0);
 
                 $y_axis=$pdf->GetY();
 
@@ -635,13 +577,12 @@
                 $pdf->SetX(10);
                 $pdf->Cell(10,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(25,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(35,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(30,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(36,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(18,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,$content_height - $y_axis,'',1,1,'C');
+                $pdf->Cell(30,$content_height - $y_axis,'',1,1,'C');
                 $pdf->SetY($content_height);
             } 
             else {
@@ -650,44 +591,32 @@
                 $pdf->SetX(10);                
                 $pdf->Cell(10,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(25,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(35,$content_height - $y_axis,'',1,0,'C');
+                $pdf->Cell(30,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(36,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(18,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,$content_height - $y_axis,'',1,0,'C');
-                $pdf->Cell(23,$content_height - $y_axis,'',1,1,'C');
+                $pdf->Cell(30,$content_height - $y_axis,'',1,1,'C');
             }
 
+            
             $pdf->SetFont('Arial','B',7);
             $pdf->SetX(10);
-            $pdf->Cell(144,8,'Total Stock',1,0,'R',0);
-            if(!empty($total_inward)){
-                $pdf->SetX(154);
-                $pdf->Cell(23,8,$total_inward,1,0,'R',0);
-            }
-            else{
-                $pdf->SetX(154);
-                $pdf->Cell(23,8,' - ',1,0,'R',0);
-            }
+            $pdf->Cell(160,8,'T0tal',1,0,'R',0);
             if(!empty($total_outward)){
-                $pdf->Cell(23,8,$total_outward,1,1,'R',0);
+                $pdf->Cell(30,8,$total_outward,1,1,'R',0);
             }
             else{
-                $pdf->SetX(177);
-                $pdf->Cell(23,8,' - ',1,1,'R',0);
+                $pdf->SetX(160);
+                $pdf->Cell(30,8,' - ',1,1,'C',0);
             }
-           
-        }else{
-            $pdf->Cell(190,8,'Sorry! No records found',1,1,'C',0);
         }
-
         $pdf->SetFont('Arial','I',7);
         $pdf->SetY(285);
         $pdf->SetX(10);
         $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
     }
 
-    $pdf_name = "Godown Report.pdf";
+    $pdf_name = "Consumption Report.pdf";
     $pdf->Output($from, $pdf_name);
 ?>

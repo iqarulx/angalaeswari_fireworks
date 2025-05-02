@@ -167,6 +167,7 @@
 			}
 			return $list;
 		}
+
 		public function getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
 			$select_query = ""; $list = array(); $where = "";
 			if(!empty($group_id)) {
@@ -236,6 +237,7 @@
 			}
 			return $list;
 		}
+
 		public function getStockContainsList($product_id) {
 			$select_query = ""; $list = array();
 			if(!empty($product_id)) {
@@ -244,6 +246,7 @@
 			}
 			return $list;
 		}
+
 		public function getConsumptionQtyList($contractor_id) {
 			$select_query = ""; $list = array(); $where = "";
 
@@ -418,6 +421,7 @@
 			return $total_records_list;
 		
 		}
+
 		public function balance_report($type, $party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date) {
 			$con = $this->connect();
 			$select_query = ""; $list = array(); $reports = array(); $payment_query = "";
@@ -425,25 +429,25 @@
 			// echo $type."hello".$party_id;
 			if(!empty($type) && !empty($party_id)) {
 				
-				// if(!empty($from_date))
-				// {
-				// 	$from_date = date("Y-m-d",strtotime($from_date));
-				// 	$bill_where = "bill_date >='".$from_date."' AND ";
-		
-				// }
-				// if(!empty($to_date))
-				// {
-				// 	$to_date = date("Y-m-d",strtotime($to_date));
+				if(!empty($from_date))
+				{
+					$from_date = date("Y-m-d",strtotime($from_date));
+					$bill_where = "bill_date >='".$from_date."' AND ";
+
+				}
+				if(!empty($to_date))
+				{
+					$to_date = date("Y-m-d",strtotime($to_date));
 				
-				// 	if(empty($bill_where))
-				// 	{
-				// 		$bill_where = "bill_date <='".$to_date."' AND ";
-				// 	}
-				// 	else
-				// 	{
-				// 		$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
-				// 	}
-				// }
+					if(empty($bill_where))
+					{
+						$bill_where = "bill_date <='".$to_date."' AND ";
+					}
+					else
+					{
+						$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
+					}
+				}
 				if($type == "Agent") {
 					$select_query = "SELECT agent_id,agent_name, mobile_number FROM ".$GLOBALS['agent_table']." WHERE agent_id = '".$party_id."' AND deleted = '0' ";
 					$list = $this->getQueryRecords($GLOBALS['agent_table'], $select_query);
@@ -453,11 +457,11 @@
 							foreach($list as $data) {
 								if(!empty($data['agent_id'])) {
 									$bill_list = array();
-									echo $payment_query = "SELECT bill_date, bill_number,bill_type, 
+									 $payment_query = "SELECT bill_date, bill_number,bill_type, 
 									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where."  party_id = '".$filter_agent_party."' AND  deleted = '0'  AND  bill_date >= '".$from_date."' AND bill_date <= '".$to_date."' AND bill_type !='Customer Opening Balance' GROUP BY bill_number";
-		
+
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
-		
+
 									$reports[] = array('party_id' => $data['agent_id'], 'party_name' => $data['agent_name'], 'party_mobile_number' => $data['mobile_number'],'bill_list' => $bill_list);
 								}
 							}
@@ -468,12 +472,12 @@
 							foreach($list as $data) {
 								if(!empty($data['agent_id'])) {
 									$bill_list = array();
-		
+
 									$payment_query = "SELECT bill_date, bill_number, bill_type, 
 									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." agent_id = '".$data['agent_id']."' AND party_id ='NULL' AND  bill_type !='Customer Opening Balance' AND bill_type !='Agent Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
-		
+
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
-		
+
 									$reports[] = array('party_id' => $data['agent_id'], 'party_name' => $data['agent_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
 								}
 							}
@@ -488,12 +492,12 @@
 						foreach($list as $data) {
 							if(!empty($data['supplier_id'])) {
 								$bill_list = array();
-		
+
 								$payment_query = "SELECT bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['supplier_id']."'  AND bill_type !='Supplier Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
-		
+
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
-		
+
 								$reports[] = array('party_id' => $data['supplier_id'], 'party_name' => $data['supplier_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
 							}
 						}
@@ -506,12 +510,12 @@
 						foreach($list as $data) {
 							if(!empty($data['contractor_id'])) {
 								$bill_list = array();
-		
+
 								$payment_query = "SELECT bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['contractor_id']."' AND  bill_type !='Contractor Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
-		
+
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
-		
+
 								$reports[] = array('party_id' => $data['contractor_id'], 'party_name' => $data['contractor_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
 							}
 						}
@@ -525,12 +529,12 @@
 						foreach($list as $data) {
 							if(!empty($data['customer_id'])) {
 								$bill_list = array();
-		
+
 								$payment_query = "SELECT bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['customer_id']."' AND  bill_type !='Customer Opening Balance' AND deleted = '0' GROUP BY bill_number";
-		
+
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
-		
+
 								$reports[] = array('party_id' => $data['customer_id'], 'party_name' => $data['customer_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
 							}
 						}
@@ -544,12 +548,12 @@
 				// 		foreach($list as $data) {
 				// 			if(!empty($data['party_id'])) {
 				// 				$bill_list = array();
-		
+
 				// 				$payment_query = "SELECT bill_date, bill_number,bill_type, 
 				// 				SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." (agent_id='' OR agent_id='NULL') AND  bill_type !='Party Opening Balance' AND party_id = '".$data['party_id']."' AND deleted = '0' AND bill_company_id = '".$bill_company_id."' GROUP BY bill_number";
-		
+
 				// 				$bill_list = $this->getQueryRecords($GLOBALS['party_table'], $payment_query);
-		
+
 				// 				$reports[] = array('party_id' => $data['party_id'], 'party_name' => $data['party_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
 				// 			}
 				// 		}
@@ -557,24 +561,24 @@
 				// }
 			}
 			else if(!empty($type) && empty($party_id)) {
-				// if(!empty($from_date))
-				// {
-				// 	$from_date = date("Y-m-d",strtotime($from_date));
-				// 	$bill_where = "bill_date >='".$from_date."' AND ";
-				// }
-				// if(!empty($to_date))
-				// {
-				// 	$to_date = date("Y-m-d",strtotime($to_date));
+				if(!empty($from_date))
+				{
+					$from_date = date("Y-m-d",strtotime($from_date));
+					$bill_where = "bill_date >='".$from_date."' AND ";
+				}
+				if(!empty($to_date))
+				{
+					$to_date = date("Y-m-d",strtotime($to_date));
 				
-				// 	if(empty($bill_where))
-				// 	{
-				// 		$bill_where = "bill_date <='".$to_date."' AND ";
-				// 	}
-				// 	else
-				// 	{
-				// 		$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
-				// 	}
-				// }
+					if(empty($bill_where))
+					{
+						$bill_where = "bill_date <='".$to_date."' AND ";
+					}
+					else
+					{
+						$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
+					}
+				}
 				if($type == "Agent") {
 					$payment_query = "SELECT 'agent' as party_type, sp.agent_id as party_id, sp.agent_name as party_name, 
 					sp.mobile_number as party_mobile_number,
@@ -637,25 +641,25 @@
 				}
 			}
 			else {
-				// if(!empty($from_date))
-				// {
-				// 	$from_date = date("Y-m-d",strtotime($from_date));
-				// 	$bill_where = "e.bill_date >='".$from_date."' AND ";
-				// }
-				// if(!empty($to_date))
-				// {
-				// 	$to_date = date("Y-m-d",strtotime($to_date));
+				if(!empty($from_date))
+				{
+					$from_date = date("Y-m-d",strtotime($from_date));
+					$bill_where = "e.bill_date >='".$from_date."' AND ";
+				}
+				if(!empty($to_date))
+				{
+					$to_date = date("Y-m-d",strtotime($to_date));
 				
-				// 	if(empty($bill_where))
-				// 	{
-				// 		$bill_where = "e.bill_date <='".$to_date."' AND ";
-				// 	}
-				// 	else
-				// 	{
-				// 		$bill_where = $bill_where."e.bill_date <='".$to_date."' AND ";
-				// 	}
-				// }
-		
+					if(empty($bill_where))
+					{
+						$bill_where = "e.bill_date <='".$to_date."' AND ";
+					}
+					else
+					{
+						$bill_where = $bill_where."e.bill_date <='".$to_date."' AND ";
+					}
+				}
+
 				$agent_query = "SELECT 'agent' as party_type, sp.agent_id as party_id, sp.agent_name as party_name,sp.mobile_number as party_mobile_number,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
 					WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.party_id ='NULL' AND  e.deleted = '0'  GROUP BY e.agent_id) as credit,
@@ -676,9 +680,9 @@
 					WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
 					WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['customer_table']." as cu WHERE cu.deleted = '0'  ";
-		
+
 				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (".$agent_query.") UNION ALL (".$contractor_query.") UNION ALL (".$supplier_query.") UNION ALL (".$customer_query.") ) as g";
-		
+
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords('',$select_query);
 					if(!empty($list)) {
@@ -692,7 +696,7 @@
 								if(!empty($data['debit'])) {
 									$total_debit = $total_debit + $data['debit'];
 								}
-		
+
 								if(!empty($total_credit)) {
 									$balance = $balance + $total_credit;
 								}
@@ -717,11 +721,14 @@
 			$agent_customer_list = $this->getQueryRecords($GLOBALS['customer_table'],$select_query);
 			return $agent_customer_list;
 		}
+		
 		public function getOpeningBalance($party_id,$from_date,$to_date,$bill_company_id,$filter_agent_party,$view_type)
 		{
-			$bill_where = ""; $agent_where = ""; $supplier_where =""; $contractor_where =""; $customer_where ="";
+
+			$bill_where = ""; $agent_where = ""; $supplier_where =""; $contractor_where =""; $customer_where ="";$select_bill_query ="";
 			if(!empty($to_date))
 			{
+	
 				$bill_where = "bill_date < '".date("Y-m-d",strtotime($from_date))."' AND";
 				
 			}
@@ -742,66 +749,47 @@
 			{
 				$customer_where = "sp.customer_id = '".$party_id."' AND";
 			}
-			// if(!empty($party_id))
-			// {
-			// 	$party_where = "sp.party_id = '".$party_id."' AND";
-			// }
-			
-			
+		
 				if($view_type == '1')
 				{
-					if(empty($filter_agent_party))
-					{
-						$select_query = "SELECT 'agent' as party_type, sp.agent_id as party_id, sp.agent_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
-						(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-						WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.deleted = '0'  GROUP BY e.agent_id,e.bill_number) as credit,
-						(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-						WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.deleted = '0'   GROUP BY e.agent_id,e.bill_number) as debit FROM ".$GLOBALS['agent_table']." as sp WHERE ".$agent_where." sp.deleted = '0' ";
-					}
-					else
-					{
-						// echo $party_where;
-						if(!empty($filter_agent_party))
-						{
-							$party_where = " sp.customer_id = '".$filter_agent_party."' AND";
-						}
-						// echo $bill_where;
-						$select_query = "SELECT 'party' as party_type, sp.customer_id as party_id, sp.customer_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
-						(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-						WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0'  GROUP BY e.party_id,e.bill_number) as credit,
-						(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-						WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0'  GROUP BY e.party_id,e.bill_number) as debit FROM ".$GLOBALS['customer_table']." as sp WHERE ".$party_where." sp.deleted = '0'  ";
-					}
+				
+					$select_bill_query = "SELECT 'agent' as party_type, sp.agent_id as party_id, sp.agent_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
+					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
+					WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.deleted = '0'  GROUP BY e.agent_id) as credit,
+					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
+					WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.deleted = '0'   GROUP BY e.agent_id) as debit FROM ".$GLOBALS['agent_table']." as sp WHERE ".$agent_where." sp.deleted = '0' ";
+					
 				}
 				elseif($view_type =='2')
 				{
-					$select_query = "SELECT 'supplier' as party_type, sp.supplier_id as party_id, sp.supplier_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
+					
+					$select_bill_query = "SELECT 'supplier' as party_type, sp.supplier_id as party_id, sp.supplier_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-					WHERE ".$bill_where." e.party_id = sp.supplier_id AND e.deleted = '0'  GROUP BY e.party_id,e.bill_number) as credit,
+					WHERE ".$bill_where." e.party_id = sp.supplier_id AND e.deleted = '0'  GROUP BY e.party_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.party_id = sp.supplier_id AND e.deleted = '0' GROUP BY e.party_id,e.bill_number) as debit FROM ".$GLOBALS['supplier_table']." as sp WHERE ".$supplier_where." sp.deleted = '0'   ";
+					WHERE ".$bill_where." e.party_id = sp.supplier_id AND e.deleted = '0' GROUP BY e.party_id) as debit FROM ".$GLOBALS['supplier_table']." as sp WHERE ".$supplier_where." sp.deleted = '0'   ";
 				}
 				elseif($view_type =='3')
 				{
-					$select_query = "SELECT 'contractor' as party_type, sp.contractor_id as party_id, sp.contractor_name as party_name,sp.mobile as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
+					
+					$select_bill_query = "SELECT 'contractor' as party_type, sp.contractor_id as party_id, sp.contractor_name as party_name,sp.mobile as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-					WHERE ".$bill_where." e.party_id = sp.contractor_id AND e.deleted = '0'  GROUP BY e.party_id,e.bill_number) as credit,
+					WHERE ".$bill_where." e.party_id = sp.contractor_id AND e.deleted = '0'  GROUP BY e.party_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.party_id = sp.contractor_id AND e.deleted = '0' GROUP BY e.party_id,e.bill_number) as debit FROM ".$GLOBALS['contractor_table']." as sp WHERE ".$contractor_where." sp.deleted = '0'   ";
+					WHERE ".$bill_where." e.party_id = sp.contractor_id AND e.deleted = '0' GROUP BY e.party_id) as debit FROM ".$GLOBALS['contractor_table']." as sp WHERE ".$contractor_where." sp.deleted = '0'   ";
 				}
 				elseif($view_type =='4')
 				{
-					$select_query = "SELECT 'customer' as party_type, sp.customer_id as party_id, sp.customer_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
+					
+					$select_bill_query = "SELECT 'customer' as party_type, sp.customer_id as party_id, sp.customer_name as party_name,sp.mobile_number as party_mobile_number, sp.opening_balance, sp.opening_balance_type,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0'  GROUP BY e.party_id,e.bill_number) as credit,
+					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0'  GROUP BY e.party_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0' GROUP BY e.party_id,e.bill_number) as debit FROM ".$GLOBALS['customer_table']." as sp WHERE ".$customer_where." sp.deleted = '0'   ";
+					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0' GROUP BY e.party_id) as debit FROM ".$GLOBALS['customer_table']." as sp WHERE ".$customer_where." sp.deleted = '0'   ";
 				}
 				
-				
-				
-				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number, opening_balance, opening_balance_type,credit,debit FROM (".$select_query.") as g";
-		
+			  $select_query = "SELECT party_type, party_id, party_name, party_mobile_number, opening_balance, opening_balance_type,credit,debit FROM (".$select_bill_query.") as g";
+
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords('',$select_query);
 					if(!empty($list)) {
@@ -838,7 +826,7 @@
 		}
 
 		//Arul Murugan
-		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id) {
+		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id,$case_contains) {
 			$list = array();
 		
 			$where = "";
@@ -877,14 +865,22 @@
 					$where = "agent_id = '".$agent_id."'";
 				}
 			}
+			if(!empty($case_contains)) {
+				if(!empty($where)) {
+					$where = $where." AND case_contains = '".$case_contains."'";
+				}
+				else {
+					$where = "case_contains = '".$case_contains."'";
+				}
+			}
 		
 			if(!empty($product_id)) {
 				$select_query = "";
 		
 				if ($unit_type == "1") {
-					$select_query = "SELECT bill_id, bill_number, bill_type, bill_date, product_id, unit_id, agent_id, party_id, inward_unit, outward_unit FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND deleted = '0'";
+					$select_query = "SELECT bill_id, bill_number, bill_type, bill_date, product_id, unit_id, agent_id, party_id, case_contains, inward_unit, outward_unit FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND deleted = '0'";
 				} else {
-					$select_query = "SELECT bill_id, bill_number, bill_type, bill_date, product_id, unit_id, agent_id, party_id, inward_sub_unit, outward_sub_unit FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND deleted = '0'";
+					$select_query = "SELECT bill_id, bill_number, bill_type, bill_date, product_id, unit_id, agent_id, party_id, case_contains, inward_sub_unit, outward_sub_unit FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND deleted = '0'";
 				}
 			
 				if (!empty($select_query)) {

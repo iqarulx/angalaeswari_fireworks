@@ -161,7 +161,7 @@ include("../include_user_check.php");
                     }
                     
                     // $pdf->SetX(60);
-                    $pdf->MultiCell(60, 8, substr($name, 0, 50), 0, 'C', 0);
+                    // $pdf->MultiCell(60, 8, substr($name, 0, 50), 0, 'C', 0);
                     $pdf->MultiCell(60, 8,$name, 0, 'C', 0);
                 }
                 // if (!empty($data['agent_id'])) {

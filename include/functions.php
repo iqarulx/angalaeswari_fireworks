@@ -469,18 +469,18 @@
 			$list = $create_obj->getSemiFinishedInwardList($from_date, $to_date, $filter_factory_id, $filter_godown_id, $filter_contractor_id, $show_bill);
 			return $list;
 		}
-		public function getPurchaseReportList($from_date, $to_date, $supplier_id) {
+		public function getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getPurchaseReportList($from_date, $to_date, $supplier_id);
+			$list = $create_obj->getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn);
 			return $list;
 		}
-		public function getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id) {
+		public function getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id,$cancel_bill_btn) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id);
+			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id,$cancel_bill_btn);
 			return $list;
 		}
 
@@ -797,11 +797,11 @@
 			return $result;
 		}
 		
-		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id) {
+		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id);
+			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains);
 			return $list;
 		}
 
@@ -863,6 +863,27 @@
 			$create_obj = $this->creation_function_object();
 			$list = array();
 			$list = $create_obj->linkedContractor($contractor_id);
+			return $list;
+		}
+		public function PaymentlinkedSupplier($supplier_id){
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->PaymentlinkedSupplier($supplier_id);
+			return $list;
+		}
+		public function PaymentlinkedCustomer($customer_id){
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->PaymentlinkedCustomer($customer_id);
+			return $list;
+		}
+		public function PaymentlinkedAgent($agent_id){
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->PaymentlinkedAgent($agent_id);
 			return $list;
 		}
 	}

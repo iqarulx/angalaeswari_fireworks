@@ -697,7 +697,7 @@ function ShowConversion(conversion_id, page_title) {
 	});
 }
 
-function getAgentCustomerList(agent_id){
+function getAgentCustomerList(agent_id) {
 
 	var post_url = "action_changes.php?get_agent_id=" + agent_id;
 	jQuery.ajax({
@@ -709,4 +709,17 @@ function getAgentCustomerList(agent_id){
 		}
 	});
 
+}
+
+/* Muniaraj */
+function getPartyName(type) {
+	var post_url = "action_changes.php?view_type=" + type;
+	jQuery.ajax({
+		url: post_url, success: function (result) {
+			result = result.trim();
+			if (jQuery('select[name="filter_party_id"]').length > 0) {
+				jQuery('select[name="filter_party_id"]').html(result);
+			}
+		}
+	});
 }

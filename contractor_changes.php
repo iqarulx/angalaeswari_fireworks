@@ -113,7 +113,7 @@
                 </div>
             </div>
             <?php if(!empty($linked_contractor)){ ?>
-                <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $open_balance_type; } ?>">
+                <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $opening_balance_type; } ?>">
                 <?php 
                } ?>
             <div class="row justify-content-center p-3">

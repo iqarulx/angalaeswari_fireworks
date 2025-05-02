@@ -31,7 +31,10 @@
                     $customer_id = $ds['customer_id'];
                 }
                 if(!empty($ds['proforma_invoice_date'])) {
-                    $proforma_invoice_date = date('Y-m-d', strtotime($proforma_invoice_date));
+                    $proforma_invoice_date = date('Y-m-d', strtotime($ds['proforma_invoice_date']));
+                }
+                if(!empty($ds['delivery_slip_date'])) {
+                    $delivery_slip_date = date('Y-m-d', strtotime($ds['delivery_slip_date']));
                 }
                 if(!empty($ds['agent_id'])) {
                     $agent_id = $ds['agent_id'];

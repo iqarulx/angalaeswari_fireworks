@@ -3,10 +3,10 @@
 	include("include.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
 
-    $login_staff_id = "";
+    $loginner_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
+            $loginner_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
             $permission_module = $GLOBALS['reports_module'];
             include("permission_check.php");
         }
@@ -28,11 +28,6 @@
 
     if(isset($_POST['filter_party_id'])) {
         $filter_party_id = $_POST['filter_party_id'];
-    }
-
-    $filter_agent_party = "";
-    if(isset($_POST['filter_agent_party'])){
-        $filter_agent_party = $_POST['filter_agent_party'];
     }
 
     $view_type = "";
@@ -114,7 +109,6 @@
         }
     }
     // print_r($agent_customer_list);
-    echo $filter_party_id;
     if(!empty($filter_party_id))
     {
         // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $filter_party_id, 'party_name');
@@ -146,11 +140,6 @@
 
         }
     }
-    // print_r($sales_list);
-    // $agent_party_list = array();
-    // if(!empty($filter_party_id)){
-    //     $agent_party_list = $obj->getTableRecords($GLOBALS['party_table'],'agent_id',$filter_party_id,'');
-    // }
 
     $excel_name = "";
     $excel_name = "Pending Balance Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
@@ -224,56 +213,29 @@
                                                 </div>
                                             </div> 
                                         </div>
-                                        <?php 
-                                            if($view_type == '1')
-                                            {
-                                                ?>
-                                                <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                                    <div class="form-group mb-2">
-                                                        <div class="form-label-group in-border mb-0">
-                                                            <select class="select2 select2-danger" name="filter_agent_customer"  data-dropdown-css-class="select2-danger" onchange="Javascript:getReport();" style="width: 100%;">
-                                                            <option value="">Select</option>
-                                                            <?php
-                                                                if(!empty($agent_customer_list)) {
-                                                                    foreach($agent_customer_list as $data) {
-                                                                        
-                                                                        if(!empty($data['party_id']) && $data['party_id'] !=$GLOBALS['null_value']) {
-                                                                            ?>
-                                                                            <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>" <?php if(!empty($filter_agent_customer)){ if($filter_agent_customer == $data['party_id']){ echo "selected"; } } ?>>
-                                                                                <?php
-                                                                                    if(!empty($data['party_name'])) {
-                                                                                        $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
-                                                                                        echo $data['party_name'];
-                                                                                        if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                            $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                            echo " - ".$data['city'];
-                                                                                        }
-                                                                                    }
-                                                                                ?>
-                                                                            </option>
-                                                                            <?php
-                                                                        }
-                                                                    }
-                                                                }
-                                                            ?>
-                                                            
-                                                            </select>
-                                                            <label>Select Agent Customer</label>
-                                                        </div>
-                                                    </div> 
+                                        
+                                        <?php if(!empty($filter_party_id)){ ?>
+                                        <div class="col-lg-2 col-md-4 col-6">
+                                            <div class="form-group mb-1">
+                                                <div class="form-label-group in-border pb-2">
+                                                    <input type="date" id="from_date" name="from_date" class="form-control shadow-none" onchange="Javascript:getReport();checkDateCheck();" value="<?php if(!empty($from_date)){ echo $from_date; }?>" placeholder="" required="" max="<?php if(!empty($current_date)){ echo $current_date; }?>">
+                                                    <label>From Date</label>
                                                 </div>
-                                                <?php
-                                            }
-                                        ?>
-                                        <!-- <div class="col-lg-2 col-md-4 col-6 px-lg-1">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" style="height:34px;" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
-                                                <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                             </div>
-                                        </div> -->
+                                        </div>
+                                        <?php  } ?>
+                                        <div class="col-lg-2 col-md-4 col-6">
+                                            <div class="form-group mb-1">
+                                                <div class="form-label-group in-border pb-2">
+                                                    <input type="date" id="to_date" name="to_date" class="form-control shadow-none"  onchange="Javascript:getReport();checkDateCheck();"  value="<?php if(!empty($to_date)){ echo $to_date; }?>" placeholder="" required="" max="<?php if(!empty($current_date)){ echo $current_date; }?>">
+                                                    <label>To Date</label>
+                                                </div>
+                                            </div>
+                                        </div>
+        
                                         <div class="col-lg-3 col-md-4 col-12 px-lg-1 text-end">
-                                            <button class="btn btn-primary m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&filter_agent_party=<?php echo $filter_agent_party; ?>&is_download=','_blank')"> <i class="fa fa-print"></i> Print </button>
-                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&filter_agent_party=<?php echo $filter_agent_party; ?>&is_download=D','_blank')"> <i class="fa fa-file-pdf-o"></i> Pdf </button>
+                                            <button class="btn btn-primary m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&is_download=','_blank')"> <i class="fa fa-print"></i> Print </button>
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&is_download=D','_blank')"> <i class="fa fa-file-pdf-o"></i> Pdf </button>
                                             <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onClick="ExportToExcel()"> <i class="fa fa-download"></i> Export </button> 
                                             <!-- <button class="btn btn-secondary float-right " style="font-size:11px;" type="button" onClick="ExportToExcel()"><i class="fa fa-download"></i>&ensp; Export </button>  -->
                                         </div> 
@@ -290,8 +252,6 @@
                                 <div class="col-lg-11">
                                         <div class="table-responsive table-bordered">
                                             <table cellpadding="0" cellspacing="0" class="table display report_table no_$obj->numberFormat" style="width: 100%; border:solid 1px black;" id="tbl_pending_balance_list">
-
-                                                
                                                 <?php if(!empty($filter_party_id)) { ?>
                                                     <thead class="smallfnt">
                                                         <tr>
@@ -327,11 +287,11 @@
                                                         </tr>
                                                         <tr >
                                                             <th style="border-top: 1px solid #000!important; border-left: 1px solid #000!important; border-bottom: 1px solid #000!important; border-right: 1px solid #000!important; text-align: center; padding: 3px; font-size: 13px;">S.No</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Date</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Bill No</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Type</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Date</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Bill No</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Type</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -351,7 +311,7 @@
                                                                         }
                                                                         if(!empty($data['opening_balance']))
                                                                         {
-                                                                            // echo $data['opening_balance_type'];
+                                                                            
                                                                             if($data['opening_balance_type'] == 'Credit')
                                                                             {
                                                                                 $opening_credit += $data['opening_balance'];
@@ -512,16 +472,16 @@
                                                     </tbody>
                                                 <?php }
                                                 else{?>
-                                                
+
                                                     <thead>
                                                         <tr>
-                                                            <th colspan="4" style="border-left: 1px solid #000; border-top: 1px solid #000!important; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Pending Payment Report - <?php echo date('d-m-Y'); ?> </th>
+                                                            <th colspan="4" style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Pending Payment Report - <?php echo date('d-m-Y'); ?> </th>
                                                         </tr>
                                                         <tr>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; width: 43px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">S.No</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Party Name</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; width: 100px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
-                                                            <th style="border-left: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; width: 100px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
+                                                            <th style="border: 1px solid #000; width: 43px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">S.No</th>
+                                                            <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Party Name</th>
+                                                            <th style="border: 1px solid #000; width: 100px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
+                                                            <th style="border: 1px solid #000; width: 100px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
                                                         </tr>
                                                     </thead>
                                                     <?php if(!empty($sales_list)) {
@@ -535,7 +495,7 @@
                                                                 $index = $key + 1; $credit_total = 0; $debit_total=0;
                                                                     ?>
                                                                     <tr>
-                                                                        <td style="border-left: 1px solid #000; border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; width: 43px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;"><?php echo $index; ?></td>
+                                                                        <td style="border: 1px solid #000; width: 43px; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;"><?php echo $index; ?></td>
                                                                         <td style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 2px 10px; font-size: 13px; cursor: pointer; vertical-align: middle; height: 30px;" onClick="Javascript:showpartyList('<?php echo $data['party_id']; ?>','<?php echo $data['party_type'];?>');">
                                                                         <?php
                                                                             if(!empty($data['party_name'])) {

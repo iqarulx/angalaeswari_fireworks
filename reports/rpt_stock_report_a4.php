@@ -2,13 +2,16 @@
 
     include("../include_user_check.php");
     
-    $current_date = date("Y-m-d"); $product_id = ""; $magazine_id = ""; $magazine_room_id = ""; $party_id = ""; $category_id = ""; $brand_id = ""; $stock_type = "";  $subunit_contains = 0; $case_contains = 0; $unit_type = ""; $from = "";
+    $current_date = date("Y-m-d"); $product_id = ""; $magazine_id = ""; $magazine_room_id = ""; $party_id = ""; $category_id = ""; $brand_id = ""; $stock_type = "";  $subunit_contains = 0; $case_contains = 0; $unit_type = ""; $from = "";$group_id ="";
     
-    if(isset($_REQUEST['magazine_id'])) {
-        $magazine_id = $_REQUEST['magazine_id'];
+    if(isset($_REQUEST['filter_group_id'])) {
+        $group_id = $_REQUEST['filter_group_id'];
     }
-    if(isset($_REQUEST['product_id'])) {
-        $product_id = $_REQUEST['product_id'];
+    if(isset($_REQUEST['filter_magazine_id'])) {
+        $magazine_id = $_REQUEST['filter_magazine_id'];
+    }
+    if(isset($_REQUEST['filter_product_id'])) {
+        $product_id = $_REQUEST['filter_product_id'];
     }
     if(isset($_REQUEST['unit_type'])) {
         $unit_type = $_REQUEST['unit_type'];
@@ -19,8 +22,8 @@
     if(empty($unit_type)) {
         $unit_type = "Unit";
     }
-    if(isset($_REQUEST['case_contains'])) {
-        $case_contains = $_REQUEST['case_contains'];
+    if(isset($_REQUEST['filter_contains'])) {
+        $case_contains = $_REQUEST['filter_contains'];
     }    
     if(isset($_REQUEST['from'])) {
         $from = $_REQUEST['from'];
@@ -135,9 +138,13 @@
                     $pdf->Cell(90,277-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(80,277-$y_axis,'',1,1,'C',0);
 
-                    $pdf->SetFont('Arial','B',10);
-                    $next_page = $pdf->PageNo() +1;
-                    $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                    // $pdf->SetFont('Arial','B',10);
+                    // $next_page = $pdf->PageNo() +1;
+                    // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                    $pdf->SetFont('Arial','I',7);
+                    $pdf->SetY(285);
+                    $pdf->SetX(10);
+                    $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
                     $pdf->AddPage();
                     $pdf->SetAutoPageBreak(false);
                     $page_number += 1;
@@ -154,9 +161,9 @@
                     $pdf->SetX(10);
                     $pdf->Cell(190,7,'Stock Report - ( '.$current_date.' )',1,1,'C',0);
                     $pdf->SetX(10);
-                    $pdf->Cell(20,8,'#',1,0,'C',0);
-                    $pdf->Cell(90,8,'Product',1,0,'C',0);
-                    $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                    $pdf->Cell(20,10,'#',1,0,'C',0);
+                    $pdf->Cell(90,10,'Product',1,0,'C',0);
+                    $pdf->Cell(80,10,'Current Stock',1,1,'C',0);
                     $pdf->SetFont('Arial','',7);
 
                     $y_axis=$pdf->GetY();
@@ -168,7 +175,7 @@
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_name = "";
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
-                    $product_name = $obj->encode_decode('decrypt', $product_name);
+                    $product_name =html_entity_decode($obj->encode_decode('decrypt', $product_name));
                     $pdf->Cell(90,6,$product_name,1,0,'C',0);
                 }
                 else{
@@ -193,6 +200,8 @@
                 $s_no++;
             }
 
+            
+
             $end_y = $pdf->GetY();
 
             $last_page_count = $s_no - $last_count;
@@ -206,11 +215,15 @@
                 $pdf->Cell(90,270-$y_axis,'',1,0,'C',0);
                 $pdf->Cell(80,270-$y_axis,'',1,1,'C',0);
         
-                $pdf->SetFont('Arial','B',9);
+                // $pdf->SetFont('Arial','B',9);
         
-                $next_page = $pdf->PageNo()+1;
+                // $next_page = $pdf->PageNo()+1;
         
-                $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                $pdf->SetFont('Arial','I',7);
+                $pdf->SetY(285);
+                $pdf->SetX(10);
+                $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
                 $pdf->AddPage();
                 $pdf->SetAutoPageBreak(false);
 
@@ -225,9 +238,9 @@
                 $pdf->SetX(10);
                 $pdf->Cell(190,7,'Stock Report - ( '.$current_date.' )',1,1,'C',0);
                 $pdf->SetX(10);
-                $pdf->Cell(20,8,'#',1,0,'C',0);
-                $pdf->Cell(90,8,'Product',1,0,'C',0);
-                $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                $pdf->Cell(20,10,'#',1,0,'C',0);
+                $pdf->Cell(90,10,'Product',1,0,'C',0);
+                $pdf->Cell(80,10,'Current Stock',1,1,'C',0);
                 $pdf->SetFont('Arial','',7);
                 
                 $y_axis=$pdf->GetY();
@@ -264,12 +277,16 @@
             }
 
         }
+        $pdf->SetFont('Arial','I',7);
+        $pdf->SetY(285);
+        $pdf->SetX(10);
+        $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
     }
     else if(!empty($product_id)) {
         $product_name = "";
         $product_names = $obj->GetTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
         if(!empty($product_names) && $product_names != $GLOBALS['null_value']) {
-            $product_name = $obj->encode_decode('decrypt', $product_names);
+            $product_name =html_entity_decode($obj->encode_decode('decrypt', $product_names));
         } 
         if(!empty($total_records_list)) {
             $total_pages = array(1);
@@ -371,9 +388,13 @@
                         $pdf->Cell(30,277-$y_axis,'',1,1,'C',0);
                     }
 
-                    $pdf->SetFont('Arial','B',10);
-                    $next_page = $pdf->PageNo() +1;
-                    $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                    // $pdf->SetFont('Arial','B',10);
+                    // $next_page = $pdf->PageNo() +1;
+                    // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                    $pdf->SetFont('Arial','I',7);
+                    $pdf->SetY(285);
+                    $pdf->SetX(10);
+                    $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
                     $pdf->AddPage();
                     $pdf->SetAutoPageBreak(false);
                     $page_number += 1;
@@ -640,11 +661,15 @@
                     $pdf->Cell(30,270-$y_axis,'',1,1,'C',0);
                 }
                 
-                $pdf->SetFont('Arial','B',9);
+                // $pdf->SetFont('Arial','B',9);
     
-                $next_page = $pdf->PageNo()+1;
+                // $next_page = $pdf->PageNo()+1;
         
-                $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
+                $pdf->SetFont('Arial','I',7);
+                $pdf->SetY(285);
+                $pdf->SetX(10);
+                $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
                 $pdf->AddPage();
                 $pdf->SetAutoPageBreak(false);
 
@@ -795,8 +820,12 @@
             }
             
         }
+        $pdf->SetFont('Arial','I',7);
+        $pdf->SetY(285);
+        $pdf->SetX(10);
+        $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
     }
-
+    
     $pdf_name = "Stock Report (".$current_date.").pdf";
     $pdf->Output($from, $pdf_name);
 ?>

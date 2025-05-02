@@ -12,7 +12,6 @@
     }
 
     $current_date = date('Y-m-d');
-
     $from_date = "";
     if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
@@ -49,11 +48,31 @@
         $agent_id = $_POST['filter_agent_id'];
     }
 
-    $total_records_list = array();
-    $total_records_list = $obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id);
+    $case_contains = "";
+    if(isset($_POST['filter_contains'])) {
+        $case_contains = $_POST['filter_contains'];
+    }
 
+    $product_subunit_id = ""; $subunit_hide = 1;
+    if(!empty($product_id)) {
+        $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
+        if(empty($product_subunit_id) || $product_subunit_id == $GLOBALS['null_value']) {
+            $subunit_hide = 0;
+        }
+    }
+
+    $total_records_list = array();$contains_list = array();
     $product_list = array();
-    $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+    $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', ''); 
+
+    $total_records_list = $obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains);
+    
+    if(!empty($product_id)){
+        if($subunit_hide == '1') {
+            $contains_list = $obj->getStockContainsList($product_id);
+        }
+    }
+
     $customer_list = array();
     if(!empty($agent_id)) {
         $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], 'agent_id', $agent_id, '');
@@ -83,7 +102,8 @@
                         <form name="current_stock_report_form" method="post">
                             <div class="card">
                                 <div class="row justify-content-end mx-0 mt-3 px-2">
-                                    <div class="col-auto d-flex">
+                                    <div class="col-lg-3 col-md-3 col-4">
+                                        <button class="btn btn-primary me-2" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_pending_order_report.php?from_date=<?php echo $from_date; ?>&from_date=<?php echo $from_date; ?>&filter_product_id=<?php echo $product_id; ?>&filter_unit_type=<?php echo $unit_type; ?>&filter_customer_id=<?php echo $customer_id; ?>&filter_agent_id=<?php echo $agent_id; ?>&filter_contains=<?php echo $case_contains; ?>')"> <i class="fa fa-print"></i> Print </button>
                                         <button class="btn btn-danger me-2" style="font-size:11px;" type="button" onclick="OpenPdf();">
                                             <i class="fa fa-download"></i> Pdf
                                         </button>
@@ -147,6 +167,36 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <?php 
+                                        if(!empty($product_id)) { 
+                                            if($subunit_hide == '1') { ?>
+                                        <div class="col-lg-2 col-md-4 col-6">
+                                            <div class="form-group mb-1">
+                                                <div class="form-label-group in-border pb-2">
+                                                    <select name="filter_contains" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width:100%!important;" onchange="Javascript:getReport();">
+                                                        <option value="">Select</option>
+                                                        <?php
+                                                            if(!empty($contains_list)) {
+                                                                foreach($contains_list as $data) {
+                                                                    if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
+                                                                        ?>
+                                                                        <option value="<?php echo $data['case_contains']; ?>" <?php if(!empty($case_contains) && $case_contains == $data['case_contains']) { ?>selected<?php } ?>>
+                                                                            <?php
+                                                                                echo $data['case_contains'];
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php 
+                                                                    }
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </select>
+                                                    <label>Contains</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php } 
+                                    }?>
                                     <div class="col-lg-2 col-md-4 col-6 mb-2">
                                         <div class="input-group">
                                             <select class="select2 select2-danger" name="filter_agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getReport();">
@@ -262,7 +312,7 @@
                                                     <?php } else { ?>
                                                         <thead class="bg-success" style="font-size:13px!important;font-weight:bold!important;">
                                                             <tr style="vertical-align:middle!important;">
-                                                                <th colspan="7">
+                                                                <th <?php if($subunit_hide == '1') { ?>colspan="8"<?php }else{ ?>colspan="7"<?php }?>>
                                                                     <?php 
                                                                         $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
 
@@ -284,6 +334,9 @@
                                                                 <th>Agent</th>
                                                                 <th>Customer</th>
                                                                 <th>Product</th>
+                                                                <?php if($subunit_hide == '1') { ?>
+                                                                    <th>Contains</th>
+                                                                <?php } ?>
                                                                 <th>Inward <?php if(!empty($unit_type)) { echo "Unit"; } else { echo "Sub Unit"; } ?></th>
                                                                 <th>Outward <?php if(!empty($unit_type)) { echo "Unit"; } else { echo "Sub Unit"; } ?></th>
                                                             </tr>
@@ -358,6 +411,15 @@
                                                                                     }
                                                                                 ?>
                                                                             </th>
+                                                                            <?php if($subunit_hide == '1') { ?>
+                                                                                <th>
+                                                                                    <?php
+                                                                                        if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
+                                                                                            echo $data['case_contains'];
+                                                                                        }
+                                                                                    ?>
+                                                                                </th>
+                                                                            <?php } ?>
                                                                             <th>
                                                                                 <?php
                                                                                     if(!empty($unit_type) && $unit_type == "1") {
@@ -393,7 +455,8 @@
                                                                     } 
                                                                     ?>
                                                                     <tr>
-                                                                        <th colspan="5" class="text-end">Total</th>
+                                                                        <th <?php if($subunit_hide == '1') { ?>colspan="6"<?php }else{
+                                                                         ?>colspan="5"<?php } ?> class="text-end">Total</th>
                                                                         <th><?php echo $total_inward; ?></th>
                                                                         <th><?php echo $total_outward; ?></th>
                                                                     </tr>

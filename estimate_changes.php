@@ -31,7 +31,10 @@
                     $customer_id = $est['customer_id'];
                 }
                 if(!empty($est['delivery_slip_date'])) {
-                    $delivery_slip_date = date('Y-m-d', strtotime($delivery_slip_date));
+                    $delivery_slip_date = date('Y-m-d', strtotime($est['delivery_slip_date']));
+                }
+                if(!empty($est['estimate_date'])) {
+                    $estimate_date = date('Y-m-d', strtotime($est['estimate_date']));
                 }
                 if(!empty($est['agent_id'])) {
                     $agent_id = $est['agent_id'];
@@ -529,6 +532,7 @@
                                                 </td>
                                                 <td>
                                                     <?php
+                                                        /* 
                                                         $per_unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
                                                         $per_subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
                                                     ?>
@@ -537,6 +541,21 @@
                                                     <?php if(!empty($per[$i]) && !empty($per_type[$i])){
                                                         echo $per[$i]." ".$obj->encode_decode("decrypt", $per_unit_name);
                                                     } ?>
+                                                    */ ?>
+                                                     <div class="form-group">
+                                                        <div class="form-label-group in-border">
+                                                            <div class="input-group">
+                                                                <input type="text" id="" name="per[]" value="<?php if(!empty($per[$i])){ echo $per[$i]; }?>" class="form-control shadow-none" onkeyup="ProductRowCheck(this);">
+                                                                <label>Per</label>
+                                                                <div class="input-group-append" style="width:50%!important;">
+                                                                    <select name="per_type[]" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="ProductRowCheck(this);">
+                                                                        <option value="1" <?php if(!empty($per_type[$i]) && $per_type[$i] == '1'){ ?>selected<?php } ?>><?php if(!empty($per_unit_name)){ echo $obj->encode_decode("decrypt",$per_unit_name); } ?></option>
+                                                                        <option value="2" <?php if(!empty($per_type[$i]) && $per_type[$i] == '2'){ ?>selected<?php } ?>><?php if(!empty($per_subunit_name)){ echo $obj->encode_decode("decrypt",$per_subunit_name); } ?></option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <?php if(!empty($product_tax[$i])) { ?>
                                                     <td class="tax_element d-none">

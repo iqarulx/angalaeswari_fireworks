@@ -26,7 +26,7 @@
                         $customer_id = $pi['customer_id'];
                     }
                     if(!empty($pi['proforma_invoice_date'])) {
-                        $proforma_invoice_date = date('Y-m-d', strtotime($proforma_invoice_date));
+                        $proforma_invoice_date = date('Y-m-d', strtotime($pi['proforma_invoice_date']));
                     }
                     if(!empty($pi['agent_id'])) {
                         $agent_id = $pi['agent_id'];

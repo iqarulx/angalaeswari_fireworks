@@ -17,15 +17,17 @@
 <head>
 	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
 	<?php include "link_style_script.php"; 
+     $from_date = ""; $to_date = ""; 
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
     $total_records_list = $obj->getTableRecords($GLOBALS['estimate_table'], '', '', '');
     $excel_name = ""; $transport_id =""; $agent_id = "";
     $excel_name = "Sales Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
-    if(isset($_POST['page_number'])) {
-        $page_number = $_POST['page_number'];
-        $page_limit = $_POST['page_limit'];
-        $page_title = $_POST['page_title']; 
-        $from_date = ""; $to_date = ""; $customer_id = ""; $bill = "";
+    $cancel_bill_btn = "";
+    // if(isset($_POST['page_number'])) {
+    //     $page_number = $_POST['page_number'];
+    //     $page_limit = $_POST['page_limit'];
+    //     $page_title = $_POST['page_title']; 
+       $customer_id = ""; $bill = "";
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
         }
@@ -41,10 +43,15 @@
         if(isset($_POST['transport_id'])) {
             $transport_id = $_POST['transport_id'];
         }
+        $cancel_bill_btn = "";
+        if(isset($_POST['cancel_bill_btn'])){
+           $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
+        }
+    
         
         $total_records_list = array();
-        $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id);
-    }
+        $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn);
+    // }
 
     $agent_list =array();
     $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
@@ -73,7 +80,7 @@
                             <div class="border card-box d-none add_update_form_content" id="add_update_form_content" ></div>
                             <div class="border card-box" id="table_records_cover">
                                 <div class="card-header align-items-center">
-                                    <div class="row justify-content-end p-2">   
+                                    <div class="row p-2">   
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border">
@@ -117,6 +124,7 @@
                                                 </div>
                                             </div> 
                                         </div> 
+                                        
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border mb-0">
@@ -147,22 +155,21 @@
                                                 </div>
                                             </div> 
                                         </div> 
-                                        </div> 
-
-                                        <!-- <div class="col-lg-3 col-md-2 col-12">
+                                        <div class="col-lg-3 col-md-2 col-12">
                                             <div class="form-group mb-1">
                                                 <div class="flex-shrink-0">
                                                     <div class="form-check form-switch form-switch-right form-switch-md">
                                                         <label for="FormSelectDefault" class="form-label text-muted smallfnt">Show Cancelled Bill Also</label>
-                                                        <input class="form-check-input code-switcher" type="checkbox" id="FormSelectDefault">
+                                                        <input class="form-check-input" type="checkbox" name="cancel_bill_btn" <?php if($cancel_bill_btn == "1"){ ?> checked <?php } ?> id="FormSelectDefault"  value="0"  onChange='Javascript:show_cancelled_bill(this.checked);'>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div> -->
+                                        </div>   
+                                    </div> 
                                     <div class="row justify-content-end p-2">   
 
                                         <div class="col-lg-12 col-6 text-end">
-                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_sales_a4.php?filter_party_id=<?php if(!empty($customer_id)){ echo $customer_id; } ?>&from_date=<?php if(!empty($from_date)){ echo $from_date; } ?>&to_date=<?php if(!empty($to_date)){ echo $to_date; } ?>&agent_id=<?php if(!empty($agent_id)){ echo $agent_id; } ?>&transport_id=<?php if(!empty($transport_id)){ echo $transport_id; } ?>')"> <i class="fa fa-print"></i> Print </button>
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_sales_a4.php?filter_party_id=<?php if(!empty($customer_id)){ echo $customer_id; } ?>&from_date=<?php if(!empty($from_date)){ echo $from_date; } ?>&to_date=<?php if(!empty($to_date)){ echo $to_date; } ?>&agent_id=<?php if(!empty($agent_id)){ echo $agent_id; } ?>&transport_id=<?php if(!empty($transport_id)){ echo $transport_id; } ?>&cancel_bill_btn=<?php echo $cancel_bill_btn; ?>')"> <i class="fa fa-print"></i> Print </button>
                                             <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Export </button>  
                                         </div> 
                                         <div class="col-sm-6 col-xl-8">
@@ -185,9 +192,11 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <?php $total_amount = 0;
+                                            <?php $total_amount = 0;$grand_amount =0;
                                                 if(!empty($total_records_list)) {
                                                     foreach($total_records_list as $key => $list) { 
+
+                                                        $total_amount =$list['bill_total'];
                                                         $index = $key + 1; ?>
                                                         <tr>
                                                             <td>
@@ -196,7 +205,13 @@
                                                             <td>
                                                                 <?php if(!empty($list['estimate_number'])) {
                                                                     echo $list['estimate_number'];
-                                                                } ?>
+                                                                } 
+                                                                
+                                                                if (!empty($list['cancelled'])) {
+                                                                    ?>
+                                                                    <br><span style="color: red;">Cancelled</span>
+                                                                    <?php
+                                                                }?>
                                                             </td>
                                                             <td>
                                                                 <?php if(!empty($list['estimate_date'])) {
@@ -209,14 +224,22 @@
                                                                 } ?>
                                                             </td>
                                                             <td class="text-end">
-                                                                <?php if(!empty($list['bill_total'])) {
-                                                                    $total_amount += (float) $list['bill_total'];
-                                                                    echo number_format($list['bill_total'],2);
-                                                                } ?>
+                                                                <?php if(!empty($total_amount)) {
+                                                                    echo number_format($total_amount,2);
+                                                                } 
+                                                                
+                                                                    if($list['cancelled'] == '0'){ 
+                                                                        $grand_amount+=$total_amount; 
+                                                                    }
+                                                                ?>
                                                             </td>
                                                         </tr>
-                                                    <?php }
-                                                } else {
+                                                    <?php } ?>
+                                                            <tr>
+                                                            <th class="text-right" colspan="4" style="text-align: right;" >Total</th>
+                                                            <th class="mr-5" style="text-align: right;margin: 30px 40px;"><?php echo $obj->numberFormat($grand_amount,2); ?></th>
+                                                            </tr>
+                                           <?php      } else {
                                                     ?>
                                                     <tr>
                                                         <td colspan="5" class="text-center">Sorry! No records found</td>
@@ -245,6 +268,7 @@
         // getOverallReport();
     });
     function getOverallReport(){
+    
         if(jQuery('form[name="sales_form"]').length > 0){
             jQuery('form[name="sales_form"]').submit();
         }
@@ -257,6 +281,20 @@
         XLSX.writeFile(wb, fn || ('<?php echo $excel_name; ?>.' + (type || 'xlsx')));
         window.open("sales_report.php","_self");
     }
+
+    function show_cancelled_bill(chk_value){
+       
+        if(chk_value == true) {
+            $("input[name='cancel_bill_btn']").val("1");
+          
+        }
+        else{
+            $("input[name='cancel_bill_btn']").val("0");
+           
+        }
+        getOverallReport();
+    }           
+   
 </script>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
 <script type="text/javascript" src="include/js/bootstrap-datepicker.min.js"></script>

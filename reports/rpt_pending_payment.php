@@ -63,21 +63,21 @@
     }
     // print_r($party_list);
     // echo $filter_party_id;
-    if(!empty($filter_party_id))
+    if(!empty($party_id))
     {
-        // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $filter_party_id, 'party_name');
+        // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
         // echo $party_name."hello";
         if(!empty($party_name)){
-            // $total_records_list = $obj->balance_report($bill_company_id,$filter_party_id,$from_date,$to_date);
-            $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
+            // $total_records_list = $obj->balance_report($bill_company_id,$party_id,$from_date,$to_date);
+            $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             $view_type = 2;
         }else{
             if(!empty($filter_agent_party)){
              
-                $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],$filter_agent_party,$from_date,$to_date);
+                $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],$filter_agent_party,$from_date,$to_date);
             }
             else{
-                $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
+                $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             }
         }
     }
@@ -169,8 +169,6 @@
                 $pdf->SetX(10);
                 $pdf->Cell(15,10,$index,0,0,'C',0);
                 
-                // $name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $data['party_id'], 'party_name');
-              
                 $pdf->SetX(25);
                 $pdf->Cell(85,10,html_entity_decode($obj->encode_decode('decrypt',$data['party_name']),ENT_QUOTES),0,0,'L',0); 
                 if(!empty($data['opening_balance']) && (!empty($data['opening_balance_type']) && $data['opening_balance_type'] == 'Credit') ) {
@@ -228,7 +226,6 @@
             }
 
             $pdf->SetFont('Arial','B',8);
-
             $pdf->SetX(10);
             $pdf->Cell(100,10,'Total',1,0,'R',0);
             $pdf->SetX(110);
@@ -288,7 +285,19 @@
         $party_name = "";
         $pdf->SetFont('Arial', 'B', 10);
 
-        $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
+    if($view_type =='1'){
+        $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
+    }else if($view_type =='2'){
+        $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $party_id, 'supplier_name');
+    }
+    else if($view_type =='3'){
+        $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'contractor_name');
+    }
+    else if($view_type =='4'){
+        $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $party_id, 'customer_name');
+    }
+
+
         if(!empty($party_name)) { 
             $party_name = $obj->encode_decode('decrypt', $party_name);
             $pdf->SetX(10);
@@ -374,7 +383,6 @@
                     }
                 }
 
-                
                 if(!empty($opening_debit) || !empty($opening_credit)) {
 
                     $pdf->Cell(120,10,'Opening Balance',1,0,'R',0);

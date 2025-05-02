@@ -40,8 +40,13 @@ if(isset($_GET['filter_agent_id'])) {
     $agent_id = $_GET['filter_agent_id'];
 }
 
+$case_contains = "";
+if(isset($_GET['filter_contains'])) {
+    $case_contains = $_GET['filter_contains'];
+}
+
 $total_records_list = array();
-$total_records_list = $obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id);
+$total_records_list = $obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains);
 
 $date_display ="";
 if($from_date == $to_date) {
@@ -96,9 +101,11 @@ if(!empty($product_id)) {
     $pdf->SetX(110);
     $pdf->Cell(30,8,'Product',1,0,'C',1);
     $pdf->SetX(140);
-    $pdf->Cell(30,8,'Inward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,0,'C',1);
-    $pdf->SetX(170);
-    $pdf->Cell(30,8,'Outward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,1,'C',1);
+    $pdf->Cell(20,8,'Contains',1,0,'C',1);
+    $pdf->SetX(160);
+    $pdf->Cell(20,8,'Inward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,0,'C',1);
+    $pdf->SetX(180);
+    $pdf->Cell(20,8,'Outward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,1,'C',1);
 
 } else {
     $pdf->Cell(10,8,'#',1,0,'C',1);
@@ -307,9 +314,11 @@ if (!empty($total_records_list)) {
                     $pdf->SetX(110);
                     $pdf->Cell(30,8,'Product',1,0,'C',1);
                     $pdf->SetX(140);
-                    $pdf->Cell(30,8,'Inward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,0,'C',1);
-                    $pdf->SetX(170);
-                    $pdf->Cell(30,8,'Outward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,1,'C',1);
+                    $pdf->Cell(20,8,'Contains',1,0,'C',1);
+                    $pdf->SetX(160);
+                    $pdf->Cell(20,8,'Inward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,0,'C',1);
+                    $pdf->SetX(180);
+                    $pdf->Cell(20,8,'Outward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,1,'C',1);
                 
                 } else {
                     $pdf->Cell(10,8,'#',1,0,'C',1);
@@ -407,61 +416,73 @@ if (!empty($total_records_list)) {
                 $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
             }
             $product_y = $pdf->GetY() - $start_y;
+
+            if(!empty($record['case_contains'] && $record['case_contains'] != "NULL")) {
+                $pdf->SetY($start_y);
+                $pdf->SetX(140);
+                $pdf->MultiCell(20, 5, $record['case_contains'], 0, 'C', 0);
+                $pdf->SetTextColor(0,0,0);
+            }
+            else {
+                $pdf->SetY($start_y);
+                $pdf->SetX(140);
+                $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
+            }
     
             if($unit_type == "1") {
                 if(!empty($record['inward_unit'] && $record['inward_unit'] != "NULL")) {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(140);
-                    $pdf->MultiCell(30, 5, $record['inward_unit'], 0, 'C', 0);
+                    $pdf->SetX(160);
+                    $pdf->MultiCell(20, 5, $record['inward_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_inward += $record['inward_unit'];
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(140);
-                    $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
+                    $pdf->SetX(160);
+                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
                 }
                 $inward_y = $pdf->GetY() - $start_y;
 
                 if(!empty($record['outward_unit']) && $record['outward_unit'] != "NULL") {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(170);
-                    $pdf->MultiCell(30, 5, $record['outward_unit'], 0, 'C', 0);
+                    $pdf->SetX(180);
+                    $pdf->MultiCell(20, 5, $record['outward_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_outward += $record['outward_unit'];
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(170);
-                    $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
+                    $pdf->SetX(180);
+                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
                 }
                 $outward_y = $pdf->GetY() - $start_y;
             } else {
                 if(!empty($record['inward_sub_unit']) && $record['inward_sub_unit'] != "NULL") {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(140);
-                    $pdf->MultiCell(30, 5, $record['inward_sub_unit'], 0, 'C', 0);
+                    $pdf->SetX(160);
+                    $pdf->MultiCell(20, 5, $record['inward_sub_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_inward += $record['inward_sub_unit'];
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(140);
-                    $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
+                    $pdf->SetX(160);
+                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
                 }
                 $inward_y = $pdf->GetY() - $start_y;
 
                 if(!empty($record['outward_sub_unit']) && $record['outward_unit'] != "NULL") {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(170);
-                    $pdf->MultiCell(30, 5, $record['outward_sub_unit'], 0, 'C', 0);
+                    $pdf->SetX(180);
+                    $pdf->MultiCell(20, 5, $record['outward_sub_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_outward += $record['outward_sub_unit'];
                 }
                 else {
                     $pdf->SetY($start_y);
-                    $pdf->SetX(170);
-                    $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
+                    $pdf->SetX(180);
+                    $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
                 }
                 $outward_y = $pdf->GetY() - $start_y;
             }
@@ -481,9 +502,11 @@ if (!empty($total_records_list)) {
             $pdf->SetX(110);
             $pdf->Cell(30,$max_y,'',1,0,'C');
             $pdf->SetX(140);
-            $pdf->Cell(30,$max_y,'',1,0,'C');
-            $pdf->SetX(170);
-            $pdf->Cell(30,$max_y,'',1,1,'C');
+            $pdf->Cell(20,$max_y,'',1,0,'C');
+            $pdf->SetX(160);
+            $pdf->Cell(20,$max_y,'',1,0,'C');
+            $pdf->SetX(180);
+            $pdf->Cell(20,$max_y,'',1,1,'C');
     
             $start_y += $max_y;
             $pdf->SetY($start_y);
@@ -501,30 +524,31 @@ if (!empty($total_records_list)) {
         $pdf->SetX(110);
         $pdf->Cell(30,255-$pdf->GetY(),'',1,0,'C',0);
         $pdf->SetX(140);
-        $pdf->Cell(30,255-$pdf->GetY(),'',1,0,'C',0);
-        $pdf->SetX(170);
-        $pdf->Cell(30,255-$pdf->GetY(),'',1,1,'C',0);
+        $pdf->Cell(20,255-$pdf->GetY(),'',1,0,'C',0);
+        $pdf->SetX(160);
+        $pdf->Cell(20,255-$pdf->GetY(),'',1,0,'C',0);
+        $pdf->SetX(180);
+        $pdf->Cell(20,255-$pdf->GetY(),'',1,1,'C',0);
     
         $pdf->SetFont('Arial','B',8);
         $pdf->SetX(10);
-        $pdf->Cell(130,8,'Total',1,0,'R',0);
+        $pdf->Cell(150,8,'Total',1,0,'R',0);
         if(!empty($total_inward)) {
-            $pdf->SetX(140);
-            $pdf->Cell(30,8,$total_inward,1,0,'R',0);
+            $pdf->SetX(160);
+            $pdf->Cell(20,8,$total_inward,1,0,'R',0);
         } else {
-            $pdf->SetX(140);
-            $pdf->Cell(30,8,'-',1,0,'R',0);
+            $pdf->SetX(160);
+            $pdf->Cell(20,8,'-',1,0,'R',0);
         }
         if(!empty($total_outward)) {
-            $pdf->SetX(170);
-            $pdf->Cell(30,8,$total_outward,1,0,'R',0);
+            $pdf->SetX(180);
+            $pdf->Cell(20,8,$total_outward,1,0,'R',0);
         } else {
-            $pdf->SetX(170);
-            $pdf->Cell(30,8,'-',1,1,'R',0);
+            $pdf->SetX(180);
+            $pdf->Cell(20,8,'-',1,1,'R',0);
         }
     }
 }
-
 
 /* End */
 $pdf->SetFont('Arial','I',7);

@@ -77,6 +77,10 @@
                 }
             }
         }
+        $linked_agent = 0;
+        if(!empty($show_agent_id)){
+             $linked_agent = $obj->PaymentlinkedAgent($show_agent_id);
+        }
 
         ?>
 
@@ -177,10 +181,10 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
-                                <input type="text" id="opening_balance" name="opening_balance" class="form-control shadow-none" required  value="<?php if(!empty($opening_balance)){echo $opening_balance;} ?>" onfocus="Javascript:KeyboardControls(this,'number',6,1);" maxlength="6">
+                                <input type="text" id="opening_balance" name="opening_balance" class="form-control shadow-none" required  value="<?php if(!empty($opening_balance)){echo $opening_balance;} ?>" onfocus="Javascript:KeyboardControls(this,'number',6,1);" maxlength="6" <?php if(!empty($linked_agent)){ ?> readonly <?php } ?>>
                                 <label>Opening Balance</label>
                                 <div class="input-group-append" style="width:40%!important;">
-                                    <select name="opening_balance_type" class="select2 select2-danger" style="width: 100%;" onchange="Javascript:InputBoxColor(this,'select');">
+                                    <select name="opening_balance_type" class="select2 select2-danger" style="width: 100%;" onchange="Javascript:InputBoxColor(this,'select');"  <?php if(!empty($linked_agent)){ ?> disabled <?php } ?>>
                                         <option value="">Select</option>
                                         <option value="Credit" <?php if(!empty($opening_balance_type) && $opening_balance_type == "Credit"){ ?>selected<?php } ?>>Credit</option>
                                         <option value="Debit" <?php if(!empty($opening_balance_type) && $opening_balance_type == "Debit"){ ?>selected<?php } ?>>Debit</option>
@@ -190,6 +194,10 @@
                         </div>
                     </div>
                 </div>
+                <?php if(!empty($linked_agent) && !empty($show_agent_id)){ ?>
+                    <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $opening_balance_type; } ?>">
+                <?php 
+               } ?>
                 <div class="col-md-12 pt-3 text-center submit_button">
                     <button class="btn btn-danger" type="button" onClick="Javascript:SaveModalContent(event,'agent_form', 'agent_changes.php', 'agent.php');">
                         Submit
