@@ -83,7 +83,7 @@
 
         $linked_count = 0;
         if(!empty($show_product_id)) {
-            // $linked_count = $obj->GetProductLinkedCount($show_product_id);
+            $linked_count = $obj->GetProductLinkedCount($show_product_id);
         }
 
         $opening_stock_count = 0;
@@ -615,7 +615,7 @@
                                              
                                                 if (empty($delete_access_error)) {
                                                     $linked_count = 0;
-                                                    // $linked_count = $obj->GetProductLinkedCount($list['product_id']); 
+                                                    $linked_count = $obj->GetAgentLinkedCount($list['product_id']); 
                                                     if ($linked_count > 0) { ?>
                                                         <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                         <?php

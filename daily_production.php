@@ -29,7 +29,7 @@
     // else {
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
     // }
-
+    $current_date = date('Y-m-d');
     $contractor_list = array();
     $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
 
@@ -61,7 +61,23 @@
 
                                     <div class="card-header align-items-center">
                                         <div class="row justify-content-end p-2">
-                                            <div class="col-lg-3 col-md-3 col-6">
+                                            <div class="col-lg-2 col-md-4 col-6">
+                                                <div class="form-group mb-0">
+                                                    <div class="form-label-group in-border mb-0">
+                                                        <input type="date" class="form-control shadow-none" name="from_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                                        <label>From Date</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-4 col-6">
+                                                <div class="form-group mb-0">
+                                                    <div class="form-label-group in-border mb-0">
+                                                        <input type="date" class="form-control shadow-none" name="to_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                                        <label>To Date</label>
+                                                    </div>
+                                                </div>
+                                            </div>	
+                                            <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border">
                                                         <select  name="filter_contractor_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
@@ -88,7 +104,7 @@
                                                     </div>
                                                 </div>       
                                             </div>
-                                            <div class="col-lg-3 col-md-3 col-6">
+                                            <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border">
                                                         <select name="filter_magazine_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
@@ -115,7 +131,7 @@
                                                     </div>
                                                 </div>       
                                             </div>
-                                            <div class="col-lg-3 col-md-4 col-6">
+                                            <div class="col-lg-2 col-md-4 col-6">
                                                 <div class="input-group">
                                                     <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search By Bill No" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();">
                                                     <span class="input-group-text" onchange="Javascript:table_listing_records_filter();" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>

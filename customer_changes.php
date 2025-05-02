@@ -833,9 +833,9 @@
                                                 }
                                                 if(empty($delete_access_error)) { 
                                                     $linked_count = 0;
-                                                    // $linked_count = $obj->GetcustomerLinkedCount($data['customer_id']); 
+                                                    $linked_count = $obj->GetCustomerLinkedCount($data['customer_id']); 
                                                     if($linked_count > 0) { ?>
-                                                        <li><a class="dropdown-item bg-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
+                                                        <li><a class="dropdown-item text-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
                                                     }
                                                     else { ?> 
                                                         <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 

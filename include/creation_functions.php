@@ -73,29 +73,6 @@
 			return $charges_id;
 		}
 
-		public function GetChargesLinkedCount($charges_id) {
-			$list = array(); $select_query = ""; $where = ""; $count = 0;
-			if(!empty($charges_id)) {
-				$where = " FIND_IN_SET('".$charges_id."', charges_id) AND ";
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE FIND_IN_SET('".$charges_id."', other_charges_id) AND deleted = '0')
-									UNION ALL 
-									(SELECT count(id) as id_count FROM ".$GLOBALS['perfoma_invoice_table']." WHERE FIND_IN_SET('".$charges_id."', other_charges_id) AND deleted = '0') UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE FIND_IN_SET('".$charges_id."', other_charges_id) AND deleted = '0'))
-								as g";
-				$list = $this->getQueryRecords('', $select_query);
-			}
-			if(!empty($list)) {
-				foreach($list as $data) {
-					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
-						$count = $data['id_count'];
-					}
-				}
-			}
-			return $count;
-		}
-
 		public function TransportMobileExists($mobile_number) {
 			$list = array(); $select_query = ""; $transport_id = ""; 
 			
@@ -134,107 +111,7 @@
 			return $contractor_id;
 		}
 
-		public function GetFactoryLinkedCount($factory_id) {
-			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
-			if(!empty($factory_id)) {
-				$where = " FIND_IN_SET('".$factory_id."', factory_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$factory_id."', from_factory_id) OR FIND_IN_SET('".$factory_id."', to_factory_id)) AND ";
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['inward_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
-								as g";
-				$list = $this->getQueryRecords('', $select_query);
-			}
-			if(!empty($list)) {
-				foreach($list as $data) {
-					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
-						$count = $data['id_count'];
-					}
-				}
-			}
-			return $count;
-		}
-
-		public function GetGodownLinkedCount($godown_id) {
-			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
-			if(!empty($godown_id)) {
-				$where = " FIND_IN_SET('".$godown_id."', godown_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$godown_id."', from_location_id) OR FIND_IN_SET('".$godown_id."', to_location_id)) AND ";
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['inward_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE ".$where." deleted = '0'))
-								as g";
-				$list = $this->getQueryRecords('', $select_query);
-			}
-			if(!empty($list)) {
-				foreach($list as $data) {
-					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
-						$count = $data['id_count'];
-					}
-				}
-			}
-			return $count;
-		}
-
-		public function GetMagazineLinkedCount($magazine_id) {
-			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
-			if(!empty($magazine_id)) {
-				$where = " FIND_IN_SET('".$magazine_id."', magazine_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$magazine_id."', from_location_id) OR FIND_IN_SET('".$magazine_id."', to_location_id)) AND ";
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['sales_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
-								as g";
-				$list = $this->getQueryRecords('', $select_query);
-			}
-			if(!empty($list)) {
-				foreach($list as $data) {
-					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
-						$count = $data['id_count'];
-					}
-				}
-			}
-			return $count;
-		}
-		
+	
 		public function GetPaymentmodeLinkedCount($payment_mode_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($payment_mode_id)) {
@@ -267,9 +144,9 @@
 				$select_query = "SELECT id_count FROM 
 									((SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE FIND_IN_SET('".$bank_id."', bank_id) AND cancelled = '0')
 									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['performa_invoice_table']." WHERE FIND_IN_SET('".$bank_id."', bank_id) AND cancelled = '0')
+									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE FIND_IN_SET('".$bank_id."', bank_id) AND cancelled = '0')
 									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['sales_invoice_table']." WHERE ".$where." cancelled = '0')
+									(SELECT count(id) as id_count FROM ".$GLOBALS['expense_table']." WHERE ".$where." deleted = '0')
 									UNION ALL
 									(SELECT count(id) as id_count FROM ".$GLOBALS['receipt_table']." WHERE ".$where." deleted = '0')
 									UNION ALL
@@ -550,12 +427,12 @@
 			return $purchase_entry_id;
 		}
 
-		public function getPurchaseList($from_date, $to_date,$search_text,$show_bill) {
+		public function getPurchaseList($from_date, $to_date,$search_text,$show_bill, $product_group) {
             $list = array(); $select_query = ""; $where = "";
             $bill_company_id = $GLOBALS['bill_company_id'];
-            if(!empty($bill_company_id)) {
-				$where = "bill_company_id = '".$bill_company_id."' ";
-			}
+            // if(!empty($bill_company_id)) {
+			// 	$where = "bill_company_id = '".$bill_company_id."' ";
+			// }
             if(!empty($from_date)) {
                 $from_date = date("Y-m-d", strtotime($from_date));
                 if(!empty($where)) {
@@ -582,9 +459,18 @@
                     $where = "cancelled = '".$show_bill."' ";
                 }
             }
+			if($product_group == '2' || $product_group == '1'){
+                if(!empty($where)) {
+                    $where = $where." AND product_group = '".$product_group."' ";
+                }
+                else {
+                    $where = "product_group = '".$product_group."' ";
+                }
+            }
+
 
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
+				 $select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
 			}
 			else{
 				$select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
@@ -769,44 +655,6 @@
             $agent_customer_list = $this->getQueryRecords($GLOBALS['customer_table'],$select_query);
             return $agent_customer_list;
         }
-
-		public function GetProductLinkedCount($product_id) {
-			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
-			if(!empty($product_id)) {
-				$where = " FIND_IN_SET('".$product_id."', product_id) AND ";
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['contractor_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['inward_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['performa_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['sales_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0'))
-								as g";
-				$list = $this->getQueryRecords('', $select_query);
-			}
-			if(!empty($list)) {
-				foreach($list as $data) {
-					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
-						$count = $data['id_count'];
-					}
-				}
-			}
-			return $count;
-		}
 
 		function getOpeningStockCount($product_id) {
 			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
@@ -1071,7 +919,7 @@
 			return $list;
 		}
 			
-		public function getSalesReportList($from_date, $to_date, $customer_id) {
+		public function getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id) {
 			$select_query = ""; $where = "";
 			
 			if(!empty($from_date)) {
@@ -1093,6 +941,20 @@
 					$where = " customer_id='".$customer_id."'";
 				}
 			}
+			if(!empty($agent_id)) {
+				if(!empty($where)) {
+					$where = $where." AND agent_id='".$agent_id."'";
+				} else {
+					$where = " agent_id='".$agent_id."'";
+				}
+			}
+			if(!empty($transport_id)) {
+				if(!empty($where)) {
+					$where = $where." AND transport_id='".$transport_id."'";
+				} else {
+					$where = " transport_id='".$transport_id."'";
+				}
+			}
 			
 			if(!empty($where)) {
 				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." AND deleted='0' ORDER BY id DESC";
@@ -1107,7 +969,7 @@
 			return $list;
 		}
 
-		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
+		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill, $agent_id, $transport_id) {
 			$list = array(); $select_query = ""; $where = "";
 		
 			if(!empty($from_date)) {
@@ -1139,9 +1001,22 @@
 					$where = "customer_id = '".$customer_id."' ";
 				}
 			}
-		
+			if(!empty($agent_id)){
+				if(!empty($where)) {
+					$where = $where." AND agent_id = '".$agent_id."' ";
+				} else {
+					$where = "agent_id = '".$agent_id."' ";
+				}
+			}
+			if(!empty($transport_id)){
+				if(!empty($where)) {
+					$where = $where." AND transport_id = '".$transport_id."' ";
+				} else {
+					$where = "transport_id = '".$transport_id."' ";
+				}
+			}
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." ORDER BY id DESC";	
+				 $select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." ORDER BY id DESC";	
 			}
 			else{
 				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE deleted = '0' ORDER BY id DESC";
@@ -1153,7 +1028,7 @@
 			return $list;
 		}
 		
-		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
+		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text, $show_bill, $agent_id, $transport_id) {
 			$list = array(); $select_query = ""; $where = "";
 		
 			if(!empty($from_date)) {
@@ -1184,7 +1059,21 @@
 					$where = "customer_id = '".$customer_id."' ";
 				}
 			}
-		
+			
+			if(!empty($agent_id)){
+				if(!empty($where)) {
+					$where = $where." AND agent_id = '".$agent_id."' ";
+				} else {
+					$where = "agent_id = '".$agent_id."' ";
+				}
+			}
+			if(!empty($transport_id)){
+				if(!empty($where)) {
+					$where = $where." AND transport_id = '".$transport_id."' ";
+				} else {
+					$where = "transport_id = '".$transport_id."' ";
+				}
+			}
 			if(!empty($where)) {
 				$select_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." ORDER BY id DESC";	
 			} else {
@@ -1615,7 +1504,7 @@
 			return $list;
 		}
 		
-		public function getEstimateList($from_date, $to_date, $customer_id, $search_text, $show_bill) {
+		public function getEstimateList($from_date, $to_date, $customer_id, $search_text, $show_bill, $agent_id, $transport_id) {
 			$list = array(); $select_query = ""; $where = "";
 		
 			if(!empty($from_date)) {
@@ -1646,7 +1535,20 @@
 					$where = "customer_id = '".$customer_id."' ";
 				}
 			}
-		
+			if(!empty($agent_id)){
+				if(!empty($where)) {
+					$where = $where." AND agent_id = '".$agent_id."' ";
+				} else {
+					$where = "agent_id = '".$agent_id."' ";
+				}
+			}
+			if(!empty($transport_id)){
+				if(!empty($where)) {
+					$where = $where." AND transport_id = '".$transport_id."' ";
+				} else {
+					$where = "transport_id = '".$transport_id."' ";
+				}
+			}
 			if(!empty($where)) {
 				$select_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." ORDER BY id DESC";	
 			}
@@ -1673,7 +1575,7 @@
 								foreach($list as $data) {
 									$linked_count = 0;
 									if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
-										// $linked_count = $this->GetProductLinkedCount($data['product_id']);
+										$linked_count = $this->GetProductLinkedCount($data['product_id']);
 										$linked_count = '0';
 										if($linked_count == '0') {
 											$columns = array(); $values = array();
@@ -1906,6 +1808,355 @@
 					}
 				}
 			}
+		}
+		
+
+
+		// New 01052025
+
+		public function GetRoleLinkedCount($role_id) {
+			$list = array(); $select_query = ""; $count = 0;
+			if(!empty($role_id)) {
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE FIND_IN_SET('".$role_id."', role_id) AND deleted = '0')) as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		
+		public function GetFactoryLinkedCount($factory_id) {
+			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
+			if(!empty($factory_id)) {
+				$where = " FIND_IN_SET('".$factory_id."', factory_id) AND ";
+				$mt_where = " (FIND_IN_SET('".$factory_id."', from_factory_id) OR FIND_IN_SET('".$factory_id."', to_factory_id)) AND ";
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." deleted = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." deleted = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		
+		public function GetGodownLinkedCount($godown_id) {
+			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
+			if(!empty($godown_id)) {
+				$where = " FIND_IN_SET('".$godown_id."', godown_id) AND ";
+				$mt_where = " (FIND_IN_SET('".$godown_id."', from_location) OR FIND_IN_SET('".$godown_id."', to_location)) AND ";
+				$pt_where = " FIND_IN_SET('".$godown_id."', location_id) AND ";
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$pt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$pt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE ".$pt_where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		public function GetMagazineLinkedCount($magazine_id) {
+			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0; $pt_where = ""; $pft_where = "";
+			if(!empty($magazine_id)) {
+				$where = " FIND_IN_SET('".$magazine_id."', magazine_id) AND ";
+				$mt_where = " (FIND_IN_SET('".$magazine_id."', from_location) OR FIND_IN_SET('".$magazine_id."', to_location)) AND ";
+				$st_where = " (FIND_IN_SET('".$magazine_id."', magazine_id) OR FIND_IN_SET('".$magazine_id."', indv_magazine_id)) AND";
+				$pft_where = " FIND_IN_SET('".$magazine_id."', indv_magazine_id) AND ";
+				$pt_where = " FIND_IN_SET('".$magazine_id."', location_id) AND ";
+				
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$pft_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$st_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$st_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$pt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$pt_where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
+								)
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		
+
+		public function GetProductLinkedCount($product_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0;
+			if(!empty($product_id)) {
+				$where = " FIND_IN_SET('".$product_id."', product_id) AND ";
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['contractor_product_table']." WHERE ".$where." deleted = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		public function GetSupplierLinkedCount($supplier_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0;
+			if(!empty($supplier_id)) {
+				$where = " FIND_IN_SET('".$supplier_id."', supplier_id) AND ";
+				$voucher_where = " FIND_IN_SET('".$supplier_id."', party_id) AND ";
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$voucher_where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+
+		public function GetContractorLinkedCount($contractor_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0;
+			if(!empty($contractor_id)) {
+				$where = " FIND_IN_SET('".$contractor_id."', contractor_id) AND ";
+				$voucher_where = " FIND_IN_SET('".$contractor_id."', party_id) AND ";
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$voucher_where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		
+		public function GetAgentLinkedCount($agent_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0; $agent_where = "";
+			if(!empty($agent_id)) {
+				$where = " FIND_IN_SET('".$agent_id."', agent_id) AND ";
+				$agent_where = " FIND_IN_SET('".$agent_id."', party_id) AND ";
+
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$agent_where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+				
+		public function GetCustomerLinkedCount($customer_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0; $customer_where = "";
+			if(!empty($customer_id)) {
+				$where = " FIND_IN_SET('".$customer_id."', customer_id) AND ";
+				$customer_where = " FIND_IN_SET('".$customer_id."', party_id) AND ";
+
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$customer_where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		
+		public function GetTransportLinkedCount($transport_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0; $transport_where = "";
+			if(!empty($transport_id)) {
+				$where = " FIND_IN_SET('".$transport_id."', transport_id) AND ";
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
+									)
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+		public function GetChargesLinkedCount($charges_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0; $charges_where = "";
+			if(!empty($charges_id)) {
+				$where = " FIND_IN_SET('".$charges_id."', other_charges_id) AND ";
+
+
+				$select_query = "SELECT id_count FROM 
+									((SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
+									UNION ALL
+									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
+									)
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		
+		public function linkedContractor($contractor_id){
+			$list = array(); $select_query = "";  $count = 0;
+			if(!empty($contractor_id)){
+				$where = " FIND_IN_SET('".$contractor_id."', party_id) AND ";
+			}
+
+			if(!empty($where)){
+				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Opening Balance' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
 		}
 		
     }

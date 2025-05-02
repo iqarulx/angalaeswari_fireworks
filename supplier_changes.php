@@ -762,9 +762,9 @@
                                                 }
                                                 if(empty($delete_access_error)) { 
                                                     $linked_count = 0;
-                                                    // $linked_count = $obj->GetsupplierLinkedCount($data['supplier_id']); 
+                                                    $linked_count = $obj->GetSupplierLinkedCount($data['supplier_id']); 
                                                     if($linked_count > 0) { ?>
-                                                        <li><a class="dropdown-item bg-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
+                                                        <li><a class="dropdown-item text-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
                                                     }
                                                     else { ?> 
                                                         <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 

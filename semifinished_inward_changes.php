@@ -1,14 +1,12 @@
 <?php
 	include("include.php");
-
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
             $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
-            $permission_module = $GLOBALS['semifinished_entry_module'];
+            $permission_module = $GLOBALS['semifinished_inward_module'];
         }
     }
-
 	if(isset($_REQUEST['show_semifinished_inward_id'])) {
         $show_semifinished_inward_id = $_REQUEST['show_semifinished_inward_id'];
         $show_semifinished_inward_id = trim($show_semifinished_inward_id);
@@ -69,7 +67,7 @@
                 if(!empty($data['total_amount']) && $data['total_amount'] != $GLOBALS['null_value']) {
                     $total_amount = $data['total_amount'];
                 }
-                if(!empty($data['subunit_contains']) && $data['subunit_contains'] != $GLOBALS['null_value']) {
+                if(!empty($data['subunit_contains'])) {
                     $contains = $data['subunit_contains'];
                     $contains = explode(",", $contains);
                 }
@@ -881,7 +879,7 @@
                                 $group_id = "";
                                 $group_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'group_id');
 
-                                $stock_update = $obj->StockUpdate($GLOBALS['semifinished_inward_table'], "In", $semifinished_inward_id, $semifinished_inward_number, $product_ids[$i], $remarks, $entry_date,'',  $godown_id,$unit_ids[$i],$quantity[$i], $case_contains[$i], $group_id,'1');
+                                $stock_update = $obj->StockUpdate($GLOBALS['semifinished_inward_table'], "In", $semifinished_inward_id, $semifinished_inward_number, $product_ids[$i], $remarks, $entry_date, $godown_id,'',$unit_ids[$i],$quantity[$i], $case_contains[$i], $group_id,'1');
                             }
                         }
                     }
@@ -1012,12 +1010,12 @@
             </div> 
         <?php } ?>
         <?php
-        $access_error = "";
+        $view_access_error = "";
         if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
-    if(empty($access_error)) {  ?>
+    if(empty($view_access_error)) {  ?>
         <table class="table nowrap cursor text-center smallfnt">
             <thead class="bg-light">
                 <tr>
@@ -1084,18 +1082,6 @@
                                         ?>
                                     </td>
                                     <td>
-                                        <?php 
-                                            $edit_access_error = "";
-                                            if(!empty($login_staff_id)) {
-                                                $permission_action = $edit_action;
-                                                include('permission_action.php');
-                                            }
-                                            $delete_access_error = "";
-                                            if(!empty($login_staff_id)) {
-                                                $permission_action = $delete_action;
-                                                include('permission_action.php');
-                                            }
-                                        ?>
                                         <div class="dropdown">
                                             <a href="#" role="button" id="dropdownMenuLink1"  class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots-vertical"></i>
@@ -1103,10 +1089,20 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                 <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_semifinished_inward_a5.php?view_semifinished_inward_id=<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                                 <?php
+                                                    $edit_access_error = "";
+                                                    if(!empty($login_staff_id)) {
+                                                        $permission_action = $edit_action;
+                                                        include('permission_action.php');
+                                                    }
                                                     if(empty($edit_access_error) && empty($list['cancelled'])) { 
                                                         ?>
                                                     <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                                     <?php } 
+                                                    $delete_access_error = "";
+                                                    if(!empty($login_staff_id)) {
+                                                        $permission_action = $delete_action;
+                                                        include('permission_action.php');
+                                                    }
                                                     if(empty($delete_access_error) && empty($list['cancelled'])) {
                                                         $linked_count = 0;
                                                         if(!empty($linked_count)) {
@@ -1118,7 +1114,7 @@
                                                             }
                                                     ?>
                                             </ul>
-                                        </div>
+                                        </div> 
                                     </td>
                                 </tr>
                                 <?php
@@ -1211,13 +1207,7 @@ if(isset($_REQUEST['products_contractor_id'])) {
         }
     }
     ?>
-    <script type="text/javascript">
-        <?php if($count == '1') { ?>
-            if(jQuery('select[name="selected_product_id"]').length > 0) {
-                jQuery('select[name="selected_product_id"]').trigger("change");
-            }
-        <?php } ?>
-    </script>
+ 
     <?php
 }
 
@@ -1287,16 +1277,18 @@ if(isset($_REQUEST['get_unit'])) {
        ?>
         <option value="">Select Content</option>
             <?php 
-        for($i=0; $i< count($case_contains); $i++){ 
-            if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
-                <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
-                    <?php
-                
-                            echo  $case_contains[$i];
-                    ?>
-                </option>
-                <?php 
-            } 
+        if(!empty($case_contains)){
+            for($i=0; $i< count($case_contains); $i++){ 
+                if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
+                    <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
+                        <?php
+                    
+                                echo  $case_contains[$i];
+                        ?>
+                    </option>
+                    <?php 
+                } 
+            }
         }
 
     }

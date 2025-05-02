@@ -19,8 +19,7 @@
 	<?php include "link_style_script.php"; 
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
     $total_records_list = $obj->getTableRecords($GLOBALS['estimate_table'], '', '', '');
-    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
-    $excel_name = "";
+    $excel_name = ""; $transport_id =""; $agent_id = "";
     $excel_name = "Sales Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
     if(isset($_POST['page_number'])) {
         $page_number = $_POST['page_number'];
@@ -36,9 +35,30 @@
         if(isset($_POST['customer_id'])) {
             $customer_id = $_POST['customer_id'];
         }
+        if(isset($_POST['filter_agent_id'])) {
+            $agent_id = $_POST['filter_agent_id'];
+        }
+        if(isset($_POST['transport_id'])) {
+            $transport_id = $_POST['transport_id'];
+        }
+        
         $total_records_list = array();
-        $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id);
+        $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id);
     }
+
+    $agent_list =array();
+    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
+
+    if(!empty($agent_id)){
+        $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], 'agent_id', $agent_id, '');
+
+    }else{
+       $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
+    }
+
+    $transport_list =array();
+    $transport_list = $obj->getTableRecords($GLOBALS['transport_table'], '', '', '');
+
     ?>
 </head>	
 <body>
@@ -70,6 +90,33 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-lg-2 col-md-3 col-6 px-lg-1">
+                                            <div class="form-group">
+                                                <div class="form-label-group in-border" >
+                                                    <select name="filter_agent_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getOverallReport();getAgentCustomer(this.value);">
+                                                        <option value="">Select</option>
+                                                        <?php
+                                                            if(!empty($agent_list)) {
+                                                                foreach($agent_list as $data) {
+                                                                    if(!empty($data['agent_id']) && $data['agent_id'] != $GLOBALS['null_value']) {
+                                                                        ?>
+                                                                        <option value="<?php echo $data['agent_id']; ?>" <?php if(!empty($agent_id) && $data['agent_id'] == $agent_id) { ?>selected<?php } ?>>
+                                                                            <?php
+                                                                                if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                                                                    echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                                }
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php
+                                                                    }
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </select>
+                                                    <label>Agent</label>
+                                                </div>
+                                            </div> 
+                                        </div> 
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border mb-0">
@@ -85,6 +132,23 @@
                                                 </div>
                                             </div> 
                                         </div> 
+                                        <div class="col-lg-2 col-md-4 col-6">
+                                            <div class="form-group mb-2">
+                                                <div class="form-label-group in-border mb-0">
+                                                    <select class="select2 select2-danger" name="transport_id" onchange="Javascript:getOverallReport();" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                        <option value="">Select transport</option>    
+                                                            <?php if(!empty($transport_list)) {
+                                                                foreach($transport_list as $transport) { ?>
+                                                                    <option value="<?php echo $transport['transport_id']; ?>" <?php if(!empty($transport_id) && $transport_id == $transport['transport_id']) { echo 'selected'; } ?> ><?php echo $obj->encode_decode('decrypt', $transport['transport_name']); ?></option>
+                                                            <?php } 
+                                                            } ?>
+                                                    </select>
+                                                    <label>Select Transport</label>
+                                                </div>
+                                            </div> 
+                                        </div> 
+                                        </div> 
+
                                         <!-- <div class="col-lg-3 col-md-2 col-12">
                                             <div class="form-group mb-1">
                                                 <div class="flex-shrink-0">
@@ -95,8 +159,10 @@
                                                 </div>
                                             </div>
                                         </div> -->
-                                        <div class="col-lg-3 col-6 text-end">
-                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_sales_a4.php?filter_party_id=<?php echo $customer_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                    <div class="row justify-content-end p-2">   
+
+                                        <div class="col-lg-12 col-6 text-end">
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_sales_a4.php?filter_party_id=<?php if(!empty($customer_id)){ echo $customer_id; } ?>&from_date=<?php if(!empty($from_date)){ echo $from_date; } ?>&to_date=<?php if(!empty($to_date)){ echo $to_date; } ?>&agent_id=<?php if(!empty($agent_id)){ echo $agent_id; } ?>&transport_id=<?php if(!empty($transport_id)){ echo $transport_id; } ?>')"> <i class="fa fa-print"></i> Print </button>
                                             <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Export </button>  
                                         </div> 
                                         <div class="col-sm-6 col-xl-8">

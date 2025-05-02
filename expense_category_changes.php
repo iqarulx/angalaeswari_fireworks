@@ -417,7 +417,7 @@
                                     ?>
                                     <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
                                         <div class="dropdown">
-                                            <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <a href="#" role="button" class="btn btn-dark show-button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots-vertical"></i>
                                             </a>
 

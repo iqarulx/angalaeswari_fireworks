@@ -12,7 +12,7 @@
 	if(isset($_REQUEST['show_purchase_entry_id'])) { 
         $bill_date = ""; $bill_number = ""; $supplier_id = ""; $Vehicle_name = ""; $godown_id = ""; $gst_option = 0; $product_id = "";
         $tax_type = 0; $tax_option = 0; $overall_tax = "";
-
+        $current_date = date('Y-m-d');
         $show_purchase_entry_id = $_REQUEST['show_purchase_entry_id'];
         $show_purchase_entry_id = trim($show_purchase_entry_id);
 
@@ -256,7 +256,7 @@
                 <div class="col-lg-2 col-md-3 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <input type="date" name="bill_date" class="form-control shadow-none" value="<?php if(!empty($purchase_entry_date)) { echo $purchase_entry_date; } else { echo date("d-M-Y"); } ?>">
+                            <input type="date" name="bill_date" class="form-control shadow-none" value="<?php if(!empty($purchase_entry_date)) { echo $purchase_entry_date; } else { echo date("d-M-Y"); } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                             <label>Bill Date <span class="text-danger">*</span></label>
                         </div>
                     </div> 
@@ -778,7 +778,7 @@
 		$page_number = $_POST['page_number'];
 		$page_limit = $_POST['page_limit'];
 		$page_title = $_POST['page_title']; 
-        $from_date = ""; $to_date = ""; $search_text = "";
+        $from_date = ""; $to_date = ""; $search_text = ""; $product_group = 0;
         $show_bill = 0;$show_draft_bill = 0;
         $supplier_id = "";
         if(isset($_POST['from_date'])) {
@@ -797,9 +797,12 @@
         if(isset($_POST['search_text'])) {
             $search_text = $_POST['search_text'];
         }
-
+        
+        if(isset($_POST['product_group'])) {
+            $product_group = $_POST['product_group'];
+        }
         $total_records_list = array();
-        $total_records_list = $obj->getPurchaseList($from_date, $to_date, $search_text,$show_bill);
+        $total_records_list = $obj->getPurchaseList($from_date, $to_date, $search_text,$show_bill,$product_group);
         
         if(!empty($supplier_id)) {
             $list = array();
@@ -966,16 +969,16 @@
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                        <li><a class="dropdown-item" target="_blank" href="reports/rpt_purchase_entry_a4.php?view_purchase_entry_id=<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>">Print</a></li>
+                                        <li><a class="dropdown-item" target="_blank" href="reports/rpt_purchase_entry_a4.php?view_purchase_entry_id=<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>"><i class="fa fa-print"></i> &ensp;Print</a></li>
                                         <?php
                                         if(empty($edit_access_error) && empty($list['cancelled'])) {
                                         ?> 
-                                        <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>');">Edit</a></li>
+                                        <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>');"> <i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                         <?php } ?>
                                         <?php 
                                             if(empty($delete_access_error) && empty($list['cancelled'])) {
                                         ?>     
-                                        <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>');">Delete</a></li>
+                                        <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['purchase_entry_id'])) { echo $list['purchase_entry_id']; } ?>');"> <i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                         <?php } ?>
                                     </ul>
                                 </div> 

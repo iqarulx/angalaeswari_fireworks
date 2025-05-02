@@ -612,7 +612,7 @@ if(isset($_REQUEST['party_type'])) {
                             <td class="">
                                 <?php 
 
-                                if(!empty($data['payment_mode_name'])) {
+                                if(!empty($data['payment_mode_name']) && ($data['payment_mode_name'] != 'NULL')) {
                                     $payment_mode_name = array();
                                     $payment_mode_name = explode(",", $data['payment_mode_name']);
                                     $payment_mode_name = array_reverse($payment_mode_name);

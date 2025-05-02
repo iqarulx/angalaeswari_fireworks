@@ -693,7 +693,7 @@
                                         }
                                     ?>
                                     <div class="dropdown">
-                                        <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <a href="#" role="button" id="dropdownMenuLink1" class="btn btn-dark show-button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">

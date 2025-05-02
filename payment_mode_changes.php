@@ -369,7 +369,7 @@
                                                    
                                                     if(empty($delete_access_error)) {
                                                         $linked_count = 0;
-                                                        // $linked_count = $obj->GetPaymentmodeLinkedCount($list['payment_mode_id']); 
+                                                        $linked_count = $obj->GetPaymentmodeLinkedCount($list['payment_mode_id']); 
 
                                                         if($linked_count > 0) { ?>
                                                             <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>

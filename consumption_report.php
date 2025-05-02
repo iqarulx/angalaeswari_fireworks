@@ -62,7 +62,7 @@
 
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
-        $total_records_list = $obj->getConsumptionQtyList();
+        $total_records_list = $obj->getConsumptionQtyList($contractor_id);
     }
     else if(!empty($product_id)) {
         if($subunit_hide == '1') {
@@ -183,7 +183,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <?php if(!empty($product_id)) { ?>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <div class="form-group mb-1">
                                             <div class="form-label-group in-border pb-2">
@@ -211,6 +210,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                <?php if(!empty($product_id)) { ?>
+
                                     <?php if($subunit_hide == '1') { ?>
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-1">

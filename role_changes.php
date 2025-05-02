@@ -148,16 +148,7 @@
                                                             <?php
                                                                 }
                                                             ?>
-                                                            <?php 
-                                                                if($module == $GLOBALS['proforma_invoice_module'] || $module == $GLOBALS['delivery_slip_module']) {
-                                                            ?>
-                                                                                                                                                                                <div class="form-check pe-3">
-                                                                        <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>" value="<?php if(!empty($convert_checkbox_value)) { echo $convert_checkbox_value; } ?>" <?php if(!empty($convert_checkbox_value) && $convert_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_convert"; } ?>');">
-                                                                        <label class="form-check-label checkbox">
-                                                                            Convert
-                                                                        </label>
-                                                                    </div>
-                                                            <?php } ?>
+                                                
                                                             <?php 
                                                                 if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['group_module'] && $module != $GLOBALS['receipt_module'] && $module != $GLOBALS['voucher_module'] && $module != $GLOBALS['expense_module']) {
                                                             ?>
@@ -508,6 +499,8 @@
                                 <td>
                                     <?php
                                     //  if(!empty($type) && $type != $GLOBALS['admin_user_type']){  
+                                        $linked_count = 0;
+                                        $linked_count = $obj->GetRoleLinkedCount($list['role_id']);
                                         ?>
                                         <div class="dropdown">
                                             <a href="#" role="button" id="dropdownMenuLink1" class="btn btn-dark show-button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -517,8 +510,8 @@
                                 
                                                 <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['role_id'])) { echo $list['role_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                                 <?php 
-                                                if(empty($list['incharger'])){  ?>
-                                                    <li><a class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['role_id'])) { echo $list['role_id']; } ?>');"> <i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                if(empty($list['incharger']) && empty($linked_count)){  ?>
+                                                    <li><a class="dropdown-item" style="cursor:pointer;" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['role_id'])) { echo $list['role_id']; } ?>');"> <i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                 <?php } ?>
                                             </ul>
                                         </div> 

@@ -227,12 +227,16 @@ if(!empty($payment_mode_names)) {
         $pdf->SetFont('Arial','',8);
         $pdf->SetX(40);
         $account_number = "";
-        $account_number = $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $bank_ids[$i], 'account_number');
-        if(!empty($bank_names[$i])) {
+        if(!empty($bank_names[$i]) && $bank_names[$i] != $GLOBALS['null_value']) {
+            $account_number = $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $bank_ids[$i], 'account_number');
+        }
+        if(!empty($bank_names[$i]) && $bank_names[$i] != $GLOBALS['null_value'] && !empty($payment_mode_names[$i]) && $payment_mode_names[$i] != $GLOBALS['null_value']) {
             $pdf->Cell(158,5,($obj->encode_decode('decrypt', $payment_mode_names[$i])).' ('.($obj->encode_decode('decrypt', $bank_names[$i])).') - '.($obj->encode_decode('decrypt', $account_number)).' - Rs. '.($obj->numberFormat($amounts[$i],2)),0,1,'L');
         }
         else {
-            $pdf->Cell(158,5,($obj->encode_decode('decrypt', $payment_mode_names[$i])).' - Rs. '.($obj->numberFormat($amounts[$i],2)),0,1,'L');
+            if(!empty($payment_mode_names[$i]) && $payment_mode_names[$i]){
+              $pdf->Cell(158,5,($obj->encode_decode('decrypt', $payment_mode_names[$i])).' - Rs. '.($obj->numberFormat($amounts[$i],2)),0,1,'L');
+            }
         }
     }
 }

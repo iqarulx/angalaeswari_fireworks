@@ -32,7 +32,7 @@
 
     $contractor_list = array();
     $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
-
+    $current_date = date('Y-m-d');
     $cancelled_bill = ""; $cancelled_count = 0;
     $cancelled_bill = $obj->getAllRecords($GLOBALS['consumption_entry_table'], 'cancelled', 1);
     $cancelled_count = count($cancelled_bill);
@@ -62,7 +62,7 @@
                                             <div class="col-lg-2 col-md-4 col-6">
                                                 <div class="form-group mb-0">
                                                     <div class="form-label-group in-border mb-0">
-                                                        <input type="date" class="form-control shadow-none" name="from_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>">
+                                                        <input type="date" class="form-control shadow-none" name="from_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                         <label>From Date</label>
                                                     </div>
                                                 </div>
@@ -70,7 +70,7 @@
                                             <div class="col-lg-2 col-md-4 col-6">
                                                 <div class="form-group mb-0">
                                                     <div class="form-label-group in-border mb-0">
-                                                        <input type="date" class="form-control shadow-none" name="to_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>">
+                                                        <input type="date" class="form-control shadow-none" name="to_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                         <label>To Date</label>
                                                     </div>
                                                 </div>

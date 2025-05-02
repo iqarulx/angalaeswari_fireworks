@@ -567,18 +567,18 @@
                                                     <?php
                                                     if(empty($edit_access_error)) {  
                                                     ?>
-                                                    <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['bank_id'])) { echo $list['bank_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;  Edit</a></li>
+                                                    <li><a class="dropdown-item"  style="cursor:pointer;"  href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['bank_id'])) { echo $list['bank_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;  Edit</a></li>
                                                     <?php } 
 
                                                     if(empty($delete_access_error)) { 
                                                         $linked_count = 0;
-                                                        // $linked_count = $obj->GetBankLinkedCount($list['bank_id']); 
+                                                        $linked_count = $obj->GetBankLinkedCount($list['bank_id']); 
 
                                                         if($linked_count > 0) {
                                                             ?>                                        
                                                         <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                     <?php }else{ ?>
-                                                        <li><a class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['bank_id'])) { echo $list['bank_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                        <li><a class="dropdown-item" style="cursor:pointer;" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['bank_id'])) { echo $list['bank_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                 <?php  } 
                                                 
                                                     }  ?>

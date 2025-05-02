@@ -839,7 +839,7 @@
                                                     }
                                                     if(empty($delete_access_error)) {
                                                         $linked_count = 0;
-                                                        // $linked_count = $obj->GetFactoryLinkedCount($list['factory_id']);
+                                                        $linked_count = $obj->GetFactoryLinkedCount($list['factory_id']);
                                                         if(!empty($linked_count)) {
                                                             ?>
                                                             <li><a style="cursor:pointer;" class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>

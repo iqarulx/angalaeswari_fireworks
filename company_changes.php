@@ -15,7 +15,7 @@
 			if(!empty($company_list)) {
 				foreach($company_list as $data) {
 					if(!empty($data['name'])) {
-						$name = $obj->encode_decode('decrypt', $data['name']);
+						$name = html_entity_decode($obj->encode_decode('decrypt', $data['name']));
 					}
 					if(!empty($data['address'])) {
 						$address = $obj->encode_decode('decrypt', $data['address']);

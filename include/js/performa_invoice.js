@@ -2055,3 +2055,24 @@ function changeState() {
         });
     }
 }
+
+function ViewStatusDetails(proforma_invoice_id){
+    var post_url = "proforma_invoice_changes.php?status_proforma_invoice_id=" + proforma_invoice_id;
+    jQuery.ajax({
+        url: post_url, success: function (result) {
+            result = result.trim();
+            if(jQuery('.order_details_modal_button').length > 0) {
+                jQuery('.order_details_modal_button').trigger('click');
+            }
+
+            if(jQuery('#ViewOrderDetailsModal').length > 0) {
+                if(jQuery('#ViewOrderDetailsModal').find('.modal-title').length > 0) {
+                    jQuery('#ViewOrderDetailsModal').find('.modal-title').html('Proforma Invoice Details');
+                }
+                if(jQuery('#ViewOrderDetailsModal').find('.modal-body').length > 0) {
+                    jQuery('#ViewOrderDetailsModal').find('.modal-body').html(result);
+                }
+            }
+        }
+    });
+}

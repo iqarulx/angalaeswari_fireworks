@@ -59,7 +59,7 @@
                                                     </div>
                                                 </div> 
                                             </div>
-                                            <div class="col-lg-3 col-md-3 col-6">
+                                            <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group mb-2">
                                                     <div class="form-label-group in-border mb-0">
                                                         <select class="select2 select2-danger" name="supplier_id" onchange="Javascript:table_listing_records_filter();" data-dropdown-css-class="select2-danger" style="width: 100%;">
@@ -74,7 +74,19 @@
                                                     </div>
                                                 </div> 
                                             </div> 
-                                            <div class="col-lg-3 col-md-4 col-6">
+                                            <div class="col-lg-2 col-md-3 col-12">
+                                                <div class="form-group">
+                                                    <div class="form-label-group in-border">
+                                                        <select class="select2 select2-danger" name="product_group" data-dropdown-css-class="select2-danger" style="width: 100%!important;"  onchange="Javascript:table_listing_records_filter();" >
+                                                            <option value="">Select</option>
+                                                            <option value="1" >UnFinished</option>
+                                                            <option value="2" >Finished</option>
+                                                        </select>
+                                                        <label>Product Group <span class="text-danger">*</span></label>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                            <div class="col-lg-2 col-md-4 col-6">
                                                 <div class="input-group">
                                                 <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search Bill No" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();">
                                                     <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>

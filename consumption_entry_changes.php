@@ -1,6 +1,5 @@
 <?php
 	include("include.php");
-
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
@@ -8,7 +7,6 @@
             $permission_module = $GLOBALS['consumption_entry_module'];
         }
     }
-
 	if(isset($_REQUEST['show_consumption_entry_id'])) { 
 
         // echo $obj->encode_decode('decrypt','4d6a67774e4449774d6a55774f544d784d444a664d44633d');
@@ -595,10 +593,10 @@
                 $available_stock_unit = $inward_unit - $outward_unit;
                 $available_stock_subunit = $inward_subunit - $outward_subunit;
 
-                $outward_unit -= $data['quantity'];
+                $outward_unit += $data['quantity'];
                 // echo $data['quantity']."/".$data['consumption_content'];
                 if(!empty($data['consumption_content']) && $data['consumption_content'] != $GLOBALS['null_value']){
-                    $outward_subunit -= ($data['quantity'] * $data['consumption_content']);
+                    $outward_subunit += ($data['quantity'] * $data['consumption_content']);
                 }
 
                 $current_stock_unit = $inward_unit - $outward_unit;
@@ -925,12 +923,12 @@
             </div> 
         <?php } ?>
         <?php
-        $access_error = "";
-        if(!empty($login_staff_id)) {
-            $permission_action = $view_action;
-            include('permission_action.php');
-        }
-            if(empty($access_error)) {  ?>
+            $view_access_error = "";
+            if(!empty($login_staff_id)) {
+                $permission_action = $view_action;
+                include('permission_action.php');
+            }
+            if(empty($view_access_error)) {  ?>
         
 		<table class="table nowrap cursor text-center smallfnt">
             <thead class="bg-light">
@@ -1000,7 +998,7 @@
                             ?>
                         </td>
                         <td>
-                            <?php 
+                              <?php 
                                 $edit_access_error = "";
                                 if(!empty($login_staff_id)) {
                                     $permission_action = $edit_action;
@@ -1017,14 +1015,23 @@
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                    <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_consumption_entry_a5.php?view_consumption_entry_id=<?php if(!empty($data['consumption_id'])) { echo $data['consumption_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
+                                     <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_consumption_entry_a5.php?view_consumption_entry_id=<?php if(!empty($data['consumption_id'])) { echo $data['consumption_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                     <?php 
-                                        
+                                        $edit_access_error = "";
+                                        if(!empty($login_staff_id)) {
+                                            $permission_action = $edit_action;
+                                            include('permission_action.php');
+                                        }
                                         if(empty($edit_access_error) && empty($data['cancelled'])) {
                                     ?> 
                                     <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['consumption_id'])) { echo $data['consumption_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a></li>
                                     <?php } ?>
                                         <?php 
+                                            $delete_access_error = "";
+                                            if(!empty($login_staff_id)) {
+                                                $permission_action = $delete_action;
+                                                include('permission_action.php');
+                                            }
                                             if(empty($delete_access_error) & empty($data['cancelled'])) {
                                                 $linked_count = 0;
                                                 // $linked_count = $obj->GetconsumptionLinkedCount($data['consumption_id']); 
@@ -1042,7 +1049,8 @@
                                         } 
                                     ?>
                                 </ul>
-                            </div>
+                            </div> 
+                            
                         </td>
                     </tr>
 

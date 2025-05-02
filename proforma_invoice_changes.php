@@ -11,7 +11,7 @@
 
 	if(isset($_REQUEST['show_proforma_invoice_id'])) { 
         $show_proforma_invoice_id = $_REQUEST['show_proforma_invoice_id'];
-
+        $current_date = date('Y-m-d');
         $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0;$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
         $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $ds_product_ids = array();
 
@@ -207,7 +207,7 @@
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <input type="date" name="proforma_invoice_date" class="form-control shadow-none" placeholder="" value="<?php if (!empty($proforma_invoice_date)) { echo $proforma_invoice_date; } ?>" required="">
+                            <input type="date" name="proforma_invoice_date" class="form-control shadow-none" placeholder="" value="<?php if (!empty($proforma_invoice_date)) { echo $proforma_invoice_date; } ?>" required=""  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                             <label>Date</label>
                         </div>
                     </div>
@@ -1605,7 +1605,7 @@
 
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number']; $page_limit = $_POST['page_limit']; $page_title = $_POST['page_title'];
-        $from_date = ""; $to_date = ""; $search_text = ""; $show_bill = 0;
+        $from_date = ""; $to_date = ""; $search_text = ""; $show_bill = 0; $agent_id = ""; $transport_id = "";
         $customer_id = "";
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
@@ -1623,9 +1623,15 @@
         if(isset($_POST['search_text'])) {
             $search_text = $_POST['search_text'];
         }
+        if(isset($_POST['agent_id'])) {
+            $agent_id = $_POST['agent_id'];
+        }
+        if(isset($_POST['transport_id'])) {
+            $transport_id = $_POST['transport_id'];
+        }
 
         $total_records_list = array();
-        $total_records_list = $obj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill);
+        $total_records_list = $obj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text, $show_bill, $agent_id, $transport_id);
         
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -1691,6 +1697,7 @@
                     <th>#</th>
                     <th>Bill No / Bill Date</th>
                     <th>Customer Name</th>
+                    <th>Status</th>
                     <th>Amount</th>
                     <th>Action</th>
                 </tr>
@@ -1733,7 +1740,9 @@
                                     <?php	
                                 } ?>
                             </td>
-                            
+                            <td>
+                                  <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;">Click </a>
+                            </td>
                             <td>
                                 <?php
                                     if(!empty($list['bill_total'])) {
@@ -1763,19 +1772,19 @@
                                     $proforma_actions = $obj->getProformaInvoiceActions($list['proforma_invoice_id']);
                                         ?>
                                             <div class="dropdown">
-                                                <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                     <li>
-                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_performa_invoice_a4.php?performa_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')">PDF</a>
+                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_performa_invoice_a4.php?performa_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
                                                     </li>
                                                     <?php
                                                         if((!empty($proforma_actions) && ($show_bill == 0))) {
                                                             if(in_array("convert", $proforma_actions)){
                                                                 ?>
                                                                     <li>
-                                                                        <a class="dropdown-item" href="Javascript:ShowConversion('<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>', '<?php if(!empty($page_title)) { echo $page_title; } ?>');">Convert To Delivery Slip</a>
+                                                                        <a class="dropdown-item" href="Javascript:ShowConversion('<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>', '<?php if(!empty($page_title)) { echo $page_title; } ?>');" ><i class="fa fa-undo" ></i>&ensp; Convert To Delivery Slip</a>
                                                                     </li>
                                                                 <?php
                                                             }
@@ -1785,7 +1794,7 @@
                                                                 if(empty($edit_access_error)) { 
                                                                 ?>
                                                                     <li>
-                                                                        <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Edit</a>
+                                                                        <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
                                                                     </li>
                                                                 <?php
                                                                 }
@@ -1796,7 +1805,7 @@
                                                                 if(empty($delete_access_error)) {
                                                                     ?>
                                                                     <li>
-                                                                        <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');">Delete</a>
+                                                                        <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a>
                                                                     </li>
                                                                     <?php
                                                                 }
@@ -2261,5 +2270,139 @@
         }
         echo $msg;
         exit;
+    }
+
+    if(isset($_REQUEST['status_proforma_invoice_id'])) {
+        $status_proforma_invoice_id = ""; $product_names = array();; $product_ids = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $current_stock_unit = 0; $current_stock_subunit = 0; $magazine_id = "";
+        $unit_names = array();$quantity = array(); 
+        $status_proforma_invoice_id = $_REQUEST['status_proforma_invoice_id'];
+        $status_proforma_invoice_id = trim($status_proforma_invoice_id);
+        if(!empty($status_proforma_invoice_id)) {
+            $proforma_invoice_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $status_proforma_invoice_id, '');
+            if(!empty($proforma_invoice_list)) {
+                foreach($proforma_invoice_list as $list) {
+               
+                    if(!empty($list['magazine_type'])) {
+                        $magazine_type = $list['magazine_type'];
+                    }
+                    if(!empty($list['magazine_id'])) {
+                        $magazine_id = $list['magazine_id'];
+                    }
+               
+                    if(!empty($list['indv_magazine_id'])) {
+                        $indv_magazine_ids = $list['indv_magazine_id'];
+                        $indv_magazine_ids = explode(",", $indv_magazine_ids);
+                        $indv_magazine_ids = array_reverse($indv_magazine_ids);
+                    }
+                    if(!empty($list['product_name'])) {
+                        $product_names = $list['product_name'];
+                        $product_names = explode(",", $product_names);
+                        $product_names = array_reverse($product_names);
+                    }
+                    if(!empty($list['product_id'])) {
+                        $product_ids = $list['product_id'];
+                        $product_ids = explode(",", $product_ids);
+                        $product_ids = array_reverse($product_ids);
+                    }
+                    if(!empty($list['subunit_need'])) {
+                        $subunit_needs = $list['subunit_need'];
+                        $subunit_needs = explode(",", $subunit_needs);
+                        $subunit_needs = array_reverse($subunit_needs);
+                    }
+                    if(!empty($list['content']) && $list['content'] != $GLOBALS['null_value']) {
+                        $contents = $list['content'];
+                        $contents = explode(",", $contents);
+                        $contents = array_reverse($contents);
+                    }
+                    if(!empty($list['unit_id'])) {
+                        $unit_ids = $list['unit_id'];
+                        $unit_ids = explode(",", $unit_ids);
+                        $unit_ids = array_reverse($unit_ids);
+                    }
+                    if(!empty($list['unit_name'])) {
+                        $unit_names = $list['unit_name'];
+                        $unit_names = explode(",", $unit_names);
+                        $unit_names = array_reverse($unit_names);
+                    }
+                    if(!empty($list['quantity'])) {
+                        $quantity = $list['quantity'];
+                        $quantity = explode(",", $quantity);
+                        $quantity = array_reverse($quantity);
+                    }
+                 
+                }
+            }
+        }
+        if(!empty($product_ids)){
+            for($i=0; $i<count($product_names); $i++){
+                $product_ids[$i] = trim($product_ids[$i]);
+
+                if(!empty($product_names[$i])){ 
+                    $group_name = "";
+                    $group_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'group_name');
+
+                    // echo $contents[$i];
+                    $getCurrentStock = array();
+                    if(!empty($contents[$i])){
+                        $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], $contents[$i]);
+                    }else{
+                        $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], '');
+                    }
+                    // print_r($getCurrentStock);
+                   
+                    ?>
+                    <div>
+                        <strong>Group:</strong> <?php echo $obj->encode_decode('decrypt', $group_name) ?>&nbsp;&nbsp;
+                        <strong>Product Name:</strong> <?php echo $obj->encode_decode('decrypt', $product_names[$i]); ?>&nbsp;&nbsp;
+                        <?php
+                        if(!empty($contents[$i]) && $contents[$i] != $GLOBALS['null_value']){ ?>
+                            <strong>Content:</strong> <?php echo $contents[$i]; 
+                        } ?>
+                    </div><br>
+                    <div>
+                        Order Quantity : <?php if(!empty($quantity[$i])){ echo $quantity[$i]. " ". $obj->encode_decode('decrypt', $unit_names[$i]); } ?>
+                    </div><br>
+            		<table class="table nowrap cursor text-center smallfnt">
+                        <thead class="bg-light">
+                            <th> Magazine</th>
+                            <th> Current Stock Unit</th>
+                            <th> Current Stock Subunit</th>
+                        </thead>
+                        <tbody>
+                           <?php
+                           if(!empty($getCurrentStock)){
+                                $magazine_name = "";
+                                foreach($getCurrentStock as $data){
+                                    if(!empty($data['current_stock_unit']) && $data['current_stock_unit'] != $GLOBALS['null_value']) {
+                                        $current_stock_unit = $data['current_stock_unit'];
+                                    }
+                                    if(!empty($data['current_stock_subunit']) && $data['current_stock_subunit'] != $GLOBALS['null_value']) {
+                                        $current_stock_subunit = $data['current_stock_subunit'];
+                                    }
+                                    if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value'] ) {
+                                        $magazine_id = $data['magazine_id'];
+                                    }
+                                }
+
+                                if(!empty($magazine_id)){
+                                    $magazine_name = $obj->getTableColumnValue($GLOBALS['magazine_table'],'magazine_id',$magazine_id,'magazine_name');
+                                    $magazine_name =  $obj->encode_decode('decrypt', $magazine_name);
+                                } ?>
+                                <td><?php if(!empty($magazine_name)){ echo $magazine_name; } ?></td>
+                                <td><?php if(!empty($current_stock_unit)){ echo $current_stock_unit; } ?></td>
+                                <td><?php if(!empty($current_stock_subunit)){ echo $current_stock_subunit; }else{ echo "-"; } ?></td>
+
+
+                                <?php
+                           }
+                           ?>
+                        </tbody>
+                    </table><br><br><br>
+                     <?php
+                }
+
+            }
+        }
+
     }
 ?>

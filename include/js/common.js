@@ -696,3 +696,17 @@ function ShowConversion(conversion_id, page_title) {
 		}
 	});
 }
+
+function getAgentCustomerList(agent_id){
+
+	var post_url = "action_changes.php?get_agent_id=" + agent_id;
+	jQuery.ajax({
+		url: post_url, success: function (result) {
+			result = result.trim();
+			if (jQuery('select[name="customer_id"]').length > 0) {
+				jQuery('select[name="customer_id"]').html(result);
+			}
+		}
+	});
+
+}

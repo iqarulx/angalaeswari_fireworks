@@ -230,7 +230,7 @@
         $company_name = "";
         $company_name = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'name');
         if(!empty($company_name) && $company_name != $GLOBALS['null_value']){
-            $company_name = $obj->encode_decode('decrypt', $company_name);
+            $company_name = html_entity_decode($obj->encode_decode('decrypt', $company_name));
         }
 
         require_once('../fpdf/AlphaPDF.php');
@@ -297,6 +297,11 @@
         $pdf->Cell(31,5,'Purchase Entry Date',0,0,'',0);
         $pdf->SetFont('Arial','',8);
         $pdf->Cell(20,5,' : '.$purchase_entry_date,0,1,'R',0);
+        $pdf->SetX(115);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(25,5,'Vehicle Details   :',0,0,'',0);
+        $pdf->SetFont('Arial','',8);
+        $pdf->MultiCell(50,5,'  '.$vehicle,0,'L',0);
         
         $pdf->SetY($bill_to_y);
         $pdf->cell(100,$y2-$bill_to_y,'',1,0,'L',0);
@@ -472,6 +477,11 @@
                     $pdf->Cell(31,5,'Purchase Entry Date',0,0,'',0);
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(20,5,' : '.$purchase_entry_date,0,1,'R',0);
+                    $pdf->SetX(115);
+                    $pdf->SetFont('Arial','B',8);
+                    $pdf->Cell(25,5,'Vehicle Details   :',0,0,'',0);
+                    $pdf->SetFont('Arial','',8);
+                    $pdf->MultiCell(50,5,'  '.$vehicle,0,'L',0);
                     
                     $pdf->SetY($bill_to_y);
                     $pdf->cell(100,$y2-$bill_to_y,'',1,0,'L',0);
@@ -778,6 +788,11 @@
                 $pdf->Cell(31,5,'Purchase Entry Date',0,0,'',0);
                 $pdf->SetFont('Arial','',8);
                 $pdf->Cell(20,5,' : '.$purchase_entry_date,0,1,'R',0);
+                $pdf->SetX(115);
+                $pdf->SetFont('Arial','B',8);
+                $pdf->Cell(25,5,'Vehicle Details   :',0,0,'',0);
+                $pdf->SetFont('Arial','',8);
+                $pdf->MultiCell(50,5,'  '.$vehicle,0,'L',0);
                 
                 $pdf->SetY($bill_to_y);
                 $pdf->cell(100,$y2-$bill_to_y,'',1,0,'L',0);
@@ -899,16 +914,16 @@
                     $pdf->Cell(42,5,'Total Quantity',0,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     if(!empty($total_unit) && !empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
                     }
                     else if(empty($total_unit) && !empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
                     }
                     else if(!empty($total_unit) && empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
                     }
                     else {
-                        $pdf->MultiCell(15,5,"-",0,'C',0);
+                        $pdf->MultiCell(35,5,"-",0,'C',0);
                     }
                     
                     $get_total_y = $pdf->GetY();
@@ -1048,29 +1063,31 @@
                     $pdf->Cell(43,5,'Total Quantity',0,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     if(!empty($total_unit) && !empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
                     }
                     else if(empty($total_unit) && !empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
                     }
                     else if(!empty($total_unit) && empty($total_subunit)) {
-                        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+                        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
                     }
                     else {
-                        $pdf->MultiCell(15,5,"-",0,'C',0);
+                        $pdf->MultiCell(35,5,"-",0,'C',0);
                     }
                     $get_total_y = $pdf->GetY();
 
                     $pdf->SetX(10);
                     $pdf->Cell(43,$get_final_Y - $get_total_y,'',1,0,'C',0);
-                    $pdf->Cell(15,$get_final_Y - $get_total_y,'',1,0,'C',0);
+                    $pdf->Cell(37,$get_final_Y - $get_total_y,'',1,0,'C',0);
+                    
+
                 }            
                 if(!empty($sub_total)) {
                     $sub_total_val = $obj->numberFormat($sub_total,2);
                     $pdf->SetY($get_final_Y);
-                    $pdf->SetX(68);
+                    $pdf->SetX(90);
                     $pdf->SetFont('Arial','B',8);
-                    $pdf->Cell(107,5,'Sub Total',1,0,'R',0);
+                    $pdf->Cell(85,5,'Sub Total',1,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(25,5,$sub_total_val,1,1,'R',0);
                 }
@@ -1198,7 +1215,7 @@
         $pdf->Cell(90,5,'Declaration',0,0,'L',0);
         $pdf->SetFont('Arial','B',9);
         $pdf->SetX(147);
-        $pdf->MultiCell(50,7, 'FOR  ' . $company_name,0,'R',0);
+        $pdf->MultiCell(50,7, 'FOR  ' . html_entity_decode($company_name,ENT_QUOTES),0,'R',0);
         $pdf->SetFont('Arial','',9);
         $pdf->SetY($line_y +7);
         $pdf->SetX(15);

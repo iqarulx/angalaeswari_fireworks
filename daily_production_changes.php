@@ -7,7 +7,6 @@
             $permission_module = $GLOBALS['daily_production_module'];
         }
     }
-
 	if(isset($_REQUEST['show_daily_production_id'])) {
         $show_daily_production_id = $_REQUEST['show_daily_production_id'];
         $show_daily_production_id = trim($show_daily_production_id);
@@ -68,7 +67,7 @@
                 if(!empty($data['total_amount']) && $data['total_amount'] != $GLOBALS['null_value']) {
                     $total_amount = $data['total_amount'];
                 }
-                if(!empty($data['subunit_contains']) && $data['subunit_contains'] != $GLOBALS['null_value']) {
+                if(!empty($data['subunit_contains'])) {
                     $contains = $data['subunit_contains'];
                     $contains = explode(",", $contains);
                 }
@@ -423,7 +422,7 @@
         if(isset($_POST['selected_magazine_id'])) {
 
             $magazine_id = $_POST['selected_magazine_id'];
-           echo $magazine_id = trim($magazine_id);
+            $magazine_id = trim($magazine_id);
             $magazine_id_error = $valid->common_validation($magazine_id, 'Magazine', 'select');
             if(empty($magazine_id_error)) {
                 $magazine_unique_id = "";
@@ -523,7 +522,7 @@
                             $quantity[$i] = trim($quantity[$i]);
                             if(!empty($quantity[$i])) {
                                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) {
-                                    // $total_quantity += $quantity[$i];
+                                    $total_quantity += $quantity[$i];
 
                                     if(!empty($cooly_amount[$i])){
                                         $overall_cooly_total += $cooly_amount[$i];
@@ -1018,12 +1017,12 @@
             </div> 
         <?php } ?>
         <?php
-        $access_error = "";
+        $view_access_error = "";
         if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
-    if(empty($add_access_error)) {  ?>
+    if(empty($view_access_error)) {  ?>
         <table class="table nowrap cursor text-center smallfnt">
             <thead class="bg-light">
                 <tr>
@@ -1090,7 +1089,7 @@
                                         ?>
                                     </td>
                                     <td>
-                                        <?php 
+                                          <?php 
                                             $edit_access_error = "";
                                             if(!empty($login_staff_id)) {
                                                 $permission_action = $edit_action;
@@ -1109,10 +1108,20 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                 <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_daily_production_a5.php?view_daily_production_id=<?php if(!empty($list['daily_production_id'])) { echo $list['daily_production_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                                 <?php
+                                                    $edit_access_error = "";
+                                                    if(!empty($login_staff_id)) {
+                                                        $permission_action = $edit_action;
+                                                        include('permission_action.php');
+                                                    }
                                                     if(empty($edit_access_error) && empty($list['cancelled'])) { 
                                                         ?>
                                                     <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['daily_production_id'])) { echo $list['daily_production_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                                     <?php } 
+                                                    $delete_access_error = "";
+                                                    if(!empty($login_staff_id)) {
+                                                        $permission_action = $delete_action;
+                                                        include('permission_action.php');
+                                                    }
                                                     if(empty($delete_access_error) && empty($list['cancelled'])) {
                                                         $linked_count = 0;
                                                         if(!empty($linked_count)) {
@@ -1216,13 +1225,7 @@ if(isset($_REQUEST['products_contractor_id'])) {
         }
     }
     ?>
-    <script type="text/javascript">
-        <?php if($count == '1') { ?>
-            if(jQuery('select[name="selected_product_id"]').length > 0) {
-                jQuery('select[name="selected_product_id"]').trigger("change");
-            }
-        <?php } ?>
-    </script>
+
     <?php
 }
 
@@ -1292,17 +1295,19 @@ if(isset($_REQUEST['get_unit'])) {
        ?>
         <option value="">Select Content</option>
             <?php 
-        for($i=0; $i< count($case_contains); $i++){ 
-            if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
-                <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
-                    <?php
-                
-                            echo  $case_contains[$i];
-                    ?>
-                </option>
-                <?php 
-            } 
-        }
+            if(!empty($case_contains)){
+                for($i=0; $i< count($case_contains); $i++){ 
+                    if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
+                        <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
+                            <?php
+                        
+                                    echo  $case_contains[$i];
+                            ?>
+                        </option>
+                        <?php 
+                    } 
+                }
+            }
 
     }
 

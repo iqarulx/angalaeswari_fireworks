@@ -65,6 +65,11 @@ if (!empty($view_stock_adjustment_id)) {
                 $unit_names = explode(",", $unit_names);
                 $unit_names = array_reverse($unit_names);
             }
+            if(!empty($data['unit_type']) && $data['unit_type'] != $GLOBALS['null_value']) {
+                $unit_types = $data['unit_type'];
+                $unit_types = explode(",", $unit_types);
+                $unit_types = array_reverse($unit_types);
+            }
             if(!empty($data['location_name']) && $data['location_name'] != $GLOBALS['null_value']) {
                 $location_names = $data['location_name'];
                 $location_names = explode(",", $location_names);
@@ -119,7 +124,7 @@ if (!empty($view_stock_adjustment_id)) {
 $company_name = "";
 $company_name = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'name');
 if(!empty($company_name) && $company_name != $GLOBALS['null_value']){
-    $company_name = $obj->encode_decode('decrypt', $company_name);
+    $company_name = html_entity_decode($obj->encode_decode('decrypt', $company_name));
 }
 
 
@@ -244,7 +249,7 @@ $footer_height = 0;
 
 
 $footer_height += 25;
-$total_pages = array(1);
+$total_pages = array(1); $total_unit = 0; $total_subunit = 0;
 $page_number = 1;
 $last_count = 0;
 
@@ -390,7 +395,13 @@ if (!empty($view_stock_adjustment_id) && !empty($product_ids)) {
         if (!empty($unit_names[$p])) {
             $unit_names[$p] = $obj->encode_decode('decrypt', $unit_names[$p]);
         }
-     
+    
+        if($unit_types[$p] == 1) {
+            $total_unit += $quantity_values[$p];
+        }
+        else if($unit_types[$p] == 2) {
+            $total_subunit += $quantity_values[$p];
+        }
         $y = $pdf->GetY();
         $pdf->SetY($product_y);
         $pdf->SetX(10);
@@ -594,28 +605,49 @@ if (($footer_height + $end_y) > 270) {
     $pdf->SetY($content_height);
 }
 
-$max_page = max($total_pages);
+    $max_page = max($total_pages);
 
 
-$pdf->SetY($y_axis);
-$pdf->SetX(10);
+    $pdf->SetY($y_axis);
+    $pdf->SetX(10);
 
-$pdf->Cell(10, 200 + $height, '', 1, 0);
-$pdf->Cell(40, 200 + $height, '', 1, 0);
-$pdf->Cell(30, 200 + $height, '', 1, 0);
-$pdf->Cell(30, 200 + $height, '', 1, 0);
-$pdf->Cell(20, 200 + $height, '', 1, 0);
-$pdf->Cell(20, 200 + $height, '', 1, 0);
-$pdf->Cell(20, 200 + $height, '', 1, 0);
-$pdf->Cell(20, 200 + $height, '', 1, 1);
-    
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->SetX(10);
+    $pdf->Cell(10, 200 + $height, '', 1, 0);
+    $pdf->Cell(40, 200 + $height, '', 1, 0);
+    $pdf->Cell(30, 200 + $height, '', 1, 0);
+    $pdf->Cell(30, 200 + $height, '', 1, 0);
+    $pdf->Cell(20, 200 + $height, '', 1, 0);
+    $pdf->Cell(20, 200 + $height, '', 1, 0);
+    $pdf->Cell(20, 200 + $height, '', 1, 0);
+    $pdf->Cell(20, 200 + $height, '', 1, 1);
+        
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->SetX(10);
 
+    $get_final_Y = $pdf->GetY();
 
-$pdf->Cell(150, 5, 'Total', 1, 0, 'R', 0);
-$pdf->Cell(20, 5, $total_quantity." ", 1, 0, 'R', 0);
-$pdf->Cell(20, 5, '', 1, 1, 'R', 0);
+    $pdf->Cell(150, 5, 'Total', 1, 0, 'R', 0);
+    // $pdf->Cell(20, 5, $total_quantity." ", 1, 0, 'R', 0);
+    $pdf->SetFont('Arial','',8);
+    $pdf->SetX(170);
+
+    if(!empty($total_unit) && !empty($total_subunit)) {
+        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit  & ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+    }
+    else if(empty($total_unit) && !empty($total_subunit)) {
+        $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+    }
+    else if(!empty($total_unit) && empty($total_subunit)) {
+        $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+    }
+    else {
+        $pdf->MultiCell(35,5,"-",0,'C',0);
+    }
+        
+    $get_total_y = $pdf->GetY();
+
+    $pdf->SetX(90);
+    $pdf->Cell(50,$get_final_Y - $get_total_y,'',1,0,'C',0);
+    // $pdf->Cell(20, 5, '', 1, 1, 'R', 0);
 
  
 $line_y = $pdf->GetY();
@@ -629,8 +661,8 @@ $pdf->SetY($line_y);
 $pdf->SetX(155);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetY($line_y+2);
-$pdf->SetX(160);
-$pdf->Cell(90, 5,$company_name, 0, 1, 'L', 0);
+$pdf->SetX(150);
+$pdf->Cell(90, 5,html_entity_decode($company_name), 0, 1, 'L', 0);
 $pdf->SetFont('Arial', '', 9);
 
 $pdf->SetY(-15);

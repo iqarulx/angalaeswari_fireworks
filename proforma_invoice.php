@@ -19,7 +19,14 @@
     $cancelled_count = count($cancelled_bill);
 
     $customer_list =array();
-    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
+
+    $agent_list =array();
+    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'','','');
+
+    $transport_list =array();
+    $transport_list = $obj->getTableRecords($GLOBALS['transport_table'],'','','');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,6 +70,24 @@
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-2">
                                             <div class="input-group">
+                                                <select class="select2 select2-danger" name="agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();getAgentCustomerList(this.value);">
+                                                    <option value="">Select Agent</option>
+                                                    <?php if (!empty($agent_list)) {
+                                                        foreach ($agent_list as $data) { ?>
+                                                            <option value="<?php if (!empty($data['agent_id'])) {
+                                                                echo $data['agent_id'];
+                                                            } ?>" <?php if(!empty($agent_id) && $agent_id == $data['agent_id']) { echo "selected"; } ?>>
+                                                                <?php if (!empty($data['name_mobile_city'])) {
+                                                                    echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                } ?>
+                                                            </option>
+                                                        <?php }
+                                                    } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
+                                            <div class="input-group">
                                                 <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
                                                     <option value="">Select Customer</option>
                                                     <?php if (!empty($customer_list)) {
@@ -72,6 +97,24 @@
                                                             } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
                                                                 <?php if (!empty($customer['name_mobile_city'])) {
                                                                     echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
+                                                                } ?>
+                                                            </option>
+                                                        <?php }
+                                                    } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
+                                            <div class="input-group">
+                                                <select class="select2 select2-danger" name="transport_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
+                                                    <option value="">Select Transport</option>
+                                                    <?php if (!empty($transport_list)) {
+                                                        foreach ($transport_list as $data) { ?>
+                                                            <option value="<?php if (!empty($data['transport_id'])) {
+                                                                echo $data['transport_id'];
+                                                            } ?>" <?php if(!empty($transport_id) && $transport_id == $data['transport_id']) { echo "selected"; } ?>>
+                                                                <?php if (!empty($data['transport_name'])) {
+                                                                    echo $obj->encode_decode('decrypt', $data['transport_name']);
                                                                 } ?>
                                                             </option>
                                                         <?php }

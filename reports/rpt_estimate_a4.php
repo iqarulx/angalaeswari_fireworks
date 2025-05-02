@@ -598,7 +598,8 @@ if(isset($_REQUEST['estimate_id'])) {
     $charges_total_amounts = array(); $total_amount_car = 0; $charge_in = array();
         if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
             for($i=0; $i < count($other_charges_id); $i++) {
-                $charge_in[$i] = "Rs.";
+                $charge_in[$i] = "Rs.".$other_charges_value[$i];
+
                 $other_charges_id[$i] = trim($other_charges_id[$i]);
                 if(!empty($other_charges_id[$i])) {
                     $other_charges_name = "";

@@ -249,6 +249,8 @@ class Stock_functions extends Basic_Functions
             $stock_type =  "Purchase Entry";
         } else if ($page_table == $GLOBALS['semifinished_inward_table']) {
             $stock_type =  "Semifinished Inward";
+            $party_id = $this->getTableColumnValue($GLOBALS['semifinished_inward_table'],'semifinished_inward_id',$bill_unique_id,'contractor_id');
+
         } else if ($page_table == $GLOBALS['material_transfer_table']) {
             $stock_type =  "Material Transfer";
         } else if ($page_table == $GLOBALS['proforma_invoice_table']) {
@@ -1277,6 +1279,35 @@ class Stock_functions extends Basic_Functions
             }
         }
         return $can_delete;
+    }
+
+    public function getCurrentStockDetails($product_id, $case_contains){
+        $select_query = ""; $list = array();
+        if (!empty($case_contains)) {
+            if (!empty($where)) {
+                $where = $where . " case_contains = '" . $case_contains . "' AND ";
+            } else {
+                $where = " case_contains = '" . $case_contains . "' AND ";
+            }
+        }
+        if (!empty($product_id)) {
+            if (!empty($where)) {
+                $where = $where . " product_id = '" . $product_id . "' ";
+            } else {
+                $where = " product_id = '" . $product_id . "' ";
+            }
+        }
+        if(!empty($where)) {
+            $select_query = "SELECT * FROM ".$GLOBALS['stock_by_magazine_table']." WHERE ".$where." ORDER BY id DESC";	
+        }
+        else{
+            $select_query = "SELECT * FROM ".$GLOBALS['stock_by_magazine_table']." WHERE deleted = '0' ORDER BY id DESC";
+        }
+        
+        if(!empty($select_query)) {
+            $list = $this->getQueryRecords($GLOBALS['stock_by_magazine_table'], $select_query);
+        }
+        return $list;
     }
 
 }

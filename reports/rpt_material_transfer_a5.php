@@ -97,7 +97,7 @@ if (!empty($view_material_transfer_id)) {
 $company_name = "";
 $company_name = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'name');
 if(!empty($company_name) && $company_name != $GLOBALS['null_value']){
-    $company_name = $obj->encode_decode('decrypt', $company_name);
+    $company_name = html_entity_decode($obj->encode_decode('decrypt', $company_name));
 }
 
 
@@ -128,7 +128,7 @@ if (!empty($company_details)) {
             
             if ($i === 0) {  // Corrected comparison
                 $pdf->SetFont('Arial', 'B', 11);
-                $pdf->MultiCell(50, 7, $company_details[$i], 0, 'C');
+                $pdf->MultiCell(50, 7, html_entity_decode($company_details[$i]), 0, 'C');
                 $rt = $pdf->gety();
             } elseif (strpos($company_details[$i], "GST") !== false) {
                 $pdf->sety($y);
@@ -568,10 +568,10 @@ if (!empty($view_material_transfer_id) && !empty($product_ids)) {
 
         // $total_quantity += $quantity_values[$p]; 
         if($unit_type[$p] == 1) {
-            $total_unit += $quantity[$p];
+            $total_unit += $quantity_values[$p];
         }
         else if($unit_type[$p] == 2) {
-            $total_subunit += $quantity[$p];
+            $total_subunit += $quantity_values[$p];
         }
 
     
@@ -787,27 +787,27 @@ $get_final_y = $pdf->GetY();
     // $pdf->SetY($get_final_y);
     
     $pdf->SetX(10);
-    $pdf->Cell(105,5,'Total Quantity',0,0,'R',0);
+    $pdf->Cell(80,5,'Total Quantity',0,0,'R',0);
     $pdf->SetFont('Arial','',8);
     // $pdf->MultiCell(25,5,$obj->numberFormat($total_unit,2) ." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
     if(!empty($total_unit) && !empty($total_subunit)) {
-        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        $pdf->MultiCell(50,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'R',0);
     }
     else if(empty($total_unit) && !empty($total_subunit)) {
-        $pdf->MultiCell(15,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        $pdf->MultiCell(50,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'R',0);
     }
     else if(!empty($total_unit) && empty($total_subunit)) {
-        $pdf->MultiCell(15,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+        $pdf->MultiCell(50,5,$obj->numberFormat($total_unit,2)." Unit ",0,'R',0);
     }
     else {
-        $pdf->MultiCell(15,5,"-",0,'C',0);
+        $pdf->MultiCell(50,5,"-",0,'C',0);
     }
     $get_total_y = $pdf->GetY();
 
     $pdf->SetY($get_final_y);
     $pdf->SetX(10);
-    $pdf->Cell(105,$get_total_y - $get_final_y,'',1,0,'C',0);
-    $pdf->Cell(25,$get_total_y - $get_final_y,'',1,1,'C',0);
+    $pdf->Cell(80,$get_total_y - $get_final_y,'',1,0,'C',0);
+    $pdf->Cell(50,$get_total_y - $get_final_y,'',1,1,'C',0);
 // }
 
 
@@ -819,7 +819,7 @@ $line_y = $pdf->GetY();
 
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(95);
-$pdf->Cell(50, 5,$company_name, 0, 1, 'L', 0);
+$pdf->Cell(50, 5,html_entity_decode($company_name), 0, 1, 'L', 0);
 $pdf->Cell(50, 10,'', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', '', 9);
 $pdf->SetX(95);

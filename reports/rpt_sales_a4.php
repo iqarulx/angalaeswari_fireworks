@@ -18,11 +18,22 @@ include("../include/number2words.php");
         $to_date = $_REQUEST['to_date'];
     }
 
+    $agent_id = "";
+    if(isset($_REQUEST['agent_id'])) {
+        $agent_id = $_REQUEST['agent_id'];
+    }
+
+    
+    $transport_id = "";
+    if(isset($_REQUEST['transport_id'])) {
+        $transport_id = $_REQUEST['transport_id'];
+    }
+
     $pdf_download_name ="";
     $pdf_download_name = "Sales Report PDF -"." (".$from_date ." to ".$to_date .")";
 
     $total_records_list = array();
-    $total_records_list = $obj->getSalesReportList($from_date, $to_date, $filter_party_id);
+    $total_records_list = $obj->getSalesReportList($from_date, $to_date, $filter_party_id, $agent_id, $transport_id);
     $from_date = date('d-m-Y',strtotime($from_date));
     $to_date = date('d-m-Y',strtotime($to_date));
     

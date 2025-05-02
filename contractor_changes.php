@@ -45,6 +45,11 @@
             $rawmaterial_group_id = $obj->getTableColumnValue($GLOBALS['group_table'],'lower_case_name',$rawmaterial_group_name,'group_id');
         }
         $product_list = $obj->GetFinishedSemiFinishedProductList($rawmaterial_group_id);
+
+        $linked_contractor = 0;
+        if(!empty($show_contractor_id)){
+             $linked_contractor = $obj->linkedContractor($show_contractor_id);
+        }
         ?>
         <form class="poppins pd-20" name="contractor_form" method="POST">
 			<div class="card-header">
@@ -94,10 +99,10 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
-                                <input type="text" id="opening_balance" name="opening_balance" value="<?php if(!empty($opening_balance)) { echo  (float)$opening_balance; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',7,'');" >
+                                <input type="text" id="opening_balance" name="opening_balance" value="<?php if(!empty($opening_balance)) { echo  (float)$opening_balance; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',7,'');" <?php if(!empty($linked_contractor)){ ?> readonly <?php } ?>>
                                 <label>Opening Balance</label>
                                 <div class="input-group-append" style="width:40%!important;">
-                                    <select name="opening_balance_type" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                    <select name="opening_balance_type" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($linked_contractor)){ ?> disabled <?php } ?>>
                                         <option value="Credit" <?php if($opening_balance_type == 'Credit') { echo "selected"; } ?>>Credit</option>
                                         <option value="Debit" <?php if($opening_balance_type == 'Debit') { echo "selected"; } ?>>Debit</option>
                                     </select>
@@ -107,6 +112,10 @@
                     </div>
                 </div>
             </div>
+            <?php if(!empty($linked_contractor)){ ?>
+                <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $open_balance_type; } ?>">
+                <?php 
+               } ?>
             <div class="row justify-content-center p-3">
                 <div class="col-lg-3 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
@@ -435,7 +444,7 @@
             }
 
         } else {
-            $product_error = "Please select product and its detials";
+            $product_error = "Please select product and its details";
         }
         if (!empty($edit_id) && empty($product_error)) {
             $prev_product_list = array();
@@ -915,7 +924,7 @@
                                         ?>
                                         <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
                                             <div class="dropdown">
-                                                <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-dark show-button">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </a>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
@@ -929,10 +938,10 @@
                                                            
                                                             if(empty($delete_access_error)) {
                                                                 $linked_count = 0;
-                                                                // $linked_count = $obj->GetcontractorLinkedCount($data['contractor_id']); 
-                                                                if($linked_count > 0) {
+                                                                $linked_count = $obj->GetContractorLinkedCount($data['contractor_id']); 
+                                                    if($linked_count > 0) {
                                                         ?>                             
-                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                    <li><a class="dropdown-item text-secondary" href="#"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                     <?php 
                                                         }
                                                         else {

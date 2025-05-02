@@ -454,16 +454,16 @@ if(isset($_POST['page_number'])) {
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"><?php
                                                     if(empty($edit_access_error)) { 
                                                         ?>
-                                                    <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['charges_id'])) { echo $list['charges_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
+                                                    <li><a class="dropdown-item" style="cursor:pointer;"  href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['charges_id'])) { echo $list['charges_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                                     <?php } 
                                                     if(empty($delete_access_error)) {
                                                         $linked_count = 0;
-                                                        // $linked_count = $obj->GetChargesLinkedCount($list['charges_id']);
+                                                        $linked_count = $obj->GetChargesLinkedCount($list['charges_id']);
                                                         if(!empty($linked_count)) {
                                                             ?>
-                                                            <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li><?php 
-                                                        }else{ ?>
-                                                            <li><a class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['charges_id'])) { echo $list['charges_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li><?php 
+                                                            <li><a class="dropdown-item text-secondary" style="cursor:pointer;"><i class="fa fa-trash"></i> &ensp; Delete</a></li><?php 
+                                                        }else{ ?> 
+                                                            <li><a class="dropdown-item" style="cursor:pointer;" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['charges_id'])) { echo $list['charges_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li><?php 
                                                         } 
                                                     } ?>
                                                 </ul>
@@ -537,8 +537,8 @@ if(isset($_REQUEST['delete_charges_id'])) {
                 $action = "Unit Deleted. Name - " . $obj->encode_decode('decrypt', $charges_name);
             }
             $linked_count = "";
-            // $linked_count = 0;
-            // $linked_count = $obj->GetChargesLinkedCount($delete_charges_id);
+            $linked_count = 0;
+            $linked_count = $obj->GetChargesLinkedCount($delete_charges_id);
             if(empty($linked_count)) {
                 $columns = array();
                 $values = array();

@@ -11,7 +11,7 @@
 
     if(isset($_REQUEST['show_estimate_id'])) { 
         $show_estimate_id = $_REQUEST['show_estimate_id'];
-
+        $current_date = date('Y-m-d');
         $conversion_update = 0;
         if(isset($_REQUEST['conversion_update'])) {
             $conversion_update = $_REQUEST['conversion_update'];
@@ -1619,7 +1619,7 @@
 
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number']; $page_limit = $_POST['page_limit']; $page_title = $_POST['page_title'];
-        $from_date = ""; $to_date = ""; $search_text = ""; $show_bill = 0;
+        $from_date = ""; $to_date = ""; $search_text = ""; $show_bill = 0; $agent_id = "";$transport_id = "";
         $customer_id = "";
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
@@ -1637,9 +1637,14 @@
         if(isset($_POST['search_text'])) {
             $search_text = $_POST['search_text'];
         }
-
+        if(isset($_POST['agent_id'])) {
+            $agent_id = $_POST['agent_id'];
+        }
+        if(isset($_POST['transport_id'])) {
+            $transport_id = $_POST['transport_id'];
+        }
         $total_records_list = array();
-        $total_records_list = $obj->getEstimateList($from_date, $to_date, $customer_id, $search_text, $show_bill);
+        $total_records_list = $obj->getEstimateList($from_date, $to_date, $customer_id, $search_text, $show_bill, $agent_id, $transport_id);
         
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -1776,19 +1781,19 @@
                                 <?php 
                                         ?>
                                         <div class="dropdown">
-                                            <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_estimate_a4.php?estimate_id=<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>')">PDF</a>
+                                                    <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_estimate_a4.php?estimate_id=<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
                                                 </li>
                                                 <?php 
                                                     if(($show_bill == 0)){
                                                         if(empty($edit_access_error)) {
                                                             ?>
                                                             <li>
-                                                                <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Edit</a>
+                                                                <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
                                                             </li>
                                                             <?php
                                                         } 
@@ -1799,7 +1804,7 @@
                                                         if(empty($delete_access_error)) {
                                                             ?>
                                                                 <li>
-                                                                    <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');">Delete</a>
+                                                                    <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;  Delete</a>
                                                                 </li>  
                                                             <?php
                                                         } 

@@ -280,11 +280,11 @@
 			$result = $create_obj->PurchaseBillNumberAlreadyExists($bill_company_id,$purchase_bill_number);
 			return $result;
 		}
-		public function getPurchaseList($from_date, $to_date,$search_text,$show_bill) {
+		public function getPurchaseList($from_date, $to_date,$search_text,$show_bill, $product_group) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getPurchaseList($from_date, $to_date,$search_text,$show_bill);
+			$list = $create_obj->getPurchaseList($from_date, $to_date,$search_text,$show_bill, $product_group);
 			return $list;
 		}
 		public function getMaterialTransferList($from_date, $to_date) {
@@ -329,18 +329,18 @@
 			$result = $create_obj->CheckExpenseCategoryAlreadyExists($expense_category_name);
 			return $result;
 		}
-		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
+		public function getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill, $agent_id, $transport_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill);
+			$list = $create_obj->getProfomaInvoiceList($from_date, $to_date, $customer_id, $search_text,$show_bill, $agent_id, $transport_id);
 			return $list;
 		}
-		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
+		public function getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill,$agent_id, $transport_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill);
+			$list = $create_obj->getDeliverySlipList($from_date, $to_date, $customer_id, $search_text,$show_bill,$agent_id, $transport_id);
 			return $list;
 		}
 		public function getDeliverySlipIndex($delivery_slip_id, $conversion_update) {
@@ -378,11 +378,11 @@
 			$list = $create_obj->getEstimateIndex($estimate_id, $conversion_update);
 			return $list;
 		}
-		public function getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill) {
+		public function getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill, $agent_id, $transport_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill);
+			$list = $create_obj->getEstimateList($from_date, $to_date, $customer_id, $search_text,$show_bill, $agent_id, $transport_id);
 			return $list;
 		}
 		public function getContractorFinishedProducts($contractor_id,$finished_product_group_id) {
@@ -476,11 +476,11 @@
 			$list = $create_obj->getPurchaseReportList($from_date, $to_date, $supplier_id);
 			return $list;
 		}
-		public function getSalesReportList($from_date, $to_date, $customer) {
+		public function getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer);
+			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id);
 			return $list;
 		}
 
@@ -721,11 +721,11 @@
 			$list = $report_obj->getStockContainsList($product_id);
 			return $list;
 		}
-		public function getConsumptionQtyList() {
+		public function getConsumptionQtyList($contractor_id) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getConsumptionQtyList();
+			$list = $report_obj->getConsumptionQtyList($contractor_id);
 			return $list;
 		}
 		public function getConsumptionQtyByProduct($product_id, $unit_type) {
@@ -802,6 +802,67 @@
 			$report_obj = $this->report_function_object();
 			$list = array();
 			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id);
+			return $list;
+		}
+
+
+		// New 01052025
+
+		public function GetRoleLinkedCount($role_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetRoleLinkedCount($role_id);
+			return $result;
+		}
+		public function GetSupplierLinkedCount($supplier_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetSupplierLinkedCount($supplier_id);
+			return $result;
+		}
+		public function GetContractorLinkedCount($contractor_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetContractorLinkedCount($contractor_id);
+			return $result;
+		}
+		public function GetAgentLinkedCount($agent_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetAgentLinkedCount($agent_id);
+			return $result;
+		}
+
+		public function GetCustomerLinkedCount($customer_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetCustomerLinkedCount($customer_id);
+			return $result;
+		}
+		public function GetTransportLinkedCount($transport_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetTransportLinkedCount($transport_id);
+			return $result;
+		}
+		public function getCurrentStockDetails($product_id, $case_contains){
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$list = array();
+			$list = $stock_obj->getCurrentStockDetails($product_id, $case_contains);
+			return $list;
+		}
+		public function linkedContractor($contractor_id){
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->linkedContractor($contractor_id);
 			return $list;
 		}
 	}

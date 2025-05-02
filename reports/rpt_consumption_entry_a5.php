@@ -128,7 +128,7 @@ if (!empty($company_details)) {
             
             if ($i === 0) {  // Corrected comparison
                 $pdf->SetFont('Arial', 'B', 11);
-                $pdf->MultiCell(50, 7, $company_details[$i], 0, 'C');
+                $pdf->MultiCell(50, 7,html_entity_decode($company_details[$i]), 0, 'C');
                 $rt = $pdf->gety();
             } elseif (strpos($company_details[$i], "GST") !== false) {
                 $pdf->sety($y);
@@ -166,7 +166,7 @@ $bill_to_y = $pdf->GetY();
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->SetX(10);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-$pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+$pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(12);
@@ -190,8 +190,8 @@ $bill_to_y1 = $pdf->GetY();
 
 $pdf->SetY($bill_to_y);
 
-
-$godown_name = "";
+ 
+$godown_name = ""; $godown_details ="";
 if(!empty($godown_id) && $godown_type == '1'){
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(75);
@@ -200,9 +200,30 @@ if(!empty($godown_id) && $godown_type == '1'){
 
     for($i = 0;$i <count($godown_id);$i++){
         $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_name');
+        $godown_details = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_details');
+        if(!empty($godown_details)){
+            $godown_details = $obj->encode_decode('decrypt',$godown_details);
+            $godown_details = explode("$$$", $godown_details);
+        }
+
     }
     $pdf->SetX(80);
-    $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
+    // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_details)), 0, 1, 'L', 0);
+    if(!empty($godown_details)) {
+        for($i=0; $i<count($godown_details); $i++) {
+            if($i==0) {
+                $pdf->SetFont("Arial", "B", 10);
+                $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+            } 
+            else {
+                $pdf->SetX(80);
+                $pdf->SetFont("Arial", "", 8);
+                if($godown_details[$i] != "NULL"){
+                    $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+                }
+            }
+        }
+    }
 }
 
 $bill_to_y2 = $pdf->GetY();
@@ -266,7 +287,7 @@ $footer_height = 0;
 $footer_height += 25;
 $total_pages = array(1);
 $page_number = 1;
-$last_count = 0;
+$last_count = 0; $total_unit = 0; $total_subunit = 0;
 
 if (!empty($view_consumption_entry_id) && !empty($product_id)) {
     for ($p = 0; $p < count($product_id); $p++) {
@@ -358,7 +379,7 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetX(10);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-            $pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+            $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->SetX(12);
@@ -394,7 +415,22 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
                     $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_name');
                 }
                 $pdf->SetX(80);
-                $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
+                // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
+                if(!empty($godown_details)) {
+                    for($i=0; $i<count($godown_details); $i++) {
+                        if($i==0) {
+                            $pdf->SetFont("Arial", "B", 10);
+                            $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+                        } 
+                        else {
+                            $pdf->SetX(80);
+                            $pdf->SetFont("Arial", "", 8);
+                            if($godown_details[$i] != "NULL"){
+                                $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+                            }
+                        }
+                    }
+                }
             }
             
             $bill_to_y2 = $pdf->GetY();
@@ -466,7 +502,12 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
         }
 
         $quantity[$p] = trim($quantity[$p]);
-
+        if($unit_type[$p] == 1) {
+            $total_unit += $quantity[$p];
+        }
+        else if($unit_type[$p] == 2) {
+            $total_subunit += $quantity[$p];
+        }
         // $consumption_content[$p] = trim($consumption_content[$p]);
 
         if(!empty($godown_id) && $godown_type == '1'){
@@ -646,7 +687,7 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(10);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-    $pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+    $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetX(12);
@@ -681,7 +722,22 @@ if (($footer_height + $end_y) > 190) {
             $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_name');
         }
         $pdf->SetX(80);
-        $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
+        // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
+        if(!empty($godown_details)) {
+            for($i=0; $i<count($godown_details); $i++) {
+                if($i==0) {
+                    $pdf->SetFont("Arial", "B", 10);
+                    $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+                } 
+                else {
+                    $pdf->SetX(80);
+                    $pdf->SetFont("Arial", "", 8);
+                    if($godown_details[$i] != "NULL"){
+                        $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
+                    }
+                }
+            }
+        }
     }
 
     $bill_to_y2 = $pdf->GetY();
@@ -789,16 +845,56 @@ if (($footer_height + $end_y) > 190) {
 
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetX(10);
+    $get_final_Y = $pdf->GetY();
 
 
     if(!empty($godown_id) && $godown_type == '1'){
-        $pdf->Cell(100, 5, 'Total Quantity', 1, 0, 'R', 0);
-        $pdf->Cell(15, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
-        $pdf->Cell(15, 5, '', 1, 0, 'R', 0);
+        $pdf->Cell(80, 5, 'Total Quantity', 1, 0, 'R', 0);
+        // $pdf->Cell(15, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetX(90);
+
+        if(!empty($total_unit) && !empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit  & ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        }
+        else if(empty($total_unit) && !empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        }
+        else if(!empty($total_unit) && empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+        }
+        else {
+            $pdf->MultiCell(40,5,"-",0,'C',0);
+        }
+            
+        $get_total_y = $pdf->GetY();
+
+        $pdf->SetX(90);
+        $pdf->Cell(50,$get_final_Y - $get_total_y,'',1,0,'C',0);
     }else{
         $pdf->Cell(101, 5, 'Total Quantity', 1, 0, 'R', 0);
-        $pdf->Cell(14, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
-        $pdf->Cell(15, 5, '', 1, 0, 'R', 0);
+        // $pdf->Cell(14, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
+        // $pdf->Cell(15, 5, '', 1, 0, 'R', 0);
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetX(90);
+
+        if(!empty($total_unit) && !empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit  & ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        }
+        else if(empty($total_unit) && !empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
+        }
+        else if(!empty($total_unit) && empty($total_subunit)) {
+            $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
+        }
+        else {
+            $pdf->MultiCell(40,5,"-",0,'C',0);
+        }
+            
+        $get_total_y = $pdf->GetY();
+
+        $pdf->SetX(90);
+        $pdf->Cell(50,$get_final_Y - $get_total_y,'',1,0,'C',0);
     }
 
 
@@ -815,7 +911,7 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetY($line_y+5);
     $pdf->SetX(95);
-    $pdf->Cell(50, 5,$company_name, 0, 1, 'L', 0);
+    $pdf->Cell(50, 5,html_entity_decode($company_name), 0, 1, 'L', 0);
     $pdf->SetFont('Arial', '', 9);
     $pdf->SetY($line_y + 15);
     $pdf->SetX(95);

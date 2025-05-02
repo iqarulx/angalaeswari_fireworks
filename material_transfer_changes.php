@@ -1,7 +1,5 @@
 <?php
 	include("include.php");
-
-    
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
@@ -9,7 +7,6 @@
             $permission_module = $GLOBALS['material_transfer_module'];
         }
     }
-
 	if(isset($_REQUEST['show_material_transfer_id'])) { 
         $show_material_transfer_id = $_REQUEST['show_material_transfer_id'];
         $location_list = $material_transfer_list = $product_id = $product_name = $unit_id = $unit_name = $subunit_id = $subunit_name = $unit_type = $content = $quantity = $quantity_limit = $negative = array();
@@ -55,7 +52,7 @@
                 if(!empty($data['unit_type']) && $data['unit_type'] != $GLOBALS['null_value']) {
                     $unit_type = explode(",", $data['unit_type']);
                 }
-                if(!empty($data['content']) && $data['content'] != $GLOBALS['null_value']) {
+                if(!empty($data['content'])) {
                     $content = explode(",", $data['content']);
                 }
                 if(!empty($data['quantity']) && $data['quantity'] != $GLOBALS['null_value']) {
@@ -1038,12 +1035,12 @@
             </div> 
         <?php } ?>
         <?php
-        $access_error = "";
+        $view_access_error = "";
         if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
-        if(empty($access_error)) { 
+        if(empty($view_access_error)) { 
         ?>
     
             <table class="table nowrap cursor text-center smallfnt">
@@ -1089,37 +1086,34 @@
                                 } ?>
                             </td>
                             <td>
-                                <?php 
-                                    $edit_access_error = "";
-                                    if(!empty($login_staff_id)) {
-                                        $permission_action = $edit_action;
-                                        include('permission_action.php');
-                                    }
-                                    $delete_access_error = "";
-                                    if(!empty($login_staff_id)) {
-                                        $permission_action = $delete_action;
-                                        include('permission_action.php');
-                                    }
-                                ?>
                                 <div class="dropdown">
                                     <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                    <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_material_transfer_a5.php?view_material_transfer_id=<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
+                                       <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_material_transfer_a5.php?view_material_transfer_id=<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                         <?php 
+                                            $edit_access_error = "";
+                                            if(!empty($login_staff_id)) {
+                                                $permission_action = $edit_action;
+                                                include('permission_action.php');
+                                            }
                                             if(empty($edit_access_error) && empty($list['cancelled'])) {
                                             ?> 
                                             <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                             <?php } ?>
                                             <?php 
+                                                $delete_access_error = "";
+                                                if(!empty($login_staff_id)) {
+                                                    $permission_action = $delete_action;
+                                                    include('permission_action.php');
+                                                }
                                                 if(empty($delete_access_error) && empty($list['cancelled'])) {
                                             ?>     
                                         <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;Delete</a></li>
                                         <?php } ?>
                                     </ul>
                                 </div> 
-
                             </td>
                         </tr>
                         

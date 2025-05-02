@@ -40,6 +40,7 @@
     $cancelled_bill = ""; $cancelled_count = 0;
     $cancelled_bill = $obj->getAllRecords($GLOBALS['stock_adjustment_table'], 'cancelled', 1);
     $cancelled_count = count($cancelled_bill);
+    $current_date = date('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +68,7 @@
                                             <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
-                                                        <input type="date" class="form-control shadow-none" name="from_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>">
+                                                        <input type="date" class="form-control shadow-none" name="from_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>" >
                                                         <label>From Date</label>
                                                     </div>
                                                 </div> 
@@ -75,7 +76,7 @@
                                             <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
-                                                        <input type="date" class="form-control shadow-none"  name="to_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>">
+                                                        <input type="date" class="form-control shadow-none"  name="to_date" onchange="Javascript:checkDateCheck();table_listing_records_filter();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                         <label>To Date</label>
                                                     </div>
                                                 </div> 

@@ -192,7 +192,7 @@
                         $last_number = trim($last_number);
                     }
 					else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
-                        $last_number = str_replace("EST","",$last_number);
+                        $last_number = str_replace("DS","",$last_number);
                         $last_number = trim($last_number);
                     }
 					else if(!empty($table) && $table == $GLOBALS['estimate_table']) {

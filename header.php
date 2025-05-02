@@ -336,22 +336,28 @@
         </div>
     </div>
 <!-- App Menu -->
+
+<?php
+     $company_name = "";
+     $company_name = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'name');
+     $company_name = html_entity_decode($obj->encode_decode('decrypt',$company_name));
+?>
     <div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
             <a href="dashboard.php" class="logo logo-dark">
                 <span class="logo-sm">
-                    <div class="text-dark h4">Angalaeswari Fireworks</div>
+                    <div class="text-dark h4"><?php if(!empty($company_name)){ echo $company_name; }else{ echo "Angalaeswari Fireworks"; } ?></div>
                 </span>
                 <span class="logo-lg">
-                    <div class="text-dark h4">Angalaeswari Fireworks</div>
+                    <div class="text-dark h4"><?php if(!empty($company_name)){ echo $company_name; }else{ echo "Angalaeswari Fireworks"; } ?></div>
                 </span>
             </a>
             <a href="dashboard.php" class="logo logo-light">
                 <span class="logo-sm">
-                    <div class="text-dark h4">Angalaeswari Fireworks</div>
+                    <div class="text-dark h4"><?php if(!empty($company_name)){ echo $company_name; }else{ echo "Angalaeswari Fireworks"; } ?></div>
                 </span>
                 <span class="logo-lg">
-                    <div class="text-dark h4">Angalaeswari Fireworks</div>
+                    <div class="text-dark h4"><?php if(!empty($company_name)){ echo $company_name; }else{ echo "Angalaeswari Fireworks"; } ?></div>
                 </span>
             </a>
             <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -593,9 +599,6 @@
                                     </li>
                                     <li class="nav-item" id="daybookledgerreport">
                                         <a href="daybook_ledger_report.php" class="nav-link"><i class="bi bi-dash"></i> Daybook Ledger Report </a>
-                                    </li>
-                                    <li class="nav-item" id="agentcustomer">
-                                        <a href="agent_customer_report.php" class="nav-link"><i class="bi bi-dash"></i> Agent - Customer Report </a>
                                     </li>
                                     <li class="nav-item" id="salesreport">
                                         <a href="sales_report.php" class="nav-link"><i class="bi bi-dash"></i> Sales Report </a>

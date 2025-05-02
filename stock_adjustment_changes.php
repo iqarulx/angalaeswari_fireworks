@@ -1,6 +1,5 @@
 <?php
 	include("include.php");
-
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
@@ -8,7 +7,6 @@
             $permission_module = $GLOBALS['stock_adjustment_module'];
         }
     }
-
 	if(isset($_REQUEST['show_stock_adjustment_id'])) { 
         $show_stock_adjustment_id = $_REQUEST['show_stock_adjustment_id'];
         $show_stock_adjustment_id = trim($show_stock_adjustment_id);
@@ -19,7 +17,7 @@
         $stock_action = array(); $remarks = ""; $godown_id = ""; $godown_name_city = ""; $magazine_id = ""; $locations = array();
         $magazine_name_city = ""; $product_count = 0; $group_name = array(); $unit_types = array();
         $stock_adjustment_list = array(); $product_group = ""; $location_type = ""; $location_name = array();$content = array();
-        $stock_adjustment_list = $obj->getTableRecords($GLOBALS['stock_adjustment_table'], 'stock_adjustment_id', $show_stock_adjustment_id, '');
+        $stock_adjustment_list = $obj->getTableRecords($GLOBALS['stock_adjustment_table'], 'stock_adjustment_id', $show_stock_adjustment_id, ''); $first_location_id = "";
         if(!empty($stock_adjustment_list)) {
             foreach($stock_adjustment_list as $data) {
                 if(!empty($data['entry_date'])) {
@@ -27,6 +25,7 @@
                 }
                 if(!empty($data['location_id']) && $data['location_id'] != $GLOBALS['null_value']) {
                     $location_ids = $data['location_id'];
+                    $location_ids = explode(",", $location_ids);
                 }
                 if(!empty($data['product_group']) && $data['product_group'] != $GLOBALS['null_value']) {
                     $product_group = $data['product_group'];
@@ -81,6 +80,9 @@
                 }
                 if(!empty($data['remarks']) && $data['remarks'] != $GLOBALS['null_value']) {
                     $remarks = $obj->encode_decode('decrypt', $data['remarks']);
+                }
+                if($location_type == 1){
+                     $first_location_id = trim($location_ids[0]);
                 }
             }
         }
@@ -143,7 +145,7 @@
                         </div>
                     </div>  
                 </div>
-                    <input type="hidden" name="location_type" value="<?php if(!empty($location_type)) { echo $location_type; } ?>">
+                <input type="hidden" name="location_type" value="<?php if(!empty($location_type)) { echo $location_type; } ?>">
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -158,11 +160,11 @@
                 <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_godown">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="selected_godown_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                            <select class="select2 select2-danger" name="selected_godown_id" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
                                 <option value="">Select Godown</option>
                                 <?php if(!empty($godown_list)) {
                                     foreach($godown_list as $godown) { ?>
-                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -175,11 +177,11 @@
                 <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_magazine">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="selected_magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                            <select class="select2 select2-danger" name="selected_magazine_id" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
                                 <option value="">Select Magazine</option>
                                 <?php if(!empty($magazine_list)) {
                                     foreach($magazine_list as $magazine) { ?>
-                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($magazine_id) && $magazine_id == $magazine['magazine_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
+                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $magazine['magazine_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -311,7 +313,7 @@
                                                 ?>
                                                 <input type="hidden" name="unit_id[]" value="<?php echo $unit_ids[$i]; ?>">
                                                 <input type="hidden" name="unit_name[]" value="<?php echo $unit_names[$i]; ?>">
-                                                <input type="hidden" name="unit_type[]" value="<?php echo $unit_type[$i]; ?>">
+                                                <input type="hidden" name="unit_type[]" value="<?php echo $unit_types[$i]; ?>">
                                             </td>
 
                                             <td class="text-center px-2 py-2">
@@ -600,7 +602,7 @@
                             $unit_name = "";
                             $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
                             $unit_names[$i] = $unit_name;
-                            if(empty($case_contains[$i])){
+                            if(empty($case_contains[$i]) && $case_contains[$i] == $GLOBALS['null_value']){
                                 $case_contains[$i] = "";
                             }
                             if($product_group == "1"){
@@ -641,11 +643,15 @@
                                                 $inward_quantity = $obj->getInwardQty($edit_id,'',$location_ids[$i], $product_ids[$i],$case_contains[$i]);
                                                 $outward_quantity = $obj->getOutwardQty($edit_id,'', $location_ids[$i], $product_ids[$i],$case_contains[$i]);
                                             }
-                                    
+
                                             if ($unit_types[$i] == '1') {
-                                                 $product_qty =$quantity[$i];
+                                                 $product_qty = $quantity[$i];
                                             } else if ($unit_types[$i] == '2') {
                                                 $product_qty = $quantity[$i] / $case_contains[$i];
+                                            }
+
+                                            if($case_contains[$i] == $GLOBALS['null_value']) {
+                                                $case_contains[$i] = 0;
                                             }
                                      
                                             $individual_product_detail[] = array('godown_id' => $location_ids[$i],'product_id' => $product_ids[$i],'subunit_content' => $case_contains[$i],'quantity' => $product_qty,'stock_action_type' =>$stock_action[$i]);
@@ -675,7 +681,6 @@
                     $product_error = "Invalid Product";
                 }
                 array_multisort(array_column($individual_product_detail, "godown_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, $individual_product_detail);
-
                 if(empty($valid_stockadjustment))
                 {
                     $final_array = combineAndSumUp($individual_product_detail);
@@ -687,7 +692,6 @@
         else {
             $product_error = "Add Products";
         }
-        // print_r($final_array);
 
         $stock_error = 0; $valid_stock = "";
         if(!empty($final_array) && empty($valid_stockadjustment))
@@ -720,10 +724,10 @@
                          $inward_subunit += ($data['quantity'] * $data['subunit_content']);
                     }
                 }else if($data['stock_action_type'] == 2){
-                    $outward_unit -= $data['quantity'];
+                    $outward_unit += $data['quantity'];
                     if(!empty($data['subunit_content']) && $data['subunit_content'] != $GLOBALS['null_value']){
 
-                        $outward_subunit -= ($data['quantity'] * $data['subunit_content']);
+                        $outward_subunit += ($data['quantity'] * $data['subunit_content']);
                     }
                 }
 
@@ -1128,12 +1132,12 @@
             </div> 
         <?php } ?>
         <?php
-        $access_error = "";
+        $view_access_error = "";
         if(!empty($login_staff_id)) {
             $permission_action = $view_action;
             include('permission_action.php');
         }
-        if(empty($access_error)) { 
+        if(empty($view_access_error)) { 
          ?>
 
             <table class="table nowrap cursor text-center smallfnt">
@@ -1142,6 +1146,7 @@
                         <th>S.No</th>
                         <th>Entry Date</th>
                         <th>Stock Adjustment Number</th>
+                        <th>Remarks</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -1182,19 +1187,15 @@
                                         <?php	
                                     }	 ?>                            
                                 </td>
-                                <td>
-                                    <?php 
-                                        $edit_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            $permission_action = $edit_action;
-                                            include('permission_action.php');
-                                        }
-                                        $delete_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            $permission_action = $delete_action;
-                                            include('permission_action.php');
+                               <td>
+                                  <?php
+                                        if(!empty($list['remarks']) && $list['remarks'] != $GLOBALS['null_value']) {
+                                            echo $obj->encode_decode('decrypt',$list['remarks']);
                                         }
                                     ?>
+                               </td>
+                                <td>
+                                      
                                     <div class="dropdown">
                                         <a href="#" role="button" id="dropdownMenuLink1"  class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots-vertical"></i>
@@ -1202,13 +1203,21 @@
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                             <a class="dropdown-item" style="cursor:pointer;"  target="_blank" href="reports/rpt_stock_adjustment_a5.php?view_stock_adjustment_id=<?php if(!empty($list['stock_adjustment_id'])) { echo $list['stock_adjustment_id']; } ?>"><i class="fa fa-print"></i>&ensp;Print</a>
                                             <?php 
-                                                
+                                                $edit_access_error = "";
+                                                if(!empty($login_staff_id)) {
+                                                    $permission_action = $edit_action;
+                                                    include('permission_action.php');
+                                                }
                                                 if(empty($edit_access_error) && empty($list['cancelled'])) {
                                             ?> 
                                                     <a class="dropdown-item"  style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['stock_adjustment_id'])) { echo $list['stock_adjustment_id']; } ?>');"><i class="fa fa-pencil"></i>&ensp; Edit</a>
                                             <?php } ?>
                                             <?php 
-                                                
+                                                $delete_access_error = "";
+                                                if(!empty($login_staff_id)) {
+                                                    $permission_action = $delete_action;
+                                                    include('permission_action.php');
+                                                }
                                                 if(empty($delete_access_error) && empty($list['cancelled'])) { 
                                             ?>                                        
                                                 <a class="dropdown-item" style="cursor:pointer;"  href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['stock_adjustment_id'])) { echo $list['stock_adjustment_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;Delete</a>

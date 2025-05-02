@@ -577,24 +577,72 @@ function ChangeLocation() {
 }
 function FindTotalQty() {
 
-    var quantity = jQuery('input[name="selected_quantity"]').val() || 0;
-    var content = jQuery('input[name="selected_content"]').val() || 1;
+    // var quantity = jQuery('input[name="selected_quantity"]').val() || 0;
+    // var content = jQuery('input[name="selected_content"]').val() || 1;
     var total_quantity = jQuery('input[name="selected_total_qty"]').val() || 0;
     var unit_type = jQuery('select[name="selected_unit_type"]').val();
+    var all_errors_check = 1; var errors_check = 1;
 
-
-
-    if (unit_type == '2') {
-        if (content == "") {
-            content = quantity;
+    if (jQuery('input[name="selected_quantity"]').length > 0) {
+        quantity = jQuery('input[name="selected_quantity"]').val();
+        quantity = jQuery.trim(quantity);
+        if ((typeof quantity == "undefined")) {
+            all_errors_check = 0;
         }
-        total_quantity = Number(quantity);
-    } else {
-        total_quantity = Number(content) * Number(quantity);
+        // else if (price_regex.test(quantity) == false) {
+        //     all_errors_check = 0;
+        // }
+        else if (parseFloat(quantity) > 99999) {
+            all_errors_check = 0;
+        }
+    }
+    // alert(quantity+"/"+all_errors_check)
+
+    if (jQuery('input[name="selected_content"]').length > 0) {
+        content = jQuery('input[name="selected_content"]').val();
+        content = jQuery.trim(content);
+        if ((typeof content == "undefined" || content == "" || content == 0)) {
+            errors_check = 0;
+        }
+        else if (numbers_regex.test(content) == false) {
+            errors_check = 0;
+        }
+        else if (parseFloat(content) > 99999) {
+            errors_check = 0;
+        }
+    }
+    if(all_errors_check == 1){
+
+        if (unit_type == '2') {
+            if (content != "" && errors_check == 1) {
+                content = quantity;
+            }else{
+                  jQuery('input[name="selected_content"]').val('');
+            }
+
+            total_quantity = (quantity);
+            
+        } else {
+            if(all_errors_check == 1 && errors_check == 1){
+
+                total_quantity = (content) * (quantity);
+            }else{
+                jQuery('input[name="selected_quantity"]').val('');
+                jQuery('input[name="selected_total_qty"]').val('');
+                jQuery('input[name="selected_content"]').val('');
+
+            }
+        }
+        
+        jQuery('input[name="selected_quantity"]').val(quantity);
+        jQuery('input[name="selected_total_qty"]').val(total_quantity);
+    }else{
+            
+        jQuery('input[name="selected_quantity"]').val('');
+        jQuery('input[name="selected_total_qty"]').val('');
     }
 
-    jQuery('input[name="selected_quantity"]').val(Number(quantity));
-    jQuery('input[name="selected_total_qty"]').val(Number(total_quantity));
+
 }
 
 function AddProductStock() {
@@ -709,7 +757,7 @@ function AddProductStock() {
                     if (typeof selected_quantity == "undefined" || selected_quantity == "") {
                         all_errors_check = 0;
                     }
-                    else if (numbers_regex.test(selected_quantity) == false) {
+                    else if (price_regex.test(selected_quantity) == false) {
                         all_errors_check = 0;
                     }
                     else if (parseFloat(selected_quantity) > 99999) {

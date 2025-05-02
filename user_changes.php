@@ -148,7 +148,7 @@
                                         if(!empty($role_list)) {
                                             foreach($role_list as $data) {
                                                 if(!empty($data['role_id'])) {
-                                                    if(!empty($data['incharger']) != '1') {
+                                                    // if(!empty($data['incharger']) != '1') {
 
                                         ?>
                                                         <option value="<?php echo $data['role_id']; ?>" <?php if(!empty($role_id) && $data['role_id'] == $role_id) { ?>selected="selected"<?php } ?>>
@@ -160,7 +160,7 @@
                                                             ?>
                                                         </option>
                                         <?php
-                                                    }
+                                                    // }
                                                 }
                                             }
                                         }
@@ -732,15 +732,15 @@
                                         $role_name = $obj->encode_decode('decrypt',$role_name);
                                         $incharger = $obj->getTableColumnValue($GLOBALS['role_table'],'role_id',$data['role_id'],'incharger');
                                     }
-                                    if(!empty($incharger) == 1) {
-                                        if(!empty($data['type'])) {
-                                            echo $data['type'];
-                                        }
-                                    }else{
+                                    // if(!empty($incharger) == 1) {
+                                    //     if(!empty($data['type'])) {
+                                    //         echo $data['type'];
+                                    //     }
+                                    // }else{
                                         if(!empty($role_name)) {
                                             echo $role_name;
                                         }
-                                    }
+                                    // }
                                 ?>
                             </td>
                             <?php if(!empty($data['admin']) || $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>

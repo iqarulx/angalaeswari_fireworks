@@ -502,4 +502,46 @@
         }
     }
 
+    
+    if(isset($_REQUEST['get_agent_id'])){
+        $agent_id = $_REQUEST['get_agent_id'];
+
+        if(!empty($agent_id) && $agent_id != $GLOBALS['null_value']) {
+            $customer_list = $obj->getAgentcustomerList($agent_id);
+            ?>
+            <option value="">Select customer</option>
+            <?php
+            foreach($customer_list as $data)
+            {
+                ?>
+                    <option value="<?php if(!empty($data['customer_id'])){ echo $data['customer_id']; }?>">
+                        <?php
+                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                            }
+                        ?>
+                    </option>
+                <?php
+            }
+        } else {
+            $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+            ?>
+            <option value="">Select customer</option>
+            <?php
+            foreach($customer_list as $data)
+            {
+                ?>
+                    <option value="<?php if(!empty($data['customer_id'])){ echo $data['customer_id']; }?>">
+                        <?php
+                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                            }
+                        ?>
+                    </option>
+                <?php
+            }
+        }
+    }
+
+
 ?>

@@ -176,7 +176,12 @@
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
                                                                 <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> <?php 
                                                             }
-                                                            if($filter_bill_type == "2"){ ?>
+                                                            else if($filter_bill_type == "2"){ ?>
+                                                                <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
+                                                            }else{ ?>
+                                                                <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
+                                                                <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
+                                                                <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> 
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
                                                             } ?>
                                                         </select>

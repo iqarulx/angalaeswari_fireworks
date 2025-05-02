@@ -156,11 +156,11 @@ if(!empty($company_details)) {
     for($i=0; $i<count($company_details); $i++) {
         if($i==0) {
             $pdf->SetFont("Arial", "B", 10);
-            $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+            $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
         } 
         else {
             $pdf->SetFont("Arial", "", 8);
-            $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+            $pdf->cell(0, 4,html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
         }
     }
 }
@@ -175,7 +175,7 @@ $bill_to_y = $pdf->GetY();
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->SetX(10);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-$pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+$pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(12);
@@ -271,7 +271,7 @@ $footer_height = 0;
 $footer_height += 25;
 $total_pages = array(1);
 $page_number = 1;
-$last_count = 0;
+$last_count = 0;$total_unit = 0; $total_subunit = 0;
 
 if (!empty($view_daily_production_id) && !empty($product_ids)) {
     for ($p = 0; $p < count($product_ids); $p++) {
@@ -313,11 +313,11 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
                 for($i=0; $i<count($company_details); $i++) {
                     if($i==0) {
                         $pdf->SetFont("Arial", "B", 10);
-                        $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+                        $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
                     } 
                     else {
                         $pdf->SetFont("Arial", "", 8);
-                        $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+                        $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
                     }
                 }
             }
@@ -332,7 +332,7 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetX(10);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-            $pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+            $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->SetX(12);
@@ -415,6 +415,25 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
             $pdf->SetFont('Arial', '', 8);
 
             $y_axis = $pdf->GetY();
+        }
+
+        $product_unit_id = "";
+        $product_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$p], 'unit_id');
+        $product_subunit_id = "";
+        $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$p], 'subunit_id');
+        $unit_type = ""; $product_qty = 0;
+        if($unit_ids[$p] == $product_unit_id) {
+            $unit_type = 1; 
+        }  else if ($unit_ids[$p] == $product_subunit_id) {
+            $unit_type = 2;
+        } else {
+            $unit_type = ""; 
+        }
+        if($unit_type == 1) {
+            $total_unit += $quantity_values[$p];
+        }
+        else if($unit_type == 2) {
+            $total_subunit += $quantity_values[$p];
         }
         $quantity_values[$p] = trim($quantity_values[$p]);
         $product_names[$p] = trim($product_names[$p]);
@@ -500,11 +519,11 @@ if (($footer_height + $end_y) > 190) {
         for($i=0; $i<count($company_details); $i++) {
             if($i==0) {
                 $pdf->SetFont("Arial", "B", 10);
-                $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+                $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
             } 
             else {
                 $pdf->SetFont("Arial", "", 8);
-                $pdf->cell(0, 4, $company_details[$i], 0, 1, 'C', 0);
+                $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
             }
         }
     }
@@ -519,7 +538,7 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(10);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-    $pdf->Cell(74, 4, 'From', 0, 1, 'L', 0);
+    $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetX(12);
@@ -625,19 +644,39 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetY($y_axis);
     $pdf->SetX(10);
 
-    $pdf->Cell(10, 105 + $height, '', 1, 0);
-    $pdf->Cell(48, 105 + $height, '', 1, 0);
-    $pdf->Cell(30, 105 + $height, '', 1, 0);
-    $pdf->Cell(20, 105 + $height, '', 1, 0);
-    $pdf->Cell(20, 105 + $height, '', 1, 1);
+    $pdf->Cell(10, 100 + $height, '', 1, 0);
+    $pdf->Cell(48, 100 + $height, '', 1, 0);
+    $pdf->Cell(30, 100 + $height, '', 1, 0);
+    $pdf->Cell(20, 100 + $height, '', 1, 0);
+    $pdf->Cell(20, 100 + $height, '', 1, 1);
 
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetX(10);
+    $get_final_Y = $pdf->GetY();
 
-    $pdf->Cell(108, 5, 'Total', 1, 0, 'R', 0);
-    $pdf->Cell(20, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
+    $pdf->Cell(88, 5, 'Total', 1, 0, 'R', 0);
+    // $pdf->Cell(20, 5, $obj->numberFormat($total_quantity,2), 1, 0, 'R', 0);
 
+    $pdf->SetFont('Arial','',8);
+    $pdf->SetX(98);
 
+    if(!empty($total_unit) && !empty($total_subunit)) {
+        $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit  & ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'R',0);
+    }
+    else if(empty($total_unit) && !empty($total_subunit)) {
+        $pdf->MultiCell(40,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'R',0);
+    }
+    else if(!empty($total_unit) && empty($total_subunit)) {
+        $pdf->MultiCell(40,5,$obj->numberFormat($total_unit,2)." Unit ",0,'R',0);
+    }
+    else {
+        $pdf->MultiCell(40,5,"-",0,'C',0);
+    }
+        
+    $get_total_y = $pdf->GetY();
+
+    $pdf->SetX(98);
+    $pdf->Cell(40,$get_final_Y - $get_total_y,'',1,0,'C',0);
 
     $line_y = $pdf->GetY();
 
@@ -652,7 +691,7 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetY($line_y+5);
     $pdf->SetX(95);
-    $pdf->Cell(50, 5,$company_name, 0, 1, 'L', 0);
+    $pdf->Cell(50, 5,html_entity_decode($company_name), 0, 1, 'L', 0);
     $pdf->SetFont('Arial', '', 9);
     $pdf->SetY($line_y + 15);
     $pdf->SetX(95);

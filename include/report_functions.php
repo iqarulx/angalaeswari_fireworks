@@ -142,7 +142,7 @@
 					$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_type = 'Expense' AND deleted = '0' ORDER BY bill_date ASC"; 	
 				}
 				else {
-					$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_number != '".$GLOBALS['null_value']."' AND deleted = '0' ORDER BY bill_date ASC";
+					$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_number != '".$GLOBALS['null_value']."' AND bill_type IN ('voucher', 'expense', 'receipt')  AND deleted = '0' ORDER BY bill_date ASC";
 				}
                  
 			
@@ -226,7 +226,7 @@
 				}
 			}
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['stock_table']." WHERE ".$where." AND deleted = '0' ORDER BY id ASC";	
+				 $select_query = "SELECT * FROM ".$GLOBALS['stock_table']." WHERE ".$where." AND deleted = '0' ORDER BY id ASC";	
 			}
 			else{
 				$select_query = "SELECT * FROM ".$GLOBALS['stock_table']." WHERE deleted = '0' ORDER BY id ASC";
@@ -244,9 +244,18 @@
 			}
 			return $list;
 		}
-		public function getConsumptionQtyList() {
-			$select_query = ""; $list = array();
-			$select_query = "SELECT DISTINCT(product_id) as product_id FROM ".$GLOBALS['stock_table']." WHERE stock_type = 'Consumption Entry' AND deleted = '0'";
+		public function getConsumptionQtyList($contractor_id) {
+			$select_query = ""; $list = array(); $where = "";
+
+			if(!empty($contractor_id)) {
+				if(!empty($where)) {
+					$where = $where." party_id = '".$contractor_id."' AND ";
+				}
+				else {
+					$where = "party_id = '".$contractor_id."' AND ";
+				}
+			}
+			 $select_query = "SELECT DISTINCT(product_id) as product_id,party_id FROM ".$GLOBALS['stock_table']." WHERE ".$where."  stock_type = 'Consumption Entry' AND deleted = '0'";
 			$list = $this->getQueryRecords('', $select_query);
 			return $list;
 		}
