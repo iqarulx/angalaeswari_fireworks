@@ -50,7 +50,14 @@
             }
         }
         $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], "", "", "");
-        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], "", "", "");
+        
+        if(!empty($login_godown_id)){
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+
+        }else{
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], "", "", "");
+        }
+
         $product_list = $obj->getProductWithGroup('semi finished', 'finished', '');
         ?>
         <form class="poppins pd-20" name="consumption_form" method="POST">
@@ -603,22 +610,47 @@
                 $current_stock_subunit = $inward_subunit - $outward_subunit;
 
                 // echo $current_stock_unit." / ".$data['quantity'];
-                if($data['quantity'] > $current_stock_unit) {
+                if($current_stock_unit < 0) {
                     $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
-                    if(!empty($product))
-                    {
+                    if(!empty($product)) {
                         $product = $obj->encode_decode("decrypt",$product);
                     }
                     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need'); 
                     $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
-                    if($negative_stock !='1')
-                    {
-                        if($subunit_need == 1){
-                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit." ,  Subunit => ".$available_stock_subunit ;
-                        }else{
-                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit;
+                    
+                    $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'unit_id');
+                    $unit_name = "";
+                    
+                    if(!empty($unit_id)) {
+                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $unit_id, 'unit_name');
+                        if(!empty($unit_name)) {
+                            $unit_name = $obj->encode_decode("decrypt", $unit_name);
                         }   
-                        
+                    }
+
+                    $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'subunit_id');
+                    $sub_unit_name = "";
+                    
+                    if(!empty($sub_unit_id)) {
+                        $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $sub_unit_id, 'unit_name');
+                        if(!empty($sub_unit_name)) {
+                            $sub_unit_name = $obj->encode_decode("decrypt", $sub_unit_name);
+                        }   
+                    }
+
+                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'product_name');
+                    if(!empty($product_name)) {
+                        $product_name = $obj->encode_decode("decrypt", $product_name);
+                    }
+
+                    if($negative_stock !='1') {
+                        if($subunit_need == 1) {
+                            $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . " & " . (!empty($data['consumption_content']) ? ($data['consumption_content'] . " " . $sub_unit_name ) : "") . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name . " & " . $available_stock_subunit . " " . $sub_unit_name;
+                            $stock_error = 1;
+                        } else {
+                            $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name;
+                            $stock_error = 1;
+                        }
                     }
                 }
             }
@@ -1082,9 +1114,30 @@
         $unit_id = "";
         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_id');
 
+        $unit_name = "";
+        if(!empty($unit_id)) {
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+            if(!empty($unit_name) && $unit_name != $GLOBALS['null_value']) {
+                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+            }
+            else {
+                $unit_name = "";
+            }
+        }
+
         $subunit_id = "";
         $subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
 
+        $sub_unit_name = "";
+        if(!empty($subunit_id)) {
+            $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
+            if(!empty($sub_unit_name) && $sub_unit_name != $GLOBALS['null_value']) {
+                $sub_unit_name = $obj->encode_decode('decrypt', $sub_unit_name);
+            }
+            else {
+                $sub_unit_name = "";
+            }
+        }
 
         $current_stock_unit = 0;
         $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $godown_id, '',$product_id,'');
@@ -1113,10 +1166,8 @@
             ?>
                 <option value="<?php echo $unit_id; ?>" selected>
                     <?php
-                        $unit_name = "";
-                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
                         if(!empty($unit_name) && $unit_name != $GLOBALS['null_value']) {
-                            echo $obj->encode_decode('decrypt', $unit_name);
+                            echo $unit_name;
                         }
                     ?>
                 </option>
@@ -1126,10 +1177,8 @@
             ?>
                 <option value="<?php echo $subunit_id; ?>">
                     <?php
-                        $subunit_name = "";
-                        $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
-                        if(!empty($subunit_name) && $subunit_name != $GLOBALS['null_value']) {
-                            echo $obj->encode_decode('decrypt', $subunit_name);
+                        if(!empty($sub_unit_name) && $sub_unit_name != $GLOBALS['null_value']) {
+                            echo $sub_unit_name;
                         }
                     ?>
                 </option>
@@ -1140,10 +1189,10 @@
         <?php if(empty($subunit_need)){ ?>
             <span class="w-100 text-center" style="font-weight:bold!important;">
                 <?php if(!empty($unit_id) && !empty($product_id)) { ?>
-                Current Stock By Unit (<?php echo number_format($current_stock_unit, 2); ?>)<br>
+                Current Stock By Unit<br>(<?php echo number_format($current_stock_unit, 2); if(!empty($unit_name)) { echo " " . $unit_name; } ?>)<br>
                 <?php } ?>
                 <?php if($subunit_id != $GLOBALS['null_value'] && !empty($product_id)) { ?>
-                Current Stock By Subunit (<?php echo number_format($current_stock_subunit, 2); ?>)
+                Current Stock By Subunit (<?php echo number_format($current_stock_subunit, 2); if(!empty($sub_unit_name)) { echo " " . $sub_unit_name; } ?>)
                 <?php } ?>
             </span>
         <?php } ?>
@@ -1276,12 +1325,11 @@
         $contains = $_REQUEST['selected_content'];
         $godown_id = $_REQUEST['godown_id'];
 
-
         $current_stock_unit = 0;
-        $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $godown_id, '',$product_id,'');
+        $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $godown_id, '',$product_id, $contains);
 
         $current_stock_subunit = 0;
-        $current_stock_subunit = $obj->getCurrentStockSubunit($GLOBALS['stock_by_godown_table'], $godown_id, '',$product_id, '');
+        $current_stock_subunit = $obj->getCurrentStockSubunit($GLOBALS['stock_by_godown_table'], $godown_id, '',$product_id, $contains);
         
         $subunit_id = "";
         $subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
@@ -1289,19 +1337,32 @@
         $subunit_need = 0;
         $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
 
+
+        $unit_name = "";
+        if(!empty($unit_id)) {
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+        }
+
+        $sub_unit_name = "";
+        if(!empty($subunit_need) && !empty($subunit_id)) {
+            if(!empty($unit_id)) {
+                $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
+            }
+        }
+
          if(!empty($subunit_need)){ ?>
             <span class="w-100 text-center" style="font-weight:bold!important;">
                 <?php if(!empty($unit_id) && !empty($product_id)) { ?>
-                Current Stock By Unit (<?php echo number_format($current_stock_unit, 2); ?>)<br>
+                Current Stock By Unit<br>(<?php echo number_format($current_stock_unit, 2); if(!empty($unit_name)) { echo " " . $obj->encode_decode('decrypt', $unit_name); } ?>)<br>
                 <?php } ?>
                 <?php if($subunit_id != $GLOBALS['null_value'] && !empty($product_id)) { ?>
-                Current Stock By Subunit (<?php echo number_format($current_stock_subunit, 2); ?>)
+                Current Stock By Subunit<br>(<?php echo number_format($current_stock_subunit, 2); if(!empty($sub_unit_name)) { echo " " . $obj->encode_decode('decrypt', $sub_unit_name); } ?>) 
                 <?php } ?>
             </span>
         <?php } else{ ?>
             <span class="w-100 text-center" style="font-weight:bold!important;">
                 <?php if(!empty($unit_id) && !empty($product_id)) { ?>
-                Current Stock By Unit (<?php echo number_format($current_stock_unit, 2); ?>)<br>
+                Current Stock By Unit<br>(<?php echo number_format($current_stock_unit, 2); if(!empty($unit_name)) { echo " " . $obj->encode_decode('decrypt', $unit_name); } ?>)<br>
                 <?php } ?>
             </span>
             <?php

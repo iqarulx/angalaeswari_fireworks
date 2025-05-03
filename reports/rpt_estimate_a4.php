@@ -404,7 +404,11 @@ if(isset($_REQUEST['estimate_id'])) {
             $subunit_qty = $quantity[$i];
             $pdf->Cell(18,8,'-',1,0,'C',0);
         }
-        $pdf->Cell(25-$less_for_tax,8,$subunit_qty.' ' . (isset($subunit_needs[$i]) && $subunit_needs == '1' ? $subunit_name : $unit_name),1,0,'C',0);
+        if(!empty($subunit_needs[$i]) && $subunit_needs[$i] =='1'){
+            $pdf->Cell(25-$less_for_tax,8,$subunit_qty.' ' . $subunit_name,1,0,'C',0);
+        }else{
+            $pdf->Cell(25-$less_for_tax,8,$subunit_qty.' ' . $unit_name,1,0,'C',0);
+        }
         if($gst_option == '1' && $tax_type == '1') {
             $pdf->Cell(9,8,$product_tax[$i],1,0,'C',0);
         }

@@ -13,7 +13,7 @@
             if(!empty($role_list)) {
                 foreach($role_list as $data) {
                     if(!empty($data['role_name']) && $data['role_name'] != $GLOBALS['null_value']) {
-                        $role_name = $obj->encode_decode('decrypt',$data['role_name']);
+                         $role_name = $obj->encode_decode('decrypt',$data['role_name']);
                     }
                     if(!empty($data['access_pages']) && $data['access_pages'] != $GLOBALS['null_value']) {
 						$access_pages = explode(",", $data['access_pages']);
@@ -27,8 +27,19 @@
                 }
             }
         }
-        
-        $access_pages_list = $GLOBALS['access_pages_list'];     
+        if($incharger == 1){
+            if($role_name == "Factory Incharger"){
+                $access_pages_list = $GLOBALS['factory_access_pages_list'];     
+            }else if($role_name == "Godown Incharger"){
+                $access_pages_list = $GLOBALS['godown_access_pages_list'];     
+            }else if($role_name == "Magazine Incharger"){
+                $access_pages_list = $GLOBALS['magazine_access_pages_list'];     
+            }else{
+                $access_pages_list = $GLOBALS['access_pages_list'];     
+            }
+        }else{
+            $access_pages_list = $GLOBALS['access_pages_list'];     
+        }
 ?>
         <form class="poppins pd-20 redirection_form" name="role_form" method="POST">
 			<div class="card-header">
@@ -104,10 +115,10 @@
                                                             $delete_checkbox_value = 1;
                                                             $module_selected++;
                                                         }
-                                                        if(in_array($convert_action, $module_action)) {
-                                                            $convert_checkbox_value = 1;
-                                                            $module_selected++;
-                                                        }
+                                                        // if(in_array($convert_action, $module_action)) {
+                                                        //     $convert_checkbox_value = 1;
+                                                        //     $module_selected++;
+                                                        // }
                                                         if($module_selected == 4) {
                                                             $select_all_checkbox_value = 1;
                                                         }

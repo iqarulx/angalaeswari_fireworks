@@ -1,5 +1,5 @@
 <?php
-	include("include_files.php");
+	include("include.php");
 	if(isset($_REQUEST['show_suspense_receipt_id'])) { ?>
         <form class="poppins pd-20" name="company_form" method="POST">
 			<div class="card-header">

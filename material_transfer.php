@@ -19,9 +19,17 @@
         <?php 
         include "link_style_script.php"; 
         $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
-        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
-        
+    
+        if(!empty($login_godown_id)) {
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+        }else{
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+        }
+        if(!empty($login_magazine_id)) {
+            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
+        }else{
+            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+        }
         ?>
     </head>	
 <body>

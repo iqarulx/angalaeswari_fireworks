@@ -1,6 +1,8 @@
 <?php 
 	$page_title = "Current Stock Report";
 	include("include_user_check.php");
+    include("include_incharger_access.php");
+
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
@@ -11,6 +13,21 @@
         }
     }
     $product_id = ""; $group_id = ""; $magazine_id = ""; $unit_type = ""; $stock_type = ""; $case_contains = "";
+    
+    if(!empty($login_user_factory_id)) {
+        $magazine_list = array();
+        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'factory_id', $login_user_factory_id, '');
+
+        if(!empty($magazine_list)) {
+            foreach($magazine_list as $magazine) {
+                $magazine_id = $magazine['magazine_id'];
+                break;
+            }
+        }
+    } else if(!empty($login_user_magazine_id)) {
+        $magazine_id = $login_user_magazine_id;
+    }
+
     if(isset($_POST['filter_group_id'])) {
         $group_id = $_POST['filter_group_id'];
     }
@@ -44,8 +61,15 @@
         $product_list = $obj->getProducts('2');
     }
 
-    $magazine_list = array();
-    $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+    if(empty($login_user_factory_id) && empty($login_user_magazine_id) && empty($login_user_magazine_id)) {
+        $magazine_list = array();
+        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+    } else {
+        if(!empty($login_user_factory_id)) {
+            $magazine_list = array();
+            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'factory_id', $login_user_factory_id, '');
+        }
+    }
 
     $product_subunit_id = ""; $subunit_hide = 1;
     if(!empty($product_id)) {
@@ -237,8 +261,12 @@
                                                                 }
                                                                 $current_stock_unit = 0; $current_stock_subunit = 0;
                                                                 $current_stock_unit = $inward_unit - $outward_unit;
+                                                                $current_stock_unit_int = $inward_unit - $outward_unit;
                                                                 $current_stock_unit = number_format($current_stock_unit, 2);
                                                                 $current_stock_unit = str_replace(",", "", $current_stock_unit);
+
+                                                                if(!empty($current_stock_unit_int) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                                                                    
 
                                                     ?>
                                                                 <tr>
@@ -260,7 +288,8 @@
                                                                     </th>
                                                                 </tr>
                                                     <?php 
-                                                            } 
+                                                                }
+                                                            }
                                                             ?>
                                                             <tr>
                                                                 <th colspan="2" class="text-end">Total</th>

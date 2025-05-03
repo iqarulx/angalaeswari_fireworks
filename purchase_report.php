@@ -147,10 +147,11 @@ $from_date = ""; $to_date = "";
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php $total_amount = 0;$grand_amount =0;
+                                                <?php $grand_amount =0;
                                                 if(!empty($total_records_list)) {
                                                     foreach($total_records_list as $key => $list) { 
                                                         $index = $key + 1; 
+                                                        $total_amount = 0;
                                                         $total_amount += (float) $list['total_amount'];?>
                                                         <tr>
                                                             <td>
@@ -169,7 +170,7 @@ $from_date = ""; $to_date = "";
                                                             </td>
                                                             <td>
                                                                 <?php if(!empty($list['purchase_entry_date'])) {
-                                                                    echo $list['purchase_entry_date'];
+                                                                    echo date('d-m-Y', strtotime($list['purchase_entry_date']));
                                                                 } ?>
                                                             </td>
                                                             <td>

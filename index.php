@@ -178,7 +178,23 @@
 							$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_name_mobile'] =  $obj->encode_decode('decrypt', $data['name_mobile']);
 							$_SESSION[$GLOBALS['site_name_user_prefix'].'_login_id'] = $obj->encode_decode('decrypt', $data['login_id']);
                             $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type'] = $data['type'];
-						}
+                            
+                            if(!empty($data['type']) && $data['type'] != "NULL") {
+                                if($data['type'] == "Factory Incharge") {
+                                    if(!empty($data['factory_id']) && $data['factory_id'] != "NULL") {
+                                        $_SESSION[$GLOBALS['site_name_user_prefix'].'_factory_id'] = $data['factory_id'];
+                                    }
+                                } else if ($data['type'] == "Godown Incharge") {
+                                    if(!empty($data['godown_id']) && $data['godown_id'] != "NULL") {
+                                        $_SESSION[$GLOBALS['site_name_user_prefix'].'_godown_id'] = $data['godown_id'];
+                                    }
+                                } else if ($data['type'] == "Magazine Incharge") {
+                                    if(!empty($data['magazine_id']) && $data['magazine_id'] != "NULL") {
+                                        $_SESSION[$GLOBALS['site_name_user_prefix'].'_magazine_id'] = $data['magazine_id'];
+                                    }
+                                }
+                            }
+                        }
 					}
 					
 					if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {

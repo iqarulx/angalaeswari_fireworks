@@ -68,20 +68,19 @@ if(isset($_REQUEST['get_limit_product'])) {
     $product_id = trim($product_id);
     $magazine_id = trim($magazine_id);
     $product_group = trim($product_group);
-
     
-    if($product_group == '1'){
+    if($product_group == 1){
         if($unit_type == '2') {
             $limit = $obj->getCurrentStockSubUnit($GLOBALS['stock_by_godown_table'], $godown_id, $GLOBALS['null_value'], $product_id, $case_contains);
         } 
-        elseif($unit_type == '1') {
+        else if($unit_type == '1') {
             $limit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $godown_id, $GLOBALS['null_value'], $product_id, $case_contains);
         }
     }else if($product_group == 2){
         if($unit_type == '2') {
             $limit = $obj->getCurrentStockSubUnit($GLOBALS['stock_by_magazine_table'], $GLOBALS['null_value'], $magazine_id, $product_id, $case_contains);
         } 
-        elseif($unit_type == '1') {
+        else if($unit_type == '1') {
             $limit = $obj->getCurrentStockUnit($GLOBALS['stock_by_magazine_table'], $GLOBALS['null_value'], $magazine_id, $product_id, $case_contains);
         }
     }

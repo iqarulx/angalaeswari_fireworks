@@ -1,9 +1,12 @@
 <?php
 	include("include.php");
+    include("include_incharger_access.php");
 
     if(isset($_REQUEST['get_location_change'])) {
         $location = $_REQUEST['get_location_change'];
+        $from_options = "";
         $options = "";
+
         if($location == '1') {
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
             if(!empty($godown_list)) {
@@ -22,7 +25,61 @@
             $option = "<option value=''>Select</option>";
         }
 
-        echo $options;
+        if(!empty($login_user_factory_id)) {
+            if($location == 1) {
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'factory_id', $login_user_factory_id, '');
+                if(!empty($godown_list)) {
+                    foreach($godown_list as $godown) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $godown['godown_id'] ."'>". $obj->encode_decode('decrypt', $godown['godown_name']) ."</option>";
+                    }
+                }
+            } else if($location == 2) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'factory_id', $login_user_factory_id, '');
+                if(!empty($magazine_list)) {
+                    foreach($magazine_list as $magazine) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $magazine['magazine_id'] ."'>". $obj->encode_decode('decrypt', $magazine['magazine_name']) ."</option>";
+                    }
+                }
+            } 
+        } else if(!empty($login_godown_id)) {
+            if($location == 1) {
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+                if(!empty($godown_list)) {
+                    foreach($godown_list as $godown) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $godown['godown_id'] ."'>". $obj->encode_decode('decrypt', $godown['godown_name']) ."</option>";
+                    }
+                }
+            } else if($location == 2) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+                if(!empty($magazine_list)) {
+                    foreach($magazine_list as $magazine) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $magazine['magazine_id'] ."'>". $obj->encode_decode('decrypt', $magazine['magazine_name']) ."</option>";
+                    }
+                }
+            }
+        } else if(!empty($login_magazine_id)) {
+            if($location == 1) {
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+                if(!empty($godown_list)) {
+                    foreach($godown_list as $godown) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $godown['godown_id'] ."'>". $obj->encode_decode('decrypt', $godown['godown_name']) ."</option>";
+                    }
+                }
+            } else if($location == 2) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
+                if(!empty($magazine_list)) {
+                    foreach($magazine_list as $magazine) {
+                        $from_options = $from_options . "<option class='location_from_to' value='". $magazine['magazine_id'] ."'>". $obj->encode_decode('decrypt', $magazine['magazine_name']) ."</option>";
+                    }
+                }
+            }
+        } 
+
+        if(!empty($from_options)) {
+            echo $options . "$$$" . $from_options;
+        } else {
+            echo $options;
+        }
     }
 
     if(isset($_REQUEST['get_product_from_location'])) {

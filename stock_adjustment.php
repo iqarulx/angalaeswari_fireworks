@@ -14,29 +14,6 @@
     
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');
 
-    // $factory_list = array();
-    // if(!empty($login_factory_id)) {
-    //     $factory_list = $obj->getTableRecords($GLOBALS['factory_table'], 'factory_id', $login_factory_id, '');
-    // }
-    // else {
-    //     $factory_list = $obj->getTableRecords($GLOBALS['factory_table'], '', '', '');
-    // }
-
-    $godown_list = array();
-    // if(!empty($login_godown_id)) {
-    //     $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
-    // }
-    // else {
-        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-    // }
-
-    $magazine_list = array();
-    // if(!empty($login_magazine_id)) {
-    //     $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
-    // }
-    // else {
-        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
-    // }
     $cancelled_bill = ""; $cancelled_count = 0;
     $cancelled_bill = $obj->getAllRecords($GLOBALS['stock_adjustment_table'], 'cancelled', 1);
     $cancelled_count = count($cancelled_bill);

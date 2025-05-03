@@ -711,7 +711,6 @@ function getAgentCustomerList(agent_id) {
 
 }
 
-/* Muniaraj */
 function getPartyName(type) {
 	var post_url = "action_changes.php?view_type=" + type;
 	jQuery.ajax({

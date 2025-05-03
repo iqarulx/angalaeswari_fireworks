@@ -476,11 +476,11 @@
 			$list = $create_obj->getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn);
 			return $list;
 		}
-		public function getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id,$cancel_bill_btn) {
+		public function getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer, $agent_id, $transport_id,$cancel_bill_btn);
+			$list = $create_obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn);
 			return $list;
 		}
 
@@ -756,11 +756,11 @@
 			$list = $reportobj->getPartyList($type);
 			return $list;
 		}
-		public function balance_report($type,$party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date){
+		public function balance_report($type, $party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date){
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$result = "";
-			$result = $report_obj->balance_report($type,$party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date);
+			$result = $report_obj->balance_report($type, $party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date);
 			return $result;
 		}
 		public function getSelectedAgentCustomerList($filter_party_id){
@@ -768,6 +768,13 @@
 			$report_obj = $this->report_function_object();
 			$result = "";
 			$result = $report_obj->getSelectedAgentCustomerList($filter_party_id);
+			return $result;
+		}
+		public function getProductStockTransactionExist($product_id){
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$result = "";
+			$result = $report_obj->getProductStockTransactionExist($product_id);
 			return $result;
 		}
 		
@@ -797,11 +804,11 @@
 			return $result;
 		}
 		
-		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains) {
+		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id,$case_contains) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains);
+			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id,$case_contains);
 			return $list;
 		}
 
@@ -856,6 +863,13 @@
 			$stock_obj = $this->stock_function_object();
 			$list = array();
 			$list = $stock_obj->getCurrentStockDetails($product_id, $case_contains);
+			return $list;
+		}
+		public function getStatusInfo($proforma_invoice_id){
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$list = array();
+			$list = $stock_obj->getStatusInfo($proforma_invoice_id);
 			return $list;
 		}
 		public function linkedContractor($contractor_id){

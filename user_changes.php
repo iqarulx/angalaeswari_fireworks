@@ -732,15 +732,11 @@
                                         $role_name = $obj->encode_decode('decrypt',$role_name);
                                         $incharger = $obj->getTableColumnValue($GLOBALS['role_table'],'role_id',$data['role_id'],'incharger');
                                     }
-                                    // if(!empty($incharger) == 1) {
-                                    //     if(!empty($data['type'])) {
-                                    //         echo $data['type'];
-                                    //     }
-                                    // }else{
-                                        if(!empty($role_name)) {
-                                            echo $role_name;
-                                        }
-                                    // }
+                                    if(empty($role_name) || $role_name == $GLOBALS['null_value']){
+                                        echo "Super Admin";
+                                    }else{
+                                        echo $role_name;
+                                    }
                                 ?>
                             </td>
                             <?php if(!empty($data['admin']) || $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
@@ -761,7 +757,8 @@
                                     </div> 
                                 </td>
                                 <?php } ?>
-                         <?php 
+                        </tr>
+                        <?php 
                     } 
                 }  
                 else {   ?>

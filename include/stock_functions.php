@@ -407,6 +407,7 @@ class Stock_functions extends Basic_Functions
             $select_query = "SELECT SUM(inward_unit) as inward_unit FROM " . $GLOBALS['stock_table'] . " WHERE  deleted = '0'";
             $list = $this->getQueryRecords('', $select_query);
         }
+
         if (!empty($list)) {
             foreach ($list as $data) {
                 if (!empty($data['inward_unit']) && $data['inward_unit'] != $GLOBALS['null_value']) {
@@ -1219,7 +1220,7 @@ class Stock_functions extends Basic_Functions
                     // }
                     $current_stock_unit = 0; $current_stock_subunit = 0; $stock_table_unique_id = ""; $stock_unique_table = "";
 
-                    if(!empty($godown_id) && $godown_id != $GLOBALS['null_value']) {
+                    if(!empty($stock_godown_id) && $stock_godown_id != $GLOBALS['null_value']) {
                         $stock_unique_table = $GLOBALS['stock_by_godown_table'];
                         $current_stock_unit = $this->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $stock_godown_id, '', $stock_product_id,$stock_case_contains);
                         $current_stock_subunit = $this->getCurrentStockSubunit($GLOBALS['stock_by_godown_table'], $stock_godown_id, '', $stock_product_id,$stock_case_contains);
@@ -1308,6 +1309,183 @@ class Stock_functions extends Basic_Functions
             $list = $this->getQueryRecords($GLOBALS['stock_by_magazine_table'], $select_query);
         }
         return $list;
+    }
+
+		
+    public function getStatusInfo($proforma_invoice_id) {
+        $query = "";
+        $query = "SELECT * FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
+
+        $profroma_list = array();
+        $profroma_list = $this->getQueryRecords($GLOBALS['proforma_invoice_table'], $query);
+
+        if(!empty($profroma_list)) {
+            $product_ids = array();
+            $sub_unit_needs = array();
+            $quantitys = array();
+            $unit_types = array();
+            $unit_ids = array();
+            $contents = array();
+
+            foreach($profroma_list as $data) {
+                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                    $product_ids = explode(',', $data['product_id']);
+                }
+                if(!empty($data['sub_unit_need']) && $data['sub_unit_need'] != $GLOBALS['null_value']) {
+                    $sub_unit_needs = explode(',', $data['sub_unit_need']);
+                }
+                if(!empty($data['content']) && $data['content'] != $GLOBALS['null_value']) {
+                    $contents = explode(',', $data['content']);
+                }
+                if(!empty($data['quantity']) && $data['quantity'] != $GLOBALS['null_value']) {
+                    $quantitys = explode(',', $data['quantity']);
+                }
+                if(!empty($data['unit_type']) && $data['unit_type'] != $GLOBALS['null_value']) {
+                    $unit_types = explode(',', $data['unit_type']);
+                }
+                if(!empty($data['unit_id']) && $data['unit_id'] != $GLOBALS['null_value']) {
+                    $unit_ids = explode(',', $data['unit_id']);
+                }
+            }
+
+            if(!empty($product_ids)) {
+                $total_unit = 0;
+                $total_subunit = 0;
+                $total_stock_unit = 0;
+                $total_stock_sub_unit = 0;
+
+                $stock_unit_arrays = array();
+                $stock_sub_unit_arrays = array();
+
+                for($i = 0; $i < count($product_ids); $i++) {
+                    $current_stock = array();
+                    $current_stock_unit = 0;
+                    $current_stock_sub_unit = 0;
+                    if(!empty($sub_unit_needs[$i])) {
+                        $current_stock = $this->getCurrentStockDetails($product_ids[$i], $contents[$i]);
+                    } else {
+                        $current_stock = $this->getCurrentStockDetails($product_ids[$i], '');
+                    }
+
+                    if(!empty($current_stock)) {
+                        foreach($current_stock as $data) {
+                            if(!empty($data['current_stock_unit']) && $data['current_stock_unit'] != $GLOBALS['null_value']) {
+                                $current_stock_unit += $data['current_stock_unit'];
+                            }
+                            if(!empty($data['current_stock_subunit']) && $data['current_stock_subunit'] != $GLOBALS['null_value']) {
+                                $current_stock_sub_unit += $data['current_stock_subunit'];
+                            }
+                            if(!empty($data['unit_id']) && $data['unit_id'] != $GLOBALS['null_value']) {
+                                $stock_unit_arrays[] = $data['unit_id'];
+                            }
+                            if(!empty($data['subunit_id']) && $data['subunit_id'] != $GLOBALS['null_value']) {
+                                $stock_sub_unit_arrays[] = $data['subunit_id'];
+                            }
+                        }
+                    }
+                  
+                    if(!empty($unit_types[$i]) && $unit_types[$i] == "1") {
+                        $total_unit += $quantitys[$i];
+                    } else {
+                        $total_subunit += $quantitys[$i];
+                    }
+
+                    $total_stock_unit += $current_stock_unit;
+                    $total_stock_sub_unit += $current_stock_sub_unit;
+                }
+
+                $status_text = "";
+
+                /** Find out only one unit exists */
+                $unit_name = "";
+                $unit_type_count = array_count_values($unit_types)['1'] ?? 0;
+                if ($unit_type_count === 1) {
+                    $unit_index = array_search("1", $unit_types);
+                
+                    if ($unit_index !== false && !empty($unit_ids[$unit_index])) {
+                        $unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$unit_index], 'unit_name');
+                        if (!empty($unit_name)) {
+                            $unit_name = $this->encode_decode('decrypt', $unit_name);
+                        }
+                    }
+                }
+
+                /** Find out only one sub unit exists */
+                $sub_unit_name = "";
+                $subunit_type_count = array_count_values($unit_types)['2'] ?? 0;
+
+                if ($subunit_type_count === 1) {
+                    $subunit_index = array_search("2", $unit_types);
+                
+                    if ($subunit_index !== false && !empty($unit_ids[$subunit_index])) {
+                        $sub_unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$subunit_index], 'unit_name');
+                        if (!empty($sub_unit_name)) {
+                            $sub_unit_name = $this->encode_decode('decrypt', $sub_unit_name);
+                        }
+                    }
+                }
+
+                if (!empty($total_unit)) {
+                    $status_text .= "(" . $total_unit;
+                    if(!empty($unit_name)) {
+                        $status_text .= " " . $unit_name;
+                    }
+                }
+                
+                if (!empty($total_subunit)) {
+                    if (!empty($status_text)) {
+                        $status_text .= " + ";
+                    }
+                    $status_text .= $total_subunit;
+
+                    if(!empty($sub_unit_name)) {
+                        $status_text .= " " . $sub_unit_name;
+                    }
+                }
+
+                $status_text .= ")";
+                
+                $status_text .= ' / (' . $total_stock_unit;
+                
+                if(!empty($stock_unit_arrays)) {
+                    $stock_unit_arrays = array_unique($stock_unit_arrays);
+                    $stock_unit_arrays = array_values($stock_unit_arrays);
+
+                    if(count($stock_unit_arrays)) {
+                        $stock_unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $stock_unit_arrays[0], 'unit_name');
+                        if (!empty($stock_unit_name)) {
+                            $stock_unit_name = $this->encode_decode('decrypt', $stock_unit_name);
+                        }
+    
+                        $status_text .= " " . $stock_unit_name;
+                    }
+                }
+
+                if (!empty($total_stock_sub_unit)) {
+                    $status_text .= " + " . $total_stock_sub_unit;
+                }
+
+                if(!empty($stock_sub_unit_arrays)) {
+                    $stock_sub_unit_arrays = array_unique($stock_sub_unit_arrays);
+                    $stock_sub_unit_arrays = array_values($stock_sub_unit_arrays);
+
+                    if(count($stock_sub_unit_arrays) == 1) {
+                        $stock_unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $stock_sub_unit_arrays[0], 'unit_name');
+                        if (!empty($stock_unit_name)) {
+                            $stock_unit_name = $this->encode_decode('decrypt', $stock_unit_name);
+                        }
+    
+                        $status_text .= " " . $stock_unit_name;
+                    }
+                }
+
+                $status_text .= ")";
+
+                return $status_text;
+            }
+        }
+
+        return "";
     }
 
 }

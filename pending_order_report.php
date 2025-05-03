@@ -1,7 +1,10 @@
 <?php 
 	$page_title = "Pending Order Report";
-	include("include_user_check.php");
+
+    require_once "include_user_check.php";
+    
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
+
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {

@@ -47,7 +47,7 @@
                 if($login_user_type == $GLOBALS['admin_user_type']) {
                     $sidebar_admin_user = 1;
                 }
-                else if($login_user_type == $GLOBALS['staff_user_type']) {
+                else if($login_user_type == $GLOBALS['staff_user_type'] || $login_user_type == $GLOBALS['factory_user_type'] || $login_user_type == $GLOBALS['godown_user_type'] || $login_user_type == $GLOBALS['magazine_user_type']) {
                     $staff_id = "";
                     if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
                         $staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];

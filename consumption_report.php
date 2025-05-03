@@ -1,6 +1,8 @@
 <?php 
 	$page_title = "Consumption Report";
 	include("include_user_check.php");
+    include("include_incharger_access.php");
+
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
@@ -11,6 +13,21 @@
         }
     }
     $product_id = ""; $group_id = ""; $godown_id = ""; $unit_type = ""; $stock_type = "Consumption Entry"; $case_contains = "";
+    
+    if(!empty($login_user_factory_id)) {
+        $godown_list = array();
+        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'factory_id', $login_user_factory_id, '');
+
+        if(!empty($godown_list)) {
+            foreach($godown_list as $godown) {
+                $godown_id = $godown['godown_id'];
+                break;
+            }
+        }
+    } else if(!empty($login_user_godown_id)) {
+        $godown_id = $login_user_godown_id;
+    }
+    
     $contractor_id = "";
     if(isset($_POST['filter_group_id'])) {
         $group_id = $_POST['filter_group_id'];
@@ -45,8 +62,15 @@
         $product_list = $obj->getProducts('1');
     }
 
-    $godown_list = array();
-    $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+    if(empty($login_user_factory_id) && empty($login_user_godown_id) && empty($login_user_magazine_id)) {
+        $godown_list = array();
+        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+    } else {
+        if(!empty($login_user_factory_id)) {
+            $godown_list = array();
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'factory_id', $login_user_factory_id, '');
+        }
+    }
 
     $contractor_list = array();
     $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');

@@ -211,7 +211,7 @@
         $product_list =array();
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
         $country = "India"; $state = "";
-		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
+        $company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'state');
         if(!empty($company_state)) {
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
@@ -532,9 +532,9 @@
                                                 </td>
                                                 <td>
                                                     <?php
-                                                        /* 
-                                                        $per_unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
-                                                        $per_subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
+                                                    $per_unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
+                                                    $per_subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
+                                                    /*     
                                                     ?>
                                                     <input type="hidden" id="" name="per[]" value="<?php if(!empty($per[$i])){ echo $per[$i]; }?>" class="form-control shadow-none" onkeyup="ProductRowCheck(this);">
                                                     <input type="hidden" id="" name="per_type[]" value="<?php if(!empty($per_type[$i])){ echo $per_type[$i]; }?>">

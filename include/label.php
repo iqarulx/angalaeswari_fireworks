@@ -175,26 +175,42 @@
 	
 	$GLOBALS['access_pages_list'] = $access_pages_list;
 
+	$access_pages_list = array();
+	$access_pages_list[] = $GLOBALS['factory_module'];
+	$access_pages_list[] = $GLOBALS['godown_module'];
+	$access_pages_list[] = $GLOBALS['magazine_module'];
+	$access_pages_list[] = $GLOBALS['product_module'];
+	$access_pages_list[] = $GLOBALS['supplier_module'];
+	$access_pages_list[] = $GLOBALS['contractor_module'];
+	$access_pages_list[] = $GLOBALS['agent_module'];
+	$access_pages_list[] = $GLOBALS['customer_module'];
+	$access_pages_list[] = $GLOBALS['transport_module'];
+	$access_pages_list[] = $GLOBALS['purchase_entry_module'];
+	$access_pages_list[] = $GLOBALS['consumption_entry_module'];
+	$access_pages_list[] = $GLOBALS['stock_adjustment_module'];
+	$access_pages_list[] = $GLOBALS['daily_production_module'];
+	$access_pages_list[] = $GLOBALS['semifinished_entry_module'];
+	$access_pages_list[] = $GLOBALS['material_transfer_module'];
+	$access_pages_list[] = $GLOBALS['proforma_invoice_module'];
+	$access_pages_list[] = $GLOBALS['delivery_slip_module'];
+	$access_pages_list[] = $GLOBALS['estimate_module'];
+	$access_pages_list[] = $GLOBALS['expense_category_module'];
+	$access_pages_list[] = $GLOBALS['expense_module'];
+	$access_pages_list[] = $GLOBALS['reports_module'];
+	
+	$GLOBALS['factory_access_pages_list'] = $access_pages_list;
+
 	$godown_access_pages_list = array();
 	$godown_access_pages_list[] = $GLOBALS['godown_module'];
 	$godown_access_pages_list[] = $GLOBALS['group_module'];
-	$godown_access_pages_list[] = $GLOBALS['unit_module'];
 	$godown_access_pages_list[] = $GLOBALS['product_module'];
 	$godown_access_pages_list[] = $GLOBALS['supplier_module'];
 	$godown_access_pages_list[] = $GLOBALS['contractor_module'];
-	$godown_access_pages_list[] = $GLOBALS['agent_module'];
-	$godown_access_pages_list[] = $GLOBALS['customer_module'];
-	$godown_access_pages_list[] = $GLOBALS['payment_mode_module'];
-	$godown_access_pages_list[] = $GLOBALS['bank_module'];
-	$godown_access_pages_list[] = $GLOBALS['charges_module'];
-	$godown_access_pages_list[] = $GLOBALS['transport_module'];
 	$godown_access_pages_list[] = $GLOBALS['purchase_entry_module'];
 	$godown_access_pages_list[] = $GLOBALS['consumption_entry_module'];
 	$godown_access_pages_list[] = $GLOBALS['stock_adjustment_module'];
 	$godown_access_pages_list[] = $GLOBALS['semifinished_entry_module'];
 	$godown_access_pages_list[] = $GLOBALS['material_transfer_module'];
-	$godown_access_pages_list[] = $GLOBALS['voucher_module'];
-	$godown_access_pages_list[] = $GLOBALS['receipt_module'];
 	$godown_access_pages_list[] = $GLOBALS['expense_category_module'];
 	$godown_access_pages_list[] = $GLOBALS['expense_module'];
 	$godown_access_pages_list[] = $GLOBALS['reports_module'];
@@ -203,17 +219,10 @@
 
 	$magazine_access_pages_list = array();
 	$magazine_access_pages_list[] = $GLOBALS['magazine_module'];
-	$magazine_access_pages_list[] = $GLOBALS['group_module'];
-	$magazine_access_pages_list[] = $GLOBALS['unit_module'];
 	$magazine_access_pages_list[] = $GLOBALS['product_module'];
-	$magazine_access_pages_list[] = $GLOBALS['supplier_module'];
 	$magazine_access_pages_list[] = $GLOBALS['contractor_module'];
 	$magazine_access_pages_list[] = $GLOBALS['agent_module'];
 	$magazine_access_pages_list[] = $GLOBALS['customer_module'];
-	$magazine_access_pages_list[] = $GLOBALS['payment_mode_module'];
-	$magazine_access_pages_list[] = $GLOBALS['bank_module'];
-	$magazine_access_pages_list[] = $GLOBALS['charges_module'];
-	$magazine_access_pages_list[] = $GLOBALS['transport_module'];
 	$magazine_access_pages_list[] = $GLOBALS['stock_adjustment_module'];
 	$magazine_access_pages_list[] = $GLOBALS['daily_production_module'];
 	$magazine_access_pages_list[] = $GLOBALS['material_transfer_module'];

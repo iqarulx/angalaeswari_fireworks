@@ -127,6 +127,7 @@
                 }
                 $current_stock_unit = 0; $current_stock_subunit = 0;
                 $current_stock_unit = $inward_unit - $outward_unit;
+                $current_stock_unit_int = $inward_unit - $outward_unit;
                 $current_stock_unit = number_format($current_stock_unit, 2);
                 $current_stock_unit = str_replace(",", "", $current_stock_unit);
                 $index = $key + 1; 
@@ -169,35 +170,37 @@
                     $y_axis=$pdf->GetY();
                 }
 
-                $pdf->SetX(10);
-                $pdf->Cell(20,6,$s_no,1,0,'C',0);
+                if(!empty($current_stock_unit_int) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                    $pdf->SetX(10);
+                    $pdf->Cell(20,6,$s_no,1,0,'C',0);
                 
-                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
-                    $product_name = "";
-                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
-                    $product_name =html_entity_decode($obj->encode_decode('decrypt', $product_name));
-                    $pdf->Cell(90,6,$product_name,1,0,'C',0);
-                }
-                else{
-                    $pdf->Cell(90,6,' - ',1,0,'C',0);
-                }
+                    if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                        $product_name = "";
+                        $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                        $product_name =html_entity_decode($obj->encode_decode('decrypt', $product_name));
+                        $pdf->Cell(90,6,$product_name,1,0,'C',0);
+                    }
+                    else{
+                        $pdf->Cell(90,6,' - ',1,0,'C',0);
+                    }
 
-                if($unit_type == "Unit") {
-                    $total_stock += $current_stock_unit;
-                    $current_stock = $current_stock_unit." ".$obj->encode_decode('decrypt', $unit_name);
+                    if($unit_type == "Unit") {
+                        $total_stock += $current_stock_unit;
+                        $current_stock = $current_stock_unit." ".$obj->encode_decode('decrypt', $unit_name);
+                    }
+                    else if($unit_type == "Subunit") {
+                        $total_stock += $current_stock_subunit;
+                        $current_stock = $current_stock_subunit." ".$obj->encode_decode('decrypt', $subunit_name);
+                    }
+                    
+                    if(!empty($current_stock)) {
+                        $pdf->Cell(80,6, $current_stock,1,1,'R',0);
+                    }
+                    else {
+                        $pdf->Cell(80,6,' - ',1,1,'R',0);
+                    }
+                    $s_no++;
                 }
-                else if($unit_type == "Subunit") {
-                    $total_stock += $current_stock_subunit;
-                    $current_stock = $current_stock_subunit." ".$obj->encode_decode('decrypt', $subunit_name);
-                }
-                
-                if(!empty($current_stock)) {
-                    $pdf->Cell(80,6, $current_stock,1,1,'R',0);
-                }
-                else {
-                    $pdf->Cell(80,6,' - ',1,1,'R',0);
-                }
-                $s_no++;
             }
 
             

@@ -938,7 +938,15 @@ function checkGST() {
     else {
         if (charges_sub_total != "" && charges_sub_total != 0 && typeof charges_sub_total != "undefined" && price_regex.test(charges_sub_total) == true) {
             if (jQuery('.overall_total').length > 0) {
-                jQuery('.overall_total').html(charges_sub_total);
+                var rowCount = 0;
+                rowCount = jQuery('.proforma_invoice_table').find("tbody").find("tr").length;
+                if (rowCount != 0) {
+                    jQuery('.overall_total').html(charges_sub_total);
+                } else {
+                    jQuery('.overall_total').html('');
+                    jQuery('.charges_sub_total').html('');
+                    jQuery('.round_off').html('');
+                }
             }
         }
     }
@@ -1309,11 +1317,11 @@ function AddproformaProducts(event) {
                         }
                     }
                     if (parseFloat(add) == 1) {
-                        var product_count = 0;
-                        product_count = jQuery('input[name="product_count"]').val();
-                        product_count = parseInt(product_count) + 1;
-                        jQuery('input[name="product_count"]').val(product_count);
-                        var post_url = "proforma_invoice_changes.php?product_row_index=" + product_count + "&selected_product_id=" + selected_product_id + "&selected_quantity=" + selected_quantity + "&selected_unit_type=" + selected_unit_type + "&selected_content=" + selected_content + "&selected_rate=" + selected_rate + "&selected_per=" + selected_per + "&selected_per_type=" + selected_per_type + "&selected_final_rate=" + selected_final_rate + "&selected_amount=" + selected_amount + "&subunit_need=" + subunit_need;
+
+                        var rowCount = 0;
+                        rowCount = jQuery('.proforma_invoice_table').find("tbody").find("tr").length;
+
+                        var post_url = "proforma_invoice_changes.php?product_row_index=" + rowCount + "&selected_product_id=" + selected_product_id + "&selected_quantity=" + selected_quantity + "&selected_unit_type=" + selected_unit_type + "&selected_content=" + selected_content + "&selected_rate=" + selected_rate + "&selected_per=" + selected_per + "&selected_per_type=" + selected_per_type + "&selected_final_rate=" + selected_final_rate + "&selected_amount=" + selected_amount + "&subunit_need=" + subunit_need;
 
                         jQuery.ajax({
                             url: post_url, success: function (result) {

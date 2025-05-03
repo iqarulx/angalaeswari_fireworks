@@ -15,20 +15,20 @@
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');
 
     $factory_list = array();
-    // if(!empty($login_factory_id)) {
-    //     $factory_list = $obj->getTableRecords($GLOBALS['factory_table'], 'factory_id', $login_factory_id, '');
-    // }
-    // else {
+    if(!empty($login_factory_id)) {
+        $factory_list = $obj->getTableRecords($GLOBALS['factory_table'], 'factory_id', $login_factory_id, '');
+    }
+    else {
         $factory_list = $obj->getTableRecords($GLOBALS['factory_table'], '', '', '');
-    // }
+    }
 
     $magazine_list = array();
-    // if(!empty($login_magazine_id)) {
-    //     $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
-    // }
-    // else {
+    if(!empty($login_magazine_id)) {
+        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
+    }
+    else {
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
-    // }
+    }
 
     $contractor_list = array();
     $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');

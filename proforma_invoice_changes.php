@@ -183,7 +183,7 @@
         $product_list =array();
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794d7a4e664d44453d', '');
         $country = "India"; $state = "";
-		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
+        $company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'state');
         if(!empty($company_state)) {
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
@@ -1740,8 +1740,9 @@
                                     <?php	
                                 } ?>
                             </td>
-                            <td>
-                                  <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;">Click </a>
+                            <td> 
+                                <?php echo $obj->getStatusInfo($list['proforma_invoice_id']); ?>
+                                <!-- <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;"><i class="bi bi-info-circle text-dark"></i></a> -->
                             </td>
                             <td>
                                 <?php

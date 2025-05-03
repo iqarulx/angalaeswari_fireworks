@@ -75,13 +75,13 @@
         }
 
         $godown_list = array();
-        // if(!empty($login_godown_id)) {
-        //     $godown_id = $login_godown_id;
-            // $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
-        // }
-        // else {
+        if(!empty($login_godown_id)) {
+            $godown_id = $login_godown_id;
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+        }
+        else {
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-        // }
+        }
 
         $contractor_list = array();
         $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
@@ -612,7 +612,7 @@
 
                 $current_stock_subunit = $inward_subunit - $outward_subunit;
 
-                if($data['quantity'] > $current_stock_unit) {
+                if($current_stock_unit < 0) {
                     $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
                     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need'); 
 
@@ -620,15 +620,41 @@
                     {
                         $product = $obj->encode_decode("decrypt",$product);
                     }
+
+                    $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'unit_id');
+                    $unit_name = "";
+                    
+                    if(!empty($unit_id)) {
+                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $unit_id, 'unit_name');
+                        if(!empty($unit_name)) {
+                            $unit_name = $obj->encode_decode("decrypt", $unit_name);
+                        }   
+                    }
+
+                    $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'subunit_id');
+                    $sub_unit_name = "";
+                    
+                    if(!empty($sub_unit_id)) {
+                        $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $sub_unit_id, 'unit_name');
+                        if(!empty($sub_unit_name)) {
+                            $sub_unit_name = $obj->encode_decode("decrypt", $sub_unit_name);
+                        }   
+                    }
+
+                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'product_name');
+                    if(!empty($product_name)) {
+                        $product_name = $obj->encode_decode("decrypt", $product_name);
+                    }
                    
                     $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
-                    if($negative_stock !='1')
-                    {
-                        if($subunit_need == 1){
-                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit." ,  Subunit => ".$available_stock_subunit ;
-                        }else{
-                            $valid_stock = "Max stock for ".$product."  <br> unit => ".$available_stock_unit;
-                        }            
+                    if($negative_stock !='1') {
+                        if($subunit_need == 1) {
+                            $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . " & " . (!empty($data['subunit_content']) ? ($data['subunit_content'] . " " . $sub_unit_name ) : "") . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name . " & " . $available_stock_subunit . " " . $sub_unit_name;
+                            $stock_error = 1;
+                        } else {
+                            $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name;
+                            $stock_error = 1;
+                        }       
                         $stock_error = 1;
                     }
                 }

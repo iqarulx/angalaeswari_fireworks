@@ -575,8 +575,9 @@ function ChangeLocation() {
         }
     });
 }
-function FindTotalQty() {
 
+function FindTotalQty() {
+    var content = 1;
     // var quantity = jQuery('input[name="selected_quantity"]').val() || 0;
     // var content = jQuery('input[name="selected_content"]').val() || 1;
     var total_quantity = jQuery('input[name="selected_total_qty"]').val() || 0;
@@ -596,7 +597,6 @@ function FindTotalQty() {
             all_errors_check = 0;
         }
     }
-    // alert(quantity+"/"+all_errors_check)
 
     if (jQuery('input[name="selected_content"]').length > 0) {
         content = jQuery('input[name="selected_content"]').val();
@@ -611,33 +611,35 @@ function FindTotalQty() {
             errors_check = 0;
         }
     }
-    if(all_errors_check == 1){
-
+    if (all_errors_check == 1) {
         if (unit_type == '2') {
             if (content != "" && errors_check == 1) {
                 content = quantity;
-            }else{
-                  jQuery('input[name="selected_content"]').val('');
+            } else {
+                jQuery('input[name="selected_content"]').val('');
             }
 
             total_quantity = (quantity);
-            
-        } else {
-            if(all_errors_check == 1 && errors_check == 1){
 
-                total_quantity = (content) * (quantity);
-            }else{
+        } else {
+            if (all_errors_check == 1) {
+                if (content != "") {
+                    total_quantity = (content) * (quantity);
+                } else {
+                    total_quantity = quantity;
+                }
+            } else {
                 jQuery('input[name="selected_quantity"]').val('');
                 jQuery('input[name="selected_total_qty"]').val('');
                 jQuery('input[name="selected_content"]').val('');
 
             }
         }
-        
+
         jQuery('input[name="selected_quantity"]').val(quantity);
         jQuery('input[name="selected_total_qty"]').val(total_quantity);
-    }else{
-            
+    } else {
+
         jQuery('input[name="selected_quantity"]').val('');
         jQuery('input[name="selected_total_qty"]').val('');
     }

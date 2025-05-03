@@ -1,0 +1,1 @@
+ALTER TABLE `af_role` ADD `incharger_access_ids` JSON NULL DEFAULT NULL AFTER `incharger`; 

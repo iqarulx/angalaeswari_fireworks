@@ -1,5 +1,6 @@
 <?php
 	include("include.php");
+    include("include_incharger_access.php");
 
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
@@ -190,8 +191,17 @@
         $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
         $transport_list =array();
         $transport_list = $obj->getTableRecords($GLOBALS['transport_table'], '', '', '');
-        $magazine_list =array();
-        $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+        $magazine_list = array();
+        if(empty($login_user_factory_id) && empty($login_user_magazine_id) && empty($login_godown_id)) {
+            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+        } else {
+            if(!empty($login_user_factory_id)) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'factory_id', $login_user_factory_id, '');
+            }
+            if(!empty($login_user_magazine_id)) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_user_magazine_id, '');
+            }
+        }
         $other_charges_list = array();
         $other_charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $bank_list =array();
@@ -199,7 +209,7 @@
         $product_list =array();
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
         $country = "India"; $state = "";
-		$company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'state');
+        $company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'state');
         if(!empty($company_state)) {
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
@@ -1456,10 +1466,30 @@
                     if(!empty($product_name)) {
                         $product_name = $obj->encode_decode("decrypt", $product_name);
                     }
+
+                    $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'unit_id');
+                    $unit_name = "";
+                    
+                    if(!empty($unit_id)) {
+                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $unit_id, 'unit_name');
+                        if(!empty($unit_name)) {
+                            $unit_name = $obj->encode_decode("decrypt", $unit_name);
+                        }   
+                    }
+
+                    $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'subunit_id');
+                    $sub_unit_name = "";
+                    
+                    if(!empty($sub_unit_id)) {
+                        $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $sub_unit_id, 'unit_name');
+                        if(!empty($sub_unit_name)) {
+                            $sub_unit_name = $obj->encode_decode("decrypt", $sub_unit_name);
+                        }   
+                    }
                    
                     $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
                     if($negative_stock !='1') {
-                        $valid_stock = "Max stock for " . $product_name . "<br>Unit => " .$current_stock_unit;
+                        $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . " & " . (!empty($data['content']) ? ($data['content'] . " " . $sub_unit_name ) : "") . "<br>Current Stock : " . $current_stock_unit;
                         $stock_error = 1;
                     }
                 }

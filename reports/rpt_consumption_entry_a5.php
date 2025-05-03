@@ -51,19 +51,25 @@ if (!empty($view_consumption_entry_id)) {
             }
             if(!empty($consumption_entry['godown_id'])) {
                 $godown_id = explode(",", $consumption_entry['godown_id']);
-                // print_r($godown_id);
+                $godown_id = array_reverse($godown_id);
             }
             if(!empty($consumption_entry['product_id'])) {
                 $product_id = explode(",", $consumption_entry['product_id']);
+                $product_id = array_reverse($product_id);
             }
             if(!empty($consumption_entry['unit_type'])) {
                 $unit_type = explode(",", $consumption_entry['unit_type']);
+                $unit_type = array_reverse($unit_type);
             }
             if(!empty($consumption_entry['quantity'])) {
                 $quantity = explode(",", $consumption_entry['quantity']);
+                $quantity = array_reverse($quantity);
+
             }
             if(!empty($consumption_entry['content'])) {
                 $consumption_content = explode(",", $consumption_entry['content']);
+                $consumption_content = array_reverse($consumption_content);
+
             }
             
             if(!empty($consumption_entry['entry_date'])) {
@@ -498,6 +504,9 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
                 if(!empty($P_list['unit_name'])) {
                     $unit_name = $P_list['unit_name'];
                 }
+                if(!empty($P_list['subunit_name'])) {
+                    $subunit_name = $P_list['subunit_name'];
+                }
             }
         }
 
@@ -507,6 +516,7 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
         }
         else if($unit_type[$p] == 2) {
             $total_subunit += $quantity[$p];
+            $unit_name = $subunit_name;
         }
         // $consumption_content[$p] = trim($consumption_content[$p]);
 

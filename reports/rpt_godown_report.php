@@ -147,20 +147,6 @@
 
                     $y_axis=$pdf->GetY();
                 }
-
-                $pdf->SetX(10);
-                $pdf->Cell(20,6,$s_no,0,0,'C',0);
-                
-                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
-                    $product_name = "";
-                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
-                    $product_name = $obj->encode_decode('decrypt', $product_name);
-                    $pdf->Cell(90,6,$product_name,0,0,'C',0);
-                }
-                else{
-                    $pdf->Cell(90,6,' - ',0,0,'C',0);
-                }
-
                 $inward_unit = 0; $outward_unit = 0;
                 if($unit_type == "Unit") {
                     $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
@@ -172,21 +158,39 @@
                 }
                 $current_stock_unit = 0; $current_stock_subunit = 0;
                 $current_stock_unit = $inward_unit - $outward_unit;
+                $current_stock_unit_int = $inward_unit - $outward_unit;
                 $current_stock_unit = number_format($current_stock_unit, 2);
                 $current_stock_unit = str_replace(",", "", $current_stock_unit);
-                
-                $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
-                $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
 
-                
-                if(!empty($current_stock_unit)) {
-                    $pdf->Cell(80,6, $current_stock_unit,0,1,'R',0);
-                    $total_stock += $current_stock_unit;
+                if(!empty($current_stock_unit_int) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                    $pdf->SetX(10);
+                    $pdf->Cell(20,6,$s_no,0,0,'C',0);
+                    
+                    if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                        $product_name = "";
+                        $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                        $product_name = $obj->encode_decode('decrypt', $product_name);
+                        $pdf->Cell(90,6,$product_name,0,0,'C',0);
+                    }
+                    else{
+                        $pdf->Cell(90,6,' - ',0,0,'C',0);
+                    }
+
+                    
+                    
+                    $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
+                    $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
+
+                    
+                    if(!empty($current_stock_unit)) {
+                        $pdf->Cell(80,6, $current_stock_unit,0,1,'R',0);
+                        $total_stock += $current_stock_unit;
+                    }
+                    else {
+                        $pdf->Cell(80,6,' - ',0,1,'R',0);
+                    }
+                    $s_no++;
                 }
-                else {
-                    $pdf->Cell(80,6,' - ',0,1,'R',0);
-                }
-                $s_no++;
             }
 
             

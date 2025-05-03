@@ -141,7 +141,7 @@
                             <input type="text" id="name" name="product_name" class="form-control shadow-none" value="<?php if (!empty($product_name)) { echo $product_name; } ?>"  onkeyup="Javascript:InputBoxColor(this,'text');">
                             <label>Product Name <span class="text-danger">*</span></label>
                         </div>
-                        <div class="new_smallfnt">Contains Text Only</div>
+                        <!-- <div class="new_smallfnt">Contains Text Only</div> -->
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-4 col-6 py-2">
@@ -615,7 +615,7 @@
                                              
                                                 if (empty($delete_access_error)) {
                                                     $linked_count = 0;
-                                                    $linked_count = $obj->GetAgentLinkedCount($list['product_id']); 
+                                                    $linked_count = $obj->GetProductLinkedCount($list['product_id']); 
                                                     if ($linked_count > 0) { ?>
                                                         <li><a class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
                                                         <?php
@@ -1346,7 +1346,7 @@
                 }
     
                 $linked_count = 0;
-                // $linked_count = $obj->GetProductLinkedCount($delete_product_id); 
+                $linked_count = $obj->GetProductLinkedCount($delete_product_id); 
     
                 if (empty($linked_count)) {
                     $columns = array();

@@ -192,10 +192,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <?php $total_amount = 0;$grand_amount =0;
+                                            <?php $grand_amount =0;
                                                 if(!empty($total_records_list)) {
                                                     foreach($total_records_list as $key => $list) { 
-
+                                                        $total_amount = 0;
                                                         $total_amount =$list['bill_total'];
                                                         $index = $key + 1; ?>
                                                         <tr>
@@ -215,7 +215,7 @@
                                                             </td>
                                                             <td>
                                                                 <?php if(!empty($list['estimate_date'])) {
-                                                                    echo $list['estimate_date'];
+                                                                    echo date('d-m-Y', strtotime($list['estimate_date']));
                                                                 } ?>
                                                             </td>
                                                             <td>

@@ -238,6 +238,20 @@
 			return $list;
 		}
 
+		public function getProductStockTransactionExist($product_id) {
+			$select_query = "";
+			$select_query = "SELECT COUNT(*) as count FROM ".$GLOBALS['stock_table']." WHERE product_id = '" . $product_id . "' AND deleted = '0'";
+			
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['stock_table'], $select_query);
+			}
+
+			if(!empty($list)) {
+				return $list[0]['count'];
+			}
+			return 0;
+		}
+
 		public function getStockContainsList($product_id) {
 			$select_query = ""; $list = array();
 			if(!empty($product_id)) {
@@ -824,6 +838,7 @@
 				}
 			return $list;
 		}
+
 
 		//Arul Murugan
 		public function getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id,$case_contains) {
