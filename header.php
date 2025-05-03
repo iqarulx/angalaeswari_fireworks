@@ -566,12 +566,12 @@
                                     <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_voucher) && $sidebar_voucher == '1')) { ?>
                                         <li class="nav-item" id="voucher">
-                                            <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i> Voucher </a>
+                                            <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i>Purchase (Voucher) </a>
                                         </li>
                                     <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_receipt) && $sidebar_receipt == '1')) { ?>
                                         <li class="nav-item" id="receipt">
-                                            <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i> Receipt </a>
+                                            <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i>Sales (Receipt) </a>
                                         </li>
                                     <?php } ?>
                                 </ul>
