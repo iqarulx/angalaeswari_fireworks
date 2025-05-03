@@ -614,6 +614,19 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end sub_tot"> Total : </td>
                                     <td colspan="1" class="text-end sub_total"></td>
                                 </tr>
+                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
+                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
+                                        Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
+                                    </td>
+                                    <input type="hidden" name="agent_commission" value="<?php if(!empty($agent_commission)){ echo $agent_commission; }?>">
+                                    <td class="text-end ">
+                                        <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end sub_tot"> Total : </td>
+                                    <td colspan="1" class="text-end before_charge_total"></td>
+                                </tr>
                                 <input type="hidden" name="charges_count" value="<?php if(!empty($charges_count)) { echo $charges_count - 1; } else { echo '0'; } ?>">
                                 <?php 
                                     $count = 1;
@@ -744,15 +757,7 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end total_tax">Total Tax :</td>
                                     <td class="text-end total_tax_value"></td>
                                 </tr>
-                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
-                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
-                                        Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
-                                    </td>
-                                    <input type="hidden" name="agent_commission" value="<?php if(!empty($agent_commission)){ echo $agent_commission; }?>">
-                                    <td class="text-end ">
-                                        <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
-                                    </td>
-                                </tr>
+                                
                                 <tr>
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end round">Round OFF :</td>
                                     <td colspan="1" class="text-end round_off"></td>
@@ -1061,7 +1066,7 @@
             $agent_commission = $_POST['agent_commission'];
             $agent_commission = trim($agent_commission);
         }
-
+        
         $rate_per_cases =array(); $rate_per_pieces =array(); $final_rate =array(); $rate_per_unit =array();
         if(!empty($product_ids)) {
             for($i = 0; $i < count($product_ids); $i++) {
@@ -1190,7 +1195,21 @@
         if(empty($product_error) && empty($total_amount)) {
             $product_error = "Bill value cannot be 0";
         }
-       
+
+        if(!empty($agent_commission)){
+            $agent_commission = str_replace('%', '', $agent_commission);
+            $agent_commission = trim($agent_commission);
+            echo "agent :". $agent_commission;
+            if(!empty($total_amount)){
+                $agent_commission_value = ($total_amount * $agent_commission) / 100;
+                echo "value :".$agent_commission_value;
+                $before_charges_total = $total_amount - $agent_commission_value;
+                echo "amount :".$before_charges_total;
+                $total_amount = $before_charges_total;
+                echo "total  :".$total_amount;
+            } 
+        }
+        
         $charges_total_amounts = array();
         if(!empty($other_charges_id) && empty($product_error)) {
             for($i=0; $i < count($other_charges_id); $i++) {
@@ -1257,6 +1276,8 @@
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
 
+        echo "grand :".$grand_total;
+    
         if($gst_option == '1' && empty($product_error) && empty($valid_estimate)) {
             $percentage = 100;
             if($tax_type == '1') {
@@ -1284,7 +1305,9 @@
                 $tax = str_replace("%", "", $overall_tax);
                 $tax = trim($tax);
                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $tax)) {
+                    echo "calculation :".$tax ." / ". $grand_total." / ". $percentage;
                     $total_tax_value = ($tax * $grand_total) / $percentage;
+                    echo "total_tax :".$total_tax_value;
                 }
                 else {
                     $product_error = "Invalid Overall tax";
@@ -1308,7 +1331,7 @@
                 $total_amount = $total_amount + $total_tax_value;
             }
         }
-
+// echo "tax :".$total_amount;
         $round_off = 0;
         if(!empty($total_amount)) {	
             if (strpos( $total_amount, "." ) !== false) {

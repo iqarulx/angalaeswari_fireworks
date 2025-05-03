@@ -677,8 +677,8 @@ function calTotal() {
             }
         }
     }
-    CheckCharges();
     getAgentCommission();
+    CheckCharges();
     getGST();
     checkGST();
 }
@@ -784,7 +784,7 @@ function checkGST() {
                                     discounted_amount = discounted_amount.toFixed(2);
                                 }
                             }
-                            else {
+                            else{
                                 if ((price_regex.test(discount) == true) && (parseFloat(discount) > 0) && (parseFloat(discount) <= parseFloat(sub_total))) {
                                     var discount_percent = "";
                                     discount_percent = (discount / sub_total) * 100;
@@ -950,6 +950,7 @@ function checkGST() {
             }
         }
     }
+    checkOverallAmount();
 }
 
 function getAgentCommission() {
@@ -959,17 +960,22 @@ function getAgentCommission() {
         agent_commission = agent_commission.replace('%', '');
     }
     var overall_total = 0;
-    if (jQuery('.overall_total').length > 0) {
-        overall_total = jQuery('.overall_total').html();
+    if (jQuery('.sub_total').length > 0) {
+        overall_total = jQuery('.sub_total').html();
     }
-    if (agent_commission != "" && agent_commission != 0 && typeof agent_commission != "undefined" && agent_commission != null) {
+    if (agent_commission != "" && agent_commission != 0 && typeof agent_commission != "undefined" && agent_commission != null){
         var commission_total = (overall_total * agent_commission) / 100;
         if (jQuery('.commission_total').length > 0) {
             commission_total = commission_total.toFixed(2);
+            var commission = commission_total;
             commission_total = jQuery('.commission_total').html(commission_total);
         }
+       
+        if (jQuery('.before_charge_total').length > 0) {
+            jQuery('.before_charge_total').html(overall_total - commission);
+        }
     }
-    checkOverallAmount();
+    CheckCharges();
 }
 
 function GetChargesType(obj) {
@@ -1034,7 +1040,10 @@ function AddChargesRow(obj) {
 
 function CheckCharges() {
     var sub_total = 0;
-    if (jQuery('.sub_total').length > 0) {
+    if (jQuery('.before_charge_total').length > 0) {
+        sub_total = jQuery('.before_charge_total').html();
+        sub_total = sub_total.trim();
+    }else{
         sub_total = jQuery('.sub_total').html();
         sub_total = sub_total.trim();
     }
@@ -1149,7 +1158,6 @@ function CheckCharges() {
         }
 
     }
-    getAgentCommission();
     getGST();
     checkGST();
 }
