@@ -2236,5 +2236,65 @@
 			}
 			return $count;
 		}
+
+		public function CheckFinishedGroupAlreadyExists($finished_group_name) {
+			$list = array(); $select_query = ""; $finished_group_id = ""; $where = "";
+		
+			if(!empty($finished_group_name)) {
+				$select_query = "SELECT finished_group_id FROM ".$GLOBALS['finished_group_table']." WHERE ".$where." lower_case_name = '".$finished_group_name."' AND deleted = '0'";	
+			}
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['finished_group_table'], $select_query);
+				if(!empty($list)) {
+					foreach($list as $data) {
+						if(!empty($data['finished_group_id'])) {
+							$finished_group_id = $data['finished_group_id'];
+						}
+					}
+				}
+			}
+			return $finished_group_id;
+		}		
+		
+		public function GetFinishedGroupLinkedCount($finished_group_id) {
+			$list = array(); $select_query = ""; $count = 0;
+			if(!empty($finished_group_id)) {
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$finished_group_id."', finished_group_id) AND deleted = '0')) as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		public function GetProductsListing($group_id, $finished_group_id) {
+			$list = array(); $select_query = ""; $count = 0;
+			$where = "";
+
+			if(!empty($group_id)) {
+				$where = " FIND_IN_SET('".$group_id."', group_id) AND ";
+			}
+
+			if(!empty($finished_group_id)) {
+				 $where .= " FIND_IN_SET('".$finished_group_id."', finished_group_id) AND ";
+			}
+
+			if(!empty($where)) {
+				$select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE " . $where . " deleted = '0' ORDER BY id DESC";
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE deleted = '0' ORDER BY id DESC";
+			}
+
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			
+			return $list;
+		}
     }
 ?>

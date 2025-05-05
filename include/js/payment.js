@@ -279,33 +279,38 @@ function HideDetails(type) {
 
 
 
-function ViewPartyDetails(type) {
-    var type_id = ""; var lower_type = "";
-    if(type != "") {
-        lower_type = type.toLowerCase();
-        lower_type = lower_type.trim();
-        type = type.replace("_"," ");
-    }
-    if(jQuery('select[name="party_id"]').length > 0) {
-        type_id = jQuery('select[name="party_id"]').val();
-    }
-    var post_url = "payment_bill_changes.php?details_type=" + lower_type + "&view_party_details=" + type_id;
-    jQuery.ajax({
-        url: post_url, success: function (result) {
-            result = result.trim();
-            if(jQuery('.details_modal_button').length > 0) {
-                jQuery('.details_modal_button').trigger('click');
-            }
-            if(jQuery('#ViewDetailsModal').length > 0) {
-                if(jQuery('#ViewDetailsModal').find('.modal-title').length > 0) {
-                    jQuery('#ViewDetailsModal').find('.modal-title').html(type+' Details');
-                }
-                if(jQuery('#ViewDetailsModal').find('.modal-body').length > 0) {
-                    jQuery('#ViewDetailsModal').find('.modal-body').html(result);
-                }
-            }
-        }
-    });
+function ViewPartyDetails() {
+	var type = "";
+	if (jQuery('select[name="party_id"]').length > 0) {
+		type_id = jQuery('select[name="party_id"]').val();
+	}
+
+	if (type_id != "" && type_id != null && typeof type_id != "undefined") {
+		if (type_id && type_id.indexOf('agent_') !== -1) {
+			type = "agent";
+			type_id = type_id.replace("agent_", "");
+		} else {
+			type = "customer";
+		}
+
+		var post_url = "payment_bill_changes.php?details_type=" + type + "&view_party_details=" + type_id;
+		jQuery.ajax({
+			url: post_url, success: function (result) {
+				result = result.trim();
+				if (jQuery('.details_modal_button').length > 0) {
+					jQuery('.details_modal_button').trigger('click');
+				}
+				if (jQuery('#ViewDetailsModal').length > 0) {
+					if (jQuery('#ViewDetailsModal').find('.modal-title').length > 0) {
+						jQuery('#ViewDetailsModal').find('.modal-title').html(type + ' Details');
+					}
+					if (jQuery('#ViewDetailsModal').find('.modal-body').length > 0) {
+						jQuery('#ViewDetailsModal').find('.modal-body').html(result);
+					}
+				}
+			}
+		});
+	}
 }
 
 
@@ -319,6 +324,10 @@ function ViewPendingDetails(type) {
 	}
 	if (jQuery('select[name="party_id"]').length > 0) {
 		type_id = jQuery('select[name="party_id"]').val();
+
+		if (type_id && type_id.indexOf('agent_') !== -1) {
+			type_id = type_id.replace("agent_", "");
+		}
 	}
 	var post_url = "payment_bill_changes.php?party_type=" + lower_type + "&party_id=" + type_id;
 	jQuery.ajax({

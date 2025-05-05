@@ -35,7 +35,7 @@
 	<?php 
 	include "link_style_script.php"; ?>
     <script src="include/js/creation_modules.js"></script>
-    <script src="include/js/performa_invoice.js"></script>
+    <script src="include/js/proforma_invoice.js"></script>
     <script src="include/js/common.js"></script>
 </head>	
 <body>

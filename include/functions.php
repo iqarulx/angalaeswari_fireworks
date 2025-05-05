@@ -140,6 +140,27 @@
 			$result = $create_obj->GetUnitLinkedCount($unit_id);
 			return $result;
 		}
+		public function CheckFinishedGroupAlreadyExists($unit_name) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->CheckFinishedGroupAlreadyExists($unit_name);
+			return $result;
+		}
+		public function GetFinishedGroupLinkedCount($finished_group_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->GetFinishedGroupLinkedCount($finished_group_id);
+			return $result;
+		}
+		public function GetProductsListing($group_id, $finished_group_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->GetProductsListing($group_id, $finished_group_id);
+			return $result;
+		}
 		public function CheckChargesAlreadyExists($bill_company_id, $charge_name) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
@@ -678,6 +699,13 @@
 			$payment_update = 0;
 			$payment_update = $payment_obj->getPartyOpeningBalanceInPaymentExist($party_id, $bill_type);
 			return $payment_update;
+		}
+		public function getCustomerList() {
+			$payment_obj = "";
+			$payment_obj = $this->payment_function_object();
+			$list = array();
+			$list = $payment_obj->getCustomerList();
+			return $list;
 		}
 
 		// Report Functions

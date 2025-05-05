@@ -172,7 +172,7 @@
                                                         <option value="">Select Party Type</option>
                                                         <option value="1" <?php if($view_type == "1") { ?> selected <?php }  ?>>Agent</option>
                                                         <option value="2" <?php if($view_type == "2") { ?> selected <?php }  ?>>Supplier</option>
-                                                        <option value="3" <?php if($view_type == "3") { ?> selected <?php }  ?>>Contractor</option>
+                                                        <!-- <option value="3" <?php if($view_type == "3") { ?> selected <?php }  ?>>Contractor</option> -->
                                                         <option value="4" <?php if($view_type == "4") { ?> selected <?php }  ?>>Customer</option>
                                                     </select>
                                                     <label>Select Party Type</label>

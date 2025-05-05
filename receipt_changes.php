@@ -16,10 +16,15 @@
         $payment_mode_list = array();
 		$payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '','','');
 
+        $agent_list = array();
+		$agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '','','');
+        
         $customer_list = array();
-		$customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '','','');
-        
-        
+		$customer_list = $obj->getCustomerList();
+
+        $party_list = array();
+        $party_list = array_merge($agent_list, $customer_list);
+
         ?>
         <form class="poppins pd-20" name="receipt_form" method="POST">
 			<div class="card-header">
@@ -59,21 +64,36 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" name="party_id"  style="width: 100%;"  onchange="Javascript:HideDetails('4');">
-                                        <option value = "">Select Party</option> <?php
-                                        if(!empty($customer_list)) {
-                                            foreach($customer_list as $data) { ?>
-                                                <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
-                                                    if(!empty($data['name_mobile_city'])) {
-                                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                                        echo $data['name_mobile_city'];
-                                                    } ?>
-                                                </option> <?php
+                                        <option value = "">Select Party</option> 
+                                        <?php
+                                            if(!empty($party_list)) {
+                                                foreach($party_list as $data) { 
+                                                    if(!empty($data['customer_id'])) {
+                                                        ?>
+                                                            <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
+                                                                if(!empty($data['name_mobile_city'])) {
+                                                                    $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                    echo $data['name_mobile_city'];
+                                                                } ?>
+                                                            </option>
+                                                        <?php
+                                                    } else if (!empty($data['agent_id'])) {
+                                                        ?>
+                                                            <option value="<?php if(!empty($data['agent_id'])) { echo 'agent_' . $data['agent_id']; } ?>"> <?php
+                                                                if(!empty($data['name_mobile_city'])) {
+                                                                    $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                    echo $data['name_mobile_city'];
+                                                                } ?>
+                                                            </option>
+                                                        <?php
+                                                    }
+                                                }
                                             }
-                                        } ?>
+                                        ?>
                                     </select>
                                     <label>Select Party <span class="text-danger">*</span></label>
                                 </div>
-                                <a href="Javascript:ViewPartyDetails('Customer');" class="d-none details_element" style="font-size: 12px;font-weight: bold;">Click to view details</a>
+                                <a href="Javascript:ViewPartyDetails();" class="d-none details_element" style="font-size: 12px;font-weight: bold;">Click to view details</a>
                             </div>        
                             <div class="col-lg-8 col-md-4 col-12 py-2">
                                 <div class="form-group">
@@ -161,7 +181,7 @@
                                     <thead class="bg-dark smallfnt">
                                         <tr style="white-space:pre;">
                                             <th>#</th>
-                                            <th style="with:400px;">Payment Mode</th>
+                                            <th style="width:400px;">Payment Mode</th>
                                             <th style="width:200px;">Bank</th>
                                             <th style="width:200px;">Amount</th>
                                             <th>Action</th>
@@ -218,10 +238,7 @@
     } 
 
     if(isset($_POST['edit_id'])) {
-        $receipt_date = ""; $receipt_date_error = ""; $party_id = ""; $party_id_error = "";
-        $payment_mode_ids = array(); $bank_ids = array(); $bank_names = array(); $payment_mode_names = array(); $amount = array(); $total_amount = 0; $payment_error = ""; $party_name = ""; $narration = ""; $narration_error = ""; $party_type = ""; $name_mobile_city = ""; $selected_payment_mode_id = ""; $party_type_error = ""; $selected_amount = ""; $selected_amount_error = ""; $selected_bank_id = ""; $selected_payment_mode_id = ""; $selected_payment_mode_id_error = "";
-
-        $form_name = "receipt_form"; $valid_receipt = ""; 
+        $receipt_date = ""; $receipt_date_error = ""; $party_id = ""; $party_id_error = ""; $payment_mode_ids = array(); $bank_ids = array(); $bank_names = array(); $payment_mode_names = array(); $amount = array(); $total_amount = 0; $payment_error = ""; $party_name = ""; $narration = ""; $narration_error = ""; $party_type = ""; $name_mobile_city = ""; $selected_payment_mode_id = ""; $party_type_error = ""; $selected_amount = ""; $selected_amount_error = ""; $selected_bank_id = ""; $selected_payment_mode_id = ""; $selected_payment_mode_id_error = ""; $form_name = "receipt_form"; $valid_receipt = ""; 
 
         $edit_id = "";
         if(isset($_POST['edit_id'])) {
@@ -255,8 +272,7 @@
         if(!empty($party_id_error)){
             if(!empty($valid_receipt)) {
                 $valid_receipt = $valid_receipt." ".$valid->error_display($form_name, "party_id", $party_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_receipt = $valid->error_display($form_name, "party_id", $party_id_error, 'select');
             }
         }
@@ -277,8 +293,16 @@
         //         }
         //     }
 		// }
-        $party_type = "Customer";
 
+        if(!empty($party_id)) {
+            if(strpos($party_id, 'agent_') !== false) {
+                $party_id = str_replace('agent_', '', $party_id);
+                $party_type = "Agent";
+                $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
+            } else {
+                $party_type = "Customer";
+            }
+        }
         
         if(isset($_POST['narration'])) {
             $narration = $_POST['narration'];
@@ -287,8 +311,7 @@
             if(!empty($narration_error)) {
                 if(!empty($valid_receipt)) {
                     $valid_receipt = $valid_receipt." ".$valid->error_display($form_name, "narration", $narration_error, 'textarea');
-                }
-                else {
+                } else {
                     $valid_receipt = $valid->error_display($form_name, "narration", $narration_error, 'textarea');
                 }
             }
@@ -332,12 +355,10 @@
                     $bank_name = $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $bank_ids[$i], 'bank_name');
                     if(!empty($bank_name) && $bank_name != $GLOBALS['null_value']) {
                         $bank_names[$i] = $bank_name;
-                    }
-                    else {
+                    } else {
                         $bank_names[$i] = "";
                     }
-                }
-                else {
+                } else {
                     $bank_ids[$i] = "";
                     $bank_names[$i] = "";
                 }
@@ -348,26 +369,22 @@
                     if(!empty($amount_error)) {
                         if(!empty($valid_receipt)) {
                             $valid_receipt = $valid_receipt." ".$valid->row_error_display($form_name, 'amount[]', $amount_error, 'text', 'payment_row', ($i+1));
-                        }
-                        else {
+                        } else {
                             $valid_receipt = $valid->row_error_display($form_name, 'amount[]', $amount_error, 'text', 'payment_row', ($i+1));
                         }
-                    }
-                    else {
+                    } else {
                         $total_amount += $amount[$i];
                     }
                 }
 
             }
-        }
-        else {
+        } else {
             if(count($payment_mode_ids) <= 0) {
                 $selected_payment_mode_id_error = $valid->common_validation($selected_payment_mode_id, 'payment mode', 'select');
     
                 if(!empty($valid_receipt)) {
                     $valid_receipt = $valid_receipt." ".$valid->error_display($form_name, "selected_payment_mode_id", $selected_payment_mode_id_error, 'select');
-                }
-                else {
+                } else {
                     $valid_receipt = $valid->error_display($form_name, "selected_payment_mode_id", $selected_payment_mode_id_error, 'select');
                 }
             }
@@ -377,8 +394,7 @@
     
                 if(!empty($valid_receipt)) {
                     $valid_receipt = $valid_receipt." ".$valid->error_display($form_name, "selected_amount", $selected_amount_error, 'text');
-                }
-                else {
+                } else {
                     $valid_receipt = $valid->error_display($form_name, "selected_amount", $selected_amount_error, 'text');
                 }
             }
@@ -398,47 +414,45 @@
                 if(!empty($payment_mode_ids)) {
                     $payment_mode_ids = array_reverse($payment_mode_ids);
                     $payment_mode_ids = implode(',', $payment_mode_ids);
-                }
-                else {
+                } else {
                     $payment_mode_ids = $GLOBALS['null_value'];
                 }
                 if(!empty($payment_mode_names)) {
                     $payment_mode_names = array_reverse($payment_mode_names);
                     $payment_mode_names = implode(',', $payment_mode_names);
-                }
-                else {
+                } else {
                     $payment_mode_names = $GLOBALS['null_value'];
                 }
                 if(!empty($bank_ids)) {
                     $bank_ids = array_reverse($bank_ids);
                     $bank_ids = implode(',', $bank_ids);
-                }
-                else {
+                } else {
                     $bank_ids = $GLOBALS['null_value'];
                 }
                 if(!empty($bank_names)) {
                     $bank_names = array_reverse($bank_names);
                     $bank_names = implode(',', $bank_names);
-                }
-                else {
+                } else {
                     $bank_names = $GLOBALS['null_value'];
                 }
                 if(!empty($amount)) {
                     $amount = array_reverse($amount);
                     $amount = implode(',', $amount);
-                }
-                else {
+                } else {
                     $amount = $GLOBALS['null_value'];
                 }
                 if(!empty($narration)) {
                     $narration = $obj->encode_decode('encrypt', $narration);
-                }
-                else {
+                } else {
                     $narration = $GLOBALS['null_value'];
                 }
                 $name_mobile_city = "";
                 if(!empty($party_id)){
                     $name_mobile_city = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $party_id, 'name_mobile_city');
+
+                    if(empty($name_mobile_city)) {
+                        $name_mobile_city = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'name_mobile_city');
+                    }
                 }
 
                 $balance = 0;	
@@ -456,15 +470,12 @@
                         $receipt_id = $obj->getTableColumnValue($GLOBALS['receipt_table'], 'id', $receipt_insert_id, 'receipt_id');
                         $receipt_number = $obj->getTableColumnValue($GLOBALS['receipt_table'], 'id', $receipt_insert_id, 'receipt_number');
                         $result = array('number' => '1', 'msg' => 'Receipt Successfully Created');						
-                    }
-                    else {
+                    } else {
                         $result = array('number' => '2', 'msg' => $receipt_insert_id);
                     }
                 }
                 
-                
                 if(!empty($balance) && $balance == 1) {
-                    
                     $bill_id = $receipt_id; $bill_date = $receipt_date;
                     $credit  = 0; $debit = 0; $bill_type ="Receipt";
                     $bill_number = $receipt_number;
@@ -493,10 +504,8 @@
                         $amounts = array_reverse($amounts);
                     }
 
-
                     if(!empty($payment_mode_id)){
                         for($l = 0; $l < count($payment_mode_id); $l++) {
-                    
                             $credit = $amounts[$l];
                             $debit = 0;
 
@@ -514,17 +523,13 @@
                         }
                     }
                 }
-                
-            }
-            else {
+            } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
-        }
-        else {
+        } else {
             if(!empty($valid_receipt)) {
 				$result = array('number' => '3', 'msg' => $valid_receipt);
-			}
-			else if(!empty($payment_error)) {
+			} else if(!empty($payment_error)) {
 				$result = array('number' => '2', 'msg' => $payment_error);
 			}
             
@@ -599,8 +604,7 @@
 					$page_start = ($page_number - 1) * $page_limit;
 					$page_end = $page_start + $page_limit;
 				}
-			}
-			else {
+			} else {
 				$page_start = 0;
 				$page_end = $page_limit;
 			}

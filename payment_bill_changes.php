@@ -595,8 +595,12 @@ if(isset($_REQUEST['party_type'])) {
                         // }
                         
                         foreach ($list as $data) { 
-                            if(!empty($data['party_name'])) {
+                            if(!empty($data['party_name']) && $data['party_name'] != "NULL") {
                                 $party_name = $obj->encode_decode('decrypt', $data['party_name']);
+                            }
+
+                            if(!empty($data['agent_name']) && $data['agent_name'] != "NULL") {
+                                $party_name = $obj->encode_decode('decrypt', $data['agent_name']);
                             }
         ?>
                         <tr>

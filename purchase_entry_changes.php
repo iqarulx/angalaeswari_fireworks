@@ -205,6 +205,10 @@
 
         $supplier_list = array();
         $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
+
+        $group_list = array();
+        $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
+
         $godown_list = array(); $magazine_list = array();
         if(!empty($show_purchase_entry_id)){
             if($product_group == "1" && $location_type == "1"){
@@ -292,13 +296,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-3 col-12 div_product_group">
+                <div class="col-lg-3 col-md-3 col-12 py-2 div_product_group">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" name="product_group" data-dropdown-css-class="select2-danger" style="width: 100%!important;" onchange="Javascript:show_godown_magazine(this.value);Javascript:show_product(this.value)" <?php if(!empty($show_purchase_entry_id)){ ?> disabled <?php } ?>>
                                 <option value="">Select</option>
-                                <option value="1" <?php if(!empty($product_group) && $product_group =='1'){ ?>selected <?php } ?>>UnFinished</option>
-                                <option value="2"  <?php if(!empty($product_group) && $product_group =='2'){ ?>selected <?php } ?>>Finished</option>
+                                <?php
+                                    if(!empty($group_list)) {
+                                        foreach($group_list as $group) { 
+                                            ?>
+                                            <option value="<?php echo $group['group_id']; ?>" <?php if(!empty($product_group) && $product_group == $group['group_id']) { echo "selected"; } ?>>
+                                                <?php 
+                                                    if(!empty($group['group_name'])) {
+                                                        echo $obj->encode_decode('decrypt', $group['group_name']);
+                                                    }
+                                                ?>
+                                            </option>
+                                            <?php
+                                        }
+                                    }
+                                ?>
+                                <?php /* <option value="1" <?php if(!empty($product_group) && $product_group =='1'){ ?>selected <?php } ?>>UnFinished</option>
+                                <option value="2"  <?php if(!empty($product_group) && $product_group =='2'){ ?>selected <?php } ?>>Finished</option> */ ?>
                             </select>
                             <label>Product Group <span class="text-danger">*</span></label>
                         </div>

@@ -87,11 +87,9 @@ function CustomCheckboxToggle(obj, toggle_id) {
 					toggle_id = toggle_id.replace('convert', '');
 					toggle_id = jQuery.trim(toggle_id);
 					var checkbox_cover = toggle_id + "cover";
-					//console.log('checkbox_cover - '+checkbox_cover+', checbox count - '+jQuery('#'+checkbox_cover).find('input[type="checkbox"]').length);
 					if (jQuery('#' + checkbox_cover).find('input[type="checkbox"]').length > 0) {
 						var view_checkbox = toggle_id + "view"; var add_checkbox = toggle_id + "add"; var edit_checkbox = toggle_id + "edit"; var convert_checkbox = toggle_id + "convert";
 						var delete_checkbox = toggle_id + "delete"; var select_count = 0; var select_all_checkbox = toggle_id + "select_all";
-						//console.log('add_checkbox - '+add_checkbox+', edit_checkbox - '+edit_checkbox+', delete_checkbox - '+delete_checkbox+', select_all_checkbox - '+select_all_checkbox);
 						var view_count = 0;
 						if (jQuery('#' + view_checkbox).prop('checked') == true) {
 							select_count = parseInt(select_count) + 1;
@@ -189,13 +187,11 @@ function FormSubmit(event, form_name, submit_page, redirection_page) {
 		dataType: 'html',
 		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 		success: function (data) {
-			//console.log(data);
 			try {
 				var x = JSON.parse(data);
 			} catch (e) {
 				return false;
 			}
-			//console.log(x);
 			if (jQuery('span.infos').length > 0) {
 				jQuery('span.infos').remove();
 			}
@@ -390,13 +386,11 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 		dataType: 'html',
 		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 		success: function (data) {
-			//console.log(data);
 			try {
 				var x = JSON.parse(data);
 			} catch (e) {
 				return false;
 			}
-			//console.log(x);
 			if (jQuery('span.infos').length > 0) {
 				jQuery('span.infos').remove();
 			}
@@ -557,7 +551,7 @@ function confirm_delete_modal(obj) {
 						jQuery('#DeleteModal .modal-content').animate({ scrollTop: 0 }, 500);
 						var intRegex = /^\d+$/;
 						if (intRegex.test(result) == true) {
-							if (page_title == "performainvoice" || page_title == "estimate" || page_title == "salesinvoice" || page_title == "inwardmaterials" || page_title == "consumptionentry" || page_title == "dailyproduction" || page_title == "materialtransfer" || page_title == "stockadjustment" || page_title == "semifinished_inward") {
+							if (page_title == "proformainvoice" || page_title == "estimate" || page_title == "salesinvoice" || page_title == "inwardmaterials" || page_title == "consumptionentry" || page_title == "dailyproduction" || page_title == "materialtransfer" || page_title == "stockadjustment" || page_title == "semifinished_inward") {
 								jQuery('#DeleteModal .modal-body').append('<div class="alert alert-success"> <button type="button" class="btn-close" data-dismiss="alert"></button> Successfully Cancelled the ' + page_title.replace("_", " ") + ' </div>');
 							}
 							else {

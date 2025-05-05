@@ -614,6 +614,15 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end sub_tot"> Total : </td>
                                     <td colspan="1" class="text-end sub_total"></td>
                                 </tr>
+                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
+                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
+                                        Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
+                                    </td>
+                                    <input type="hidden" name="agent_commission" value="<?php if(!empty($agent_commission)){ echo $agent_commission; }?>">
+                                    <td class="text-end ">
+                                        <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
+                                    </td>
+                                </tr>
                                 <input type="hidden" name="charges_count" value="<?php if(!empty($charges_count)) { echo $charges_count - 1; } else { echo '0'; } ?>">
                                 <?php 
                                     $count = 1;
@@ -743,15 +752,6 @@
                                 <tr class="d-none">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end total_tax">Total Tax :</td>
                                     <td class="text-end total_tax_value"></td>
-                                </tr>
-                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
-                                    <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
-                                        Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
-                                    </td>
-                                    <input type="hidden" name="agent_commission" value="<?php if(!empty($agent_commission)){ echo $agent_commission; }?>">
-                                    <td class="text-end ">
-                                        <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
-                                    </td>
                                 </tr>
                                 <tr>
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end round">Round OFF :</td>
@@ -1190,6 +1190,16 @@
         if(empty($product_error) && empty($total_amount)) {
             $product_error = "Bill value cannot be 0";
         }
+
+        if(!empty($agent_commission)){
+            $agent_commission = str_replace('%', '', $agent_commission);
+            $agent_commission = trim($agent_commission);
+            if(!empty($total_amount)){
+                $agent_commission_value = ($total_amount * $agent_commission) / 100;
+                $before_charges_total = $total_amount - $agent_commission_value;
+                $total_amount = $before_charges_total;
+            }
+        }
        
         $charges_total_amounts = array();
         if(!empty($other_charges_id) && empty($product_error)) {
@@ -1552,19 +1562,10 @@
 
                     $debit = $total_amount; 
                     $opening_balance_type = 'Debit';
-                    if(empty($credit)){
-                        $credit = 0;
-                    }
-                    if(empty($debit)) {
-                        $debit = 0;
-                    }
-                    if(empty($opening_balance)){
-                        $opening_balance = 0;
-                    }
-                    if(empty($opening_balance_type)){
-                        $opening_balance_type = $GLOBALS['null_value'];
-                    }
-
+                    if(empty($credit)) { $credit = 0; }
+                    if(empty($debit)) { $debit = 0; }
+                    if(empty($opening_balance)) { $opening_balance = 0; }
+                    if(empty($opening_balance_type)) { $opening_balance_type = $GLOBALS['null_value']; }
                     if(empty($edit_id)){
                         if(!empty($estimate_insert_id)) {
                             $estimate_number = "";
@@ -1598,24 +1599,12 @@
                         $agent_name = "";
                         $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_name');
 
-                        $agent_commission = "";
-                        $agent_commission = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'commission');
-
-                        if(!empty($agent_commission)) {
-                            $commission_percent = str_replace("%", "", $agent_commission);
-                            $commission_percent = floatval($commission_percent);
-                            $commission_amount = ($total_amount * $commission_percent) / 100;
-
-                            if(!empty($commission_amount)) {
-                                $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type,  $agent_id, $agent_name, $GLOBALS['null_value'], $GLOBALS['null_value'],'Agent', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $commission_amount, $opening_balance_type);
-                            }
-                        }
+                        $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type,  $agent_id, $agent_name, $GLOBALS['null_value'], $GLOBALS['null_value'],'Agent', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $debit, $opening_balance_type);
+                    } else {
+                        $update_balance = "";                    
+                        $update_balance = $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type, $GLOBALS['null_value'], $GLOBALS['null_value'], $customer_id, $customer_name, 'Customer', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $debit, $opening_balance_type);    
                     }
-
-                    $update_balance = "";                    
-                    $update_balance = $obj->UpdateBalance($bill_id, $bill_number, $bill_date, $bill_type, $GLOBALS['null_value'], $GLOBALS['null_value'], $customer_id, $customer_name, 'Customer', $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $GLOBALS['null_value'], $credit, $debit, $opening_balance_type);
                 }
-
             } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
@@ -1634,7 +1623,6 @@
         }
         echo $result; exit;
     }
-
 
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number']; $page_limit = $_POST['page_limit']; $page_title = $_POST['page_title'];

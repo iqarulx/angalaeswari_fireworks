@@ -574,6 +574,14 @@ function ChangeLocation() {
             }
         }
     });
+
+    if (group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+        if (jQuery('.finished_group_div').length > 0) {
+            jQuery('.finished_group_div').removeClass('d-none');
+        } else {
+            jQuery('.finished_group_div').addClass('d-none');
+        }
+    }
 }
 
 function FindTotalQty() {
@@ -1169,7 +1177,6 @@ function AddContractorProducts() {
                         var post_url = "action_changes.php?product_row_index=" + product_count + "&product=" + product + "&selected_unit_type=" + selected_unit_type + "&selected_quantity=" + selected_quantity + "&selected_rate=" + selected_rate + "&unit_subunit=" + globalVar;
                         jQuery.ajax({
                             url: post_url, success: function (result) {
-                                console.log(result);
                                 if (jQuery('.product_constractor_table tbody').find('tr').length > 0) {
                                     jQuery('.product_constractor_table tbody').find('tr:first').before(result);
                                 }
@@ -1296,8 +1303,6 @@ function AddConsumptionProducts() {
                 // if(selected_quantity > 0 && selected_quantity != "") {
                 // 	var limit = $('input[name = "stock_limit"]').val();
                 // 	var negative = $('input[name = "stock_negative"]').val();
-                // 	// console.log("limit : "+limit);
-                // 	// console.log("negative : "+negative);
                 // 	if(product != "" && selected_unit_type != "" && godown != "") {
                 //         if(jQuery('input[name="godown_id[]"]').length > 0) {
                 // 			if(jQuery('input[name="product_id[]"]').length > 0) {
@@ -1313,13 +1318,11 @@ function AddConsumptionProducts() {
                 // 							if(prev_unit_type == 1) {
                 // 								if(selected_unit_type == 1) {
                 // 									var total = perv_quantity + selected_quantity;
-                // 									console.log("total:" +total);
                 // 									if(parseFloat(total) > parseFloat(limit) && negative == 0) {
                 // 										limit_errors_check = 0;
                 // 									}
                 // 								} else if (selected_unit_type == 2) {
                 // 									var total = selected_quantity + parseFloat( perv_quantity/ selected_consumption_content);
-                // 									console.log("total:" +total);
                 // 									if(parseFloat(total) > parseFloat(limit) && negative == 0) {
                 // 										limit_errors_check = 0;
                 // 									}
@@ -1327,13 +1330,11 @@ function AddConsumptionProducts() {
                 // 							} else if(prev_unit_type == 2) {
                 // 								if(selected_unit_type == 1) {
                 // 									var total = parseFloat(perv_quantity / perv_subunit_contains) + parseFloat(selected_quantity);
-                // 									console.log("total:" +total);
                 // 									if(parseFloat(total) > parseFloat(limit) && negative == 0) {
                 // 										limit_errors_check = 0;
                 // 									}
                 // 								} else if(selected_unit_type == 2) {
                 // 									var total = perv_quantity + selected_quantity;
-                // 									console.log("total:" +total);
                 // 									if(parseFloat(total) > parseFloat(limit) && negative == 0) {
                 // 										limit_errors_check = 0;
                 // 									}
@@ -1346,7 +1347,6 @@ function AddConsumptionProducts() {
                 // 			}
                 //         }
                 //     }
-                // 	console.log("limitcheck "+ limit_errors_check);
                 // 	if(parseFloat(selected_quantity) > parseFloat(limit) && negative == 0) {
                 // 		limit_errors_check = 0;
                 // 	}
@@ -1379,7 +1379,6 @@ function AddConsumptionProducts() {
                         var post_url = "action_changes.php?product_consumption_row_index=" + product_count + "&godown=" + godown + "&product=" + product + "&selected_unit_type=" + selected_unit_type + "&selected_quantity=" + selected_quantity + "&unit_subunit=" + globalVar + "&selected_consumption_content=" + selected_consumption_content + "&subunit_need=" + subunit_need;
                         jQuery.ajax({
                             url: post_url, success: function (result) {
-                                console.log(result);
                                 if (jQuery('.product_consumption_table tbody').find('tr').length > 0) {
                                     jQuery('.product_consumption_table tbody').find('tr:first').before(result);
                                 }
@@ -1562,32 +1561,28 @@ function AddPurchaseProducts() {
                     amount = jQuery.trim(amount);
                     if (typeof amount == "undefined" || amount == "" || amount == 0) {
                         all_errors_check = 0;
-                    }
-                    else if (price_regex.test(amount) == false) {
+                    } else if (price_regex.test(amount) == false) {
                         all_errors_check = 0;
-                    }
-                    else if (parseFloat(amount) > 99999) {
+                    } else if (parseFloat(amount) > 99999) {
                         all_errors_check = 0;
                     }
                 }
 
                 var location_id = "";
-                if ($("select[name='location_type']").length > 0) {
-                    location_type = $("select[name='location_type']").val();
+                if (jQuery("select[name='location_type']").length > 0) {
+                    location_type = jQuery("select[name='location_type']").val();
                     if (location_type == "1") {
-                        if (product_group == "1") {
-                            location_id = $("select[name='selected_godown_id']").val();
-                        }
-                        else if (product_group == "2") {
-                            location_id = $("select[name='selected_magazine_id']").val();
+                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+                            location_id = jQuery("select[name='selected_godown_id']").val();
+                        } else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+                            location_id = jQuery("select[name='selected_magazine_id']").val();
                         }
                     }
                     else if (location_type == "2") {
-                        if (product_group == "1") {
-                            location_id = $("select[name='selected_godown_id']").val();
-                        }
-                        else if (product_group == "2") {
-                            location_id = $("select[name='selected_magazine_id']").val();
+                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+                            location_id = jQuery("select[name='selected_godown_id']").val();
+                        } else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+                            location_id = jQuery("select[name='selected_magazine_id']").val();
                         }
                     }
                 }
@@ -1629,7 +1624,6 @@ function AddPurchaseProducts() {
 
                         jQuery.ajax({
                             url: post_url, success: function (result) {
-                                console.log(result);
                                 if (jQuery('.purchase_entry_table tbody').find('tr').length > 0) {
                                     jQuery('.purchase_entry_table tbody').find('tr:first').before(result);
                                 }

@@ -166,21 +166,23 @@
             $ds_product_ids = $obj->getDeliveryProductsFromPI($show_proforma_invoice_id);
         }
 
-        $customer_list =array();
+        $customer_list = array();
         $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
-        $charges_list =array();
+        $charges_list = array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
-        $agent_list =array();
+        $agent_list = array();
         $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
-        $transport_list =array();
+        $transport_list = array();
         $transport_list = $obj->getTableRecords($GLOBALS['transport_table'], '', '', '');
-        $magazine_list =array();
+        $magazine_list = array();
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         $other_charges_list = array();
         $other_charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
-        $bank_list =array();
+        $bank_list = array();
         $bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '', '', '');
-        $product_list =array();
+        $finished_group_list = array();
+        $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
+        $product_list = array();
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794d7a4e664d44453d', '');
         $country = "India"; $state = "";
         $company_state = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'state');
@@ -402,6 +404,29 @@
                 </div>                   
             </div>    
             <div class="row justify-content-center p-3">
+                <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="selected_finished_group_id" data-dropdown-css-class="select2-danger"
+                                data-placeholder="Select a Finished Group" style="width: 100%;"
+                                onchange="GetFinishedGroupProducts();">
+                                <option value="">Select</option>
+                                <?php if (!empty($finished_group_list)) {
+                                    foreach ($finished_group_list as $fg) { ?>
+                                        <option value="<?php if (!empty($fg['finished_group_id'])) {
+                                            echo $fg['finished_group_id'];
+                                        } ?>">
+                                            <?php if (!empty($fg['finished_group_name'])) {
+                                                echo $obj->encode_decode('decrypt', $fg['finished_group_name']);
+                                            } ?>
+                                        </option>
+                                    <?php }
+                                } ?>
+                            </select>
+                            <label>Select Finished Group</label>
+                        </div>
+                    </div>        
+                </div>
                 <div class="col-lg-2 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -768,7 +793,8 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end total_tax">Total Tax :</td>
                                     <td class="text-end total_tax_value"></td>
                                 </tr>
-                                <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
+                                <!-- <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>"> -->
+                                <tr style="color:green;" class="d-none">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
                                         Commission : <?php if(!empty($agent_commission)){ echo $agent_commission;}?>
                                     </td>
@@ -1741,8 +1767,67 @@
                                 } ?>
                             </td>
                             <td> 
-                                <?php echo $obj->getStatusInfo($list['proforma_invoice_id']); ?>
-                                <!-- <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;"><i class="bi bi-info-circle text-dark"></i></a> -->
+                                <?php 
+                                    $status_list = array();
+                                    $status_list = $obj->getStatusInfo($list['proforma_invoice_id']); 
+
+                                    if(!empty($status_list)) {
+                                        ?>
+                                        <div class="tooltip-container">
+                                            <?php 
+                                                echo "(";
+                                                if(!empty($status_list['total_unit'])) {
+                                                    echo $status_list['total_unit'];
+                                                }
+                                                if(!empty($status_list['total_sub_unit'])) {
+                                                    echo " + " . $status_list['total_sub_unit'];
+                                                }
+                                                echo ") / ";
+                                                echo "(";
+                                                if(!empty($status_list['total_stock_unit'])) {
+                                                    echo $status_list['total_stock_unit'];
+                                                }
+                                                if(!empty($status_list['total_stock_sub_unit'])) {
+                                                    echo " + " . $status_list['total_stock_sub_unit'];
+                                                }
+                                                echo ")";
+                                            ?>
+                                            <div class="tooltip-text">
+                                                <?php
+                                                    echo "( ";
+                                                    if(!empty($status_list['total_unit'])) {
+                                                        echo $status_list['total_unit'];
+                                                    }
+                                                    if(!empty($status_list['unit_name'])) {
+                                                        echo " " . $status_list['unit_name'];
+                                                    }
+                                                    if(!empty($status_list['total_sub_unit'])) {
+                                                        echo " + " . $status_list['total_sub_unit'];
+                                                    }
+                                                    if(!empty($status_list['sub_unit_name'])) {
+                                                        echo " " . $status_list['sub_unit_name'];
+                                                    }
+                                                    echo " ) / (";
+                                                    if(!empty($status_list['total_stock_unit'])) {
+                                                        echo $status_list['total_stock_unit'];
+                                                    }
+                                                    if(!empty($status_list['stock_unit_name'])) {
+                                                        echo " " . $status_list['stock_unit_name'];
+                                                    }
+                                                    if(!empty($status_list['total_stock_sub_unit'])) {
+                                                        echo " + " . $status_list['total_stock_sub_unit'];
+                                                    }
+                                                    if(!empty($status_list['stock_sub_unit_name'])) {
+                                                        echo " " . $status_list['stock_sub_unit_name'];
+                                                    }
+                                                    echo " )";
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                    }
+                                ?><br>
+                                <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;"><i class="bi bi-info-circle text-dark"></i></a>
                             </td>
                             <td>
                                 <?php
@@ -1778,7 +1863,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                                     <li>
-                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_performa_invoice_a4.php?performa_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
+                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
                                                     </li>
                                                     <?php
                                                         if((!empty($proforma_actions) && ($show_bill == 0))) {
@@ -1906,6 +1991,48 @@
             <?php
         }
 
+    }
+
+    if(isset($_REQUEST['get_product_by_finished_group'])) {
+        $finished_group_id = $_REQUEST['finished_group_id'];
+
+        if(!empty($finished_group_id)) {
+            $product_list = array();
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'finished_group_id', $finished_group_id, '');
+            
+            if(!empty($product_list)) {
+                ?>
+                <option value="">Select</option>
+                <?php
+                foreach($product_list as $pl) {
+                    ?>
+                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>">
+                        <?php if (!empty($pl['product_name'])) {
+                            echo $obj->encode_decode('decrypt', $pl['product_name']);
+                        } ?>
+                    </option>
+                    <?php
+                }
+            }
+        } else {
+            $product_list = array();
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+            
+            if(!empty($product_list)) {
+                ?>
+                <option value="">Select</option>
+                <?php
+                foreach($product_list as $pl) {
+                    ?>
+                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>">
+                        <?php if (!empty($pl['product_name'])) {
+                            echo $obj->encode_decode('decrypt', $pl['product_name']);
+                        } ?>
+                    </option>
+                    <?php
+                }
+            }
+        }
     }
 
     if(isset($_REQUEST['product_row_index'])){

@@ -552,7 +552,7 @@
                             $customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'id', $customer_insert_id, 'customer_id');
                            	
                             $balance = 1;
-                            $result = array('number' => '1', 'msg' => 'customer Successfully Created','customer_id' => $customer_id);
+                            $result = array('number' => '1', 'msg' => 'Customer Successfully Created','customer_id' => $customer_id);
                             				
                         }
                         else {

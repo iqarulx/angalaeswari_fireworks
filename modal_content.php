@@ -227,3 +227,20 @@
         </div>
     </div>
 </div>
+
+<button type="button" data-toggle="modal" data-target="#PaymentReportModal" class="d-none payment_report_modal_button"></button>
+<!-- The Modal -->
+<div class="modal fade" id="PaymentReportModal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Payment Report</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>

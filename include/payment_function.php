@@ -187,7 +187,7 @@ class PaymentFunctions extends Basic_Functions {
         $select_query = ""; $list = array();
         if(!empty($party_id)) {
             
-            $select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE party_id = '".$party_id."' AND deleted = '0' ORDER BY bill_date ASC";
+            $select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE (party_id = '" . $party_id . "' OR agent_id = '" . $party_id . "') AND deleted = '0' ORDER BY bill_date ASC";
             
             $list = $this->getQueryRecords($GLOBALS['payment_table'], $select_query);
         }
@@ -325,4 +325,12 @@ class PaymentFunctions extends Basic_Functions {
         return $list;
     }
     
+    public function getCustomerList(){
+        $list = array(); $select_query = ""; $where = "";
+         $select_query = "SELECT * FROM " . $GLOBALS['customer_table'] . " WHERE agent_id = '' AND deleted = 0 ORDER BY id DESC";
+        if(!empty($select_query)) {
+            $list = $this->getQueryRecords('', $select_query);
+        }
+        return $list;
+    }
 }

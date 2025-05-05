@@ -14,8 +14,14 @@
 
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date("Y-m-d");
 
+    $agent_list = array();
+    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '','','');
+    
     $customer_list = array();
-	$customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '','','');
+    $customer_list = $obj->getCustomerList();
+
+    $party_list = array();
+    $party_list = array_merge($agent_list, $customer_list);
 
     $cancelled_bill = array(); $cancelled_count = 0;
     $cancelled_bill = $obj->getAllRecords($GLOBALS['receipt_table'], 'deleted', 1);
@@ -67,17 +73,32 @@
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
                                                         <select name="filter_party_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
-                                                            <option value = "">Select Party</option>  <?php
-                                                            if(!empty($customer_list)) {
-                                                                foreach($customer_list as $data) { ?>
-                                                                    <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
-                                                                        if(!empty($data['name_mobile_city'])) {
-                                                                            $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                                                            echo $data['name_mobile_city'];
-                                                                        } ?>
-                                                                    </option> <?php
-                                                                }
-                                                            } ?>
+                                                            <option value = "">Select Party</option>
+                                                            <?php
+                                                                if(!empty($party_list)) {
+                                                                    foreach($party_list as $data) { 
+                                                                        if(!empty($data['customer_id'])) {
+                                                                            ?>
+                                                                                <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
+                                                                                    if(!empty($data['name_mobile_city'])) {
+                                                                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                                        echo $data['name_mobile_city'];
+                                                                                    } ?>
+                                                                                </option>
+                                                                            <?php
+                                                                        } else if (!empty($data['agent_id'])) {
+                                                                            ?>
+                                                                                <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>"> <?php
+                                                                                    if(!empty($data['name_mobile_city'])) {
+                                                                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                                        echo $data['name_mobile_city'];
+                                                                                    } ?>
+                                                                                </option>
+                                                                            <?php
+                                                                        }
+                                                                    }
+                                                                } 
+                                                            ?>
                                                         </select>
                                                         <label>Select Party</label>
                                                     </div>

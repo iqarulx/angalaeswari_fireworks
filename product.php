@@ -13,7 +13,12 @@
     }
 
     $product_list = array(); $product_count = 0;
+
     $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
+
+    $finished_group_list = array();
+    $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
+
     $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
     if(!empty($product_list)){
         $product_count = count($product_list);
@@ -60,6 +65,25 @@
                                                         ?>
                                                     </select>
                                                     <label>Group</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 py-1">
+                                            <div class="form-group">
+                                                <div class="form-label-group in-border">
+                                                    <select class="select2 select2-danger Product_Fix_field" name="filter_finished_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="table_listing_records_filter();">
+                                                        <option value="">Select</option>
+                                                        <?php
+                                                            if($finished_group_list) {
+                                                                foreach($finished_group_list as $finished_group) { ?>
+                                                                    <option value="<?php if(!empty($finished_group['finished_group_id'])){ echo $finished_group['finished_group_id']; } ?>" <?php if(!empty($finished_group_id) && $finished_group_id == $finished_group['finished_group_id']) { ?>selected<?php } ?>>
+                                                                        <?php if(!empty($finished_group['finished_group_name'])) { echo $obj->encode_decode('decrypt', $finished_group['finished_group_name']); } ?>
+                                                                    </option>
+                                                                <?php }
+                                                            }
+                                                        ?>
+                                                    </select>
+                                                    <label>Finished Group</label>
                                                 </div>
                                             </div>
                                         </div>

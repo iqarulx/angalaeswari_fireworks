@@ -57,8 +57,7 @@
     $product_list = array();
     if(!empty($group_id)) {
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $group_id, '');
-    }
-    else {
+    } else {
         $product_list = $obj->getProducts('1');
     }
 
@@ -87,8 +86,7 @@
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
         $total_records_list = $obj->getConsumptionQtyList($contractor_id);
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
@@ -208,35 +206,36 @@
                                         </div>
                                     </div>
                                 </div>
-                                    <div class="col-lg-2 col-md-4 col-6">
-                                        <div class="form-group mb-1">
-                                            <div class="form-label-group in-border pb-2">
-                                                <select name="filter_contractor_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width:100%!important;" onchange="Javascript:getReport();">
-                                                    <option value="">Select</option>
-                                                    <?php
-                                                        if(!empty($contractor_list)) {
-                                                            foreach($contractor_list as $data) {
-                                                                if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
-                                                                    ?>
-                                                                    <option value="<?php echo $data['contractor_id']; ?>" <?php if(!empty($contractor_id) && $contractor_id == $data['contractor_id']) { ?>selected<?php } ?>>
-                                                                        <?php
-                                                                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
-                                                                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                                                            }
-                                                                        ?>
-                                                                    </option>
+                                <?php /*
+                                <div class="col-lg-2 col-md-4 col-6">
+                                    <div class="form-group mb-1">
+                                        <div class="form-label-group in-border pb-2">
+                                            <select name="filter_contractor_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width:100%!important;" onchange="Javascript:getReport();">
+                                                <option value="">Select</option>
+                                                <?php
+                                                    if(!empty($contractor_list)) {
+                                                        foreach($contractor_list as $data) {
+                                                            if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
+                                                                ?>
+                                                                <option value="<?php echo $data['contractor_id']; ?>" <?php if(!empty($contractor_id) && $contractor_id == $data['contractor_id']) { ?>selected<?php } ?>>
                                                                     <?php
-                                                                }
+                                                                        if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                                                            echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                        }
+                                                                    ?>
+                                                                </option>
+                                                                <?php
                                                             }
                                                         }
-                                                    ?>
-                                                </select>
-                                                <label>Contractor</label>
-                                            </div>
+                                                    }
+                                                ?>
+                                            </select>
+                                            <label>Contractor</label>
                                         </div>
                                     </div>
+                                </div>
+                                */ ?>
                                 <?php if(!empty($product_id)) { ?>
-
                                     <?php if($subunit_hide == '1') { ?>
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-1">

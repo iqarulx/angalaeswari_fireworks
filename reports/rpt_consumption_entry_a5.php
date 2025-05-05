@@ -172,7 +172,8 @@ $bill_to_y = $pdf->GetY();
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->SetX(10);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-$pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+// $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+$pdf->Cell(74, 4, '', 0, 1, 'L', 0);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(12);
@@ -191,7 +192,13 @@ if(!empty($contractor_details)) {
             }
         }
     }
+} else {
+    for($i = 0; $i < 3; $i++) {
+        $pdf->SetX(12);
+        $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+    }
 }
+
 $bill_to_y1 = $pdf->GetY();
 
 $pdf->SetY($bill_to_y);
@@ -200,7 +207,7 @@ $pdf->SetY($bill_to_y);
 $godown_name = ""; $godown_details ="";
 if(!empty($godown_id) && $godown_type == '1'){
     $pdf->SetFont('Arial', 'B', 10);
-    $pdf->SetX(75);
+    $pdf->SetX(12);
     $pdf->Cell(50, 5, 'Godown Details', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
 
@@ -213,7 +220,7 @@ if(!empty($godown_id) && $godown_type == '1'){
         }
 
     }
-    $pdf->SetX(80);
+    $pdf->SetX(12);
     // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_details)), 0, 1, 'L', 0);
     if(!empty($godown_details)) {
         for($i=0; $i<count($godown_details); $i++) {
@@ -222,7 +229,7 @@ if(!empty($godown_id) && $godown_type == '1'){
                 $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
             } 
             else {
-                $pdf->SetX(80);
+                $pdf->SetX(12);
                 $pdf->SetFont("Arial", "", 8);
                 if($godown_details[$i] != "NULL"){
                     $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
@@ -385,7 +392,8 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetX(10);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-            $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+            // $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+            $pdf->Cell(74, 4, '', 0, 1, 'L', 0);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->SetX(12);
@@ -404,7 +412,13 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
                         }
                     }
                 }
+            } else {
+                for($i = 0; $i < 3; $i++) {
+                    $pdf->SetX(12);
+                    $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+                }
             }
+            
             $bill_to_y1 = $pdf->GetY();
             
             $pdf->SetY($bill_to_y);
@@ -413,14 +427,14 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
             
             if(!empty($godown_id) && $godown_type == '1'){
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->SetX(75);
+                $pdf->SetX(12);
                 $pdf->Cell(50, 5, 'Godown Details', 0, 1, 'L', 0);
                 $pdf->SetFont('Arial', 'B', 9);
             
                 for($i = 0;$i <count($godown_id);$i++){
                     $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_name');
                 }
-                $pdf->SetX(80);
+                $pdf->SetX(12);
                 // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
                 if(!empty($godown_details)) {
                     for($i=0; $i<count($godown_details); $i++) {
@@ -429,7 +443,7 @@ if (!empty($view_consumption_entry_id) && !empty($product_id)) {
                             $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
                         } 
                         else {
-                            $pdf->SetX(80);
+                            $pdf->SetX(12);
                             $pdf->SetFont("Arial", "", 8);
                             if($godown_details[$i] != "NULL"){
                                 $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
@@ -692,12 +706,12 @@ if (($footer_height + $end_y) > 190) {
 
     $pdf->SetY($header_end);
 
-
     $bill_to_y = $pdf->GetY();
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(10);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-    $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+    // $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+    $pdf->Cell(74, 4, '', 0, 1, 'L', 0);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetX(12);
@@ -716,7 +730,13 @@ if (($footer_height + $end_y) > 190) {
                 }
             }
         }
+    } else {
+        for($i = 0; $i < 3; $i++) {
+            $pdf->SetX(12);
+            $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+        }
     }
+    
     $bill_to_y1 = $pdf->GetY();
 
     $pdf->SetY($bill_to_y);
@@ -724,14 +744,14 @@ if (($footer_height + $end_y) > 190) {
     
     if(!empty($godown_id) && $godown_type == '1'){
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->SetX(75);
+        $pdf->SetX(12);
         $pdf->Cell(50, 5, 'Godown Details', 0, 1, 'L', 0);
         $pdf->SetFont('Arial', 'B', 9);
 
         for($i = 0;$i <count($godown_id);$i++){
             $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'],'godown_id',$godown_id[$i],'godown_name');
         }
-        $pdf->SetX(80);
+        $pdf->SetX(12);
         // $pdf->cell(60, 5, html_entity_decode($obj->encode_decode("decrypt", $godown_name)), 0, 1, 'L', 0);
         if(!empty($godown_details)) {
             for($i=0; $i<count($godown_details); $i++) {
@@ -740,7 +760,7 @@ if (($footer_height + $end_y) > 190) {
                     $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);
                 } 
                 else {
-                    $pdf->SetX(80);
+                    $pdf->SetX(12);
                     $pdf->SetFont("Arial", "", 8);
                     if($godown_details[$i] != "NULL"){
                         $pdf->cell(60, 5, $godown_details[$i], 0, 1, 'L', 0);

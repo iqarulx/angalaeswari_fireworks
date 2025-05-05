@@ -35,8 +35,47 @@
 	<?php 
 	include "link_style_script.php"; ?>
     <script src="include/js/creation_modules.js"></script>
-    <script src="include/js/performa_invoice.js"></script>
+    <script src="include/js/proforma_invoice.js"></script>
     <script src="include/js/common.js"></script>
+    <style>
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            /* font-weight: bold; */
+        }
+
+        .tooltip-text {
+            position: fixed;
+            bottom: auto;
+            left: auto;
+            top: 0;
+            right: 0;
+
+            visibility: hidden;
+            max-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: normal;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translate(-50%, -100%);
+        }
+    </style>
 </head>	
 <body>
 <?php include "header.php"; ?>

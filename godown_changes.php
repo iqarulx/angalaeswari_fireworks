@@ -200,7 +200,7 @@
             $godown_name_error = "Only 50 characters allowed";
         }
         else {
-            $godown_name_error = $valid->valid_company_name($godown_name,'godown Name','1');
+            $godown_name_error = $valid->valid_company_name($godown_name,'Godown Name','1');
         }
         if(empty($godown_name_error) && empty($edit_id)) {
             $godown_list = array(); $godown_count = 0;
@@ -719,7 +719,7 @@
             <thead class="bg-light">
                 <tr>
                     <th>S.No</th>
-                    <th>godown Name</th>
+                    <th>Godown Name</th>
                     <th>Incharge Name</th>
                     <th>Action</th>
                 </tr>

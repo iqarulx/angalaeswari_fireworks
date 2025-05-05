@@ -652,7 +652,6 @@ function CheckCharges() {
         var charges_count = 0;
         charges_count = jQuery('input[name="charges_count"]').val();
         charges_count = parseInt(charges_count);
-        console.log("==><== ", jQuery('.charges_row').length);
         if (jQuery('.charges_row').length > 0) {
             jQuery('.charges_row').each(function () {
                 if (jQuery(this).find('span.infos').length > 0) {
@@ -934,7 +933,6 @@ function getRateByTaxOption() {
         tax_option = jQuery('select[name="tax_option"]').val();
         tax_option = jQuery.trim(tax_option);
     }
-    // console.log(tax_option);
     var tax_type = "";
     if (jQuery('select[name="tax_type"]').length > 0) {
         tax_type = jQuery('select[name="tax_type"]').val();
@@ -976,13 +974,11 @@ function getRateByTaxOption() {
                     selected_rate = jQuery(this).find('input[name="entry_rate[]"]').val();
                     selected_rate = jQuery.trim(selected_rate);
                 }
-                console.log(selected_rate, "<br>", unit_type, "<br>", per_type, "<br>", per, "<br>", content);
                 if (unit_type == '1') {
                     if (per_type == '1') {
                         final_rate = parseFloat(selected_rate) / parseFloat(per);
                     }
                     else if (per_type == '2') {
-                        // console.log("hello");
                         rate_per_piece = parseFloat(selected_rate) / parseFloat(per);
                         final_rate = parseFloat(rate_per_piece) * parseFloat(content);
                     }
@@ -1018,7 +1014,6 @@ function getRateByTaxOption() {
                             }
                         }
                     }
-                    console.log(final_rate + "jai" + tax);
                     if (price_regex.test(final_rate) == true) {
                         if (price_regex.test(tax) == true) {
                             if (tax_option == 2) {
@@ -1266,7 +1261,6 @@ function GetChargesType(obj) {
     jQuery.ajax({
         url: post_url, success: function (result) {
             result = jQuery.trim(result);
-            console.log("001=>", result);
             if (jQuery(obj).closest('.charges_row').find('input[name="charges_type[]"]').length > 0) {
                 jQuery(obj).closest('.charges_row').find('input[name="charges_type[]"]').val(result);
             }
@@ -1285,7 +1279,6 @@ function SupplierState(id) {
                 var post_url = "action_changes.php?get_supplier_state=" + id;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
-                        console.log(result);
                         if (result != "") {
                             if (jQuery('input[name="party_state"]').length > 0) {
                                 jQuery('input[name="party_state"]').val(result);
@@ -1315,7 +1308,6 @@ function GetStockLimit() {
                 var post_url = "action_changes.php?get_limit_product=" + product + "&unit_type=" + unit_type + "&content=" + content + "&godown=" + godown;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
-                        // console.log(result,"<==");
                         if (result != "") {
                             if (jQuery('input[name="stock_limit"]').length > 0) {
                                 jQuery('input[name="stock_limit"]').val(result);
@@ -1332,7 +1324,7 @@ function GetStockLimit() {
 }
 
 function show_godown_magazine(product_group) {
-    if (product_group == "1") {
+    if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
         if ($(".div_selected_godown").length > 0) {
             $(".div_selected_godown").removeClass("d-none")
         }
@@ -1342,8 +1334,7 @@ function show_godown_magazine(product_group) {
         if ($("select[name='selected_magazine_id']").length > 0) {
             $("select[name='selected_magazine_id']").val("").trigger("change")
         }
-    }
-    else if (product_group == "2") {
+    } else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
         if ($(".div_selected_magazine").length > 0) {
             $(".div_selected_magazine").removeClass("d-none")
         }

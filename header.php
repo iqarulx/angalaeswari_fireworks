@@ -22,7 +22,7 @@
 
         $sidebar_admin_user = 0;
         $login_user_name = ""; $login_user_type = ""; $login_role_id = ""; $login_role_name = "";
-        $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_group = 0; $sidebar_unit = 0; $sidebar_product = 0; $sidebar_supplier = 0; $sidebar_contractor = 0; $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_transport = 0; $sidebar_charges = 0; $sidebar_purchase_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0; $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_delivery_slip = 0; $sidebar_estimate = 0; $sidebar_expense_category = 0; $sidebar_expense_entry = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_reports = 0;
+        $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_group = 0; $sidebar_unit = 0; $sidebar_product = 0; $sidebar_supplier = 0; /* $sidebar_contractor = 0; */ $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_transport = 0; $sidebar_charges = 0; $sidebar_purchase_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0; $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_delivery_slip = 0; $sidebar_estimate = 0; $sidebar_expense_category = 0; $sidebar_expense_entry = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_reports = 0;
         if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
             $login_user_name = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'], 'name');
             if(!empty($login_user_name) && $login_user_name != $GLOBALS['null_value']) {
@@ -60,7 +60,7 @@
                         $sidebar_unit = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['unit_module']);
                         $sidebar_product = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['product_module']);
                         $sidebar_supplier = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['supplier_module']);
-                        $sidebar_contractor = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['contractor_module']);
+                        // $sidebar_contractor = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['contractor_module']);
                         $sidebar_agent = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['agent_module']);
                         $sidebar_customer = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['customer_module']);
                         $sidebar_payment_mode = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['payment_mode_module']);
@@ -379,7 +379,7 @@
                                 <i class="bi bi-person-circle"></i> <span>Admin</span>
                             </a>
                             <div class="collapse menu-dropdown" id="admin">
-                                <ul class="nav nav-sm flex-column">
+                                <ul class="nav nav-lg flex-column">
                                     <?php if($login_user_type == $GLOBALS['admin_user_type']) { ?>
                                         <li class="nav-item" id="company">
                                             <a href="company.php" class="nav-link"><i class="bi bi-dash"></i> Company </a>
@@ -397,7 +397,7 @@
                             </div>
                         </li>
                     <?php } ?>
-                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1') || (!empty($sidebar_group) && $sidebar_group == '1') || (!empty($sidebar_unit) && $sidebar_unit == '1') || (!empty($sidebar_product) && $sidebar_product == '1') || (!empty($sidebar_supplier) && $sidebar_supplier == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1') || (!empty($sidebar_agent) && $sidebar_agent == '1') || (!empty($sidebar_customer) && $sidebar_customer == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1') || (!empty($sidebar_group) && $sidebar_group == '1') || (!empty($sidebar_unit) && $sidebar_unit == '1') || (!empty($sidebar_product) && $sidebar_product == '1') || (!empty($sidebar_supplier) && $sidebar_supplier == '1') || /* (!empty($sidebar_contractor) && $sidebar_contractor == '1') || */ (!empty($sidebar_agent) && $sidebar_agent == '1') || (!empty($sidebar_customer) && $sidebar_customer == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#creation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="company">
                                 <i class="bi bi-folder-plus"></i> <span>Creation</span>
@@ -424,6 +424,11 @@
                                             <a href="group.php" class="nav-link"><i class="bi bi-dash"></i><span>Group</span></a>
                                         </li>
                                     <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1')) { ?>
+                                        <li class="nav-item" id="finished_group">
+                                            <a href="finished_group.php" class="nav-link"><i class="bi bi-dash"></i><span>Finished Group</span></a>
+                                        </li>
+                                    <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_unit) && $sidebar_unit == '1')) { ?>
                                         <li class="nav-item" id="unit">
                                             <a href="unit.php" class="nav-link"><i class="bi bi-dash"></i><span>Unit</span></a>
@@ -439,11 +444,11 @@
                                             <a href="supplier.php" class="nav-link"><i class="bi bi-dash"></i><span>Supplier</span></a>
                                         </li>
                                     <?php } ?>
-                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1')) { ?>
+                                    <?php /* if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1')) { ?>
                                         <li class="nav-item" id="contractor">
                                             <a href="contractor.php" class="nav-link"><i class="bi bi-dash"></i><span>Contractor</span></a>
                                         </li>
-                                    <?php } ?>
+                                    <?php } */ ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_agent) && $sidebar_agent == '1')) { ?>
                                         <li class="nav-item" id="agent">
                                             <a href="agent.php" class="nav-link"><i class="bi bi-dash"></i><span>Agent</span></a>
@@ -566,12 +571,12 @@
                                     <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_voucher) && $sidebar_voucher == '1')) { ?>
                                         <li class="nav-item" id="voucher">
-                                            <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i> Voucher </a>
+                                            <a href="voucher.php" class="nav-link"><i class="bi bi-dash"></i> Purchase (Voucher) </a>
                                         </li>
                                     <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_receipt) && $sidebar_receipt == '1')) { ?>
                                         <li class="nav-item" id="receipt">
-                                            <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i> Receipt </a>
+                                            <a href="receipt.php" class="nav-link"><i class="bi bi-dash"></i> Sales (Receipt) </a>
                                         </li>
                                     <?php } ?>
                                 </ul>

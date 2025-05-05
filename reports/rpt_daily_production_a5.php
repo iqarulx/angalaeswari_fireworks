@@ -175,7 +175,8 @@ $bill_to_y = $pdf->GetY();
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->SetX(10);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-$pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+// $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+$pdf->Cell(74, 4, '', 0, 1, 'L', 0);
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(12);
@@ -194,13 +195,19 @@ if(!empty($contractor_details)) {
             }
         }
     }
+} else {
+    for($i = 0; $i < 3; $i++) {
+        $pdf->SetX(12);
+        $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+    }
 }
+
 $bill_to_y1 = $pdf->GetY();
 
 $pdf->SetY($bill_to_y);
 
 $pdf->SetFont('Arial', 'B', 10);
-$pdf->SetX(75);
+$pdf->SetX(12);
 $pdf->Cell(50, 4, 'Magazine Details', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', 'B', 9);
 
@@ -208,12 +215,12 @@ $pdf->SetFont('Arial', 'B', 9);
 if(!empty($magazine_details)) {
     for($i=0; $i<count($magazine_details); $i++) {
         if($i==0) {
-            $pdf->SetX(80);
+            $pdf->SetX(12);
             $pdf->SetFont("Arial", "B", 10);
             $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
         } 
         else {
-            $pdf->SetX(80);
+            $pdf->SetX(12);
             $pdf->SetFont("Arial", "", 8);
             if($magazine_details[$i] != "NULL"){
                 $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
@@ -332,7 +339,8 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetX(10);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-            $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+            // $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+            $pdf->Cell(74, 4, '', 0, 1, 'L', 0);
             $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->SetX(12);
@@ -351,7 +359,13 @@ if (!empty($view_daily_production_id) && !empty($product_ids)) {
                         }
                     }
                 }
+            } else {
+                for($i = 0; $i < 3; $i++) {
+                    $pdf->SetX(12);
+                    $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+                }
             }
+            
             $bill_to_y1 = $pdf->GetY();
             
             $pdf->SetY($bill_to_y);
@@ -538,7 +552,8 @@ if (($footer_height + $end_y) > 190) {
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(10);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-    $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+    // $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
+    $pdf->Cell(74, 4, '', 0, 1, 'L', 0);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetX(12);
@@ -557,7 +572,13 @@ if (($footer_height + $end_y) > 190) {
                 }
             }
         }
+    } else {
+        for($i = 0; $i < 3; $i++) {
+            $pdf->SetX(12);
+            $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+        }
     }
+    
     $bill_to_y1 = $pdf->GetY();
 
     $pdf->SetY($bill_to_y);

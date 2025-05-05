@@ -12,7 +12,7 @@
 	if(isset($_REQUEST['show_product_id'])) { 
         $show_product_id = $_REQUEST['show_product_id'];
         $show_product_id = trim($show_product_id);
-        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";$hsn_code = "";$group_lowercase ="";
+        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";$hsn_code = "";$group_lowercase =""; $description = ""; $finished_group_id = "";
 
         if (!empty($show_product_id)) {
             $product_list = array();
@@ -74,11 +74,20 @@
                     if(!empty($data['hsn_code']) && $data['hsn_code'] != $GLOBALS['null_value']) {
                         $hsn_code = $data['hsn_code'];
                     }
-    
+                    if(!empty($data['description']) && $data['description'] != $GLOBALS['null_value']) {
+                        $description = $obj->encode_decode('decrypt', $data['description']);
+                    }
+                    if(!empty($data['finished_group_id']) && $data['finished_group_id'] != $GLOBALS['null_value']) {
+                        $finished_group_id = $data['finished_group_id'];
+                    }
                 }
             }
         }
         $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
+
+        $finished_group_list = array();
+        $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
+
         $unit_list = $obj->getTableRecords($GLOBALS['unit_table'], '', '', '');
 
         $linked_count = 0;
@@ -270,6 +279,43 @@
                             </div>
                         </div>
                     </div>     
+                </div>
+                <div class="col-lg-3 col-md-4 col-12 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <textarea class="form-control" id="description" name="description" placeholder="Enter Your Description" onkeydown="Javascript:KeyboardControls(this,'',150,'');InputBoxColor(this,'text');"><?php if(!empty($description)) { echo $description; } ?></textarea>
+                            <label>Description</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 py-2 finished_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="finished_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select Filter Group</option>
+                                <?php
+                                    if (!empty($finished_group_list)) {
+                                        foreach ($finished_group_list as $data) {
+                                            if (!empty($data['finished_group_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['finished_group_name'])) {
+                                                        $data['finished_group_name'] = $obj->encode_decode('decrypt', $data['finished_group_name']);
+                                                        echo $data['finished_group_name'];
+                                                    }
+                                                    ?>
+
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Finished Group</label>
+                        </div>
+                    </div> 
                 </div>
             </div>
             <div class="row justify-content-center p-3">
@@ -473,12 +519,12 @@
             $filter_group = $_POST['filter_group'];
         }
 
-        $total_records_list = array();
-        if(!empty($filter_group)) {
-            $total_records_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $filter_group, 'DESC');
-        } else {
-            $total_records_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', 'DESC');
+        if (isset($_POST['filter_finished_group'])) {
+            $filter_finished_group = $_POST['filter_finished_group'];
         }
+
+        $total_records_list = array();
+        $total_records_list = $obj->getProductsListing($filter_group, $filter_finished_group);
 
         if (!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -806,7 +852,8 @@
 
     if (isset($_POST['edit_id'])) {
         $product_name = ""; $product_name_error = ""; $unit_id = ""; $unit_id_error = ""; $subunit_id = ""; $subunit_id_error = ""; $subunit_contains = ""; $subunit_contains_error = ""; $sales_rate = ""; $sales_rate_error = ""; $per = ""; $per_error = ""; $per_type = ""; $per_type = ""; $opening_stock = array(); $stock_unique_ids = array();
-        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();$hsn_code = ""; $hsn_code_error = ""; $group_lowercase = "";
+        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();$hsn_code = ""; $hsn_code_error = ""; $group_lowercase = ""; $description = ""; $finished_group_id = "";
+
         if (isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
             $edit_id = trim($edit_id);
@@ -854,6 +901,16 @@
             } else {
                 $valid_product = $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
             }
+        }
+
+        if(isset($_POST['description'])) {
+            $description = $_POST['description'];
+            $description = trim($description);
+        }
+
+        if(isset($_POST['finished_group_id'])) {
+            $finished_group_id = $_POST['finished_group_id'];
+            $finished_group_id = trim($finished_group_id);
         }
 
         if (isset($_POST['unit_id'])) {
@@ -1215,6 +1272,15 @@
             if (empty($hsn_code)) {
                 $hsn_code = $GLOBALS['null_value'];
             }
+            if (!empty($description)) {
+                $description = $obj->encode_decode('encrypt', $description);
+            } else {
+                $description = $GLOBALS['null_value'];
+            }
+            if (empty($finished_group_id)) {
+                $finished_group_id = $GLOBALS['null_value'];
+            }
+
             $prev_product_id = "";
             $product_error = "";
             if (!empty($lower_case_name)) {
@@ -1235,8 +1301,8 @@
                         $action = "New Product Created - " . $obj->encode_decode("decrypt", $product_name);
                     }
                     $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name','hsn_code', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name','hsn_code', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'description', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $description . "'", "'0'");
                     $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values, 'product_id', '', $action);
                     if (preg_match("/^\d+$/", $product_insert_id)) {
                         $product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'id', $product_insert_id, 'product_id');
@@ -1263,8 +1329,8 @@
 
                         $columns = array();
                         $values = array();
-                        $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name','hsn_code', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece');
-                        $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'");
+                        $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name','hsn_code', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'description');
+                        $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $description . "'",);
                         $entry_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
                         if (preg_match("/^\d+$/", $entry_update_id)) {
                             $update_stock = 1;

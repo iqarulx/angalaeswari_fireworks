@@ -171,17 +171,16 @@
                                                     <div class="form-label-group in-border mb-0">
                                                         <select class="select2 select2-danger" name="filter_party_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getPartyType(this.value);">
                                                             <option value="">Select </option> <?php 
-                                                            if($filter_bill_type == "1"){ ?>
+                                                            if($filter_bill_type == "1") { ?>
                                                                 <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
-                                                                <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> <?php 
-                                                            }
-                                                            else if($filter_bill_type == "2"){ ?>
+                                                                <?php /* <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> */ ?> <?php 
+                                                            } else if($filter_bill_type == "2") { ?>
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
-                                                            }else{ ?>
+                                                            } else { ?>
                                                                 <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
-                                                                <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> 
+                                                                <?php /* <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> */ ?> 
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
                                                             } ?>
                                                         </select>
@@ -195,17 +194,21 @@
                                                         <select class="select2 select2-danger" name="filter_party_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport();">
                                                             <option value="">Select Party Name</option> <?php
                                                             if(!empty($party_list)) {
-                                                                foreach($party_list as $data) { ?>
-                                                                    <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>"<?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>> <?php
-                                                                        if(!empty($data['party_name'])) {
-                                                                            $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
-                                                                            echo $data['party_name'];
-                                                                            if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
-                                                                                $data['mobile_number'] = $obj->encode_decode('decrypt', $data['mobile_number']);
-                                                                                echo " - ".$data['mobile_number'];
-                                                                            }
-                                                                        } ?>
-                                                                    </option> <?php
+                                                                foreach($party_list as $data) { 
+                                                                    if(!empty($data['party_id']) && $data['party_id'] != "NULL") {
+                                                                    ?>
+                                                                        <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>"<?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>> <?php
+                                                                            if(!empty($data['party_name']) && $data['party_name'] != "NULL") {
+                                                                                $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
+                                                                                echo $data['party_name'];
+                                                                                if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
+                                                                                    $data['mobile_number'] = $obj->encode_decode('decrypt', $data['mobile_number']);
+                                                                                    echo " - ".$data['mobile_number'];
+                                                                                }
+                                                                            } ?>
+                                                                        </option>
+                                                                    <?php
+                                                                    }
                                                                 }
                                                             } ?>
                                                         </select>
@@ -380,21 +383,22 @@
                                                                         }
                                                                         ?>
                                                                 
-                                                                        <tr style="cursor:pointer">
+                                                                        <tr>
                                                                             <td class="text-center px-2 py-2"><?php echo $index; ?></td>
                                                                             <td class="text-center px-2 py-2">
                                                                                 <?php echo date('d-m-Y', strtotime($data['bill_date'])); ?>
                                                                             </td>
-                                                                            <td class="text-center px-2 py-2">
+                                                                            <td class="text-center px-2 py-2" style="cursor:pointer" onclick="Javascript:showBill('<?php echo $data['bill_id']; ?>', '<?php echo $data['bill_type']; ?>');">
                                                                                 <?php if(!empty($data['bill_number']) && $data['bill_number'] != $GLOBALS['null_value']) {
-                                                                                    echo $data['bill_number']; 
-                                                                                }
-                                                                                else {
+                                                                                    echo trim($data['bill_number']); 
+                                                                                } else {
                                                                                     echo "-";
                                                                                 }
                                                                                 ?>
                                                                                 &nbsp;
-                                                                                <span style="font-size:9px;cursor:pointer;" onclick="Javascript:ShowBillPDF('<?php if(!empty($data['bill_id']) && $data['bill_id'] != $GLOBALS['null_value']) { echo $data['bill_id']; } ?>', '<?php if(!empty($data['bill_type']) && $data['bill_type'] != $GLOBALS['null_value']) { echo $data['bill_type']; } ?>')"></span>
+                                                                                <span style="font-size:9px;cursor:pointer;" onclick="Javascript:ShowBillPDF('<?php if(!empty($data['bill_id']) && $data['bill_id'] != $GLOBALS['null_value']) { echo $data['bill_id']; } ?>', '<?php if(!empty($data['bill_type']) && $data['bill_type'] != $GLOBALS['null_value']) { echo $data['bill_type']; } ?>')">
+                                                                                <i class="bi bi-eye"></i>
+                                                                                </span>
                                                                             </td>
                                                                             <td>
                                                                                 <?php echo $data['bill_type']; ?>
@@ -529,12 +533,11 @@
 </script>
 <script type="text/javascript">
     function getOverallReport(){
-       
         if(jQuery('form[name="payment_report_form"]').length > 0){
             jQuery('form[name="payment_report_form"]').submit();
         }
-
     }
+   
     function getBillType(bill_type){
         if(jQuery('select[name="filter_bill_type"]').length > 0) {
             jQuery('select[name="filter_bill_type"]').val(bill_type);
@@ -547,6 +550,7 @@
             jQuery('form[name="payment_report_form"]').submit();
         }
     }
+   
     function getPartyType(party_type){
         if(jQuery('select[name="filter_party_type"]').length > 0) {
             jQuery('select[name="filter_party_type"]').val(party_type);
@@ -560,7 +564,6 @@
         }
     }
    
-    
     function ExportToExcel(type, fn, dl) {
         jQuery('.header').removeClass('d-none');
         
@@ -587,22 +590,39 @@
         type = type.trim();
         if(type == 'Receipt') {
             url = "reports/rpt_receipt_a5.php?view_receipt_id="+bill_id;
-        }
-        else if(type == 'Voucher') {
+        } else if(type == 'Voucher') {
             url = "reports/rpt_voucher_a5.php?view_voucher_id="+bill_id;
-        }
-        else if(type == 'Expense') {
+        } else if(type == 'Expense') {
             url = "reports/rpt_expense_entry_a5.php?view_expense_id="+bill_id;
-        }
-        else if(type == 'Estimate') {
+        } else if(type == 'Estimate') {
             url = "reports/rpt_estimate_a4.php?view_estimate_id="+bill_id;
-        }
-        else if(type == 'Purchase') {
+        } else if(type == 'Purchase') {
             url = "reports/rpt_purchase_bill_a4.php?view_purchase_bill_id="+bill_id;
         }
         
         if(url != "") {
             window.open(url, "_blank");
         }
+    }
+
+    function showBill(bill_id, type) {
+        // var post_url = "proforma_invoice_changes.php?status_proforma_invoice_id=" + proforma_invoice_id;
+        // jQuery.ajax({
+        //     url: post_url, success: function (result) {
+        //         result = result.trim();
+                if (jQuery('.payment_report_modal_button').length > 0) {
+                    jQuery('.payment_report_modal_button').trigger('click');
+                }
+
+                // if (jQuery('#ViewOrderDetailsModal').length > 0) {
+                //     if (jQuery('#ViewOrderDetailsModal').find('.modal-title').length > 0) {
+                //         jQuery('#ViewOrderDetailsModal').find('.modal-title').html('Proforma Invoice Details');
+                //     }
+                //     if (jQuery('#ViewOrderDetailsModal').find('.modal-body').length > 0) {
+                //         jQuery('#ViewOrderDetailsModal').find('.modal-body').html(result);
+                //     }
+                // }
+    //         }
+    //     });
     }
 </script>

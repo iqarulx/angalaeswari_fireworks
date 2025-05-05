@@ -7,8 +7,8 @@ include("../include/number2words.php");
 if(isset($_REQUEST['proforma_invoice_id'])) {
     $proforma_invoice_id = $_REQUEST['proforma_invoice_id'];
     $pdf_download_name ="";
-    $pdf_download_name = "proforma Invice Report PDF";
-    $proforma_invoice_number = ""; $proforma_invoice_date = date('d-m-Y'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $transport_name = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
+    $pdf_download_name = "Proforma Invice Report PDF";
+    $proforma_invoice_number = ""; $proforma_invoice_date = date('d-m-Y'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
     $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0;
 
     if(!empty($proforma_invoice_id)) {
@@ -33,7 +33,6 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                 }
                 if(!empty($pi['transport_id'])) {
                     $transport_id = $pi['transport_id'];
-                    $transport_name = $obj->encode_decode('decrypt', $obj->getTableColumnValue($GLOBALS['transport_table'], 'transport_id', $transport_id, 'transport_name'));
                 }
                 if(!empty($pi['bank_id'])) {
                     $bank_id = $pi['bank_id'];
@@ -169,10 +168,8 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         }
     }
 
-    // require_once('../fpdf/fpdf.php');
-    // $pdf = new FPDF('P','mm','A4');
-    require_once('../fpdf/AlphaPDF.php');
-    $pdf = new AlphaPDF('P','mm','A4');
+    require_once('../fpdf/fpdf.php');
+    $pdf = new FPDF('P','mm','A4');
     $pdf->AliasNbPages(); 
     $pdf->AddPage();
     $pdf->SetAutoPageBreak(false);
@@ -181,18 +178,9 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $file_name="Proforma Invoice";
     include("rpt_header.php");
 
-    if(!empty($company_logo)) {
-        $pdf->SetAlpha(0.2);
-        if(!empty($company_logo)){
-            if(file_exists('../include/images/upload/'.$company_logo)){
-                $pdf->Image('../include/images/upload/'.$company_logo,55,100,85,85);
-            }
-        }
-        
-        $pdf->SetAlpha(1);
-    }   
+
     $pdf->SetY($header_end);
-    $pdf->Cell(20,10,'To :',0,1,'C',0);   
+    $pdf->Cell(20,10,'To :',0,1,'C',0);
     if (!empty($customer_details)) {
         for ($i = 0; $i < count($customer_details); $i++) {
             $customer_details[$i] = trim($customer_details[$i]);
@@ -205,17 +193,12 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
 
     $detials_y = $pdf->GetY();
     $pdf->SetY($header_end);
-    $pdf->SetX(110);   
-    $pdf->Cell(20,10,'Bill Date',0,0,'L',0);   
+    $pdf->SetX(110);
+    $pdf->Cell(20,10,'Bill Date',0,0,'L',0);
     $pdf->Cell(30,10,":  ".$proforma_invoice_date,0,1,'L',0);
-    $pdf->SetX(110);   
-    $pdf->Cell(20,10,'Bill No',0,0,'L',0);   
+    $pdf->SetX(110);
+    $pdf->Cell(20,10,'Bill No',0,0,'L',0);
     $pdf->Cell(30,10,":  ".$proforma_invoice_number,0,1,'L',0);
-    if(!empty($transport_name)) {
-        $pdf->SetX(110);   
-        $pdf->Cell(20,10,'Transport',0,0,'L',0);   
-        $pdf->Cell(30,10,":  ".$transport_name,0,1,'L',0);
-    }
     $bill_y = $pdf->GetY();
 
     if($detials_y > $bill_y) {
@@ -275,10 +258,8 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             
             $pdf->SetY($header_end);
 
-       
             $pdf->SetY($header_end);
             $pdf->Cell(20,10,'To :',0,1,'C',0);
-       
             if (!empty($customer_details)) {
                 for ($i = 0; $i < count($customer_details); $i++) {
                     $customer_details[$i] = trim($customer_details[$i]);
@@ -292,21 +273,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $detials_y = $pdf->GetY();
             $pdf->SetY($header_end);
             $pdf->SetX(110);
-       
             $pdf->Cell(20,10,'Bill Date',0,0,'L',0);
-       
             $pdf->Cell(30,10,":  ".$proforma_invoice_date,0,1,'L',0);
             $pdf->SetX(110);
-       
             $pdf->Cell(20,10,'Bill No',0,0,'L',0);
-       
             $pdf->Cell(30,10,":  ".$proforma_invoice_number,0,1,'L',0);
-            if(!empty($transport_name)) {
-                $pdf->SetX(110);   
-                $pdf->Cell(20,10,'Transport',0,0,'L',0);   
-                $pdf->Cell(30,10,":  ".$transport_name,0,1,'L',0);
-            }
-
             $bill_y = $pdf->GetY();
         
             if($detials_y > $bill_y) {
@@ -328,7 +299,6 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->Cell(18,8,'Per',1,0,'C',0);
             $pdf->Cell(20,8,'Amount(Rs.)',1,1,'C',0);
             $pdf->SetFont('Arial','',8);
-            $pdf->SetTextColor(0,0,0);
 
             $y_axis=$pdf->GetY();
         }
@@ -410,10 +380,8 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             
             $pdf->SetY($header_end);
 
-       
             $pdf->SetY($header_end);
             $pdf->Cell(20,10,'To :',0,1,'C',0);
-       
             if (!empty($customer_details)) {
                 for ($i = 0; $i < count($customer_details); $i++) {
                     $customer_details[$i] = trim($customer_details[$i]);
@@ -427,20 +395,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $detials_y = $pdf->GetY();
             $pdf->SetY($header_end);
             $pdf->SetX(110);
-       
             $pdf->Cell(20,10,'Bill Date',0,0,'L',0);
-       
             $pdf->Cell(30,10,":  ".$proforma_invoice_date,0,1,'L',0);
             $pdf->SetX(110);
-       
             $pdf->Cell(20,10,'Bill No',0,0,'L',0);
-       
             $pdf->Cell(30,10,":  ".$proforma_invoice_number,0,1,'L',0);
-            if(!empty($transport_name)) {
-                $pdf->SetX(110);   
-                $pdf->Cell(20,10,'Transport',0,0,'L',0);   
-                $pdf->Cell(30,10,":  ".$transport_name,0,1,'L',0);
-            }
             $bill_y = $pdf->GetY();
         
             if($detials_y > $bill_y) {
@@ -452,8 +411,6 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->SetFont('Arial','B',8);   
             $y=$pdf->GetY();
             $pdf->SetX(10);
-            $pdf->SetFillColor(52,58,64);
-            $pdf->SetTextColor(0,0,0);
             $pdf->Cell(20,8,'S.No.',1,0,'C',0);
             $pdf->Cell(40,8,'Products',1,0,'C',0);
             $pdf->Cell(30,8,'Quantity',1,0,'C',0);
@@ -463,7 +420,6 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->Cell(18,8,'Per',1,0,'C',0);
             $pdf->Cell(20,8,'Amount(Rs.)',1,1,'C',0);
             $pdf->SetFont('Arial','',8);
-            $pdf->SetTextColor(0,0,0);
 
             $y_axis=$pdf->GetY();
         }
@@ -547,9 +503,8 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
 
 
         $charges_total_amounts = array(); $total_amount_car = 0; $charge_in = array();
-        if(!empty($other_charges_id) && empty($product_error)) {
+        if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value'] && empty($product_error)) {
             for($i=0; $i < count($other_charges_id); $i++) {
-                $charge_in[$i] = "Rs.";
                 $other_charges_id[$i] = trim($other_charges_id[$i]);
                 if(!empty($other_charges_id[$i])) {
                     $other_charges_name = "";
@@ -560,12 +515,15 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                     if(isset($other_charges_value[$i])) {
                         $other_charges_error = "";
                         if(strpos($other_charges_value[$i], '%') !== false) {
-                            $charge_in[$i] = $other_charges_value[$i];
+                            // $charge_in[$i] = "%";
+                            $charge_in[$i] = "";
+
                             $other_charges_values[$i] = str_replace('%', '', $other_charges_value[$i]);
                             $other_charges_values[$i] = trim($other_charges_values[$i]);
                             $other_charges_values[$i] = (float) $purchase_subtotal * $other_charges_values[$i] /100;
                            
                         } else {
+                            $charge_in[$i] = "Rs.";
                             $other_charges_values[$i] = $other_charges_value[$i];
                         }
                     }
@@ -581,27 +539,29 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             }
         }
         $total_amount_ = $purchase_subtotal;
-        if(!empty($other_charges_id)) {
+        if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value'] ) {
             $total_charge = 0; 
             
             for($o = 0; $o < count($other_charges_id); $o++) {
-                if($charges_type[$o] == "minus") {
-                    $total_amount_ -= $other_charges_values[$o];
+                if($other_charges_id[$o] != $GLOBALS['null_value'] ){
+                    if($charges_type[$o] == "minus") {
+                        $total_amount_ -= $other_charges_values[$o];
+                    }
+                    else if($charges_type[$o] == "plus") {
+                        $total_amount_ += $other_charges_values[$o];
+                    }
+                    $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
+                    $pdf->SetX(100);
+                    $pdf->SetFont('Arial','B',8);
+                    $pdf->Cell(80,5,$obj->encode_decode('decrypt', $charges_name)."( ".$charge_in[$o]."".$other_charges_value[$o].")",1,0,'R',0);
+                    $pdf->SetFont('Arial','',8);
+                    $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_values[$o],1,1,'R',0);
+                    $pdf->SetX(100);
+                    $pdf->SetFont('Arial','B',8);
+                    $pdf->Cell(80,5,'Total',1,0,'R',0);
+                    $pdf->SetFont('Arial','',8);
+                    $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
                 }
-                else if($charges_type[$o] == "plus") {
-                    $total_amount_ += $other_charges_values[$o];
-                }
-                $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,$obj->encode_decode('decrypt', $charges_name)."(".$charge_in[$o].")",1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_values[$o],1,1,'R',0);
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,'Total',1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
             }
         }
 

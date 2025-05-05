@@ -30,8 +30,8 @@
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
     }
     $current_date = date('Y-m-d');
-    $contractor_list = array();
-    $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+    // $contractor_list = array();
+    // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
 
     $cancelled_bill = ""; $cancelled_count = 0;
     $cancelled_bill = $obj->getAllRecords($GLOBALS['daily_production_table'], 'cancelled', 1);
@@ -77,6 +77,7 @@
                                                     </div>
                                                 </div>
                                             </div>	
+                                            <?php /*
                                             <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border">
@@ -104,6 +105,7 @@
                                                     </div>
                                                 </div>       
                                             </div>
+                                            */ ?>
                                             <div class="col-lg-2 col-md-3 col-6">
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border">

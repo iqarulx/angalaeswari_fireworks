@@ -2,7 +2,7 @@
 
 function show_godown_magazine(product_group) {
 
-    if(jQuery('input[name="product_group"]').length > 0) {
+    if (jQuery('input[name="product_group"]').length > 0) {
         product_group = jQuery('select[name="product_group"]').val();
         jQuery('input[name="product_group"]').val(product_group);
     }
@@ -32,14 +32,14 @@ function show_godown_magazine(product_group) {
 
 function location_type_value() {
 
-    if(jQuery('input[name="location_type"]').length > 0) {
+    if (jQuery('input[name="location_type"]').length > 0) {
         location_type = jQuery('select[name="location_type"]').val();
         jQuery('input[name="location_type"]').val(location_type);
     }
 }
 
 function show_product(product_group) {
-    
+
     var check_login_session = 1;
     var post_url = "dashboard_changes.php?check_login_session=1";
     jQuery.ajax({
@@ -59,7 +59,7 @@ function show_product(product_group) {
             }
         }
     });
-} 
+}
 
 
 function GetProdetails() {
@@ -79,7 +79,7 @@ function GetProdetails() {
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                post_url = "stock_adjustment_table.php?change_product_id=" + product+"&selected_magazine_id="+selected_magazine_id+"&selected_godown_id="+selected_godown_id;
+                post_url = "stock_adjustment_table.php?change_product_id=" + product + "&selected_magazine_id=" + selected_magazine_id + "&selected_godown_id=" + selected_godown_id;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (result != "") {
@@ -121,7 +121,7 @@ function GetProdetails() {
 }
 function GetStockLimit() {
 
-  
+
     var product = $('select[name="product"]').val();
     var unit_type = jQuery('select[name="selected_unit_type"]').val();
     var content = ""; var product_group = ""; var selected_magazine_id = ""; var selected_godown_id = "";
@@ -142,26 +142,25 @@ function GetStockLimit() {
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                var post_url = "stock_adjustment_table.php?get_limit_product=" + product + "&unit_type=" + unit_type + "&content=" + content + "&product_group=" + product_group+"&selected_godown_id="+selected_godown_id+"&selected_magazine_id="+selected_magazine_id;
+                var post_url = "stock_adjustment_table.php?get_limit_product=" + product + "&unit_type=" + unit_type + "&content=" + content + "&product_group=" + product_group + "&selected_godown_id=" + selected_godown_id + "&selected_magazine_id=" + selected_magazine_id;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
-                        // console.log(result,"<==");
                         if (result != "") {
                             if (jQuery('input[name="stock_limit"]').length > 0) {
                                 jQuery('input[name="stock_limit"]').val(result);
                             }
-                             if (product != "") {
+                            if (product != "") {
 
-                                if(jQuery('#qty_limit').length > 0) {
-                                    jQuery('#qty_limit').html("Current Stock : <span class='text-danger' style='font-weight:bold'>"+ result + "</span>" );
+                                if (jQuery('#qty_limit').length > 0) {
+                                    jQuery('#qty_limit').html("Current Stock : <span class='text-danger' style='font-weight:bold'>" + result + "</span>");
                                 }
-                            }else{
-                                if(jQuery('#qty_limit').length > 0) {
+                            } else {
+                                if (jQuery('#qty_limit').length > 0) {
                                     jQuery('#qty_limit').html('');
                                 }
                             }
-                        }else{
-                            if(jQuery('#qty_limit').length > 0) {
+                        } else {
+                            if (jQuery('#qty_limit').length > 0) {
                                 jQuery('#qty_limit').html('');
                             }
                         }
@@ -310,7 +309,7 @@ function GetStockLimit() {
 //                                         }
 //                                     }
 //                                 }
-                               
+
 //                                 if(jQuery('select[name="magazine_id"]').length > 0) {
 //                                     jQuery('select[name="magazine_id"]').attr('disabled', true);
 //                                     if(jQuery('input[name="magazine_id"]').length > 0) {
@@ -364,10 +363,10 @@ function AddStockAdjustmentProducts() {
                 if (jQuery('.infos').length > 0) {
                     jQuery('.infos').each(function () { jQuery(this).remove(); });
                 }
-                if(jQuery('#qty_limit').length > 0) {
+                if (jQuery('#qty_limit').length > 0) {
                     jQuery('#qty_limit').html('');
                 }
-                
+
                 var product_group = "";
                 if (jQuery('select[name="product_group"]').length > 0) {
                     product_group = jQuery('select[name="product_group"]').val();
@@ -387,7 +386,7 @@ function AddStockAdjustmentProducts() {
                     }
                 }
 
-                if(product_group == 1){
+                if (product_group == 1) {
                     var selected_godown_id = ""; var error = "";
                     if (jQuery('select[name="selected_godown_id"]').length > 0) {
                         selected_godown_id = jQuery('select[name="selected_godown_id"]').val();
@@ -396,9 +395,9 @@ function AddStockAdjustmentProducts() {
                             all_errors_check = 0;
                             error = "Select Godown";
                         }
-                       location_id = selected_godown_id;
+                        location_id = selected_godown_id;
                     }
-                    if(selected_godown_id == ""){
+                    if (selected_godown_id == "") {
                         if (jQuery('[name="selected_godown_id"]').length > 0) {
                             selected_godown_id = jQuery('input[name="selected_godown_id"]').val();
                             selected_godown_id = selected_godown_id.trim();
@@ -407,10 +406,10 @@ function AddStockAdjustmentProducts() {
                                 error = "Select Godown";
                             }
                         }
-                       location_id = selected_godown_id;
+                        location_id = selected_godown_id;
                     }
 
-                }else{
+                } else {
                     var selected_magazine_id = ""; var error = "";
                     if (jQuery('select[name="selected_magazine_id"]').length > 0) {
                         selected_magazine_id = jQuery('select[name="selected_magazine_id"]').val();
@@ -421,7 +420,7 @@ function AddStockAdjustmentProducts() {
                         }
                         location_id = selected_magazine_id;
                     }
-                    if(selected_magazine_id == ""){
+                    if (selected_magazine_id == "") {
                         if (jQuery('[name="selected_magazine_id"]').length > 0) {
                             selected_magazine_id = jQuery('input[name="selected_magazine_id"]').val();
                             selected_magazine_id = selected_magazine_id.trim();
@@ -430,11 +429,11 @@ function AddStockAdjustmentProducts() {
                                 error = "Select Godown";
                             }
                         }
-                         location_id = selected_magazine_id;
+                        location_id = selected_magazine_id;
                     }
 
                 }
-           
+
 
                 var product = "";
                 if (jQuery('select[name="product"]').is(":visible")) {
@@ -518,7 +517,7 @@ function AddStockAdjustmentProducts() {
                                                 if (prev_product_id == product && prev_unit_type == selected_unit_type && prev_location_id == location_id && prev_content == content) {
                                                     add = 0;
                                                 }
-                                            }else{
+                                            } else {
                                                 if (prev_product_id == product && prev_unit_type == selected_unit_type && prev_location_id == location_id) {
                                                     add = 0;
                                                 }
@@ -536,7 +535,7 @@ function AddStockAdjustmentProducts() {
                         product_count = parseInt(product_count) + 1;
                         jQuery('input[name="product_count"]').val(product_count);
 
-                        var post_url = "stock_adjustment_table.php?product_row_index=" + product_count + "&product=" + product + "&unit_type=" + selected_unit_type + "&selected_quantity=" + selected_quantity + "&content=" + content + "&unit_subunit=" + globalVar + "&product_group=" + product_group+"&selected_stock_action="+selected_stock_action+"&selected_magazine_id="+selected_magazine_id+"&selected_godown_id="+selected_godown_id;
+                        var post_url = "stock_adjustment_table.php?product_row_index=" + product_count + "&product=" + product + "&unit_type=" + selected_unit_type + "&selected_quantity=" + selected_quantity + "&content=" + content + "&unit_subunit=" + globalVar + "&product_group=" + product_group + "&selected_stock_action=" + selected_stock_action + "&selected_magazine_id=" + selected_magazine_id + "&selected_godown_id=" + selected_godown_id;
 
                         jQuery.ajax({
                             url: post_url, success: function (result) {
@@ -576,7 +575,7 @@ function AddStockAdjustmentProducts() {
                                     }
                                 }
                                 if (location_type == "1") {
-                                    if(selected_godown_id !=""){
+                                    if (selected_godown_id != "") {
                                         $("select[name='selected_godown_id']").attr("disabled", true)
                                         $("input[name='selected_godown_id']").attr("disabled", false)
 
@@ -584,7 +583,7 @@ function AddStockAdjustmentProducts() {
                                             jQuery('input[name="selected_godown_id"]').val(selected_godown_id);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (jQuery('select[name="selected_godown_id"]').length > 0) {
                                         jQuery('select[name="selected_godown_id"]').val('');
                                     }
@@ -592,7 +591,7 @@ function AddStockAdjustmentProducts() {
                                         jQuery('select[name="selected_magazine_id"]').val('');
                                     }
                                 }
-                         
+
                                 if (jQuery('input[name="selected_quantity"]').length > 0) {
                                     jQuery('input[name="selected_quantity"]').val('');
                                 }
@@ -608,7 +607,7 @@ function AddStockAdjustmentProducts() {
                                 if (jQuery('select[name="selected_stock_action"]').length > 0) {
                                     jQuery('select[name="selected_stock_action"]').val('').trigger('change');
                                 }
-                                if(jQuery('#qty_limit').length > 0) {
+                                if (jQuery('#qty_limit').length > 0) {
                                     jQuery('#qty_limit').html('');
                                 }
                                 calcTotalQuantity();
@@ -620,8 +619,8 @@ function AddStockAdjustmentProducts() {
                         if (error == "") {
                             if (jQuery('select[name="contains"]').is(":visible")) {
 
-                                 jQuery('.stockadjustment_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product ,Unit & Contains Already Exists</span>');
-                            }else{
+                                jQuery('.stockadjustment_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product ,Unit & Contains Already Exists</span>');
+                            } else {
                                 jQuery('.stockadjustment_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product ,Unit Already Exists</span>');
                             }
                         }
@@ -643,84 +642,84 @@ function AddStockAdjustmentProducts() {
     });
 }
 
-function SnoCalculation(){
+function SnoCalculation() {
     if (jQuery('.sno').length > 0) {
-		var row_count = 0;
-		row_count = jQuery('.sno').length;
-		if (typeof row_count != "undefined" && row_count != null && row_count != 0 && row_count != "") {
-			var j = 1;
-			var sno = document.getElementsByClassName('sno');
-			for (var i = row_count - 1; i >= 0; i--) {
-				sno[i].innerHTML = j;
-				j = parseInt(j) + 1;
-			}
-		}
-	}
+        var row_count = 0;
+        row_count = jQuery('.sno').length;
+        if (typeof row_count != "undefined" && row_count != null && row_count != 0 && row_count != "") {
+            var j = 1;
+            var sno = document.getElementsByClassName('sno');
+            for (var i = row_count - 1; i >= 0; i--) {
+                sno[i].innerHTML = j;
+                j = parseInt(j) + 1;
+            }
+        }
+    }
 }
 
 
 function calcTotalQuantity() {
     SnoCalculation();
-    
-    if(jQuery('.overall_qty').length > 0) {
+
+    if (jQuery('.overall_qty').length > 0) {
         jQuery('.overall_qty').html('');
     }
-	var quantity_total = 0;
-	if(jQuery('.product_row').length > 0) {
-		jQuery('.product_row').each(function(){
+    var quantity_total = 0;
+    if (jQuery('.product_row').length > 0) {
+        jQuery('.product_row').each(function () {
             var quantity = 0;
-            if(jQuery(this).find('input[name="quantity[]"]').length > 0) {
+            if (jQuery(this).find('input[name="quantity[]"]').length > 0) {
                 quantity = jQuery(this).find('input[name="quantity[]"]').val();
                 quantity = jQuery.trim(quantity);
             }
             if (typeof quantity != "undefined" && quantity != "" && quantity != 0 && price_regex.test(quantity) == true) {
                 quantity_total = parseFloat(quantity_total) + parseFloat(quantity);
-			}
-		});
+            }
+        });
         if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
             quantity_total = quantity_total.toFixed(2);
-            if(jQuery('.overall_qty').length > 0) {
+            if (jQuery('.overall_qty').length > 0) {
                 jQuery('.overall_qty').html(quantity_total);
             }
-		}
-	}
+        }
+    }
 }
 
-function DeleteStockAdjRow(row_index,id_name){
+function DeleteStockAdjRow(row_index, id_name) {
     var check_login_session = 1;
-	var post_url = "dashboard_changes.php?check_login_session=1";
-	jQuery.ajax({
-		url: post_url, success: function (check_login_session) {
-			if (check_login_session == 1) {
-				if (jQuery('#'+id_name+row_index).length > 0) {
-					jQuery('#'+id_name+row_index).remove();
-				}
-			
-                if(id_name == 'product_row') {
-					if(jQuery('.product_row').length == 0) {
-                        if(jQuery('select[name="product_group"]').length > 0) {
-                            if(jQuery('input[name="product_group"]').length > 0) {
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                if (jQuery('#' + id_name + row_index).length > 0) {
+                    jQuery('#' + id_name + row_index).remove();
+                }
+
+                if (id_name == 'product_row') {
+                    if (jQuery('.product_row').length == 0) {
+                        if (jQuery('select[name="product_group"]').length > 0) {
+                            if (jQuery('input[name="product_group"]').length > 0) {
                                 jQuery('input[name="product_group"]').val('');
                                 jQuery('input[name="product_group"]').attr('disabled', true);
                             }
                             jQuery('select[name="product_group"]').attr('disabled', false);
                         }
-                        if(jQuery('select[name="location_type"]').length > 0) {
-                            if(jQuery('input[name="location_type"]').length > 0) {
+                        if (jQuery('select[name="location_type"]').length > 0) {
+                            if (jQuery('input[name="location_type"]').length > 0) {
                                 jQuery('input[name="location_type"]').val('');
                                 jQuery('input[name="location_type"]').attr('disabled', true);
                             }
                             jQuery('select[name="location_type"]').attr('disabled', false);
                         }
-                        if(jQuery('select[name="selected_godown_id"]').length > 0) {
-                            if(jQuery('input[name="selected_godown_id"]').length > 0) {
+                        if (jQuery('select[name="selected_godown_id"]').length > 0) {
+                            if (jQuery('input[name="selected_godown_id"]').length > 0) {
                                 jQuery('input[name="selected_godown_id"]').val('');
                                 jQuery('input[name="selected_godown_id"]').attr('disabled', true);
                             }
                             jQuery('select[name="selected_godown_id"]').attr('disabled', false);
                         }
-                        if(jQuery('select[name="selected_magazine_id"]').length > 0) {
-                            if(jQuery('input[name="selected_magazine_id"]').length > 0) {
+                        if (jQuery('select[name="selected_magazine_id"]').length > 0) {
+                            if (jQuery('input[name="selected_magazine_id"]').length > 0) {
                                 jQuery('input[name="selected_magazine_id"]').val('');
                                 jQuery('input[name="selected_magazine_id"]').attr('disabled', true);
                             }
@@ -729,10 +728,10 @@ function DeleteStockAdjRow(row_index,id_name){
                     }
                 }
                 calcTotalQuantity();
-			}
-			else {
-				window.location.reload();
-			}
-		}
-	});
+            }
+            else {
+                window.location.reload();
+            }
+        }
+    });
 }

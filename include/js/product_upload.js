@@ -1,125 +1,134 @@
-function ProductUploadCheck(){
-    console.log('excel');
+function ProductUploadCheck() {
 	var check_login_session = 1;
 	var post_url = "dashboard_changes.php?check_login_session=1";
-	jQuery.ajax({url: post_url, success: function(check_login_session){
-		if(check_login_session == 1){
-			var post_url = "product_changes.php?check_product_count=1";
-			jQuery.ajax({url: post_url, success: function(product_count){
-				if(parseInt(product_count) > 0){
-					jQuery('.upload_modal_button').trigger("click");
-				}
-				else{
-					UploadExcel();
-				}
-				if(jQuery('#excel_div').length > 0) {
-					jQuery('#excel_div').addClass("d-none");
-				}
-				if(jQuery('#table_listing_records').length > 0) {
-					jQuery('#table_listing_records').addClass("d-none");
-				}
-			}});
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				var post_url = "product_changes.php?check_product_count=1";
+				jQuery.ajax({
+					url: post_url, success: function (product_count) {
+						if (parseInt(product_count) > 0) {
+							jQuery('.upload_modal_button').trigger("click");
+						}
+						else {
+							UploadExcel();
+						}
+						if (jQuery('#excel_div').length > 0) {
+							jQuery('#excel_div').addClass("d-none");
+						}
+						if (jQuery('#table_listing_records').length > 0) {
+							jQuery('#table_listing_records').addClass("d-none");
+						}
+					}
+				});
+			}
 		}
-	}});
+	});
 }
 
 function UploadExcel(upload_type) {
-    var check_login_session = 1;
-    var post_url = "dashboard_changes.php?check_login_session=1";	
-    jQuery.ajax({url: post_url, success: function(check_login_session){
-        if(check_login_session == 1) {	
+	var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
 
-            if(jQuery('.add_update_excel_form_content_excel').length > 0) {
-                jQuery('.add_update_excel_form_content_excel').removeClass('col-xl-7 px-0 mx-auto');
-            }
+				if (jQuery('.add_update_excel_form_content_excel').length > 0) {
+					jQuery('.add_update_excel_form_content_excel').removeClass('col-xl-7 px-0 mx-auto');
+				}
 
-            var post_url = "product_upload.php?show_upload_excel=1";	
-            jQuery.ajax({url: post_url, success: function(result){
-                if(jQuery('.add_update_excel_form_content_excel').length > 0) {
-                    jQuery('.add_update_excel_form_content_excel').html(result);
-                }
-            }});
+				var post_url = "product_upload.php?show_upload_excel=1";
+				jQuery.ajax({
+					url: post_url, success: function (result) {
+						if (jQuery('.add_update_excel_form_content_excel').length > 0) {
+							jQuery('.add_update_excel_form_content_excel').html(result);
+						}
+					}
+				});
 
-			if(jQuery('input[name="upload_type"]').length > 0) {
-				jQuery('input[name="upload_type"]').val(upload_type);
+				if (jQuery('input[name="upload_type"]').length > 0) {
+					jQuery('input[name="upload_type"]').val(upload_type);
+				}
+				if (jQuery('#UploadModal').length > 0) {
+					jQuery('#UploadModal').modal('hide');
+				}
+
+				if (jQuery('input[name="product_excel_upload"]').length > 0) {
+					jQuery('input[name="product_excel_upload"]').trigger("click");
+				}
 			}
-			if(jQuery('#UploadModal').length > 0) {
-				jQuery('#UploadModal').modal('hide');
+			else {
+				window.location.reload();
 			}
-
-			if(jQuery('input[name="product_excel_upload"]').length > 0) {
-				jQuery('input[name="product_excel_upload"]').trigger("click");
-			}
-        }
-        else {
-            window.location.reload();
-        }
-    }});
+		}
+	});
 }
 
 function UploadExcelData(event, form_name) {
 	event.preventDefault();
-	if(jQuery('div.alert').length > 0) {
-        jQuery('div.alert').remove();
-    }
-    if(jQuery('span.infos').length > 0) {
-        jQuery('span.infos').remove();
-    }
-    if(jQuery('.submit_button').length > 0) {
-        jQuery('.submit_button').attr('disabled', true);
-    }
-    if(jQuery('#excel_upload_details_table').find('tbody').find('tr.excel_row').length > 0) {
-        jQuery('html, body').animate({
-            scrollTop: (jQuery('.add_update_excel_form_content_excel').parent().parent().offset().top)
-        }, 500);
-        jQuery('form[name="'+form_name+'"]').find('.row:first').before('<div class="alert alert-danger mb-3"> <button type="button" class="close" data-dismiss="alert">&times;</button> Processing </div>');
+	if (jQuery('div.alert').length > 0) {
+		jQuery('div.alert').remove();
+	}
+	if (jQuery('span.infos').length > 0) {
+		jQuery('span.infos').remove();
+	}
+	if (jQuery('.submit_button').length > 0) {
+		jQuery('.submit_button').attr('disabled', true);
+	}
+	if (jQuery('#excel_upload_details_table').find('tbody').find('tr.excel_row').length > 0) {
+		jQuery('html, body').animate({
+			scrollTop: (jQuery('.add_update_excel_form_content_excel').parent().parent().offset().top)
+		}, 500);
+		jQuery('form[name="' + form_name + '"]').find('.row:first').before('<div class="alert alert-danger mb-3"> <button type="button" class="close" data-dismiss="alert">&times;</button> Processing </div>');
 
 		var excel_upload_type = "";
-		if(jQuery('input[name="excel_upload_type"]').length > 0) {		
+		if (jQuery('input[name="excel_upload_type"]').length > 0) {
 			excel_upload_type = jQuery('input[name="excel_upload_type"]').val();
 		}
-		console.log(excel_upload_type,"<== type")
-        var check_login_session = 1;
-        var post_url = "dashboard_changes.php?check_login_session=1";	
-        jQuery.ajax({url: post_url, success: function(check_login_session){
-            if(check_login_session == 1) {
-				if(parseInt(excel_upload_type) == 1){
-					var post_url = "product_changes.php?clear_category_product_tables=1";
-					jQuery.ajax({url: post_url, success: function(result){
-						console.log(result,"delete");
-						setTimeout(function(){ 
-							var upload_row_index = "";
-							var row_index = 0;
-							if(jQuery('.excel_upload_details_table').find('tr').find('.status').find('.fa-check').length > 0) {
-								row_index = jQuery('.excel_upload_details_table').find('tr').find('.status').find('.fa-check').length;
+		var check_login_session = 1;
+		var post_url = "dashboard_changes.php?check_login_session=1";
+		jQuery.ajax({
+			url: post_url, success: function (check_login_session) {
+				if (check_login_session == 1) {
+					if (parseInt(excel_upload_type) == 1) {
+						var post_url = "product_changes.php?clear_category_product_tables=1";
+						jQuery.ajax({
+							url: post_url, success: function (result) {
+								setTimeout(function () {
+									var upload_row_index = "";
+									var row_index = 0;
+									if (jQuery('.excel_upload_details_table').find('tr').find('.status').find('.fa-check').length > 0) {
+										row_index = jQuery('.excel_upload_details_table').find('tr').find('.status').find('.fa-check').length;
+									}
+									upload_row_index = parseInt(row_index) + 1;
+									UploadExcelRow(form_name, upload_row_index);
+								}, 500);
 							}
-							upload_row_index = parseInt(row_index) + 1;
+						});
+					}
+					else {
+
+						setTimeout(function () {
+							var upload_row_index = "";
+							if (jQuery('input[name="upload_row_index"]').length > 0) {
+								upload_row_index = jQuery('input[name="upload_row_index"]').val();
+							}
 							UploadExcelRow(form_name, upload_row_index);
 						}, 500);
-					}});
+					}
 				}
-				else{
-
-					setTimeout(function(){ 
-						var upload_row_index = "";
-						if(jQuery('input[name="upload_row_index"]').length > 0) {
-							upload_row_index = jQuery('input[name="upload_row_index"]').val();
-						}
-						UploadExcelRow(form_name, upload_row_index);
-					}, 500);
+				else {
+					window.location.reload();
 				}
-            }
-            else {
-                window.location.reload();
-            }
-        }});
-    }
-    else {
-        jQuery('form[name="'+form_name+'"]').find('.row:first').before('<div class="alert alert-danger mb-3"> <button type="button" class="close" data-dismiss="alert">&times;</button> Upload the file </div>');
-        if(jQuery('.submit_button').length > 0) {
-            jQuery('.submit_button').attr('disabled', false);
-        }
-    }
+			}
+		});
+	}
+	else {
+		jQuery('form[name="' + form_name + '"]').find('.row:first').before('<div class="alert alert-danger mb-3"> <button type="button" class="close" data-dismiss="alert">&times;</button> Upload the file </div>');
+		if (jQuery('.submit_button').length > 0) {
+			jQuery('.submit_button').attr('disabled', false);
+		}
+	}
 }
 
 function UploadExcelRow(form_name, row_index) {
@@ -136,11 +145,11 @@ function UploadExcelRow(form_name, row_index) {
 							scrollTop: (jQuery('#excel_upload_details_table').find('tbody').find('tr:nth-child(' + pos + ')').offset().top)
 						}, 500);
 					}
-				
+
 					var excel_row = "";
 					excel_row = jQuery('#excel_upload_details_table').find('tbody').find('tr:nth-child(' + row_index + ')');
 
-                    var group = "";
+					var group = "";
 					if (jQuery(excel_row).find('input[name="group"]').length > 0) {
 						group = jQuery(excel_row).find('input[name="group"]').val();
 						group = clean_value(group);
@@ -154,7 +163,7 @@ function UploadExcelRow(form_name, row_index) {
 						product_name = jQuery.trim(product_name);
 					}
 
-                    var hsn_code = "";
+					var hsn_code = "";
 					if (jQuery(excel_row).find('input[name="hsn_code"]').length > 0) {
 						hsn_code = jQuery(excel_row).find('input[name="hsn_code"]').val();
 						hsn_code = clean_value(hsn_code);
@@ -168,7 +177,7 @@ function UploadExcelRow(form_name, row_index) {
 						unit_name = clean_value(unit_name);
 						unit_name = jQuery.trim(unit_name);
 					}
-				
+
 
 					var subunit_name = "";
 					if (jQuery(excel_row).find('input[name="subunit_name"]').length > 0) {
@@ -199,15 +208,14 @@ function UploadExcelRow(form_name, row_index) {
 					}
 
 					var excel_upload_type = "";
-					if(jQuery('input[name="excel_upload_type"]').length > 0) {		
+					if (jQuery('input[name="excel_upload_type"]').length > 0) {
 						excel_upload_type = jQuery('input[name="excel_upload_type"]').val();
 					}
-					
+
 
 					jQuery(excel_row).find('.excel_upload_status').html('<i class="fa fa-spinner fa-spin" style="color: blue; font-size: 15px; line-height: 15px;"></i>');
-					var post_url = "product_upload.php?product_name="+product_name+"&group="+group+"&hsn_code="+hsn_code+"&unit_name="+unit_name+"&per="+per+"&per_type="+per_type+"&case_rate="+case_rate+"&subunit_name="+subunit_name+"&excel_upload_type="+excel_upload_type;
-					console.log(post_url,"$$$");
-                    jQuery.ajax({
+					var post_url = "product_upload.php?product_name=" + product_name + "&group=" + group + "&hsn_code=" + hsn_code + "&unit_name=" + unit_name + "&per=" + per + "&per_type=" + per_type + "&case_rate=" + case_rate + "&subunit_name=" + subunit_name + "&excel_upload_type=" + excel_upload_type;
+					jQuery.ajax({
 						url: post_url, success: function (result) {
 							if (result == 1) {
 								jQuery(excel_row).find('.excel_upload_status').html('<i class="fa fa-check" style="color: green; font-size: 15px; line-height: 15px;"></i>');
@@ -246,8 +254,8 @@ function UploadExcelRow(form_name, row_index) {
 									}
 									UploadExcelRow(form_name, row_index);
 								}, 500);
-								jQuery('.back_button').removeClass("d-none"); 
-								
+								jQuery('.back_button').removeClass("d-none");
+
 							}
 						}
 					});
@@ -272,12 +280,12 @@ function UploadExcelRow(form_name, row_index) {
 				uploaded_count = jQuery('.excel_upload_count').html();
 			}
 
-			if(jQuery('.excel_upload_total_count').length > 0) {
+			if (jQuery('.excel_upload_total_count').length > 0) {
 				total_row_count = jQuery('.excel_upload_total_count').html();
 			}
 
-			if((uploaded_count != "" && (total_row_count != "")) && (uploaded_count == total_row_count)) {
-			
+			if ((uploaded_count != "" && (total_row_count != "")) && (uploaded_count == total_row_count)) {
+
 				if (jQuery('.excel_upload_details').length > 0) {
 					jQuery('.excel_upload_details').css({ "display": "none" });
 				}
@@ -292,22 +300,19 @@ function UploadExcelRow(form_name, row_index) {
 }
 
 function getExcelData(obj) {
-	console.log(obj);
 	var count = jQuery(obj).get(0).files.length;
 	if (parseInt(count) > 0) {
 
 		if (jQuery('#excel_div').length > 0) {
 			jQuery('#excel_div').addClass('d-none');
 		}
-		if(jQuery('#table_listing_records').length > 0) {
+		if (jQuery('#table_listing_records').length > 0) {
 			jQuery('#table_listing_records').addClass("d-none");
 		}
 
 		var fileName = jQuery(obj).get(0).files[0];
-		console.log(fileName);
 		var idxDot = fileName.name.lastIndexOf(".") + 1;
 		var extFile = fileName.name.substr(idxDot, fileName.name.length).toLowerCase();
-		console.log(extFile,"easdf");
 		if (extFile == "xls" || extFile == "xlsx") {
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(fileName);
@@ -327,16 +332,15 @@ function getExcelData(obj) {
 				sheet_name_list.forEach(function (y) {
 					var Sheet = workbook.Sheets[workbook.SheetNames[s]];
 					var result = XLSX.utils.sheet_to_json(Sheet, { header: 1 });
-					console.log(result);
 
 					const nonEmptyRows = result.filter(row => row.some(cell => cell !== undefined && cell !== null && cell !== ''));
-                    const usedRowsCount = nonEmptyRows.length;
+					const usedRowsCount = nonEmptyRows.length;
 
-                    if(usedRowsCount != "" && usedRowsCount != undefined) {
-                        if($('.excel_upload_total_count').length > 0) {
-                            $('.excel_upload_total_count').html(usedRowsCount -1);
-                        }
-                    }
+					if (usedRowsCount != "" && usedRowsCount != undefined) {
+						if ($('.excel_upload_total_count').length > 0) {
+							$('.excel_upload_total_count').html(usedRowsCount - 1);
+						}
+					}
 
 
 					var pages = JSON.stringify(result);
@@ -367,7 +371,6 @@ function getExcelData(obj) {
 }
 
 function getExcelRow(start_row_index, row_index, data_array) {
-    console.log(data_array,"<<<>>>");
 	if (parseInt(row_index) < parseInt(data_array.length)) {
 		var row_values = data_array[row_index];
 		if (row_values.length > 0 && row_values != '' && typeof row_values != 'undefined') {
@@ -396,12 +399,10 @@ function getExcelRow(start_row_index, row_index, data_array) {
 			if (row_values['7'] != "undefined") {
 				row_values['7'] = clean_value(row_values['7']);
 			}
-            if (row_values['8'] != "undefined") {
+			if (row_values['8'] != "undefined") {
 				row_values['8'] = clean_value(row_values['8']);
 			}
 			var row_values = JSON.stringify(row_values);
-
-			console.log(row_values);
 
 			// setTimeout(function(){ 
 			// 	row_index = parseInt(row_index) + 1;
@@ -416,11 +417,10 @@ function getExcelRow(start_row_index, row_index, data_array) {
 						var excel_row_index = parseInt(start_row_index) + 1;
 
 						var upload_type = "";
-						if(jQuery('input[name="upload_type"]').length > 0) {
+						if (jQuery('input[name="upload_type"]').length > 0) {
 							upload_type = jQuery('input[name="upload_type"]').val();
 						}
-						console.log(upload_type,":: upload");
-						var post_url = "product_upload.php?excel_row_index=" + excel_row_index + "&excel_row_values=" + row_values+"&upload_type="+upload_type;
+						var post_url = "product_upload.php?excel_row_index=" + excel_row_index + "&excel_row_values=" + row_values + "&upload_type=" + upload_type;
 						jQuery.ajax({
 							url: post_url, success: function (result) {
 								if (jQuery('#excel_upload_details_table').find('tbody').length > 0) {
@@ -440,8 +440,8 @@ function getExcelRow(start_row_index, row_index, data_array) {
 				}
 			});
 		}
-		else{
-			getExcelRow('0', parseInt(row_index)+1, data_array);
+		else {
+			getExcelRow('0', parseInt(row_index) + 1, data_array);
 		}
 	}
 }

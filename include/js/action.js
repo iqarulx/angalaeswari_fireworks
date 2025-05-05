@@ -709,7 +709,6 @@ function CheckCharges() {
         var charges_count = 0;
         charges_count = jQuery('input[name="charges_count"]').val();
         charges_count = parseInt(charges_count);
-        console.log("==><== ", jQuery('.charges_row').length);
         if (jQuery('.charges_row').length > 0) {
             jQuery('.charges_row').each(function () {
                 if (jQuery(this).find('span.infos').length > 0) {
@@ -989,7 +988,6 @@ function getRateByTaxOption() {
         tax_option = jQuery('select[name="tax_option"]').val();
         tax_option = jQuery.trim(tax_option);
     }
-    // console.log(tax_option);
     var tax_type = "";
     if (jQuery('select[name="tax_type"]').length > 0) {
         tax_type = jQuery('select[name="tax_type"]').val();
@@ -1031,13 +1029,11 @@ function getRateByTaxOption() {
                     selected_rate = jQuery(this).find('input[name="entry_rate[]"]').val();
                     selected_rate = jQuery.trim(selected_rate);
                 }
-                console.log(selected_rate, "<br>", unit_type, "<br>", per_type, "<br>", per, "<br>", content);
                 if (unit_type == '1') {
                     if (per_type == '1') {
                         final_rate = parseFloat(selected_rate) / parseFloat(per);
                     }
                     else if (per_type == '2') {
-                        // console.log("hello");
                         rate_per_piece = parseFloat(selected_rate) / parseFloat(per);
                         final_rate = parseFloat(rate_per_piece) * parseFloat(content);
                     }
@@ -1073,7 +1069,6 @@ function getRateByTaxOption() {
                             }
                         }
                     }
-                    console.log(final_rate + "jai" + tax);
                     if (price_regex.test(final_rate) == true) {
                         if (price_regex.test(tax) == true) {
                             if (tax_option == 2) {
@@ -1304,7 +1299,6 @@ function GetChargesType(obj) {
     jQuery.ajax({
         url: post_url, success: function (result) {
             result = jQuery.trim(result);
-            console.log("001=>", result);
             if (jQuery(obj).closest('.charges_row').find('input[name="charges_type[]"]').length > 0) {
                 jQuery(obj).closest('.charges_row').find('input[name="charges_type[]"]').val(result);
             }
@@ -1323,7 +1317,6 @@ function SupplierState(id) {
                 var post_url = "action_changes.php?get_supplier_state=" + id;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
-                        console.log(result);
                         if (result != "") {
                             if (jQuery('input[name="party_state"]').length > 0) {
                                 jQuery('input[name="party_state"]').val(result);
@@ -1353,7 +1346,6 @@ function GetStockLimit() {
                 var post_url = "action_changes.php?get_limit_product=" + product + "&unit_type=" + unit_type + "&content=" + content + "&godown=" + godown;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
-                        // console.log(result,"<==");
                         if (result != "") {
                             if (jQuery('input[name="stock_limit"]').length > 0) {
                                 jQuery('input[name="stock_limit"]').val(result);
@@ -1388,15 +1380,16 @@ function GetStockProduct() {
             godown = jQuery('select[name="indv_godown"]').val();
         }
     }
-    if (jQuery('select[name="contractor"]').length > 0) {
-        contractor_id = jQuery('select[name="contractor"]').val();
-    }
+    // if (jQuery('select[name="contractor"]').length > 0) {
+    //     contractor_id = jQuery('select[name="contractor"]').val();
+    // }
     var check_login_session = 1;
     var post_url = "dashboard_changes.php?check_login_session=1";
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown + "&contractor_id=" + contractor_id;
+                // var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown + "&contractor_id=" + contractor_id;
+                var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (jQuery('select[name="product"]').length > 0) {

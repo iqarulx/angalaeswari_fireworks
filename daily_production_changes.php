@@ -7,13 +7,14 @@
             $permission_module = $GLOBALS['daily_production_module'];
         }
     }
+
 	if(isset($_REQUEST['show_daily_production_id'])) {
         $show_daily_production_id = $_REQUEST['show_daily_production_id'];
         $show_daily_production_id = trim($show_daily_production_id);
         
         $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
-        $entry_date = date('Y-m-d'); $bill_date = date('Y-m-d'); $contractor_id = "";
-        $magazine_id = ""; $contractor_name_mobile_city = "";
+        $entry_date = date('Y-m-d'); $bill_date = date('Y-m-d'); /* $contractor_id = ""; */
+        $magazine_id = ""; /* $contractor_name_mobile_city = ""; */
         $product_ids = array(); $product_names = array(); $unit_ids = array(); $unit_names = array(); $quantity = array();
         $cooly_per_qty = array(); $cooly_rate = array(); $total_amount = ""; $contains = array();
         $daily_production_list = array();
@@ -29,12 +30,12 @@
                 if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value']) {
                     $magazine_id = $data['magazine_id'];
                 }
-                if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
+                /* if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
                     $contractor_id = $data['contractor_id'];
                 }
                 if(!empty($data['contractor_name_mobile_city']) && $data['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
                     $contractor_name_mobile_city = $data['contractor_name_mobile_city'];
-                }
+                } */
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_ids = $data['product_id'];
                     $product_ids = explode(",", $product_ids);
@@ -83,8 +84,11 @@
             $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         }
 
-        $contractor_list = array();
-        $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+        $product_list =array();
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794d7a4e664d44453d', '');
+
+        // $contractor_list = array();
+        // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
         ?>
         <form class="poppins pd-20" name="daily_production_form" method="POST">
 			<div class="card-header">
@@ -113,6 +117,7 @@
                                 </div>
                             </div> 
                         </div>
+                        <?php /*
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -141,7 +146,7 @@
                             </div>       
                         </div>
                         <input type="hidden" name="selected_contractor_id" value="<?php if(!empty($contractor_id)) { echo $contractor_id; } ?>" <?php if(empty($show_daily_production_id)) { ?>disabled<?php } ?>>
-
+                        */ ?>
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -177,6 +182,17 @@
                                 <div class="form-label-group in-border">
                                     <select name="selected_product_id" class="select2 select2-danger"  onchange="Javascript:GetUnit(this.value);" data-dropdown-css-class="select2-danger" style="width: 100%;">
                                         <option value="">Select Product</option>
+                                        <?php if (!empty($product_list)) {
+                                            foreach ($product_list as $Pro_list) { ?>
+                                                <option value="<?php if (!empty($Pro_list['product_id'])) {
+                                                    echo $Pro_list['product_id'];
+                                                } ?>">
+                                                    <?php if (!empty($Pro_list['product_name'])) {
+                                                        echo $obj->encode_decode('decrypt', $Pro_list['product_name']);
+                                                    } ?>
+                                                </option>
+                                            <?php }
+                                        } ?>
                                     </select>
                                     <label>Select Product <span class="text-danger">*</span></label>
                                 </div>
@@ -369,8 +385,8 @@
         </form>
 		<?php
     } 
+    
     if(isset($_POST['edit_id'])) {
-
         function combineAndSumUp ($myArray) {
             $finalArray = Array ();
             foreach ($myArray as $nkey => $nvalue) {
@@ -393,11 +409,10 @@
                 }
             }
             return $finalArray;
-            // print_r($final_array);
         }
 
         $entry_date = ""; $entry_date_error = ""; $bill_date = ""; $bill_date_error = "";
-        $magazine_id = ""; $magazine_id_error = ""; $contractor_id = ""; $contractor_id_error = "";
+        $magazine_id = ""; $magazine_id_error = ""; /* $contractor_id = ""; $contractor_id_error = ""; */
         $product_ids = array(); $unit_ids = array(); $quantity = array(); $cooly_per_qty = array(); $total_cooly = array(); $product_error = ""; $product_names = array(); $unit_names = array(); $total_quantity = 0; $total_amount = 0; $stock_unique_ids = array();
         $case_contains = array(); $cooly_amount = array();
         $valid_daily_production = ""; $form_name = "daily_production_form"; $edit_id = "";
@@ -412,8 +427,7 @@
             if(!empty($entry_date_error)) {
                 if(!empty($valid_daily_production)) {
                     $valid_daily_production = $valid_daily_production." ".$valid->error_display($form_name, 'entry_date', $entry_date_error, 'text');
-                }
-                else {
+                } else {
                     $valid_daily_production = $valid->error_display($form_name, 'entry_date', $entry_date_error, 'text');
                 }
             }
@@ -434,13 +448,13 @@
             if(!empty($magazine_id_error)) {
                 if(!empty($valid_daily_production)) {
                     $valid_daily_production = $valid_daily_production." ".$valid->error_display($form_name, 'selected_magazine_id', $magazine_id_error, 'select');
-                }
-                else {
+                } else {
                     $valid_daily_production = $valid->error_display($form_name, 'selected_magazine_id', $magazine_id_error, 'select');
                 }
             }
         }
-        if(isset($_POST['selected_contractor_id'])) {
+        
+        /* if(isset($_POST['selected_contractor_id'])) {
 
             $contractor_id = $_POST['selected_contractor_id'];
             $contractor_id = trim($contractor_id);
@@ -460,7 +474,7 @@
                     $valid_daily_production = $valid->error_display($form_name, 'selected_contractor_id', $contractor_id_error, 'select');
                 }
             }
-        }
+        } */
 
         if(isset($_POST['product_id'])) {
             $product_ids = $_POST['product_id'];
@@ -497,7 +511,7 @@
                     $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'subunit_id');
                     if(!empty($case_contains[$i])){
                         $case_contains[$i] = trim($case_contains[$i]);
-                    }else{
+                    } else {
                         $case_contains[$i] = $GLOBALS['null_value'];
                     }
                     $unit_ids[$i] = trim($unit_ids[$i]);
@@ -505,7 +519,7 @@
                         $unit_type = ""; $product_qty = 0;
                         if($unit_ids[$i] == $product_unit_id) {
                             $unit_type = 1; 
-                        }  else if ($unit_ids[$i] == $product_subunit_id) {
+                        } else if ($unit_ids[$i] == $product_subunit_id) {
                             $unit_type = 2;
                         } else {
                             $unit_type = ""; 
@@ -557,36 +571,29 @@
 
                                     $individual_product_detail[] = array('magazine_id' => $magazine_id,'product_id' => $product_ids[$i],'subunit_content' => $case_contains[$i],'quantity' => $product_qty); 
                             
-                                }
-                                else {
+                                } else {
                                     $product_error = "Invalid Quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
                                 }
-                            }
-                            else {
+                            } else {
                                 $product_error = "Empty Quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
                             }
-                        }
-                        else {
+                        } else {
                             $product_error = "Invalid Unit in Product - ".($obj->encode_decode('decrypt', $product_name));
                         }
-                    }
-                    else {
+                    } else {
                         $product_error = "Empty Unit in Product - ".($obj->encode_decode('decrypt', $product_name));
                     }
-                }
-                else {
+                } else {
                     $product_error = "Invalid Product";
                 }
 
                 array_multisort(array_column($individual_product_detail, "magazine_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, $individual_product_detail);
 
-                if(empty($valid_material_transfer))
-                {
+                if(empty($valid_material_transfer)) {
                     $final_array = combineAndSumUp($individual_product_detail);
                 }
             }
-        }
-        else {
+        } else {
             $product_error = "Add Products";
         }
 
@@ -609,14 +616,12 @@
 						$round_off = 100 - $decimal;
 						if($round_off < 10) {
 							$round_off = "0.0".$round_off;
-						}
-						else {
+						} else {
 							$round_off = "0.".$round_off;
 						}
 						
 						$total_amount = $total_amount + $round_off;
-					}
-					else {
+					} else {
 						$decimal = "0.".$decimal;
 						$round_off = "-".$decimal;
 						$total_amount = $total_amount - $decimal;
@@ -630,8 +635,7 @@
         }
 
         $stock_error = 0; $valid_stock = "";
-        if(!empty($final_array) && empty($valid_daily_production))
-        {
+        if(!empty($final_array) && empty($valid_daily_production)) {
             foreach($final_array as $data)
             {
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
@@ -658,8 +662,7 @@
                     $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
                     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need'); 
 
-                    if(!empty($product))
-                    {
+                    if(!empty($product)) {
                         $product = $obj->encode_decode("decrypt",$product);
                     }
 
@@ -689,8 +692,7 @@
                     }
                     
                     $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
-                    if($negative_stock !='1')
-                    {
+                    if($negative_stock !='1') {
                         if($subunit_need == 1) {
                             $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . " & " . (!empty($data['subunit_content']) ? ($data['subunit_content'] . " " . $sub_unit_name ) : "") . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name . " & " . $available_stock_subunit . " " . $sub_unit_name;
                             $stock_error = 1;
@@ -777,9 +779,7 @@
             $check_user_id_ip_address = 0;
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
             if(preg_match("/^\d+$/", $check_user_id_ip_address)) {
-                $factory_id = "";
-                $factory_name_location = ""; $magazine_name_location = ""; $contractor_name_mobile_city = "";
-                $factory_details = ""; $magazine_details = ""; $contractor_details = "";
+                $factory_id = ""; $factory_name_location = ""; $magazine_name_location = ""; /* $contractor_name_mobile_city = ""; $contractor_details = ""; */ $factory_details = ""; $magazine_details = ""; 
                 if(!empty($entry_date)) {
                     $entry_date = date('Y-m-d', strtotime($entry_date));
                 }
@@ -806,15 +806,15 @@
                     $factory_name_location = $GLOBALS['null_value'];
                     $factory_details = $GLOBALS['null_value'];
                 }
-                if(!empty($contractor_id)) {
+                /* if(!empty($contractor_id)) {
                     $contractor_name_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city');
                     $contractor_details = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'contractor_details');
         
-                }
-                else {
+                } else {
                     $contractor_id = $GLOBALS['null_value'];
                     $contractor_name_mobile_city = $GLOBALS['null_value'];
-                }
+                } */
+
                 if(!empty($product_ids)) {
                     $product_ids = implode(",", $product_ids);
                 }
@@ -858,8 +858,8 @@
 
                     $null_value = $GLOBALS['null_value'];
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'daily_production_id', 'daily_production_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'contractor_id', 'contractor_name_mobile_city', 'contractor_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate','total_quantity', 'overall_cooly_total','cancelled', 'deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'", "'".$contractor_id."'", "'".$contractor_name_mobile_city."'",  "'".$contractor_details."'","'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'","'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'daily_production_id', 'daily_production_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate','total_quantity', 'overall_cooly_total','cancelled', 'deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'","'0'", "'0'");
                     $daily_production_insert_id = $obj->InsertSQL($GLOBALS['daily_production_table'], $columns, $values,'daily_production_id', 'daily_production_number', $action);
 
                     if(preg_match("/^\d+$/", $daily_production_insert_id)) {
@@ -880,8 +880,8 @@
                         $action = "Daily Production Updated.";
 
                         $columns = array(); $values = array();						
-                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'contractor_id', 'contractor_name_mobile_city', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate',  'total_quantity', 'overall_cooly_total', 'contractor_details');
-                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'", "'".$contractor_id."'", "'".$contractor_name_mobile_city."'",  "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'", "'".$contractor_details."'");    
+                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate',  'total_quantity', 'overall_cooly_total');
+                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'",  "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'");    
 
                         $daily_production_update_id = $obj->UpdateSQL($GLOBALS['daily_production_table'], $getUniqueID, $columns, $values, $action);
 
@@ -917,7 +917,7 @@
                 }
 
                 if ($update_payment == 1) {
-                    $bill_date = date("Y-m-d");   $bill_number = $daily_production_number; $bill_type = "Daily Production";
+                    /* $bill_date = date("Y-m-d");   $bill_number = $daily_production_number; $bill_type = "Daily Production";
                     $party_id = $contractor_id;  $party_name = $contractor_name_mobile_city; $party_type = 'Contractor';
                     $payment_mode_id = $GLOBALS['null_value']; $payment_mode_name = $GLOBALS['null_value']; $bank_id = $GLOBALS['null_value'];
                     $bank_name = $GLOBALS['null_value'];  $credit  = 0; $debit = 0; $opening_balance = $GLOBALS['null_value']; $opening_balance_type = $GLOBALS['null_value']; $agent_id = $GLOBALS['null_value']; $agent_name = $GLOBALS['null_value'];
@@ -931,8 +931,7 @@
                     }
 
                     $update_balance = "";
-                    $update_balance = $obj->UpdateBalance($daily_production_id,$bill_number,$bill_date,$bill_type, $agent_id, $agent_name,$contractor_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit, $opening_balance_type);
-
+                    $update_balance = $obj->UpdateBalance($daily_production_id,$bill_number,$bill_date,$bill_type, $agent_id, $agent_name,$contractor_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit, $opening_balance_type); */
                 }
             }
             else {
@@ -961,7 +960,7 @@
 		$page_limit = $_POST['page_limit'];
 		$page_title = $_POST['page_title'];
         
-        $from_date = ""; $to_date = ""; $search_text = ""; $filter_factory_id = ""; $filter_magazine_id = ""; $filter_contractor_id = "";
+        $from_date = ""; $to_date = ""; $search_text = ""; $filter_factory_id = ""; $filter_magazine_id = ""; /* $filter_contractor_id = ""; */
         $show_bill = 0;
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
@@ -975,9 +974,9 @@
         if(isset($_POST['filter_magazine_id'])) {
             $filter_magazine_id = $_POST['filter_magazine_id'];
         }
-        if(isset($_POST['filter_contractor_id'])) {
-            $filter_contractor_id = $_POST['filter_contractor_id'];
-        }
+        // if(isset($_POST['filter_contractor_id'])) {
+        //     $filter_contractor_id = $_POST['filter_contractor_id'];
+        // }
         if(isset($_POST['search_text'])) {
             $search_text = $_POST['search_text'];
         }
@@ -992,7 +991,7 @@
         // }
 
         $total_records_list = array();
-        $total_records_list = $obj->getDailyProductionList($from_date, $to_date, $filter_factory_id, $filter_magazine_id, $filter_contractor_id, $show_bill);
+        $total_records_list = $obj->getDailyProductionList($from_date, $to_date, $filter_factory_id, $filter_magazine_id, '', $show_bill);
 
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -1057,7 +1056,7 @@
                     <th>Entry Date</th>
                     <th>Daily Production No</th>
                     <th>Magazine</th>
-                    <th>Contractor</th>
+                    <!-- <th>Contractor</th> -->
                     <th>Total Amount</th>
                     <th>Action</th>
                 </tr>
@@ -1101,6 +1100,7 @@
                                         ?>
                                   
                                     </td>   
+                                    <?php /*
                                     <td>
                                         <?php
                                             if(!empty($list['contractor_name_mobile_city']) && $list['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
@@ -1108,6 +1108,7 @@
                                             }
                                         ?>
                                     </td>
+                                    */ ?>
                                     <td>
                                         <?php
                                             if(!empty($list['overall_cooly_total']) && $list['overall_cooly_total'] != $GLOBALS['null_value']) {

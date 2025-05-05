@@ -8,23 +8,20 @@
         }
     }
 	if(isset($_REQUEST['show_consumption_entry_id'])) { 
-
-        // echo $obj->encode_decode('decrypt','4d6a67774e4449774d6a55774f544d784d444a664d44633d');
         $show_consumption_entry_id = $_REQUEST['show_consumption_entry_id'];
-        $godown_id = array(); $product_id = array(); $unit_type = array(); $quantity = array(); $contractor_id = ""; $consumption_content =array(); $godown_type = "";$entry_date = date('Y-m-d'); $first_godown_id = ""; $product_count =0;
+        $godown_id = array(); $product_id = array(); $unit_type = array(); $quantity = array(); /* $contractor_id = "";*/ $consumption_content = array(); $godown_type = ""; $entry_date = date('Y-m-d'); $first_godown_id = ""; $product_count =0;
        if(!empty($show_consumption_entry_id)) {
             $show_consumption_entry_list = $obj->getTableRecords($GLOBALS['consumption_entry_table'], 'consumption_id', $show_consumption_entry_id, '');
             if(!empty($show_consumption_entry_list)) {
                 foreach($show_consumption_entry_list as $consumption_entry) {
-                    if(!empty($consumption_entry['contractor_id'])) {
-                        $contractor_id = $consumption_entry['contractor_id'];
-                    }
+                    // if(!empty($consumption_entry['contractor_id'])) {
+                    //     $contractor_id = $consumption_entry['contractor_id'];
+                    // }
                     if(!empty($consumption_entry['godown_type'])) {
                         $godown_type = $consumption_entry['godown_type'];
                     }
                     if(!empty($consumption_entry['godown_id'])) {
                         $godown_id = explode(",", $consumption_entry['godown_id']);
-                        // print_r($godown_id);
                     }
                     if(!empty($consumption_entry['product_id'])) {
                         $product_id = explode(",", $consumption_entry['product_id']);
@@ -45,16 +42,15 @@
                     if($godown_type == 1){
                         $first_godown_id = trim($godown_id[0]);
                     }
-                    // print_r($consumption_content);
                 }
             }
         }
-        $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], "", "", "");
+
+        // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], "", "", "");
         
         if(!empty($login_godown_id)){
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
-
-        }else{
+        } else {
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], "", "", "");
         }
 
@@ -89,6 +85,7 @@
                                 </div>
                             </div> 
                         </div>
+                        <?php /*
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -104,11 +101,10 @@
                                 </div>
                             </div>       
                         </div>
+                        */ ?>
                         <?php /*
                         <input type="hidden" name="contractor" value="<?php if(!empty($contractor_id)) { echo $contractor_id; } ?>" <?php if(empty($show_consumption_entry_id)) { ?>disabled<?php } ?>>
-
                         <?php */ ?>
-
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -417,10 +413,9 @@
                 }
             }
             return $finalArray;
-            // print_r($final_array);
         }
 
-        $edit_id = ""; $contractor_id = ""; $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = "";
+        $edit_id = ""; /* $contractor_id = ""; */ $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = "";
         $consumption_id = ""; $stock_unique_ids = array(); $group_id = array(); $unit_id = array(); $subunit_id = array();
         $contractor_error = ""; $consumption_content = array(); $godown_type_error = ""; $overall_godown_error = ""; $overall_godown = "";
         if(isset($_POST['edit_id'])) {
@@ -442,7 +437,7 @@
         }
 
 
-        if(isset($_POST['contractor'])) {
+        /* if(isset($_POST['contractor'])) {
             $contractor_id = $_POST['contractor'];
         }
         if(empty($contractor_id)) {
@@ -454,7 +449,7 @@
             } else {
                 $valid_consumption = $valid->error_display($form_name, 'contractor', $contractor_error, 'select');
             }
-        }
+        } */
 
         if(isset($_POST['godown_type'])) {
             $godown_type = $_POST['godown_type'];
@@ -782,9 +777,9 @@
                     $entry_date = date('Y-m-d', strtotime($entry_date));
                 }
 
-                $contractor_details = ""; $consumption_entry_number = "";
+                /* $contractor_details = ""; $consumption_entry_number = "";
                 $contractor_details = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'contractor_details');
-                $contractor_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city');
+                $contractor_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city'); */
 
                 $company_details = "";
                 $company_details = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'company_details');
@@ -796,8 +791,8 @@
                 if (empty($edit_id)) {
                     $action = "New consumption Created ";
                     $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'company_details','consumption_id','consumption_entry_number', 'entry_date', 'contractor_id', 'contractor_details', 'contractor_mobile_city','godown_type','product_id', 'godown_id', 'unit_type', 'quantity','content', 'total_quantity', 'cancelled','deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$company_details."'","'".$null_value."'", "'".$null_value."'","'".$entry_date."'","'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'","'".$godown_type."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$consumption_content."'", "'".$total_qty."'", "'0'","'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'company_details','consumption_id','consumption_entry_number', 'entry_date','godown_type','product_id', 'godown_id', 'unit_type', 'quantity','content', 'total_quantity', 'cancelled','deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$company_details."'","'".$null_value."'", "'".$null_value."'","'".$entry_date."'", "'".$godown_type."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$consumption_content."'", "'".$total_qty."'", "'0'","'0'");
                     $insert_id = $obj->InsertSQL($GLOBALS['consumption_entry_table'], $columns, $values, "consumption_id", "consumption_entry_number", $action);
                     if (preg_match("/^\d+$/", $insert_id)) {
 
@@ -814,8 +809,8 @@
                     if(preg_match("/^\d+$/", $getUniqueID)) {
                         $action = "consumption Updated.";
                         $columns = array(); $values = array();	
-                        $columns = array('company_details', 'contractor_id', 'contractor_details', 'contractor_mobile_city','product_id', 'godown_id', 'unit_type', 'quantity', 'total_quantity','entry_date','content','godown_type');
-                        $values = array("'".$company_details."'", "'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'","'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$total_qty."'","'".$entry_date."'","'".$consumption_content."'","'".$godown_type."'");
+                        $columns = array('company_details', 'product_id', 'godown_id', 'unit_type', 'quantity', 'total_quantity','entry_date','content','godown_type');
+                        $values = array("'".$company_details."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$total_qty."'","'".$entry_date."'","'".$consumption_content."'","'".$godown_type."'");
                         $consumption_update_id = $obj->UpdateSQL($GLOBALS['consumption_entry_table'], $getUniqueID, $columns, $values, $action);
                         if(preg_match("/^\d+$/", $consumption_update_id)) {
                             $consumption_id = $edit_id;
@@ -892,10 +887,11 @@
 		   $search_text = $_POST['search_text'];
 		}
 
-        $filter_contractor_id = "";  $from_date = ""; $to_date = "";
+        /* $filter_contractor_id = "";  $from_date = ""; $to_date = "";
 		if(isset($_POST['filter_contractor_id'])) {
 		   $filter_contractor_id = $_POST['filter_contractor_id'];
-		}
+		} */
+
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
         }
@@ -905,7 +901,7 @@
         if(isset($_POST['show_bill'])) {
             $show_bill = $_POST['show_bill'];
         }
-        $total_records_list = $obj->getConsumptionTableRecords($filter_contractor_id, $show_bill, $from_date, $to_date);
+        $total_records_list = $obj->getConsumptionTableRecords('', $show_bill, $from_date, $to_date);
 
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -968,7 +964,7 @@
                     <th>S.No</th>
                     <th>Entry Date</th>
                     <th>Consumption Entry No</th>
-                    <th>contractor Name</th>
+                    <!-- <th>Contractor Name</th> -->
                     <th>QTY</th>
                     <th>Action</th>
                 </tr>
@@ -1013,6 +1009,7 @@
                                     <?php	
                                 }	 ?>
                         </td>
+                        <?php /*
                         <td>
                             <?php
                                 if(!empty($data['contractor_mobile_city'])) {
@@ -1022,6 +1019,7 @@
                             ?>
                          
                         </td>
+                        */ ?>
                         <td class="ribbon-header" style="cursor:default;">
                             <?php 
                                 if(!empty($data['total_quantity'])) {
@@ -1088,8 +1086,7 @@
 
                 <?php 
                         } 
-                    }  
-                    else {
+                    } else {
                 ?>
                         <tr>
                             <td colspan="4" class="text-center">Sorry! No records found</td>
@@ -1119,8 +1116,7 @@
             $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
             if(!empty($unit_name) && $unit_name != $GLOBALS['null_value']) {
                 $unit_name = $obj->encode_decode('decrypt', $unit_name);
-            }
-            else {
+            } else {
                 $unit_name = "";
             }
         }
@@ -1133,8 +1129,7 @@
             $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
             if(!empty($sub_unit_name) && $sub_unit_name != $GLOBALS['null_value']) {
                 $sub_unit_name = $obj->encode_decode('decrypt', $sub_unit_name);
-            }
-            else {
+            } else {
                 $sub_unit_name = "";
             }
         }
@@ -1149,13 +1144,12 @@
         $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
 
         $contains_list = array();
-        if($subunit_need == 1){
+        if($subunit_need == 1) {
             $contains_list = $obj->ProductContainsList($product_id);
         }
     
-        if(!empty($contains_list)){
-            foreach($contains_list as $contain)
-            {
+        if(!empty($contains_list)) {
+            foreach($contains_list as $contain) {
                 $case_contains[] = $contain['case_contains'];
             }
         }
@@ -1247,9 +1241,9 @@
                 }
             }
         }
-        if($unit_id == $product_unit_id){
+        if($unit_id == $product_unit_id) {
             $unit_type = 1;
-        }else if($unit_id == $product_subunit_id){
+        } else if($unit_id == $product_subunit_id) {
             $unit_type = 2;
         }
         ?>
@@ -1359,7 +1353,7 @@
                 Current Stock By Subunit<br>(<?php echo number_format($current_stock_subunit, 2); if(!empty($sub_unit_name)) { echo " " . $obj->encode_decode('decrypt', $sub_unit_name); } ?>) 
                 <?php } ?>
             </span>
-        <?php } else{ ?>
+        <?php } else { ?>
             <span class="w-100 text-center" style="font-weight:bold!important;">
                 <?php if(!empty($unit_id) && !empty($product_id)) { ?>
                 Current Stock By Unit<br>(<?php echo number_format($current_stock_unit, 2); if(!empty($unit_name)) { echo " " . $obj->encode_decode('decrypt', $unit_name); } ?>)<br>
@@ -1425,14 +1419,12 @@
 
                         if(!empty($current_stock_unit) && $current_stock_unit != $GLOBALS['null_value']) {
                             $current_stock_unit = $current_stock_unit + $outward_unit;
-                        }
-                        else {
+                        } else {
                             $current_stock_unit = 0;
                         }
                         if(!empty($current_stock_subunit) && $current_stock_subunit != $GLOBALS['null_value']) {
                             $current_stock_subunit = $current_stock_subunit + $outward_subunit;
-                        }
-                        else {
+                        } else {
                             $current_stock_subunit = $GLOBALS['null_value'];
                         }
 

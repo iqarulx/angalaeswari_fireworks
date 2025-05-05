@@ -126,14 +126,14 @@
         $total_rate = 0;
         $unit_subunit = explode(",", $_REQUEST['unit_subunit']);
 
-        if($product_group == "1"){
+        if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
             $lcoation_name = '';
             $lcoation_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_id, 'godown_name');
-        }
-        else if($product_group == "2"){
+        } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
             $lcoation_name = '';
             $lcoation_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_id, 'magazine_name');
-        } ?>
+        } 
+        ?>
         <tr class="purchase_product_row" id="purchase_product_row<?php echo $purchase_entry_row_index; ?>">
             <td class="sno text-center px-2 py-2"><?php echo $purchase_entry_row_index; ?></td>
 
@@ -440,10 +440,10 @@
 
     if(isset($_REQUEST['get_stock_product'])) {
         $get_stock_product = $_REQUEST['get_stock_product'];
-        $contractor_id = $_REQUEST['contractor_id'];
+        // $contractor_id = $_REQUEST['contractor_id'];
         $godown_id = $_REQUEST['godown_id'];
         $product_list = array(); $unit_type =""; $case_contains ="";
-        $product_list = $obj->getGodownContractorStockProduct($godown_id, $contractor_id);
+        $product_list = $obj->getGodownContractorStockProduct($godown_id, '');
         
         ?>
         <option value="">Select Product</option>
@@ -476,13 +476,15 @@
         $product_list = array();
         $product_type = "finished";
         $product_type = $obj->encode_decode('encrypt',$product_type);
-        if($product_group == "1"){
-            $product_list = $obj->getProducts("1");
-        }
-        else if($product_group == "2"){
-            $product_list = $obj->getProducts("2");
-        }
+        // if($product_group == "1"){
+        //     $product_list = $obj->getProducts("1");
+        // }
+        // else if($product_group == "2"){
+        //     $product_list = $obj->getProducts("2");
+        // }
         
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group, '');
+
         ?>
         <option value="">Select</option>
         <?php

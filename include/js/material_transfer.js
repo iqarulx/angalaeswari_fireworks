@@ -112,7 +112,6 @@ function loadProductForFromLocation() {
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (result != "") {
-                            console.log(result);
                             if (jQuery('select[name="selected_product"]').length > 0) {
                                 jQuery('select[name="selected_product"]').empty().append(result)
                             }
@@ -142,7 +141,6 @@ function GetProductdetails() {
                     url: post_url, success: function (result) {
                         if (result != "") {
                             result = result.split("$$");
-                            console.log(result);
                             if ($("select[name='selected_unit_type']").length > 0) {
                                 $("select[name='selected_unit_type']").empty().append(result[0]);
                             }
@@ -364,7 +362,6 @@ function AddMaterialProducts() {
                         var post_url = "material_action_changes.php?product_material_row_index=" + product_count + "&selected_product=" + selected_product + "&selected_unit_type=" + selected_unit_type + "&selected_quantity=" + selected_quantity + "&unit_subunit=" + globalVar + "&selected_content=" + selected_content + "&limit=" + limit + "&negative=" + negative;
                         jQuery.ajax({
                             url: post_url, success: function (result) {
-                                console.log(result);
                                 if (jQuery('.product_material_table tbody').find('tr').length > 0) {
                                     jQuery('.product_material_table tbody').find('tr:first').before(result);
                                 }
@@ -436,7 +433,6 @@ function DeleteMaterialTransferRow(row_index, id_name) {
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                console.log(id_name + row_index);
                 if (jQuery('#' + id_name + row_index).length > 0) {
                     jQuery('#' + id_name + row_index).remove();
                 }
