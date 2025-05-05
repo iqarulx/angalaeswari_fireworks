@@ -49,7 +49,7 @@
                                 <form name="table_listing_form" method="post">
 
                                     <div class="row  p-2">
-                                        <div class="col-lg-3 py-1">
+                                        <div class="col-lg-2 py-1">
                                             <div class="form-group">
                                                 <div class="form-label-group in-border">
                                                     <select class="select2 select2-danger Product_Fix_field" name="filter_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="table_listing_records_filter();">
@@ -68,7 +68,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 py-1">
+                                        <div class="col-lg-2 py-1">
                                             <div class="form-group">
                                                 <div class="form-label-group in-border">
                                                     <select class="select2 select2-danger Product_Fix_field" name="filter_finished_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="table_listing_records_filter();">
@@ -87,14 +87,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 py-1">
+                                        <div class="col-lg-2 py-1">
                                             <div class="input-group">
                                                 <input type="text" class="form-control" name="search_text" style="height:34px;" placeholder="Search By Name" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();" >
                                                 <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                             </div>
                                         </div>
-                                        <div class="col-lg-12 ms-2">
-                                            <div class="tooltip-container ms-2">
+                                        <div class="col-lg-6">
+                                            <div class="tooltip-container">
                                                 <button class="btn btn-primary m-1" style="font-size:11px;" type="button">
                                                     <i class="bi bi-info-circle"></i>&nbsp; Upload Info
                                                 </button>

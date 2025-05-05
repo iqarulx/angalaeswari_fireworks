@@ -141,7 +141,7 @@
                                 </div>
                             </div>        
                         </div>
-                        <div class="col-lg-2 col-md-3 col-12 d-none" id="bank_list">
+                        <div class="col-lg-2 col-md-3 col-12 d-none py-2" id="bank_list">
                             <div class="form-group">
                                 <div class="form-label-group in-border mt-0">
                                     <select name="selected_bank_id" class="select2 select2-danger smallfnt form-control" style="width:100% !important;">

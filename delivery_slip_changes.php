@@ -25,6 +25,9 @@
 
             if(!empty($delivery_slip_list)) {
                 $ds = $delivery_slip_list;
+                if(!empty($ds['proforma_invoice_id'])) {
+                    $proforma_invoice_id = $ds['proforma_invoice_id'];
+                }
                 if(!empty($ds['proforma_invoice_number'])) {
                     $proforma_invoice_number = $ds['proforma_invoice_number'];
                 }
@@ -184,7 +187,7 @@
         }
 
         $customer_list = array();
-        $customer_list = $obj->getCustomerList();
+        $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
         $charges_list =array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $agent_list =array();
@@ -216,6 +219,24 @@
         if(!empty($company_state)) {
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
+
+        $proforma_products = array();
+        if(!empty($proforma_invoice_id)) {
+            $proforma_invoice_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $proforma_invoice_id, '');
+
+            if(!empty($proforma_invoice_list)) {
+                foreach($proforma_invoice_list as $proforma) {
+                    $pi_product_ids = explode(',', $proforma['product_id']);
+                    $quantitys = explode(',', $proforma['quantity']);
+                    if(!empty($pi_product_ids)) {
+                        for($i = 0; $i < count($pi_product_ids); $i++) {
+                            $proforma_products[$pi_product_ids[$i]] = ["product_id" => $pi_product_ids[$i], "quantity" => $quantitys[$i]];
+                        }
+                    }
+                }
+            }
+        }
+        
     ?>
         <form class="poppins pd-20 redirection_form" name="delivery_slip_form" method="POST">
             <div class="card-header">
@@ -278,7 +299,7 @@
                                     foreach ($customer_list as $customer) { ?>
                                         <option value="<?php if (!empty($customer['customer_id'])) {
                                             echo $customer['customer_id'];
-                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
+                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { ?> selected <?php } ?>>
                                             <?php
                                                 if(!empty($customer['name_mobile_city']) && $customer['name_mobile_city'] != $GLOBALS['null_value']) {
                                                     echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
@@ -495,11 +516,11 @@
                                                     </div> 
                                                 </th>
                                                 <th class="text-center px-2 py-2">
-                                                    <?php if($unit_types[$i] == '1'){
+                                                    <?php if(!empty($unit_types[$i]) && $unit_types[$i] == '1'){
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
                                                     }
-                                                    elseif($unit_types[$i] == '2')
+                                                    elseif(!empty($unit_types[$i]) && $unit_types[$i] == '2')
                                                     {
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
@@ -518,12 +539,11 @@
                                                 </th>
                                                 <th class="text-center px-2 py-2">
                                                     <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity[$i])) { echo $quantity[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
-                                                    <input type="hidden" name="old_quantity[]" class="form-control shadow-none" value="<?php if(!empty($old_quantity[$i])) { echo $old_quantity[$i]; } ?>">
+                                                    <input type="hidden" name="old_quantity[]" class="form-control shadow-none" value="<?php if(!empty($proforma_products[$product_ids[$i]]['quantity'])) { echo $proforma_products[$product_ids[$i]]['quantity']; } ?>">
                                                     </th>
                                                 <th class="text-center px-2 py-2">
-                                                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i]) && ($contents[$i])) { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
-
-                                                    <?php if(!empty($contents[$i])) { echo $contents[$i]; } ?>
+                                                    <input type="hidden" name="content[]" class="form-control shadow-none" value="<?php if(!empty($contents[$i]) && $contents[$i] != "NULL") { echo $contents[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:ProductRowCheck(this);">
+                                                    <?php if(!empty($contents[$i]) && $contents[$i] != "NULL") { echo $contents[$i]; } ?>
                                                 </th>
                                                 <td class="d-none">
                                                     <div class="form-group mb-1">

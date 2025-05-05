@@ -58,35 +58,35 @@
             $total_party_list = $agent_list;
         }
         else if($view_type == '2') {
-            $total_party_list = $party_list;
-        }
-        else if($view_type == '4') {
             $total_party_list = $supplier_list;
         }
-    }
-    else {
-        if(!empty($agent_list)) {
-            foreach($agent_list as $data) {
-                if(!empty($data)) {
-                    $total_party_list[] = $data;
-                }
-            }
-        }
-        if(!empty($party_list)) {
-            foreach($party_list as $data) {
-                if(!empty($data)) {
-                    $total_party_list[] = $data;
-                }
-            }
-        }
-        if(!empty($supplier_list)) {
-            foreach($supplier_list as $data) {
-                if(!empty($data)) {
-                    $total_party_list[] = $data;
-                }
-            }
+        else if($view_type == '4') {
+            $total_party_list = $party_list;
         }
     }
+    // else {
+    //     if(!empty($agent_list)) {
+    //         foreach($agent_list as $data) {
+    //             if(!empty($data)) {
+    //                 $total_party_list[] = $data;
+    //             }
+    //         }
+    //     }
+    //     if(!empty($party_list)) {
+    //         foreach($party_list as $data) {
+    //             if(!empty($data)) {
+    //                 $total_party_list[] = $data;
+    //             }
+    //         }
+    //     }
+    //     if(!empty($supplier_list)) {
+    //         foreach($supplier_list as $data) {
+    //             if(!empty($data)) {
+    //                 $total_party_list[] = $data;
+    //             }
+    //         }
+    //     }
+    // }
 
     $sales_list =array(); $total_records_list =array();
     $type ="";
@@ -169,7 +169,7 @@
                                         <div class="col-lg-2 col-md-3 col-12">
                                             <div class="form-group pb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="view_type" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                    <select class="select2 select2-danger" name="view_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="getReport();">
                                                             <option value="">Select Party Type</option>
                                                             <option value="1" <?php if($view_type == "1") { ?> selected <?php }  ?>>Agent</option>
                                                             <option value="2" <?php if($view_type == "2") { ?> selected <?php }  ?>>Supplier</option>
@@ -182,19 +182,19 @@
                                         <div class="col-lg-2 col-md-3 col-6 px-lg-1">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;">
+                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="getReport();">
                                                     <option value="">Select</option>
                                                     <?php
                                                             if(!empty($total_party_list)) {
                                                                 foreach($total_party_list as $data) {
                                                                     
-                                                                    if(!empty($data['party_id']) && $data['party_id'] !=$GLOBALS['null_value']) {
+                                                                    if(!empty($data['customer_id']) && $data['customer_id'] !=$GLOBALS['null_value']) {
                                                                         ?>
-                                                                        <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>>
+                                                                        <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['customer_id']){ echo "selected"; } } ?>>
                                                                             <?php
-                                                                                if(!empty($data['party_name'])) {
-                                                                                    $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
-                                                                                    echo $data['party_name'];
+                                                                                if(!empty($data['customer_name'])) {
+                                                                                    $data['customer_name'] = $obj->encode_decode('decrypt', $data['customer_name']);
+                                                                                    echo $data['customer_name'];
                                                                                     if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
                                                                                         $data['city'] = $obj->encode_decode('decrypt', $data['city']);
                                                                                         echo " - ".$data['city'];

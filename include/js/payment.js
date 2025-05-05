@@ -439,3 +439,40 @@ function getVoucherFilterPartyList(party_type) {
 		}
 	});
 }
+
+function DeleteExpenseCategoryRow(row_index) {
+	var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				if (jQuery('#expense_category_row' + row_index).length > 0) {
+					jQuery('#expense_category_row' + row_index).remove();
+				}
+				SnoCalculation();
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}
+
+function DeletePaymentRow(row_index) {
+	var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				if (jQuery('#payment_row' + row_index).length > 0) {
+					jQuery('#payment_row' + row_index).remove();
+				}
+				PaymentTotal();
+				SnoCalculation();
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}

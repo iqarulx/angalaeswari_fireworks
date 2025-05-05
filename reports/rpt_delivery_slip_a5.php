@@ -439,7 +439,7 @@
         $pdf->Cell(20,8,$index,1,0,'C',0);
         $pdf->Cell(65,8,$obj->encode_decode('decrypt', $product_names[$i]),1,0,'C',0);
         $pdf->Cell(25,8,$quantity[$i].' '. ($unit_types[$i] == '1' ? $unit_name : $subunit_name),1,0,'C',0);
-        $pdf->Cell(20,8,($contents[$i] != '' ? $contents[$i] . ' '. $subunit_name : '-'),1,1,'C',0);
+        $pdf->Cell(20,8,($contents[$i] != '' && $contents[$i] != 'NULL' ? $contents[$i] . ' '. $subunit_name : '-'),1,1,'C',0);
         if($unit_types[$i] == '1') {
             $total_unit = $total_unit + $quantity[$i];
         } else if($unit_types[$i] == '2') {

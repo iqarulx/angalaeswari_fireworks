@@ -129,7 +129,7 @@
                             </div>
                         </div>        
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6">
+                    <div class="col-lg-2 col-md-3 col-6 py-2">
                         <div class="form-group">
                             <div class="form-label-group in-border">
                                 <input type="text" name="selected_amount"  class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number','',1);">
@@ -137,7 +137,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-12 text-center">
+                    <div class="col-lg-2 col-md-3 col-12 text-center py-2">
                         <button class="btn btn-success add_payment_button" style="font-size:12px;" type="button" onclick="Javascript:AddPaymentRow();">
                             Add To Bill
                         </button>
@@ -185,7 +185,6 @@
                      if($payment_mode_count == 1){ ?>
                              getBankDetails('<?php if(!empty($selected_payment_mode)){ echo $selected_payment_mode; } ?>');
                     <?php } ?>
-                    
                     jQuery('.add_update_form_content').find('select').select2();
                     jQuery(".select2").on("select2:open", function () {
                         // Find the inner search field of the opened dropdown
@@ -652,7 +651,7 @@
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
                                             <li><a class="dropdown-item" target="_blank" href="reports/rpt_expense_entry_a5.php?view_expense_id=<?php if(!empty($list['expense_id'])) { echo $list['expense_id']; } ?>&from="><i class="fa fa-print"></i> &ensp; Print</a></li>
-                                            <li><a class="dropdown-item" target="_blank" href="reports/rpt_expense_entry.php?view_expense_id=<?php if(!empty($list['expense_id'])) { echo $list['expense_id']; } ?>&from=D"><i class="fa fa-download"></i> &ensp; Download</a></li> <?php 
+                                            <li><a class="dropdown-item" target="_blank" href="reports/rpt_expense_entry_a5.php?view_expense_id=<?php if(!empty($list['expense_id'])) { echo $list['expense_id']; } ?>&from=D"><i class="fa fa-download"></i> &ensp; Download</a></li> <?php 
                                             if(empty($list['deleted'])){ 
 
                                                 if(empty($delete_access_error)) { ?>

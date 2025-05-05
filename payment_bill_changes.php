@@ -43,7 +43,7 @@ if(isset($_REQUEST['payment_row_index'])) {
             <input type="text" name="amount[]" style="width:75%!important;margin:auto!important;" class="form-control shadow-none px-1 text-center" value="<?php if(!empty($amount)) { echo $amount; } ?>" onfocus="Javascript:KeyboardControls(this,'number','','');" onkeyup="Javascript:PaymentTotal();InputBoxColor(this, 'text');">
         </td>
         <td class="text-center">
-            <button class="btn btn-danger" type="button" onclick="Javascript:DeleteRow('payment_row', '<?php if(!empty($payment_row_index)) { echo $payment_row_index; } ?>');"><i class="fa fa-trash"></i></button>
+            <button class="btn btn-danger" type="button" onclick="Javascript:DeletePaymentRow('<?php if(!empty($payment_row_index)) { echo $payment_row_index; } ?>');"><i class="fa fa-trash"></i></button>
         </td>
     </tr>
     <?php
@@ -123,7 +123,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                             }
                         ?>
                     </select>
-                    <label>Party</label>                   
+                    <label>Party</label>
                 </div>
                 <a href="Javascript:ViewPartyDetails('supplier');" class="d-none details_element" style="font-size: 12px;font-weight: bold;">Click to view details</a>
             </div>
@@ -167,6 +167,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                         }
                     ?>
                 </select>
+                <label>Agent</label>
                 <script type="text/javascript">
                         jQuery(document).ready(function(){
                             jQuery('.add_update_form_content').find('select').select2();
@@ -280,6 +281,41 @@ if(isset($_REQUEST['details_type'])) {
                     }
                 }
             }	
+        } else {
+            if($type == "customer") {
+                $details_list = $obj->getTableRecords($GLOBALS['agent_table'], 'agent_id', $type_id, '');
+                if(!empty($details_list)) {
+                    foreach($details_list as $data) {
+                        if(!empty($data['agent_name']) && $data['agent_name'] != $GLOBALS['null_value']) {
+                            $name = $obj->encode_decode('decrypt', $data['agent_name']);
+                        }
+                        if(!empty($data['address']) && $data['address'] != $GLOBALS['null_value']) {
+                            $address = $obj->encode_decode('decrypt', $data['address']);
+                        }
+                        if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                            $city = $obj->encode_decode('decrypt', $data['city']);
+                        }
+                        if(!empty($data['district']) && $data['district'] != $GLOBALS['null_value']) {
+                            $district = $obj->encode_decode('decrypt', $data['district']);
+                        }
+                        if(!empty($data['state']) && $data['state'] != $GLOBALS['null_value']) {
+                            $state = $obj->encode_decode('decrypt', $data['state']);
+                        }
+                        if(!empty($data['pincode']) && $data['pincode'] != $GLOBALS['null_value']) {
+                            $pincode = $obj->encode_decode('decrypt', $data['pincode']);
+                        }
+                        if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
+                            $mobile_number = $obj->encode_decode('decrypt', $data['mobile_number']);
+                        }
+                        if(!empty($data['email']) && $data['email'] != $GLOBALS['null_value']) {
+                            $email = $obj->encode_decode('decrypt', $data['email']);
+                        }
+                        if(!empty($data['identification']) && $data['identification'] != $GLOBALS['null_value']) {
+                            $identification = $obj->encode_decode('decrypt', $data['identification']);
+                        }
+                    }	
+                }
+            }
         }
 
         ?>

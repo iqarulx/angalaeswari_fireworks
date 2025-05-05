@@ -201,7 +201,6 @@
 
         $count_of_bank = 0;
         $count_of_bank = count($bank_list);
-
         
         $count_of_group = 0;
         $count_of_group = count($finished_group_list);
@@ -594,15 +593,12 @@
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'unit_name');
                                                     }
-                                                    elseif($unit_types[$i] == '2')
-                                                    {
+                                                    else if($unit_types[$i] == '2') {
                                                         $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_id');
                                                         $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$product_ids[$i],'subunit_name');
-                                                        
                                                     }
 
-                                                    if(!empty($unit_name) && $unit_name !='NULL')
-                                                    {
+                                                    if(!empty($unit_name) && $unit_name !='NULL') {
                                                         echo $unit_name = $obj->encode_decode("decrypt",$unit_name);
                                                     }
                                                     ?>

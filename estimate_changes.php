@@ -158,20 +158,17 @@
                 if(!empty($est['other_charges_id'])) {
                     $other_charges_id = $est['other_charges_id'];
                     $other_charges_id = explode(",", $other_charges_id);
-                    $other_charges_id = array_reverse($other_charges_id);
                     $charges_count = count($other_charges_id);
                 }      
                     
                 if(!empty($est['charges_type'])) {
                     $charges_type = $est['charges_type'];
                     $charges_type = explode(",", $charges_type);
-                    $charges_type = array_reverse($charges_type);
                 }
 
                 if(!empty($est['other_charges_value'])) {
                     $other_charges_value = $est['other_charges_value'];
                     $other_charges_value = explode(",", $other_charges_value);
-                    $other_charges_value = array_reverse($other_charges_value);
                 }   
 
                 if(!empty($est['agent_commission'])) {
@@ -194,8 +191,8 @@
             }
         }
 
-        $customer_list =array();
-        $customer_list = $obj->getCustomerList();
+        $customer_list = array();
+        $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
         $charges_list =array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $agent_list =array();
@@ -1044,17 +1041,14 @@
 
         if(isset($_POST['other_charges_id'])) {
             $other_charges_id = $_POST['other_charges_id'];
-            $other_charges_id = array_reverse($other_charges_id);
         }
 
         if(isset($_POST['charges_type'])) {
             $charges_type = $_POST['charges_type'];
-            $charges_type = array_reverse($charges_type);
         }   
         
         if(isset($_POST['other_charges_value'])) {
             $other_charges_values = $_POST['other_charges_value'];
-            $other_charges_values = array_reverse($other_charges_values);
         }   
 
         if(isset($_POST['agent_commission'])) {
@@ -1191,6 +1185,7 @@
             $product_error = "Bill value cannot be 0";
         }
 
+        $agent_commission_value = 0;
         if(!empty($agent_commission)){
             $agent_commission = str_replace('%', '', $agent_commission);
             $agent_commission = trim($agent_commission);
@@ -1216,7 +1211,8 @@
                         if(strpos($other_charges_values[$i], '%') !== false) {
                             $other_charges_value = str_replace('%', '', $other_charges_values[$i]);
                             $other_charges_value = trim($other_charges_value);
-                        } else {
+                        }
+                        else {
                             $other_charges_value = $other_charges_values[$i];
                         }
                         $other_charges_error = $valid->valid_price($other_charges_value, ($obj->encode_decode('decrypt', $other_charges_name)), 1, '');
@@ -1257,15 +1253,9 @@
                 }
             }
         }
-
-        if(!empty($other_charges_total)) {
-            $other_charges_total = array_sum($other_charges_total);
-        } else {
-            $other_charges_total = 0;
-        }
-    
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
+
 
         if($gst_option == '1' && empty($product_error) && empty($valid_estimate)) {
             $percentage = 100;
@@ -1509,6 +1499,12 @@
                     $charges_total_amounts = implode(",", $charges_total_amounts);
                 } else {
                     $charges_total_amounts = $GLOBALS['null_value'];
+                }
+                if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
+                    $other_charges_total = implode(",", $other_charges_total);
+                }
+                else {
+                    $other_charges_total = $GLOBALS['null_value'];
                 }
 
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator']; $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']); $bill_company_id = $GLOBALS['bill_company_id']; $null_value = $GLOBALS['null_value']; $balance = 0; $estimate_insert_id = "";
@@ -1756,7 +1752,7 @@
                                 
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                            <br><span style="color: red;">Cancelled</span>
+                                        <br><span style="color: red;">Cancelled</span>
                                     <?php	
                                 }	 ?>
                             </td>

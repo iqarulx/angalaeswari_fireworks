@@ -638,8 +638,14 @@ function calTotal() {
             if (selected_quantity != "" && selected_quantity != 0 && typeof final_rate != "undefined" && price_regex.test(final_rate) == true) {
                 amount = parseFloat(selected_quantity) * parseFloat(final_rate);
                 amount = amount.toFixed(2);
+                // if (jQuery(this).find('input[name="amount[]"]').length > 0) {
+                //     amount = jQuery(this).find('input[name="amount[]"]').val();
+                // }
+                if (jQuery(this).find('.amount').length > 0) {
+                    jQuery(this).find('.amount').html(amount)
+                }
                 if (jQuery(this).find('input[name="amount[]"]').length > 0) {
-                    amount = jQuery(this).find('input[name="amount[]"]').val();
+                    jQuery(this).find('input[name="amount[]"]').val(amount)
                 }
             }
             // }
@@ -679,11 +685,11 @@ function calTotal() {
             if (agent_commission_total != 0) {
                 if (jQuery('.overall_total').length > 0) {
                     var overall_total = amount_total - agent_commission_total;
-                    jQuery('.overall_total').html(roundToNearest(overall_total));
+                    jQuery('.overall_total').html(overall_total);
                 }
             } else {
                 if (jQuery('.overall_total').length > 0) {
-                    jQuery('.overall_total').html(roundToNearest(amount_total));
+                    jQuery('.overall_total').html(amount_total);
                 }
             }
         }
@@ -782,6 +788,7 @@ function checkGST() {
                     var amount = 0; var discount = ""; var discounted_amount = 0; var tax_percentage = ""; var tax = "";
                     var tax_value = 0;
                     amount = jQuery(this).find('input[name="amount[]"]').val();
+                    console.log("amnt 3 :" + amount);
                     amount = amount.replace(/ /g, '');
                     amount = amount.trim();
                     if (jQuery(this).find('select[name="product_tax[]"]').length > 0) {
@@ -944,13 +951,13 @@ function checkGST() {
                 total_value = parseFloat(charges_sub_total) + parseFloat(overall_tax_value);
                 total_value = total_value.toFixed(2);
                 if (jQuery('.overall_total').length > 0) {
-                    jQuery('.overall_total').html(roundToNearest(total_value));
+                    jQuery('.overall_total').html(total_value);
                 }
             }
         } else {
             if (charges_sub_total != "" && charges_sub_total != 0 && typeof charges_sub_total != "undefined" && price_regex.test(charges_sub_total) == true) {
                 if (jQuery('.overall_total').length > 0) {
-                    jQuery('.overall_total').html(roundToNearest(charges_sub_total));
+                    jQuery('.overall_total').html(charges_sub_total);
                 }
             }
         }
@@ -960,7 +967,7 @@ function checkGST() {
                 var rowCount = 0;
                 rowCount = jQuery('.proforma_invoice_table').find("tbody").find("tr").length;
                 if (rowCount != 0) {
-                    jQuery('.overall_total').html(roundToNearest(charges_sub_total));
+                    jQuery('.overall_total').html(charges_sub_total);
                 } else {
                     jQuery('.overall_total').html('');
                     jQuery('.charges_sub_total').html('');
@@ -1175,7 +1182,7 @@ function CheckCharges() {
     }
     if (price_regex.test(total_amount) !== false) {
         if (jQuery('.overall_total').length > 0) {
-            jQuery('.overall_total').html(roundToNearest(total_amount));
+            jQuery('.overall_total').html(total_amount);
         }
         if (jQuery('.total_amount').length > 0) {
             jQuery('.total_amount').html(total_amount);
@@ -1192,6 +1199,7 @@ function CheckCharges() {
     // getAgentCommission();
     getGST();
     checkGST();
+    checkOverallAmount();
 }
 
 function AddproformaProducts(event) {
@@ -1854,7 +1862,6 @@ function getRateByTaxOption() {
                                         jQuery(this).find('.amount').html(amount);
                                     }
                                     if (jQuery(this).find('input[name="amount[]"]').length > 0) {
-
                                         jQuery(this).find('input[name="amount[]"]').val(amount);
                                     }
                                 }

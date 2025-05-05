@@ -268,7 +268,7 @@ if(isset($_REQUEST['estimate_id'])) {
     $pdf->Cell(20,8,'S.No.',1,0,'C',0);
     $pdf->Cell(40,8,'Products',1,0,'C',0);
     $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-    $pdf->Cell(18,8,'contents',1,0,'C',0);
+    $pdf->Cell(18,8,'Contents',1,0,'C',0);
     $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
     if($gst_option == '1' && $tax_type == '1') {
         $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -358,7 +358,7 @@ if(isset($_REQUEST['estimate_id'])) {
             $pdf->Cell(20,8,'S.No.',1,0,'C',0);
             $pdf->Cell(40,8,'Products',1,0,'C',0);
             $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-            $pdf->Cell(18,8,'contents',1,0,'C',0);
+            $pdf->Cell(18,8,'Contents',1,0,'C',0);
             $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
             if($gst_option == '1' && $tax_type == '1') {
                 $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -506,7 +506,7 @@ if(isset($_REQUEST['estimate_id'])) {
         $pdf->Cell(20,8,'S.No.',1,0,'C',0);
         $pdf->Cell(40,8,'Products',1,0,'C',0);
         $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-        $pdf->Cell(18,8,'contents',1,0,'C',0);
+        $pdf->Cell(18,8,'Contents',1,0,'C',0);
         $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
         if($gst_option == '1' && $tax_type == '1') {
             $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -600,171 +600,172 @@ if(isset($_REQUEST['estimate_id'])) {
     $pdf->SetY($bank_start_y);
 
     $charges_total_amounts = array(); $total_amount_car = 0; $charge_in = array();
-        if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
-            for($i=0; $i < count($other_charges_id); $i++) {
-                $charge_in[$i] = "Rs.".$other_charges_value[$i];
+    if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
+        for($i=0; $i < count($other_charges_id); $i++) {
+            $charge_in[$i] = "Rs.".$other_charges_value[$i];
 
-                $other_charges_id[$i] = trim($other_charges_id[$i]);
-                if(!empty($other_charges_id[$i])) {
-                    $other_charges_name = "";
-                    $other_charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$i], 'charges_name');
-                    $other_charges_names[$i] = $other_charges_name;
-                    $charges_type[$i] = trim($charges_type[$i]);
-                    $other_charges_value[$i] = trim($other_charges_value[$i]);
-                    if(isset($other_charges_value[$i])) {
-                        $other_charges_error = "";
-                        if(strpos($other_charges_value[$i], '%') !== false) {
-                            $charge_in[$i] = $other_charges_value[$i];
-                            $other_charges_values[$i] = str_replace('%', '', $other_charges_value[$i]);
-                            $other_charges_values[$i] = trim($other_charges_values[$i]);
-                            $other_charges_values[$i] = (float) $purchase_subtotal * $other_charges_values[$i] /100;
-                           
-                        } else {
-                            $other_charges_values[$i] = $other_charges_value[$i];
-                        }
+            $other_charges_id[$i] = trim($other_charges_id[$i]);
+            if(!empty($other_charges_id[$i])) {
+                $other_charges_name = "";
+                $other_charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$i], 'charges_name');
+                $other_charges_names[$i] = $other_charges_name;
+                $charges_type[$i] = trim($charges_type[$i]);
+                $other_charges_value[$i] = trim($other_charges_value[$i]);
+                if(isset($other_charges_value[$i])) {
+                    $other_charges_error = "";
+                    if(strpos($other_charges_value[$i], '%') !== false) {
+                        $charge_in[$i] = $other_charges_value[$i];
+                        $other_charges_values[$i] = str_replace('%', '', $other_charges_value[$i]);
+                        $other_charges_values[$i] = trim($other_charges_values[$i]);
+                        $other_charges_values[$i] = (float) $purchase_subtotal * $other_charges_values[$i] /100;
+                        
+                    } else {
+                        $other_charges_values[$i] = $other_charges_value[$i];
                     }
-                    $other_charges_total[$i] = $other_charges_values[$i];
-                    if($charges_type[$i] == "minus") {
-                        $total_amount_car -= $other_charges_values[$i];
-                    }
-                    else if($charges_type[$i] == "plus") {
-                        $total_amount_car += $other_charges_values[$i];
-                    }
-                    $charges_total_amounts[] = $total_amount_car;
                 }
+                $other_charges_total[$i] = $other_charges_values[$i];
+                if($charges_type[$i] == "minus") {
+                    $total_amount_car -= $other_charges_values[$i];
+                }
+                else if($charges_type[$i] == "plus") {
+                    $total_amount_car += $other_charges_values[$i];
+                }
+                $charges_total_amounts[] = $total_amount_car;
             }
         }
-        $total_amount_ = $purchase_subtotal;
+    }
+    $total_amount_ = $purchase_subtotal;
+    
+    if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
+        $total_charge = 0; 
         
-        if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
-            $total_charge = 0; 
-            
-            for($o = 0; $o < count($other_charges_id); $o++) {
-                if($charges_type[$o] == "minus") {
-                    $total_amount_ -= $other_charges_values[$o];
-                }
-                else if($charges_type[$o] == "plus") {
-                    $total_amount_ += $other_charges_values[$o];
-                }
-                $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,$obj->encode_decode('decrypt', $charges_name)."(".$charge_in[$o].")",1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_values[$o],1,1,'R',0);
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,'Total',1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
+        for($o = 0; $o < count($other_charges_id); $o++) {
+            if($charges_type[$o] == "minus") {
+                $total_amount_ -= $other_charges_values[$o];
             }
+            else if($charges_type[$o] == "plus") {
+                $total_amount_ += $other_charges_values[$o];
+            }
+            $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
+            $pdf->SetX(100);
+            $pdf->SetFont('Arial','B',8);
+            $pdf->Cell(80,5,$obj->encode_decode('decrypt', $charges_name)."(".$charge_in[$o].")",1,0,'R',0);
+            $pdf->SetFont('Arial','',8);
+            $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_values[$o],1,1,'R',0);
+            $pdf->SetX(100);
+            $pdf->SetFont('Arial','B',8);
+            $pdf->Cell(80,5,'Total',1,0,'R',0);
+            $pdf->SetFont('Arial','',8);
+            $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
         }
+    }
 
-        if($gst_option == 1 && $company_state == $party_state) {
-            if(!empty($cgst_value)){  
-                $cgst_value = $obj->numberFormat($cgst_value,2);
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,'CGST',1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5,$cgst_value,1,1,'R',0);
-            }
-            if(!empty($sgst_value)){  
-                $sgst_value = $obj->numberFormat($sgst_value,2);
-
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,'SGST',1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5,$sgst_value,1,1,'R',0);
-            }
+    if($gst_option == 1 && $company_state == $party_state) {
+        if(!empty($cgst_value)){  
+            $cgst_value = $obj->numberFormat($cgst_value,2);
+            $pdf->SetX(100);
+            $pdf->SetFont('Arial','B',8);
+            $pdf->Cell(80,5,'CGST',1,0,'R',0);
+            $pdf->SetFont('Arial','',8);
+            $pdf->Cell(20,5,$cgst_value,1,1,'R',0);
         }
-        if($gst_option == 1 && $company_state != $party_state) {
-            if(!empty($igst_value)){  
-                $igst_value = $obj->numberFormat($igst_value,2);
-
-                $pdf->SetX(100);
-                $pdf->SetFont('Arial','B',8);
-                $pdf->Cell(80,5,'IGST ',1,0,'R',0);
-                $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5,$igst_value,1,1,'R',0);
-            }
-        }
-        if(!empty($total_tax_value)){  
-            $total_tax_value = $obj->numberFormat($total_tax_value,2);
+        if(!empty($sgst_value)){  
+            $sgst_value = $obj->numberFormat($sgst_value,2);
 
             $pdf->SetX(100);
             $pdf->SetFont('Arial','B',8);
-            $pdf->Cell(80,5,'Total Tax',1,0,'R',0);
+            $pdf->Cell(80,5,'SGST',1,0,'R',0);
             $pdf->SetFont('Arial','',8);
-            $pdf->Cell(20,5,$total_tax_value,1,1,'R',0);
-        }          
-        if(!empty($round_off)){  
-            $pdf->SetX(100);
-            $pdf->SetFont('Arial','B',8);
-            $pdf->Cell(80,5,'Round Off',1,0,'R',0);
-            $pdf->SetFont('Arial','',8);
-            $pdf->Cell(20,5,number_format($round_off,2),1,1,'R',0);
+            $pdf->Cell(20,5,$sgst_value,1,1,'R',0);
         }
-        if(!empty($bill_total)){
+    }
+
+    if($gst_option == 1 && $company_state != $party_state) {
+        if(!empty($igst_value)){  
+            $igst_value = $obj->numberFormat($igst_value,2);
+
             $pdf->SetX(100);
             $pdf->SetFont('Arial','B',8);
-            $pdf->Cell(80,5,'Bill Total',1,0,'R',0);
+            $pdf->Cell(80,5,'IGST ',1,0,'R',0);
             $pdf->SetFont('Arial','',8);
-            $pdf->Cell(20,5,$obj->numberFormat($bill_total,2),1,1,'R',0);
-            $total_cal_y = $pdf->GetY();
-            $line_y = $total_cal_y;
-            if($total_cal_y >  $bank_y) {
-                $line_y = $total_cal_y;
-            } else if($bank_y > $total_cal_y) {
-                $pdf->Line(100,$bank_start_y,100,$bank_y);
-                $line_y = $bank_y;
-            }
-            $pdf->SetY($line_y);
-            // echo $total_cal_y ,"<br>", $bank_y,"<br>", $line_y;
-            $line_y = $pdf->GetY();
-            $pdf->Line(10,$line_y,200,$line_y);
+            $pdf->Cell(20,5,$igst_value,1,1,'R',0);
+        }
+    }
 
-            $pdf->SetFont('Arial','',8);
-            $pdf->SetX(10);
-            $pdf->Cell(40,5,'Amount (in words) :',0,0,'L',0);
-            $pdf->SetX(10);
-            $pdf->Cell(0,5,'E. & O.E',0,1,'R',0);
-            $pdf->SetFont('Arial','B',8);
-            $pdf->SetX(10);
-            $pdf->Cell(190,5,getIndianCurrency($bill_total).'Only',0,1,'L',0);
-            $line_y = $pdf->GetY();
-        }   
+    if(!empty($total_tax_value)){  
+        $total_tax_value = $obj->numberFormat($total_tax_value,2);
 
-        $pdf->Line(10,$line_y,200,$line_y);
-        $pdf->SetY($line_y);
-        $pdf->SetFont('Arial','BU',9);
-        // $pdf->Cell(100,2,'', 0, 1, '');
-        $pdf->Cell(100,5,'Terms and Conditions', 0, 1, '');
-        $pdf->SetY($line_y);
-        $pdf->SetX(140);
-        $pdf->SetFont('Arial','B',9);
-        $pdf->MultiCell(60,7, 'FOR  ' . $company_details[0],0,'C',0);
+        $pdf->SetX(100);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(80,5,'Total Tax',1,0,'R',0);
         $pdf->SetFont('Arial','',8);
-        $pdf->SetY(260);
-        $pdf->setX(13);
-        $pdf->MultiCell(90,4,'* We declare that this bill shows the actual price of the goods described and that all particulars are true and correct. ', 0, 1, '');
-        $pdf->setX(13);
-        $pdf->MultiCell(90,6,'* Subject to SIVAKASI jurisdiction only', 0, 1, '');
-        $pdf->Cell(190,2,'', 0, 1, 'C');
-        $pdf->SetY(270);
-        $pdf->SetX(155);
-        $pdf->Cell(45,2,'Authorised Signatory',0,1,'C',0);
-        $pdf->SetFont('Arial','',7);
-        $pdf->SetY(10);
-        $pdf->SetX(10);
-        $pdf->Cell(190,265,'',1,0,'C');
-        $yz = $pdf ->GetY();
-        $pdf->SetY(275);
-        $pdf->Cell(190,5,'***This is Computer Generated bill. Hence Digital Signature is not required.***',0,1,'C',0);
+        $pdf->Cell(20,5,$total_tax_value,1,1,'R',0);
+    }
 
+    if(!empty($round_off)){  
+        $pdf->SetX(100);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(80,5,'Round Off',1,0,'R',0);
+        $pdf->SetFont('Arial','',8);
+        $pdf->Cell(20,5,number_format($round_off,2),1,1,'R',0);
+    }
+    
+    if(!empty($bill_total)){
+        $pdf->SetX(100);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(80,5,'Bill Total',1,0,'R',0);
+        $pdf->SetFont('Arial','',8);
+        $pdf->Cell(20,5,$obj->numberFormat($bill_total,2),1,1,'R',0);
+        $total_cal_y = $pdf->GetY();
+        $line_y = $total_cal_y;
+        if($total_cal_y >  $bank_y) {
+            $line_y = $total_cal_y;
+        } else if($bank_y > $total_cal_y) {
+            $pdf->Line(100,$bank_start_y,100,$bank_y);
+            $line_y = $bank_y;
+        }
+        $pdf->SetY($line_y);
+        // echo $total_cal_y ,"<br>", $bank_y,"<br>", $line_y;
+        $line_y = $pdf->GetY();
+        $pdf->Line(10,$line_y,200,$line_y);
+
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetX(10);
+        $pdf->Cell(40,5,'Amount (in words) :',0,0,'L',0);
+        $pdf->SetX(10);
+        $pdf->Cell(0,5,'E. & O.E',0,1,'R',0);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->SetX(10);
+        $pdf->Cell(190,5,getIndianCurrency($bill_total).'Only',0,1,'L',0);
+        $line_y = $pdf->GetY();
+    }   
+
+    $pdf->Line(10,$line_y,200,$line_y);
+    $pdf->SetY($line_y);
+    $pdf->SetFont('Arial','BU',9);
+    // $pdf->Cell(100,2,'', 0, 1, '');
+    $pdf->Cell(100,5,'Terms and Conditions', 0, 1, '');
+    $pdf->SetY($line_y);
+    $pdf->SetX(140);
+    $pdf->SetFont('Arial','B',9);
+    $pdf->MultiCell(60,7, 'FOR  ' . $company_details[0],0,'C',0);
+    $pdf->SetFont('Arial','',8);
+    $pdf->SetY(260);
+    $pdf->setX(13);
+    $pdf->MultiCell(90,4,'* We declare that this bill shows the actual price of the goods described and that all particulars are true and correct. ', 0, 1, '');
+    $pdf->setX(13);
+    $pdf->MultiCell(90,6,'* Subject to SIVAKASI jurisdiction only', 0, 1, '');
+    $pdf->Cell(190,2,'', 0, 1, 'C');
+    $pdf->SetY(270);
+    $pdf->SetX(155);
+    $pdf->Cell(45,2,'Authorised Signatory',0,1,'C',0);
+    $pdf->SetFont('Arial','',7);
+    $pdf->SetY(10);
+    $pdf->SetX(10);
+    $pdf->Cell(190,265,'',1,0,'C');
+    $yz = $pdf ->GetY();
+    $pdf->SetY(275);
+    $pdf->Cell(190,5,'***This is Computer Generated bill. Hence Digital Signature is not required.***',0,1,'C',0);
 
     $pdf->Output('',$pdf_download_name . '.pdf');
-
-
 }

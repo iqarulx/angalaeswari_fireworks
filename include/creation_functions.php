@@ -1206,20 +1206,20 @@
 											$new_quantity = $current_quantity - $old_quantity;
 		
 											$filtered_products['product_id'][] = $current_product_id;
-											$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
-											$filtered_products['product_name'][] = trim($product_names[$i]);
+											$filtered_products['indv_magazine_id'][] = !empty($indv_magazine_ids[$i]) && $indv_magazine_ids[$i] != 'NULL' ? trim($indv_magazine_ids[$i]) : '';
+											$filtered_products['product_name'][] = !empty($product_names[$i]) && $product_names[$i] != 'NULL' ? trim($product_names[$i]) : '';
 											$filtered_products['unit_type'][] = trim($unit_types[$i]);
 											$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
-											$filtered_products['content'][] = trim($contents[$i]);
-											$filtered_products['unit_id'][] = trim($unit_ids[$i]);
-											$filtered_products['unit_name'][] = trim($unit_names[$i]);
+											$filtered_products['content'][] = !empty($contents[$i]) && $contents[$i] != 'NULL' ? trim($contents[$i]) : '';
+											$filtered_products['unit_id'][] = !empty($unit_ids[$i]) && $unit_ids[$i] != 'NULL' ? trim($unit_ids[$i]) : '';
+											$filtered_products['unit_name'][] = !empty($unit_names[$i]) && $unit_names[$i] != 'NULL' ? trim($unit_names[$i]) : '';
 											$filtered_products['quantity'][] = $new_quantity;
-											$filtered_products['rate'][] = trim($rates[$i]);
-											$filtered_products['per'][] = trim($pers[$i]);
-											$filtered_products['per_type'][] = trim($per_types[$i]);
-											$filtered_products['product_tax'][] = trim($product_taxs[$i]);
-											$filtered_products['final_rate'][] = trim($final_rates[$i]);
-											$filtered_products['amount'][] = trim($amounts[$i]);
+											$filtered_products['rate'][] = !empty($rates[$i]) && $rates[$i] != 'NULL' ? trim($rates[$i]) : '';
+											$filtered_products['per'][] = !empty($pers[$i]) && $pers[$i] != 'NULL' ? trim($pers[$i]) : '';
+											$filtered_products['per_type'][] = !empty($per_types[$i]) && $per_types[$i] != 'NULL' ? trim($per_types[$i]) : '';
+											$filtered_products['product_tax'][] = !empty($product_taxs[$i]) && $product_taxs[$i] != 'NULL' ?  trim($product_taxs[$i]) : '';
+											$filtered_products['final_rate'][] = !empty($final_rates[$i]) && $final_rates[$i] != 'NULL' ? trim($final_rates[$i]) : '';
+											$filtered_products['amount'][] = !empty($amounts[$i]) && $amounts[$i] != 'NULL' ? trim($amounts[$i]) : '';
 										}
 										// If old == current quantity, skip adding (means remove)
 										break;
@@ -1229,21 +1229,21 @@
 								if (!$found) {
 									// If not found in old products, add as it is
 									$filtered_products['product_id'][] = $current_product_id;
-									$filtered_products['indv_magazine_id'][] = trim($indv_magazine_ids[$i]);
-									$filtered_products['product_name'][] = trim($product_names[$i]);
+									$filtered_products['indv_magazine_id'][] = !empty($indv_magazine_ids[$i]) && $indv_magazine_ids[$i] != 'NULL' ? trim($indv_magazine_ids[$i]) : '';
+									$filtered_products['product_name'][] = !empty($product_names[$i]) && $product_names[$i] != 'NULL' ? trim($product_names[$i]) : '';
 									$filtered_products['unit_type'][] = trim($unit_types[$i]);
 									$filtered_products['subunit_need'][] = trim($subunit_needs[$i]);
-									$filtered_products['content'][] = trim($contents[$i]);
-									$filtered_products['unit_id'][] = trim($unit_ids[$i]);
-									$filtered_products['unit_name'][] = trim($unit_names[$i]);
+									$filtered_products['content'][] = !empty($contents[$i]) && $contents[$i] != 'NULL' ? trim($contents[$i]) : '';
+									$filtered_products['unit_id'][] = !empty($unit_ids[$i]) && $unit_ids[$i] != 'NULL' ? trim($unit_ids[$i]) : '';
+									$filtered_products['unit_name'][] = !empty($unit_names[$i]) && $unit_names[$i] != 'NULL' ? trim($unit_names[$i]) : '';
 									$filtered_products['quantity'][] = $current_quantity;
-									$filtered_products['rate'][] = trim($rates[$i]);
-									$filtered_products['per'][] = trim($pers[$i]);
-									$filtered_products['per_type'][] = trim($per_types[$i]);
-									$filtered_products['product_tax'][] = trim($product_taxs[$i]);
-									$filtered_products['final_rate'][] = trim($final_rates[$i]);
-									$filtered_products['amount'][] = trim($amounts[$i]);
-								}
+									$filtered_products['rate'][] = !empty($rates[$i]) && $rates[$i] != 'NULL' ? trim($rates[$i]) : '';
+									$filtered_products['per'][] = !empty($pers[$i]) && $pers[$i] != 'NULL' ? trim($pers[$i]) : '';
+									$filtered_products['per_type'][] = !empty($per_types[$i]) && $per_types[$i] != 'NULL' ? trim($per_types[$i]) : '';
+									$filtered_products['product_tax'][] = !empty($product_taxs[$i]) && $product_taxs[$i] != 'NULL' ?  trim($product_taxs[$i]) : '';
+									$filtered_products['final_rate'][] = !empty($final_rates[$i]) && $final_rates[$i] != 'NULL' ? trim($final_rates[$i]) : '';
+									$filtered_products['amount'][] = !empty($amounts[$i]) && $amounts[$i] != 'NULL' ? trim($amounts[$i]) : '';
+								}								
 							}
 		
 							// Merge new proforma data
