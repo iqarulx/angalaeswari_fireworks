@@ -12,6 +12,7 @@
         }
     }
     
+    
     $from_date=""; $to_date="";
     $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
 
@@ -23,10 +24,6 @@
 
     $bank_list = array(); 
     $bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '','', '');
-
-    // if(!empty($party_list)){
-    //     $party_count = count($party_list);
-    // }
 
     $filter_party_id =""; $fiter_bill_type =""; $filter_party_type= "";  
 
@@ -394,10 +391,10 @@
                                                                                 } else {
                                                                                     echo "-";
                                                                                 }
-                                                                                ?>
+                                                                                ?><br> 
                                                                                 &nbsp;
-                                                                                <span style="font-size:9px;cursor:pointer;" onclick="Javascript:ShowBillPDF('<?php if(!empty($data['bill_id']) && $data['bill_id'] != $GLOBALS['null_value']) { echo $data['bill_id']; } ?>', '<?php if(!empty($data['bill_type']) && $data['bill_type'] != $GLOBALS['null_value']) { echo $data['bill_type']; } ?>')">
-                                                                                <i class="bi bi-eye"></i>
+                                                                                <span style="font-size:9px;cursor:pointer;" onclick="Javascript:PaymentModalContent('<?php if(!empty($data['bill_id']) && $data['bill_id'] != $GLOBALS['null_value']) { echo $data['bill_id']; } ?>', '<?php if(!empty($data['bill_type']) && $data['bill_type'] != $GLOBALS['null_value']) { echo $data['bill_type']; } ?>')">
+                                                                                <i class="bi bi-eye-fill text-dark fs-15"></i>
                                                                                 </span>
                                                                             </td>
                                                                             <td>
@@ -584,45 +581,35 @@
         // }, 1000); 
     }
 
-    function ShowBillPDF(bill_id, type) {
+
+    function PaymentModalContent(bill_id, type) {
         var url = "";
         bill_id = bill_id.trim();
         type = type.trim();
-        if(type == 'Receipt') {
-            url = "reports/rpt_receipt_a5.php?view_receipt_id="+bill_id;
-        } else if(type == 'Voucher') {
-            url = "reports/rpt_voucher_a5.php?view_voucher_id="+bill_id;
-        } else if(type == 'Expense') {
-            url = "reports/rpt_expense_entry_a5.php?view_expense_id="+bill_id;
-        } else if(type == 'Estimate') {
-            url = "reports/rpt_estimate_a4.php?view_estimate_id="+bill_id;
-        } else if(type == 'Purchase') {
-            url = "reports/rpt_purchase_bill_a4.php?view_purchase_bill_id="+bill_id;
-        }
-        
-        if(url != "") {
-            window.open(url, "_blank");
-        }
-    }
 
-    function showBill(bill_id, type) {
-        // var post_url = "proforma_invoice_changes.php?status_proforma_invoice_id=" + proforma_invoice_id;
-        // jQuery.ajax({
-        //     url: post_url, success: function (result) {
-        //         result = result.trim();
-                if (jQuery('.payment_report_modal_button').length > 0) {
-                    jQuery('.payment_report_modal_button').trigger('click');
+        if (type == 'Receipt') {
+            url = "reports/rpt_receipt_a5.php?view_receipt_id=" + bill_id;
+        } else if (type == 'Voucher') {
+            url = "reports/rpt_voucher_a5.php?view_voucher_id=" + bill_id;
+        } else if (type == 'Expense') {
+            url = "reports/rpt_expense_entry_a5.php?view_expense_id=" + bill_id;
+        } 
+
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url,
+            success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    jQuery('#PaymentModal .modal-header h1').html(type +"  Preview");
+
+                    jQuery('.payment_modal_button').trigger("click");
+                    var iframe = '<iframe src="' + url + '" width="100%" height="500px" style="border:none;"></iframe>';
+                    jQuery('#PaymentModal .modal-body').html(iframe);
+                } else {
+                    window.location.reload();
                 }
-
-                // if (jQuery('#ViewOrderDetailsModal').length > 0) {
-                //     if (jQuery('#ViewOrderDetailsModal').find('.modal-title').length > 0) {
-                //         jQuery('#ViewOrderDetailsModal').find('.modal-title').html('Proforma Invoice Details');
-                //     }
-                //     if (jQuery('#ViewOrderDetailsModal').find('.modal-body').length > 0) {
-                //         jQuery('#ViewOrderDetailsModal').find('.modal-body').html(result);
-                //     }
-                // }
-    //         }
-    //     });
+            }
+        });
     }
+
 </script>

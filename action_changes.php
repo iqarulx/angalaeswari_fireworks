@@ -476,14 +476,25 @@
         $product_list = array();
         $product_type = "finished";
         $product_type = $obj->encode_decode('encrypt',$product_type);
-        // if($product_group == "1"){
-        //     $product_list = $obj->getProducts("1");
-        // }
-        // else if($product_group == "2"){
-        //     $product_list = $obj->getProducts("2");
-        // }
-        
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group, '');
+
+        $product_group_ids = array();
+
+        if($product_group == "1"){
+            $product_group_ids = ["4d5449774e4449774d6a55784d44557a4d444a664d444d3d", "4d5449774e4449774d6a55784d4455794e4464664d44493d"];
+        }
+        else if($product_group == "2"){
+            $product_group_ids = ["4d5449774e4449774d6a55784d4455794d7a4e664d44453d"];
+        }
+
+        if(!empty($product_group_ids)) {
+            if(count($product_group_ids) == 2) {
+                $raw_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
+                $semi_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[1], '');
+                $product_list = array_merge($raw_list, $semi_list); 
+            } else {
+                $product_list =  $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
+            }    
+        }
 
         ?>
         <option value="">Select</option>
@@ -526,7 +537,7 @@
                 <?php
             }
         } else {
-            $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+            $customer_list = $obj->getCustomerList();
             ?>
             <option value="">Select customer</option>
             <?php
@@ -623,7 +634,7 @@
 				<option value="">Select</option>
 				<?php
 					$customer_list = array();
-					$customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
+					$customer_list = $obj->getCustomerList();
 					if(!empty($customer_list)) {
 						foreach($customer_list as $data) { ?>
 							<option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>">
@@ -652,4 +663,18 @@
 		</script>
 	<?php }
 
+    if(isset($_REQUEST['estimate_id'])){
+        $estimate_id = $_REQUEST['estimate_id'];
+        $delivery_slip_id ="";$proforma_invoice_id ="";
+        $delivery_slip_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id',$estimate_id,'delivery_slip_id');
+
+        if(!empty($delivery_slip_id) && $delivery_slip_id!=$GLOBALS['null_value']){
+            $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['delivery_slip_table'],'delivery_slip_id',$delivery_slip_id,'proforma_invoice_id');
+        }
+
+        if(!empty($proforma_invoice_id) && $proforma_invoice_id!=$GLOBALS['null_value']){
+            echo $proforma_invoice_id;
+        }
+
+    }
 ?>

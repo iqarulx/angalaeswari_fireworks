@@ -183,8 +183,8 @@
             }
         }
 
-        $customer_list =array();
-        $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+        $customer_list = array();
+        $customer_list = $obj->getCustomerList();
         $charges_list =array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $agent_list =array();

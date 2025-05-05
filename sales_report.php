@@ -58,9 +58,8 @@
 
     if(!empty($agent_id)){
         $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], 'agent_id', $agent_id, '');
-
-    }else{
-       $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '', '');
+    } else{
+       $customer_list = $obj->getCustomerList();
     }
 
     $transport_list =array();

@@ -148,7 +148,7 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <input id="gst_number" name="gst_number" class="form-control shadow-none" onkeydown="Javascript:KeyboardControls(this,'',16,'');InputBoxColor(this,'text');" value="<?php if(!empty($gst_number)) { echo $gst_number; } ?>" class="form-control shadow-none">
-                                    <label id="gst_label">GST Number</label>
+                                    <label id="gst_label">GST Number<span class="text-danger">*</span></label>
                                 </div>
                                 <div class="new_smallfnt">Format : 22AAAAA0000A1Z5</div>
                             </div>

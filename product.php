@@ -93,8 +93,8 @@
                                                 <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
-                                            <div class="tooltip-container">
+                                        <div class="col-lg-12 ms-2">
+                                            <div class="tooltip-container ms-2">
                                                 <button class="btn btn-primary m-1" style="font-size:11px;" type="button">
                                                     <i class="bi bi-info-circle"></i>&nbsp; Upload Info
                                                 </button>

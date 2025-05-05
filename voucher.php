@@ -68,7 +68,7 @@
                                                             <option value="">Select</option>
                                                             <option value="1">Supplier</option>
                                                             <option value="2">Agent</option>
-                                                            <option value="3">Contractor</option>
+                                                            <!-- <option value="3">Contractor</option> -->
                                                         </select>
                                                         <label>Party Type</label>  
                                                     </div>

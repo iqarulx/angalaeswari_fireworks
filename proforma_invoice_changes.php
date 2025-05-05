@@ -167,7 +167,7 @@
         }
 
         $customer_list = array();
-        $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+        $customer_list = $obj->getCustomerList();
         $charges_list = array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $agent_list = array();
@@ -1734,6 +1734,8 @@
                     foreach($show_records_list as $key => $list) {
                         $index = $key + 1;
                         if(!empty($prefix)) { $index = $index + $prefix; }   
+                        $proforma_actions = array();
+                        $proforma_actions = $obj->getProformaInvoiceActions($list['proforma_invoice_id']);
                         ?>
                         <tr>
                             <td>
@@ -1768,66 +1770,71 @@
                             </td>
                             <td> 
                                 <?php 
-                                    $status_list = array();
-                                    $status_list = $obj->getStatusInfo($list['proforma_invoice_id']); 
+                                    if(!empty($proforma_actions)) {
+                                        $status_list = array();
+                                        $status_list = $obj->getStatusInfo($list['proforma_invoice_id']); 
 
-                                    if(!empty($status_list)) {
-                                        ?>
-                                        <div class="tooltip-container">
-                                            <?php 
-                                                echo "(";
-                                                if(!empty($status_list['total_unit'])) {
-                                                    echo $status_list['total_unit'];
-                                                }
-                                                if(!empty($status_list['total_sub_unit'])) {
-                                                    echo " + " . $status_list['total_sub_unit'];
-                                                }
-                                                echo ") / ";
-                                                echo "(";
-                                                if(!empty($status_list['total_stock_unit'])) {
-                                                    echo $status_list['total_stock_unit'];
-                                                }
-                                                if(!empty($status_list['total_stock_sub_unit'])) {
-                                                    echo " + " . $status_list['total_stock_sub_unit'];
-                                                }
-                                                echo ")";
+                                        if(!empty($status_list)) {
                                             ?>
-                                            <div class="tooltip-text">
-                                                <?php
-                                                    echo "( ";
+                                            <div class="tooltip-container">
+                                                <?php 
+                                                    echo "(";
                                                     if(!empty($status_list['total_unit'])) {
                                                         echo $status_list['total_unit'];
-                                                    }
-                                                    if(!empty($status_list['unit_name'])) {
-                                                        echo " " . $status_list['unit_name'];
                                                     }
                                                     if(!empty($status_list['total_sub_unit'])) {
                                                         echo " + " . $status_list['total_sub_unit'];
                                                     }
-                                                    if(!empty($status_list['sub_unit_name'])) {
-                                                        echo " " . $status_list['sub_unit_name'];
-                                                    }
-                                                    echo " ) / (";
+                                                    echo ") / ";
+                                                    echo "(";
                                                     if(!empty($status_list['total_stock_unit'])) {
                                                         echo $status_list['total_stock_unit'];
-                                                    }
-                                                    if(!empty($status_list['stock_unit_name'])) {
-                                                        echo " " . $status_list['stock_unit_name'];
                                                     }
                                                     if(!empty($status_list['total_stock_sub_unit'])) {
                                                         echo " + " . $status_list['total_stock_sub_unit'];
                                                     }
-                                                    if(!empty($status_list['stock_sub_unit_name'])) {
-                                                        echo " " . $status_list['stock_sub_unit_name'];
-                                                    }
-                                                    echo " )";
+                                                    echo ")";
                                                 ?>
+                                                <div class="tooltip-text">
+                                                    <?php
+                                                        echo "( ";
+                                                        if(!empty($status_list['total_unit'])) {
+                                                            echo $status_list['total_unit'];
+                                                        }
+                                                        if(!empty($status_list['unit_name'])) {
+                                                            echo " " . $status_list['unit_name'];
+                                                        }
+                                                        if(!empty($status_list['total_sub_unit'])) {
+                                                            echo " + " . $status_list['total_sub_unit'];
+                                                        }
+                                                        if(!empty($status_list['sub_unit_name'])) {
+                                                            echo " " . $status_list['sub_unit_name'];
+                                                        }
+                                                        echo " ) / (";
+                                                        if(!empty($status_list['total_stock_unit'])) {
+                                                            echo $status_list['total_stock_unit'];
+                                                        }
+                                                        if(!empty($status_list['stock_unit_name'])) {
+                                                            echo " " . $status_list['stock_unit_name'];
+                                                        }
+                                                        if(!empty($status_list['total_stock_sub_unit'])) {
+                                                            echo " + " . $status_list['total_stock_sub_unit'];
+                                                        }
+                                                        if(!empty($status_list['stock_sub_unit_name'])) {
+                                                            echo " " . $status_list['stock_sub_unit_name'];
+                                                        }
+                                                        echo " )";
+                                                    ?>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <?php
-                                    }
-                                ?><br>
+                                            <?php
+                                        }
+                                ?>
+                                <br>
                                 <a href="Javascript:ViewStatusDetails('<?php echo $list['proforma_invoice_id'] ?>');" class="order_details" style="font-size: 12px;font-weight: bold;"><i class="bi bi-info-circle text-dark"></i></a>
+                                <?php } else {
+                                    echo "-";
+                                } ?>
                             </td>
                             <td>
                                 <?php
@@ -1840,8 +1847,7 @@
                             </td>
 
                             <td>
-                                <?php 
-                                    
+                                <?php
                                     $edit_access_error = "";
                                     if(!empty($login_staff_id)) {
                                         $permission_action = $edit_action;
@@ -1853,55 +1859,49 @@
                                         include('permission_action.php');
                                     }
                                 ?>
-                                <?php 
-                                    $proforma_actions = array();
-                                    $proforma_actions = $obj->getProformaInvoiceActions($list['proforma_invoice_id']);
-                                        ?>
-                                            <div class="dropdown">
-                                                <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                                    <li>
-                                                        <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
-                                                    </li>
-                                                    <?php
-                                                        if((!empty($proforma_actions) && ($show_bill == 0))) {
-                                                            if(in_array("convert", $proforma_actions)){
-                                                                ?>
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="Javascript:ShowConversion('<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>', '<?php if(!empty($page_title)) { echo $page_title; } ?>');" ><i class="fa fa-undo" ></i>&ensp; Convert To Delivery Slip</a>
-                                                                    </li>
-                                                                <?php
-                                                            }
-                                                        }
-                                                        if((!empty($proforma_actions) && ($show_bill == 0))) {
-                                                            if(in_array("edit", $proforma_actions)){
-                                                                if(empty($edit_access_error)) { 
-                                                                ?>
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
-                                                                    </li>
-                                                                <?php
-                                                                }
-                                                            }
-                                                        }
-                                                        if((!empty($proforma_actions) && ($show_bill == 0))) {
-                                                            if(in_array("delete", $proforma_actions)){
-                                                                if(empty($delete_access_error)) {
-                                                                    ?>
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a>
-                                                                    </li>
-                                                                    <?php
-                                                                }
-                                                            }
-                                                        }
-                                                    ?>
-                                                </ul>
-                                            </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
+                                        </li>
                                         <?php
-                                ?>
+                                            if((!empty($proforma_actions) && ($show_bill == 0))) {
+                                                if(in_array("convert", $proforma_actions)){
+                                                    ?>
+                                                        <li>
+                                                            <a class="dropdown-item" href="Javascript:ShowConversion('<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>', '<?php if(!empty($page_title)) { echo $page_title; } ?>');" ><i class="fa fa-undo" ></i>&ensp; Convert To Delivery Slip</a>
+                                                        </li>
+                                                    <?php
+                                                }
+                                            }
+                                            if((!empty($proforma_actions) && ($show_bill == 0))) {
+                                                if(in_array("edit", $proforma_actions)){
+                                                    if(empty($edit_access_error)) { 
+                                                    ?>
+                                                        <li>
+                                                            <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
+                                                        </li>
+                                                    <?php
+                                                    }
+                                                }
+                                            }
+                                            if((!empty($proforma_actions) && ($show_bill == 0))) {
+                                                if(in_array("delete", $proforma_actions)){
+                                                    if(empty($delete_access_error)) {
+                                                        ?>
+                                                        <li>
+                                                            <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['proforma_invoice_id'])) { echo $list['proforma_invoice_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a>
+                                                        </li>
+                                                        <?php
+                                                    }
+                                                }
+                                            }
+                                        ?>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                         <?php
@@ -2210,7 +2210,7 @@
             }
             echo "$$$ Commission : ".$agent_commission."$$$".$agent_commission;
         } else {
-            $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+            $customer_list = $obj->getCustomerList();
             ?>
             <option value="">Select customer</option>
             <?php
@@ -2469,15 +2469,13 @@
                     $group_name = "";
                     $group_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'group_name');
 
-                    // echo $contents[$i];
                     $getCurrentStock = array();
                     if(!empty($contents[$i])){
                         $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], $contents[$i]);
-                    }else{
+                    } else {
                         $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], '');
                     }
-                    // print_r($getCurrentStock);
-                   
+
                     ?>
                     <div>
                         <strong>Group:</strong> <?php echo $obj->encode_decode('decrypt', $group_name) ?>&nbsp;&nbsp;
@@ -2500,12 +2498,14 @@
                            <?php
                            if(!empty($getCurrentStock)){
                                 $magazine_name = "";
+                                $current_stock_unit = 0;
+                                $current_stock_subunit = 0;
                                 foreach($getCurrentStock as $data){
                                     if(!empty($data['current_stock_unit']) && $data['current_stock_unit'] != $GLOBALS['null_value']) {
-                                        $current_stock_unit = $data['current_stock_unit'];
+                                        $current_stock_unit += $data['current_stock_unit'];
                                     }
                                     if(!empty($data['current_stock_subunit']) && $data['current_stock_subunit'] != $GLOBALS['null_value']) {
-                                        $current_stock_subunit = $data['current_stock_subunit'];
+                                        $current_stock_subunit += $data['current_stock_subunit'];
                                     }
                                     if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value'] ) {
                                         $magazine_id = $data['magazine_id'];

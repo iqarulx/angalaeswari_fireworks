@@ -18,6 +18,11 @@ if(isset($_POST['to_date'])) {
     $to_date = date('Y-m-d');
 }
 
+$product_id = "";
+if(isset($_GET['filter_product_id'])) {
+    $product_id = $_GET['filter_product_id'];
+}
+
 $unit_type = "";
 if(isset($_GET['filter_unit_type'])) {
     $unit_type = $_GET['filter_unit_type'];
@@ -35,8 +40,13 @@ if(isset($_GET['filter_agent_id'])) {
     $agent_id = $_GET['filter_agent_id'];
 }
 
+$case_contains = "";
+if(isset($_GET['filter_contains'])) {
+    $case_contains = $_GET['filter_contains'];
+}
+
 $total_records_list = array();
-$total_records_list = $obj->GetPendingOrderReportAgentWise($from_date, $to_date, $customer_id, $agent_id, $unit_type);
+$total_records_list = $obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id, $customer_id, $agent_id,$case_contains);
 
 $date_display ="";
 if($from_date == $to_date) {
@@ -46,15 +56,15 @@ else {
     $date_display = '('.date('d-m-Y', strtotime($from_date)) . ' to '. date('d-m-Y', strtotime($to_date)) . ')';
 }
 
-$agent_display = "";
-if(!empty($agent_id)) {
-    $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_name');
-    if(!empty($agent_name)) {
-        $agent_name = $obj->encode_decode('decrypt', $agent_name) ;
+$product_display = "";
+if(!empty($product_id)) {
+    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
+    if(!empty($product_name)) {
+        $product_name = $obj->encode_decode('decrypt', $product_name) ;
     }
 
-    if(!empty($from_date) && !empty($to_date) && !empty($agent_name)) {
-        $agent_display =  $agent_name . " (Pending Stock : " . date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)) . ")";
+    if(!empty($from_date) && !empty($to_date) && !empty($product_name)) {
+        $product_display =  $product_name . " (Ordered Stock : " . date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)) . ")";
     }
 }
 
@@ -70,7 +80,7 @@ include("rpt_header.php");
 
 $pdf->SetFont('Arial','B',9);
 $pdf->SetX(10);
-$pdf->Cell(190,7, (!empty($agent_id)) ?  $agent_display : 'Pending Order Report ' . $date_display ,1,1,'C',0);
+$pdf->Cell(190,7, (!empty($product_id)) ?  $product_display : 'Pending Order Report ' . $date_display ,1,1,'C',0);
 
 $pdf->SetFont('Arial','B',7);
 $y = $pdf->GetY();
@@ -78,12 +88,32 @@ $y = $pdf->GetY();
 $pdf->SetFillColor(101,114,122);
 $pdf->SetTextColor(255,255,255);
 $pdf->SetX(10);
+if(!empty($product_id)) {
+    $pdf->Cell(10,8,'#',1,0,'C',1);
+    $pdf->Cell(30,4,'Bill Number',0,1,'C',1);
+    $pdf->SetX(20);
+    $pdf->Cell(30,4,'Bill Type',0,0,'C',1);
+    $pdf->SetY($y);
+    $pdf->SetX(50);
+    $pdf->Cell(30,8,'Agent',1,0,'C',1);
+    $pdf->SetX(80);
+    $pdf->Cell(30,8,'Customer',1,0,'C',1);
+    $pdf->SetX(110);
+    $pdf->Cell(30,8,'Product',1,0,'C',1);
+    $pdf->SetX(140);
+    $pdf->Cell(20,8,'Contains',1,0,'C',1);
+    $pdf->SetX(160);
+    $pdf->Cell(20,8,'Inward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,0,'C',1);
+    $pdf->SetX(180);
+    $pdf->Cell(20,8,'Outward ' . (!empty($unit_type) && $unit_type == "1" ? "Unit" : "Sub Unit"),1,1,'C',1);
 
-$pdf->Cell(10,8,'#',1,0,'C',1);
-$pdf->Cell(60,8,'Agent / Customer',1,0,'C',1);
-$pdf->Cell(40,8,'Pending Stock',1,0,'C',1);
-$pdf->Cell(40,8,'Ready Stock',1,0,'C',1);
-$pdf->Cell(40,8,'Need Stock',1,1,'C',1);
+} else {
+    $pdf->Cell(10,8,'#',1,0,'C',1);
+    $pdf->Cell(60,8,'Product',1,0,'C',1);
+    $pdf->Cell(40,8,'Ordered Stock',1,0,'C',1);
+    $pdf->Cell(40,8,'Ready Stock',1,0,'C',1);
+    $pdf->Cell(40,8,'Need Stock',1,1,'C',1);
+}
 
 $pdf->SetTextColor(0,0,0);
 $start_y = $pdf->GetY();
@@ -116,8 +146,8 @@ if (!empty($total_records_list)) {
                 $pdf->SetTextColor(255,255,255);
                 $pdf->SetX(10);
                 $pdf->Cell(10,8,'#',1,0,'C',1);
-                $pdf->Cell(60,8,'Agent / Customer',1,0,'C',1);
-                $pdf->Cell(40,8,'Pending Stock',1,0,'C',1);
+                $pdf->Cell(60,8,'Product',1,0,'C',1);
+                $pdf->Cell(40,8,'Ordered Stock',1,0,'C',1);
                 $pdf->Cell(40,8,'Ready Stock',1,0,'C',1);
                 $pdf->Cell(40,8,'Need Stock',1,1,'C',1);
                 
@@ -130,31 +160,23 @@ if (!empty($total_records_list)) {
             $pdf->SetX(10);
             $pdf->Cell(10,5, $s_no , 0 , 0,'C',0);
     
-            if(!empty($record['agent_id'])) {
-                $agent_name = "";
-                $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $record['agent_id'], 'agent_name');
-                $agent_name = $obj->encode_decode('decrypt', $agent_name);
+            if(!empty($record['product_id'])) {
+                $product_name = "";
+                $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $record['product_id'], 'product_name');
+                $product_name = $obj->encode_decode('decrypt', $product_name);
     
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
-                $pdf->MultiCell(60, 5, $agent_name, 0, 'L', 0);
+                $pdf->MultiCell(60, 5, $product_name, 0, 'L', 0);
                 $pdf->SetTextColor(0,0,0);
-            } else if(!empty($record['party_id'])) {
-                $customer_name = "";
-                $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $record['party_id'], 'customer_name');
-                $customer_name = $obj->encode_decode('decrypt', $customer_name);
-    
-                $pdf->SetY($start_y);
-                $pdf->SetX(20);
-                $pdf->MultiCell(60, 5, $customer_name, 0, 'L', 0);
-                $pdf->SetTextColor(0,0,0);
-            } else {
+            }
+            else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(60, 5, '-', 0, 'L', 0);
             }
     
-            $agent_y = $pdf->GetY() - $start_y;
+            $product_y = $pdf->GetY() - $start_y;
     
             if(!empty($record['pending_order_unit'])) {
                 $pdf->SetY($start_y);
@@ -198,7 +220,7 @@ if (!empty($total_records_list)) {
             }
             $need_order_y = $pdf->GetY() - $start_y;
     
-            $y_array = array($agent_y, $pending_order_y, $current_stock_y, $need_order_y);
+            $y_array = array($product_y, $pending_order_y, $current_stock_y, $need_order_y);
             $max_y = max($y_array);
     
             $pdf->SetY($start_y);
@@ -271,7 +293,7 @@ if (!empty($total_records_list)) {
                 
                 $pdf->SetFont('Arial','B',9);
                 $pdf->SetX(10);
-                $pdf->Cell(190,7, (!empty($product_id)) ?  $agent_display : 'Pending Order Report ' . $date_display ,1,1,'C',0);
+                $pdf->Cell(190,7, (!empty($product_id)) ?  $product_display : 'Pending Order Report ' . $date_display ,1,1,'C',0);
 
                 $pdf->SetFont('Arial','B',7);
                 $y = $pdf->GetY();
@@ -301,7 +323,7 @@ if (!empty($total_records_list)) {
                 } else {
                     $pdf->Cell(10,8,'#',1,0,'C',1);
                     $pdf->Cell(60,8,'Product',1,0,'C',1);
-                    $pdf->Cell(40,8,'Pending Stock',1,0,'C',1);
+                    $pdf->Cell(40,8,'Ordered Stock',1,0,'C',1);
                     $pdf->Cell(40,8,'Ready Stock',1,0,'C',1);
                     $pdf->Cell(40,8,'Need Stock',1,1,'C',1);
                 }
@@ -393,7 +415,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(110);
                 $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
             }
-            $agent_y = $pdf->GetY() - $start_y;
+            $product_y = $pdf->GetY() - $start_y;
 
             if(!empty($record['case_contains'] && $record['case_contains'] != "NULL")) {
                 $pdf->SetY($start_y);
@@ -465,7 +487,7 @@ if (!empty($total_records_list)) {
                 $outward_y = $pdf->GetY() - $start_y;
             }
     
-            $y_array = array($bill_number_y, $bill_type_y, $agent_y, $party_y, $agent_y, $inward_y, $outward_y);
+            $y_array = array($bill_number_y, $bill_type_y, $agent_y, $party_y, $product_y, $inward_y, $outward_y);
             $max_y = max($y_array);
     
             $pdf->SetY($start_y);

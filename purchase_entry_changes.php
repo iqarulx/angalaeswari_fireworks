@@ -19,7 +19,7 @@
         $purchase_entry_date = date('Y-m-d'); $current_date = date('Y-m-d');$purchase_entry_number = "";$gst_option = 0; $tax_type = 0; $tax_option = 0; $overall_tax = "";$purchase_godown_ids = "";
         $godown_ids = array();$brand_ids = array();$product_id = array(); $product_names = array();$cases = array();$piece_per_cases = array();$rate_per_piece = array();$rate_per_cases = array(); $product_amount = array();$discount = ""; $discount_value = "";$extra_charges = ""; $extra_charges_value = "";$hsn_codes=array(); $round_off = "";$total_amount = "";
         $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array(); $product_group = ""; $location_type = ""; $location_id = array();
-        $cancelled = 0;
+        $cancelled = 0; $location_name =array();
         $purchase_entry_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $show_purchase_entry_id, '');
         if(!empty($purchase_entry_list)) {
             foreach($purchase_entry_list as $data) {
@@ -523,12 +523,16 @@
                                     for($i=0; $i < count($product_id); $i++) {    
                                         $unit_display = "";
                                         $unit_display = $obj->encode_decode('decrypt', $unit_name[$i]);
+
+                                        if(empty($location_name[$i])){
+                                            $location_name[$i] ="'";
+                                        }
                                         ?>
                                         <tr class="purchase_product_row" id="purchase_product_row<?php echo $i; ?>">
                                             <td class="sno text-center px-2 py-2"><?php echo $i+1; ?></td>
                                             <td class="text-center px-2 py-2">
                                                 <?php
-                                                if ($location_name[$i] != $GLOBALS['null_value']) {
+                                                if (!empty($location_name[$i]) && ($location_name[$i] != $GLOBALS['null_value'])) {
                                                     echo $obj->encode_decode('decrypt', $location_name[$i]);
                                                 }
                                                 ?>

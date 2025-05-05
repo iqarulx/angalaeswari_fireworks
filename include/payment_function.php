@@ -327,7 +327,7 @@ class PaymentFunctions extends Basic_Functions {
     
     public function getCustomerList(){
         $list = array(); $select_query = ""; $where = "";
-         $select_query = "SELECT * FROM " . $GLOBALS['customer_table'] . " WHERE agent_id = '' AND deleted = 0 ORDER BY id DESC";
+        $select_query = "SELECT * FROM " . $GLOBALS['customer_table'] . " WHERE agent_id = '' AND agent_id != 'NULL' AND deleted = 0 ORDER BY id DESC";
         if(!empty($select_query)) {
             $list = $this->getQueryRecords('', $select_query);
         }

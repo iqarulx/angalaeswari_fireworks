@@ -1127,7 +1127,7 @@ class Stock_functions extends Basic_Functions
     }
 
     public function DeleteStockAdjustment($bill_unique_id) {
-        $stock_adjustment_list = array(); $godown_id = ""; $magazine_id = ""; $product_id = array(); $stock_action = array();
+        $stock_adjustment_list = array(); $godown_id = ""; $magazine_id = ""; $product_id = array(); $content = array(); $stock_action = array();
         $stock_adjustment_list = $this->getTableRecords($GLOBALS['stock_adjustment_table'], 'stock_adjustment_id', $bill_unique_id, '');
         if(!empty($stock_adjustment_list)) {
             foreach($stock_adjustment_list as $data) {
@@ -1145,6 +1145,10 @@ class Stock_functions extends Basic_Functions
                     $stock_action = $data['stock_action'];
                     $stock_action = explode(",", $stock_action);
                 }
+                if(!empty($data['content'])) {
+                    $content = $data['content'];
+                    $content = explode(",", $content);
+                }
             }
         }
         $can_delete = 1;
@@ -1155,12 +1159,12 @@ class Stock_functions extends Basic_Functions
                         $inward_quantity = 0; $outward_quantity = 0;
                         if(!empty($godown_id)) {
 
-                            $inward_quantity = $this->getInwardQty($bill_unique_id, $godown_id, '',$product_id[$i], $case_contains[$i]);
-                            $outward_quantity = $this->getOutwardQty('', $godown_id, '', $product_id[$i],$case_contains[$i]);
+                            $inward_quantity = $this->getInwardQty($bill_unique_id, $godown_id, '',$product_id[$i], $content[$i]);
+                            $outward_quantity = $this->getOutwardQty('', $godown_id, '', $product_id[$i],$content[$i]);
                         }
                         else if(!empty($magazine_id)) {
-                            $inward_quantity = $this->getInwardQty($bill_unique_id, '', $magazine_id, $product_id[$i], $case_contains[$i]);
-                            $outward_quantity = $this->getOutwardQty('', '', $magazine_id, $product_id[$i], $case_contains[$i]);
+                            $inward_quantity = $this->getInwardQty($bill_unique_id, '', $magazine_id, $product_id[$i], $content[$i]);
+                            $outward_quantity = $this->getOutwardQty('', '', $magazine_id, $product_id[$i], $content[$i]);
                         }
                     
                         if($inward_quantity < $outward_quantity) {
@@ -1326,6 +1330,7 @@ class Stock_functions extends Basic_Functions
             $unit_types = array();
             $unit_ids = array();
             $contents = array();
+            $ds_product_ids = array();
 
             foreach($profroma_list as $data) {
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
@@ -1453,7 +1458,7 @@ class Stock_functions extends Basic_Functions
             }
         }
 
-        return "";
+        return [];
     }
 
 }

@@ -831,9 +831,9 @@
                                     ?>
                                     <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
                                         <div class="dropdown">
-                                            <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-dark show-button poppins" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots-vertical"></i>
-                                            </a>
+                                            </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
                                                 if(empty($edit_access_error)) { ?> 
                                                     <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 

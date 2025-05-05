@@ -42,12 +42,13 @@
     }
 
     $party_list =array();
-    // $select_query = "";
-    // $select_query = "SELECT * FROM ".$GLOBALS['party_table']." WHERE (agent_id = '' OR agent_id = 'NULL') AND deleted = '0' ";
-    // $party_list = $obj->getQueryRecords("", $select_query);
+    $party_list = $obj->getCustomerList();
     
     $agent_list = array();
     $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '','');
+
+    $supplier_list = array();
+    $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '','');
  
     $total_party_list = array();
     if(!empty($view_type)) {
@@ -58,6 +59,9 @@
         }
         else if($view_type == '2') {
             $total_party_list = $party_list;
+        }
+        else if($view_type == '4') {
+            $total_party_list = $supplier_list;
         }
     }
     else {
@@ -75,6 +79,13 @@
                 }
             }
         }
+        if(!empty($supplier_list)) {
+            foreach($supplier_list as $data) {
+                if(!empty($data)) {
+                    $total_party_list[] = $data;
+                }
+            }
+        }
     }
 
     $sales_list =array(); $total_records_list =array();
@@ -87,58 +98,48 @@
     {
         $type = "Supplier";
     }
-    elseif($view_type == '3')
-    {
-        $type ="Contractor";
-    }
+    // elseif($view_type == '3')
+    // {
+    //     $type ="Contractor";
+    // }
     elseif($view_type == '4')
     {
         $type ="Customer";
     }
-    if(!empty($view_type))
-    {
-        $party_list = $obj->getPartyList($view_type);
-    }
+    // if(!empty($view_type))
+    // {
+    //     $party_list = $obj->getPartyList($view_type);
+    // }
     
-    $agent_customer_list =array();
-    if($view_type == '1')
-    {
-        if(!empty($filter_party_id))
-        {
-            $agent_customer_list = $obj->getSelectedAgentCustomerList($filter_party_id);
-        }
-    }
+    // $agent_customer_list =array();
+    // if($view_type == '1')
+    // {
+    //     if(!empty($filter_party_id))
+    //     {
+    //         $agent_customer_list = $obj->getSelectedAgentCustomerList($filter_party_id);
+    //     }
+    // }
     // print_r($agent_customer_list);
+
     if(!empty($filter_party_id))
     {
-        // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $filter_party_id, 'party_name');
-        // echo $party_name."hello";
-        // if(!empty($party_name)){
-        //     // $total_records_list = $obj->balance_report($bill_company_id,$filter_party_id,$from_date,$to_date);
-        //     $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-        //     $view_type = 2;
-        // }else{
-        //     if(!empty($filter_agent_party)){
+       
              
-                $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],$filter_agent_customer,$from_date,$to_date);
-        //     }
-        //     else{
-        //         $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-        //     }
-        // }
+        $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],$filter_agent_customer,$from_date,$to_date);
+       
     }
     else {
-        if(!empty($view_type))
-        {
+        // if(!empty($view_type))
+        // {
             $sales_list = ""; 
             $sales_list= $obj->balance_report($type,'',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-        }
-        else
-        {   
-            $sales_list = ""; 
-            $sales_list= $obj->balance_report('','',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
+        // }
+        // else
+        // {   
+        //     $sales_list = ""; 
+        //     $sales_list= $obj->balance_report('','',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
 
-        }
+        // }
     }
 
     $excel_name = "";
@@ -168,13 +169,12 @@
                                         <div class="col-lg-2 col-md-3 col-12">
                                             <div class="form-group pb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="view_type" data-dropdown-css-class="select2-danger" onchange="Javascript:getPartyName(this.value);getReport();" style="width: 100%;">
-                                                        <option value="">Select Party Type</option>
-                                                        <option value="1" <?php if($view_type == "1") { ?> selected <?php }  ?>>Agent</option>
-                                                        <option value="2" <?php if($view_type == "2") { ?> selected <?php }  ?>>Supplier</option>
-                                                        <!-- <option value="3" <?php if($view_type == "3") { ?> selected <?php }  ?>>Contractor</option> -->
-                                                        <option value="4" <?php if($view_type == "4") { ?> selected <?php }  ?>>Customer</option>
-                                                    </select>
+                                                    <select class="select2 select2-danger" name="view_type" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                            <option value="">Select Party Type</option>
+                                                            <option value="1" <?php if($view_type == "1") { ?> selected <?php }  ?>>Agent</option>
+                                                            <option value="2" <?php if($view_type == "2") { ?> selected <?php }  ?>>Supplier</option>
+                                                            <option value="4" <?php if($view_type == "4") { ?> selected <?php }  ?>>Customer</option>
+                                                        </select>
                                                     <label>Select Party Type</label>
                                                 </div>
                                             </div>        
@@ -182,32 +182,65 @@
                                         <div class="col-lg-2 col-md-3 col-6 px-lg-1">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger" onchange="Javascript:getReport();" style="width: 100%;">
+                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;">
                                                     <option value="">Select</option>
                                                     <?php
-                                                        if(!empty($party_list)) {
-                                                            foreach($party_list as $data) {
-                                                                
-                                                                if(!empty($data['party_id']) && $data['party_id'] !=$GLOBALS['null_value']) {
-                                                                    ?>
-                                                                    <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>>
-                                                                        <?php
-                                                                            if(!empty($data['party_name'])) {
-                                                                                $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
-                                                                                echo $data['party_name'];
-                                                                                if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                    $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                    echo " - ".$data['city'];
-                                                                                }
-                                                                            }
+                                                            if(!empty($total_party_list)) {
+                                                                foreach($total_party_list as $data) {
+                                                                    
+                                                                    if(!empty($data['party_id']) && $data['party_id'] !=$GLOBALS['null_value']) {
                                                                         ?>
-                                                                    </option>
-                                                                    <?php
+                                                                        <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>>
+                                                                            <?php
+                                                                                if(!empty($data['party_name'])) {
+                                                                                    $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
+                                                                                    echo $data['party_name'];
+                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                        echo " - ".$data['city'];
+                                                                                    }
+                                                                                }
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php
+                                                                    }
+
+                                                                    if(!empty($data['agent_id']) && $data['agent_id'] !=$GLOBALS['null_value']) {
+                                                                        ?>
+                                                                        <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['agent_id']){ echo "selected"; } } ?>>
+                                                                            <?php
+                                                                                if(!empty($data['agent_name'])) {
+                                                                                    $data['agent_name'] = $obj->encode_decode('decrypt', $data['agent_name']);
+                                                                                    echo $data['agent_name'];
+                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                        echo " - ".$data['city'];
+                                                                                    }
+                                                                                }
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php
+                                                                    }
+
+                                                                    if(!empty($data['supplier_id']) && $data['supplier_id'] !=$GLOBALS['null_value']) {
+                                                                        ?>
+                                                                        <option value="<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['supplier_id']){ echo "selected"; } } ?>>
+                                                                            <?php
+                                                                                if(!empty($data['supplier_name'])) {
+                                                                                    $data['supplier_name'] = $obj->encode_decode('decrypt', $data['supplier_name']);
+                                                                                    echo $data['supplier_name'];
+                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                        echo " - ".$data['city'];
+                                                                                    }
+                                                                                }
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php
+                                                                    }
                                                                 }
                                                             }
-                                                        }
-                                                    ?>
-                                                    
+                                                        ?>
                                                     </select>
                                                     <label>Select Party</label>
                                                 </div>
@@ -357,7 +390,6 @@
                                                                     $sno=0;
                                                                 
                                                                     foreach($total_records_list as $key => $data) {
-                                                                    
                                                                     if(!empty($data['bill_list'])){
                                                                         foreach($data['bill_list'] as $key => $list) {
                                                                             
@@ -393,18 +425,29 @@
                                                                                     
                                                                                 ?>
                                                                             </td>
-                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-center px-2 py-2">
+                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px; cursor: pointer;" class="text-center px-2">
                                                                                 <?php
-                                                                                    if(!empty($list['bill_type'])) {
-                                                                                        echo $list['bill_type'];
-                                                                                                
-                                                                                    }else{
-                                                                                        echo " - ";
-
+                                                                                if (!empty($list['bill_type'])) {
+                                                                                    if ($list['bill_type'] == "Estimate") {
+                                                                                        ?>
+                                                                                        <div style="display: flex; justify-content: space-between;">
+                                                                                            <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>');" style="width: 50%; cursor: pointer;border-right:1px solid;">
+                                                                                                Estimate
+                                                                                            </div>
+                                                                                            <div onclick="viewpreview('2','<?php echo $list['bill_id']; ?>');" style="width: 50%; cursor: pointer;">
+                                                                                                Proforma<br>Invoice
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <?php
+                                                                                    } else {
+                                                                                        echo htmlspecialchars($list['bill_type']);
                                                                                     }
-                                                                                    
+                                                                                } else {
+                                                                                    echo " - ";
+                                                                                }
                                                                                 ?>
                                                                             </td>
+
                                                                             <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-right px-2 py-2">
                                                                                 <?php if(!empty($credit)) { 
                                                                                     echo $obj->numberFormat($credit, 2); $credit_amount += $credit; ?>
@@ -629,7 +672,7 @@
     }
     function showpartyList(party_id,view_type) {
         if(jQuery('select[name="filter_party_id"]').length > 0) {
-            jQuery('select[name="filter_party_id"]').val(party_id);
+            jQuery('select[name="filter_party_id"]').val(party_id).trigger('change');
         }
         var type ="";
         if(view_type =='agent')
@@ -640,19 +683,52 @@
         {
             type = '2';
         }
-        else if(view_type == 'contractor')
-        {
-            type = "3";
-        }
         else if(view_type ==' customer')
         {
             type = '4';
         }
+        console.log("id :"+party_id+" type "+type);
 
         if(jQuery('select[name="view_type"]').length > 0) {
-            jQuery('select[name="view_type"]').val(type);
+            jQuery('select[name="view_type"]').val(type).trigger('change');
         }
         getReport();
+
+    }
+    function viewpreview(type,bill_id){
+        var url = "";
+        bill_id = bill_id.trim();
+        type = type.trim();
+        if (type == '1') {
+            type ="Estimate";
+            url = "reports/rpt_estimate_a4.php?estimate_id=" + bill_id;
+        }else if(type == '2'){
+            proforma_post_url = "action_changes.php?estimate_id=" + bill_id;
+            jQuery.ajax({
+                url: proforma_post_url, success: function (result) {
+                    if (result != "") {
+                        type ="Proforma Invoice";
+                        url = "reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=" + result;
+                    }
+                }
+            });
+        }
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url,
+            success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    jQuery('#PaymentModal .modal-header h1').html(type +"  Preview");
+                    jQuery('.payment_modal_button').trigger("click");
+                    var iframe = '<iframe src="' + url + '" width="100%" height="500px" style="border:none;"></iframe>';
+                    jQuery('#PaymentModal .modal-body').html(iframe);
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+
+
     }
 </script>
 <script>

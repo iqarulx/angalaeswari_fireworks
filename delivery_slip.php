@@ -18,8 +18,8 @@
     $cancelled_bill = $obj->getAllRecords($GLOBALS['delivery_slip_table'], 'deleted', 1);
     $cancelled_count = count($cancelled_bill);
 
-    $customer_list =array();
-    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'],'','','');
+    $customer_list = array();
+    $customer_list = $obj->getCustomerList();
     
     $agent_list =array();
     $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'','','');
@@ -69,62 +69,71 @@
                                             </div> 
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-2">
-                                            <div class="input-group">
-                                                <select class="select2 select2-danger" name="agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();getAgentCustomerList(this.value);">
-                                                    <option value="">Select Agent</option>
-                                                    <?php if (!empty($agent_list)) {
-                                                        foreach ($agent_list as $data) { ?>
-                                                            <option value="<?php if (!empty($data['agent_id'])) {
-                                                                echo $data['agent_id'];
-                                                            } ?>" <?php if(!empty($agent_id) && $agent_id == $data['agent_id']) { echo "selected"; } ?>>
-                                                                <?php if (!empty($data['name_mobile_city'])) {
-                                                                    echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                                                } ?>
-                                                            </option>
-                                                        <?php }
-                                                    } ?>
-                                                </select>
+                                            <div class="form-group pb-2">
+                                                <div class="form-label-group in-border">
+                                                    <select class="select2 select2-danger" name="agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();getAgentCustomerList(this.value);">
+                                                        <option value="">Select</option>
+                                                        <?php if (!empty($agent_list)) {
+                                                            foreach ($agent_list as $data) { ?>
+                                                                <option value="<?php if (!empty($data['agent_id'])) {
+                                                                    echo $data['agent_id'];
+                                                                } ?>" <?php if(!empty($agent_id) && $agent_id == $data['agent_id']) { echo "selected"; } ?>>
+                                                                    <?php if (!empty($data['name_mobile_city'])) {
+                                                                        echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                    } ?>
+                                                                </option>
+                                                            <?php }
+                                                        } ?>
+                                                    </select>
+                                                    <label>Agent</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
+                                            <div class="form-group pb-2">
+                                                <div class="form-label-group in-border">
+                                                    <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
+                                                        <option value="">Select</option>
+                                                        <?php if (!empty($customer_list)) {
+                                                            foreach ($customer_list as $customer) { ?>
+                                                                <option value="<?php if (!empty($customer['customer_id'])) {
+                                                                    echo $customer['customer_id'];
+                                                                } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
+                                                                    <?php if (!empty($customer['name_mobile_city'])) {
+                                                                        echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
+                                                                    } ?>
+                                                                </option>
+                                                            <?php }
+                                                        } ?>
+                                                    </select>
+                                                    <label>Customer</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
+                                            <div class="form-group pb-2">
+                                                <div class="form-label-group in-border">
+                                                    <select class="select2 select2-danger" name="transport_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
+                                                        <option value="">Select</option>
+                                                        <?php if (!empty($transport_list)) {
+                                                            foreach ($transport_list as $data) { ?>
+                                                                <option value="<?php if (!empty($data['transport_id'])) {
+                                                                    echo $data['transport_id'];
+                                                                } ?>" <?php if(!empty($transport_id) && $transport_id == $data['transport_id']) { echo "selected"; } ?>>
+                                                                    <?php if (!empty($data['transport_name'])) {
+                                                                        echo $obj->encode_decode('decrypt', $data['transport_name']);
+                                                                    } ?>
+                                                                </option>
+                                                            <?php }
+                                                        } ?>
+                                                    </select>
+                                                    <label>Transport</label>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-2">
                                             <div class="input-group">
-                                                <select class="select2 select2-danger" name="customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
-                                                    <option value="">Select Customer</option>
-                                                    <?php if (!empty($customer_list)) {
-                                                        foreach ($customer_list as $customer) { ?>
-                                                            <option value="<?php if (!empty($customer['customer_id'])) {
-                                                                echo $customer['customer_id'];
-                                                            } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
-                                                                <?php if (!empty($customer['name_mobile_city'])) {
-                                                                    echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
-                                                                } ?>
-                                                            </option>
-                                                        <?php }
-                                                    } ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
-                                            <div class="input-group">
-                                                <select class="select2 select2-danger" name="transport_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
-                                                    <option value="">Select Transport</option>
-                                                    <?php if (!empty($transport_list)) {
-                                                        foreach ($transport_list as $data) { ?>
-                                                            <option value="<?php if (!empty($data['transport_id'])) {
-                                                                echo $data['transport_id'];
-                                                            } ?>" <?php if(!empty($transport_id) && $transport_id == $data['transport_id']) { echo "selected"; } ?>>
-                                                                <?php if (!empty($data['transport_name'])) {
-                                                                    echo $obj->encode_decode('decrypt', $data['transport_name']);
-                                                                } ?>
-                                                            </option>
-                                                        <?php }
-                                                    } ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2 col-md-4 col-6 mb-2">
-                                            <div class="input-group">
-                                                <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();">
+                                                <input type="text" name="search_text" class="form-control" style="height:34px;" placeholder="Search By No" aria-label="Search" aria-describedby="basic-addon2" onkeyup="Javascript:table_listing_records_filter();">
                                                 <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                             </div>
                                         </div>

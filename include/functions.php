@@ -839,6 +839,14 @@
 			$list = $report_obj->getPendingOrderReport($from_date, $to_date, $unit_type, $product_id,$customer_id, $agent_id,$case_contains);
 			return $list;
 		}
+		
+		public function GetPendingOrderReportAgentWise($from_date, $to_date, $customer_id, $agent_id, $unit_type) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->GetPendingOrderReportAgentWise($from_date, $to_date, $customer_id, $agent_id, $unit_type);
+			return $list;
+		}
 
 
 		// New 01052025

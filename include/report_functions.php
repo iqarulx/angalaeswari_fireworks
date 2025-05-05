@@ -417,13 +417,12 @@
 				if($type == "Agent") {
 					$select_query = "SELECT agent_id,agent_name, mobile_number FROM ".$GLOBALS['agent_table']." WHERE agent_id = '".$party_id."' AND deleted = '0' ";
 					$list = $this->getQueryRecords($GLOBALS['agent_table'], $select_query);
-					// print_r($list);
 					if(!empty($filter_agent_party)){
 						if(!empty($list)) {
 							foreach($list as $data) {
 								if(!empty($data['agent_id'])) {
 									$bill_list = array();
-									 $payment_query = "SELECT bill_date, bill_number,bill_type, 
+									 $payment_query = "SELECT bill_id,bill_date, bill_number,bill_type, 
 									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where."  party_id = '".$filter_agent_party."' AND  deleted = '0'  AND  bill_date >= '".$from_date."' AND bill_date <= '".$to_date."' AND bill_type !='Customer Opening Balance' GROUP BY bill_number";
 
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
@@ -432,14 +431,14 @@
 								}
 							}
 						}
-					} else {
+					}else {
 						if(!empty($list)) {
 							foreach($list as $data) {
 								if(!empty($data['agent_id'])) {
 									$bill_list = array();
 
-									$payment_query = "SELECT bill_date, bill_number, bill_type, 
-									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." agent_id = '".$data['agent_id']."' AND party_id ='NULL' AND  bill_type !='Customer Opening Balance' AND bill_type !='Agent Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
+									$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
+									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." agent_id = '".$data['agent_id']."' AND bill_type !='Customer Opening Balance' AND bill_type !='Agent Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
@@ -448,7 +447,7 @@
 							}
 						}
 					}
-				} else if($type == "Supplier") {
+				}else if($type == "Supplier") {
 					$select_query = "SELECT supplier_id,supplier_name, mobile_number FROM ".$GLOBALS['supplier_table']." WHERE supplier_id = '".$party_id."' AND deleted = '0'  ";
 					$list = $this->getQueryRecords($GLOBALS['supplier_table'], $select_query);
 					
@@ -457,7 +456,7 @@
 							if(!empty($data['supplier_id'])) {
 								$bill_list = array();
 
-								$payment_query = "SELECT bill_date, bill_number, bill_type, 
+								$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['supplier_id']."'  AND bill_type !='Supplier Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
@@ -466,7 +465,7 @@
 							}
 						}
 					}
-				} else if($type == "Contractor") {
+				}else if($type == "Contractor") {
 					$select_query = "SELECT contractor_id,contractor_name, mobile as mobile_number FROM ".$GLOBALS['contractor_table']." WHERE contractor_id = '".$party_id."' AND deleted = '0'  ";
 					$list = $this->getQueryRecords($GLOBALS['contractor_table'], $select_query);
 					
@@ -475,7 +474,7 @@
 							if(!empty($data['contractor_id'])) {
 								$bill_list = array();
 
-								$payment_query = "SELECT bill_date, bill_number, bill_type, 
+								$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['contractor_id']."' AND  bill_type !='Contractor Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
@@ -493,7 +492,7 @@
 							if(!empty($data['customer_id'])) {
 								$bill_list = array();
 
-								$payment_query = "SELECT bill_date, bill_number, bill_type, 
+								$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
 								SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['customer_id']."' AND  bill_type !='Customer Opening Balance' AND deleted = '0' GROUP BY bill_number";
 
 								$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
@@ -611,11 +610,7 @@
 					WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.party_id ='NULL' AND  e.deleted = '0'  GROUP BY e.agent_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
 					WHERE ".$bill_where." e.agent_id = sp.agent_id AND e.party_id ='NULL'  AND e.deleted = '0'  GROUP BY e.agent_id) as debit FROM ".$GLOBALS['agent_table']." as sp WHERE sp.deleted = '0'  ";
-				$contractor_query = "SELECT 'contractor' as party_type, c.contractor_id as party_id, c.contractor_name as party_name,c.mobile as party_mobile_number,
-					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-					WHERE ".$bill_where." e.party_id = c.contractor_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
-					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.party_id = c.contractor_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['contractor_table']." as c WHERE c.deleted = '0'  ";
+				
 				$supplier_query = "SELECT 'supplier' as party_type, s.supplier_id as party_id, s.supplier_name as party_name,s.mobile_number as party_mobile_number,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
 					WHERE ".$bill_where." e.party_id = s.supplier_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
@@ -625,9 +620,9 @@
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
 					WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
 					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['customer_table']." as cu WHERE cu.deleted = '0'  ";
+					WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['customer_table']." as cu WHERE (cu.agent_id = '' OR cu.agent_id = 'NULL') AND cu.deleted = '0'  ";
 
-				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (".$agent_query.") UNION ALL (".$contractor_query.") UNION ALL (".$supplier_query.") UNION ALL (".$customer_query.") ) as g";
+				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (".$agent_query.") UNION ALL (".$supplier_query.") UNION ALL (".$customer_query.") ) as g";
 
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords('',$select_query);
@@ -850,6 +845,250 @@
 					}
 				}
 			}
+			return $list;
+		}
+
+		public function GetPendingOrderReportAgentWIse($from_date, $to_date, $customer_id, $agent_id, $unit_type) {
+			$where = ""; $list = array();
+
+			if (!empty($from_date)) {
+				$where = "bill_date >= '" . $from_date . "'";
+			}
+			if (!empty($to_date)) {
+				$to_date = date("Y-m-d", strtotime($to_date));
+				if (!empty($where)) {
+					$where .= " AND bill_date <= '" . $to_date . "'";
+				} else {
+					$where = "bill_date <= '" . $to_date . "'";
+				}
+			}
+
+			if(!empty($customer_id)) {
+				if(!empty($where)) {
+					$where = $where." AND party_id = '".$customer_id."'";
+				} else {
+					$where = "party_id = '".$customer_id."'";
+				}
+			}
+
+			if(!empty($agent_id)) {
+				if(!empty($where)) {
+					$where = $where." AND agent_id = '".$agent_id."'";
+				} else {
+					$where = "agent_id = '".$agent_id."'";
+				}
+			}
+			
+			if(!empty($agent_id) || (!empty($agent_id) && !empty($customer_id))) {
+				$agent_select_query = "";
+				if ($unit_type == "1") {
+					$agent_select_query = "SELECT SUM(inward_unit) AS inward_unit, SUM(outward_unit) AS outward_unit, product_id, unit_id, agent_id, agent_name, party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY party_id";
+				} else {
+					$agent_select_query = "SELECT SUM(inward_sub_unit) AS inward_sub_unit,  SUM(outward_sub_unit) AS outward_sub_unit, product_id, unit_id, agent_id, agent_name,  party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY party_id";
+				}
+				
+				if (!empty($agent_select_query)) {
+					$agent_conversion_records = $this->getQueryRecords('', $agent_select_query);
+					if (!empty($agent_conversion_records)) {
+						$grouped_by_party = [];
+				
+						foreach ($agent_conversion_records as $data) {
+							$party_id = $data['party_id'];
+							$product_id = $data['product_id'];
+							if (!isset($product_stock_cache[$product_id])) {
+								$stock_obj = new Stock_functions();
+								$inward_qty = $stock_obj->getInwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$outward_qty = $stock_obj->getOutwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$product_stock_cache[$product_id] = $inward_qty - $outward_qty;
+							}
+				
+							$current_stock_unit = $product_stock_cache[$product_id];
+				
+							if ($unit_type == "1") {
+								$pending_order_unit = $data['inward_unit'] - $data['outward_unit'];
+							} else {
+								$pending_order_unit = $data['inward_sub_unit'] - $data['outward_sub_unit'];
+							}
+				
+							if (!isset($grouped_by_party[$party_id])) {
+								$grouped_by_party[$party_id] = [
+									'party_id' => $party_id,
+									'party_name' => $data['party_name'],
+									'pending_order_unit' => 0,
+									'products' => [],
+								];
+							}
+				
+							$grouped_by_party[$party_id]['pending_order_unit'] += $pending_order_unit;
+							$grouped_by_party[$party_id]['products'][$product_id] = [
+								'product_id' => $product_id,
+								'unit_id' => $data['unit_id'],
+								'current_stock_unit' => $current_stock_unit,
+							];
+						}
+						
+						// Now compute need_order_unit per party
+						foreach ($grouped_by_party as $party_id => $party_data) {
+							$total_current_stock = 0;
+							foreach ($party_data['products'] as $prod_data) {
+								$total_current_stock += $prod_data['current_stock_unit'];
+							}
+				
+							$need_order_unit = max(0, $party_data['pending_order_unit'] - $total_current_stock);
+				
+							$list[] = [
+								'party_id' => $party_data['party_id'],
+								'party_name' => $party_data['party_name'],
+								'pending_order_unit' => $party_data['pending_order_unit'],
+								'current_stock_unit' => $total_current_stock,
+								'need_order_unit' => $need_order_unit,
+							];
+						}
+					}
+				}
+				
+			} else {
+				$agent_select_query = "";
+				if ($unit_type == "1") {
+					$agent_select_query = "SELECT SUM(inward_unit) AS inward_unit, SUM(outward_unit) AS outward_unit, product_id, unit_id, agent_id, agent_name  FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY product_id, agent_id";
+				} else {
+					$agent_select_query = "SELECT SUM(inward_sub_unit) AS inward_sub_unit,  SUM(outward_sub_unit) AS outward_sub_unit, product_id, unit_id, agent_id, agent_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY product_id, agent_id";
+				}
+				
+				$party_select_query = "";
+				if ($unit_type == "1") {
+					$party_select_query = "SELECT SUM(inward_unit) AS inward_unit, SUM(outward_unit) AS outward_unit, product_id, unit_id, agent_id, agent_name, party_id, party_name  FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND (agent_id = 'NULL' OR agent_id = '') AND deleted = '0' GROUP BY product_id, party_id";
+				} else {
+					$party_select_query = "SELECT SUM(inward_sub_unit) AS inward_sub_unit,  SUM(outward_sub_unit) AS outward_sub_unit, product_id, unit_id, agent_id, agent_name, party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND (agent_id = 'NULL' OR agent_id = '') AND deleted = '0' GROUP BY product_id, party_id";
+				}
+				
+				$list = [];
+				
+				if (!empty($agent_select_query)) {
+					$agent_conversion_records = $this->getQueryRecords('', $agent_select_query);
+				
+					if (!empty($agent_conversion_records)) {
+						$grouped_by_agent = [];
+				
+						foreach ($agent_conversion_records as $data) {
+							$agent_id = $data['agent_id'];
+							$product_id = $data['product_id'];
+							if (!isset($product_stock_cache[$product_id])) {
+								$stock_obj = new Stock_functions();
+								$inward_qty = $stock_obj->getInwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$outward_qty = $stock_obj->getOutwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$product_stock_cache[$product_id] = $inward_qty - $outward_qty;
+							}
+				
+							$current_stock_unit = $product_stock_cache[$product_id];
+				
+							if ($unit_type == "1") {
+								$pending_order_unit = $data['inward_unit'] - $data['outward_unit'];
+							} else {
+								$pending_order_unit = $data['inward_sub_unit'] - $data['outward_sub_unit'];
+							}
+				
+							if (!isset($grouped_by_agent[$agent_id])) {
+								$grouped_by_agent[$agent_id] = [
+									'agent_id' => $agent_id,
+									'agent_name' => $data['agent_name'],
+									'pending_order_unit' => 0,
+									'products' => [],
+								];
+							}
+				
+							$grouped_by_agent[$agent_id]['pending_order_unit'] += $pending_order_unit;
+							$grouped_by_agent[$agent_id]['products'][$product_id] = [
+								'product_id' => $product_id,
+								'unit_id' => $data['unit_id'],
+								'current_stock_unit' => $current_stock_unit,
+							];
+						}
+				
+						foreach ($grouped_by_agent as $agent_id => $agent_data) {
+							$total_current_stock = 0;
+							foreach ($agent_data['products'] as $prod_data) {
+								$total_current_stock += $prod_data['current_stock_unit'];
+							}
+				
+							$need_order_unit = max(0, $agent_data['pending_order_unit'] - $total_current_stock);
+				
+							$list[] = [
+								'agent_id' => $agent_data['agent_id'],
+								'agent_name' => $agent_data['agent_name'],
+								'pending_order_unit' => $agent_data['pending_order_unit'],
+								'current_stock_unit' => $total_current_stock,
+								'need_order_unit' => $need_order_unit,
+							];
+						}
+					}
+				}	
+
+				if(!empty($party_select_query)) {
+					$party_conversion_records = $this->getQueryRecords('', $party_select_query);
+
+					if (!empty($party_conversion_records)) {
+						$grouped_by_party = [];
+				
+						foreach ($party_conversion_records as $data) {
+							$party_id = $data['party_id'];
+							$product_id = $data['product_id'];
+							if (!isset($product_stock_cache[$product_id])) {
+								$stock_obj = new Stock_functions();
+								$inward_qty = $stock_obj->getInwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$outward_qty = $stock_obj->getOutwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
+								$product_stock_cache[$product_id] = $inward_qty - $outward_qty;
+							}
+				
+							$current_stock_unit = $product_stock_cache[$product_id];
+				
+							if ($unit_type == "1") {
+								$pending_order_unit = $data['inward_unit'] - $data['outward_unit'];
+							} else {
+								$pending_order_unit = $data['inward_sub_unit'] - $data['outward_sub_unit'];
+							}
+				
+							if (!isset($grouped_by_party[$party_id])) {
+								$grouped_by_party[$party_id] = [
+									'party_id' => $party_id,
+									'party_name' => $data['party_name'],
+									'pending_order_unit' => 0,
+									'products' => [],
+								];
+							}
+				
+							$grouped_by_party[$party_id]['pending_order_unit'] += $pending_order_unit;
+							$grouped_by_party[$party_id]['products'][$product_id] = [
+								'product_id' => $product_id,
+								'unit_id' => $data['unit_id'],
+								'current_stock_unit' => $current_stock_unit,
+							];
+						}
+						
+
+						// Now compute need_order_unit per party
+						foreach ($grouped_by_party as $party_id => $party_data) {
+							$total_current_stock = 0;
+							foreach ($party_data['products'] as $prod_data) {
+								$total_current_stock += $prod_data['current_stock_unit'];
+							}
+				
+							$need_order_unit = max(0, $party_data['pending_order_unit'] - $total_current_stock);
+				
+							$list[] = [
+								'party_id' => $party_data['party_id'],
+								'party_name' => $party_data['party_name'],
+								'pending_order_unit' => $party_data['pending_order_unit'],
+								'current_stock_unit' => $total_current_stock,
+								'need_order_unit' => $need_order_unit,
+							];
+						}
+					}
+				}
+
+				
+			}
+
 			return $list;
 		}
     }

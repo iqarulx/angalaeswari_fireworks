@@ -515,11 +515,20 @@
                             if(empty($bank_name[$l])){
                                 $bank_name[$l] =$GLOBALS['null_value'];
                             }
+                            $agent_id ="";
+                            $agent_name = "";
+                            if($party_type =="Agent"){
+                                $agent_id = $party_id;
+                                $agent_name = $party_name;
+                            }else{
+                                $agent_id = $GLOBALS['null_value'];
+                                $agent_name = $GLOBALS['null_value'];
+                            }
 
                             $open_balance_type = "Credit";
 
                             $update_balance ="";
-                            $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$null_value,$null_value,$party_id,$party_name,$party_type,$payment_mode_id[$l],$payment_mode_name[$l],$bank_id[$l],$bank_name[$l],$credit,$debit,$open_balance_type);
+                            $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name,$party_id,$party_name,$party_type,$payment_mode_id[$l],$payment_mode_name[$l],$bank_id[$l],$bank_name[$l],$credit,$debit,$open_balance_type);
                         }
                     }
                 }

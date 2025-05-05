@@ -643,19 +643,18 @@
 		}
 
 		public function daily_db_backup() {
+			$path = $GLOBALS['backup_folder_name']."/";
+
 			$con = $this->connect();
-			$backupAlert = 0; $backup_file = ""; $path = $GLOBALS['backup_folder_name']."/"; $file_name = ""; $dbname = $this->db_name;
+			$backupAlert = 0; $backup_file = ""; $file_name = ""; $dbname = $this->db_name;
 			$tables = array();
-			$result = mysqli_query($con, "SHOW TABLES");
+			//$result = mysqli_query($con, "SHOW TABLES");
 			$select_query = "SHOW TABLES";
 			$result = 0; $pdo = "";			
 			$pdo = $con->prepare($select_query);
 			$pdo->execute();	
 			$result = $pdo->fetchAll(PDO::FETCH_COLUMN); 
-			if (!$result) {
-				$backupAlert = 'Error found.<br/>ERROR : ' . mysqli_error($con) . 'ERROR NO :' . mysqli_errno($con);
-			}
-			else {
+			if (!empty($result)) {
 				$tables = array();
 				foreach($result as $table_name) {
 					if(!empty($table_name)) {
@@ -665,26 +664,28 @@
 				$output = '';
 				if(!empty($tables)) {
 					foreach($tables as $table) {
-						$show_table_query = "SHOW CREATE TABLE " . $table . "";
-						$statement = $con->prepare($show_table_query);
-						$statement->execute();
-						$show_table_result = $statement->fetchAll();
+						if (strpos($table, $GLOBALS['table_prefix']) !== false) {
+							$show_table_query = "SHOW CREATE TABLE " . $table . "";
+							$statement = $con->prepare($show_table_query);
+							$statement->execute();
+							$show_table_result = $statement->fetchAll();
 
-						foreach($show_table_result as $show_table_row) {
-							$output .= "\n\n" . $show_table_row["Create Table"] . ";\n\n";
-						}
-						$select_query = "SELECT * FROM " . $table . "";
-						$statement = $con->prepare($select_query);
-						$statement->execute();
-						$total_row = $statement->rowCount();
-						for($count=0; $count<$total_row; $count++) {
-							$single_result = $statement->fetch(\PDO::FETCH_ASSOC);
-							$table_column_array = array_keys($single_result);
-							$table_value_array = array_values($single_result);
-							$output .= "\nINSERT INTO $table (";
-							$output .= "" . implode(", ", $table_column_array) . ") VALUES (";
-							$output .= "'" . implode("','", $table_value_array) . "');\n";
-						}
+							foreach($show_table_result as $show_table_row) {
+								$output .= "\n\n" . $show_table_row["Create Table"] . ";\n\n";
+							}
+							$select_query = "SELECT * FROM " . $table . "";
+							$statement = $con->prepare($select_query);
+							$statement->execute();
+							$total_row = $statement->rowCount();
+							for($count=0; $count<$total_row; $count++) {
+								$single_result = $statement->fetch(\PDO::FETCH_ASSOC);
+								$table_column_array = array_keys($single_result);
+								$table_value_array = array_values($single_result);
+								$output .= "\nINSERT INTO $table (";
+								$output .= "" . implode(", ", $table_column_array) . ") VALUES (";
+								$output .= "'" . implode("','", $table_value_array) . "');\n";
+							}
+						}	
 					}
 				}
 
