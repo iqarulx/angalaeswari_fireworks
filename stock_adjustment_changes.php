@@ -88,13 +88,23 @@
         }
         
         $godown_list = array();
-        $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-
+        if(!empty($login_godown_id)) {
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+        } else {
+            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+        }
+        
         if(!empty($login_magazine_id)) {
             $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
         }else{
             $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         }
+
+        $count_of_godown = 0;
+        $count_of_godown = count($godown_list);
+
+        $count_of_magazine = 0;
+        $count_of_magazine = count($magazine_list);
         ?>
         <form class="poppins pd-20 redirection_form" name="stock_adjustment_form" method="POST">
 			<div class="card-header">
@@ -167,7 +177,7 @@
                                 <option value="">Select Godown</option>
                                 <?php if(!empty($godown_list)) {
                                     foreach($godown_list as $godown) { ?>
-                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $godown['godown_id'] || !empty($count_of_godown) && $count_of_godown == 1) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -184,7 +194,7 @@
                                 <option value="">Select Magazine</option>
                                 <?php if(!empty($magazine_list)) {
                                     foreach($magazine_list as $magazine) { ?>
-                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $magazine['magazine_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
+                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($first_location_id) && $first_location_id == $magazine['magazine_id'] || !empty($count_of_magazine) && $count_of_magazine == 1) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -198,11 +208,11 @@
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" name="product" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="GetProdetails();">
                                 <option value="">Select Product</option>
-                                <?php if(!empty($product_list)) {
+                                <?php /* if(!empty($product_list)) {
                                     foreach($product_list as $product) { ?>
                                         <option value="<?php echo $product['product_id']; ?>"><?php echo $obj->encode_decode('decrypt', $product['product_name']); ?></option>
                                 <?php }
-                                } ?>
+                                } */ ?>
                             </select>
                             <label>Select Product <span class="text-danger">*</span></label>
                         </div>

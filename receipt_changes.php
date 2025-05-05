@@ -12,6 +12,7 @@
     if(isset($_REQUEST['show_receipt_id'])) { 
         $show_receipt_id = $_REQUEST['show_receipt_id'];
         $receipt_date = date("Y-m-d"); 
+        $selected_payment_mode = "";
 
         $payment_mode_list = array();
 		$payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '','','');
@@ -24,6 +25,12 @@
 
         $party_list = array();
         $party_list = array_merge($agent_list, $customer_list);
+
+        $party_count = 0;
+        $party_count = count($party_list);  
+
+        $payment_mode_count = 0;
+        $payment_mode_count = count($payment_mode_list);  
 
         ?>
         <form class="poppins pd-20" name="receipt_form" method="POST">
@@ -70,7 +77,7 @@
                                                 foreach($party_list as $data) { 
                                                     if(!empty($data['customer_id'])) {
                                                         ?>
-                                                            <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
+                                                            <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php  } ?>> <?php
                                                                 if(!empty($data['name_mobile_city'])) {
                                                                     $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
                                                                     echo $data['name_mobile_city'];
@@ -79,7 +86,7 @@
                                                         <?php
                                                     } else if (!empty($data['agent_id'])) {
                                                         ?>
-                                                            <option value="<?php if(!empty($data['agent_id'])) { echo 'agent_' . $data['agent_id']; } ?>"> <?php
+                                                            <option value="<?php if(!empty($data['agent_id'])) { echo 'agent_' . $data['agent_id']; } ?>"  <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php  } ?>> <?php
                                                                 if(!empty($data['name_mobile_city'])) {
                                                                     $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
                                                                     echo $data['name_mobile_city'];
@@ -139,21 +146,20 @@
                                 <div class="form-label-group in-border mt-0">
                                     <select name="selected_bank_id" class="select2 select2-danger smallfnt form-control" style="width:100% !important;">
                                         <option value="">Select Bank</option>
-                                        <?php 
-                                            if(!empty($bank_list)){
-                                                foreach($bank_list as $col){
-                                                    ?>
-                                                    <option value="<?php if(!empty($col['bank_id'])){echo $col['bank_id'];} ?>" <?php if(!empty($bank_id) && $col['bank_id'] == $bank_id){ ?>selected<?php } ?>>
-                                                        <?php 
-                                                            if(!empty($col['bank_name'])){
-                                                                echo $obj->encode_decode('decrypt',$col['bank_name'])." - ".$obj->encode_decode('decrypt',$col['account_number']);
-                                                            }
-                                                        ?>
-                                                    </option>
-                                                    <?php
-                                                }
+                                        <?php
+                                        if(!empty($payment_mode_list)) {
+                                            foreach($payment_mode_list as $data) { ?>
+                                                <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>"<?php if(!empty($payment_mode_count) && $payment_mode_count == 1){ ?> selected <?php } ?>> <?php
+                                                    $selected_payment_mode = $data['payment_mode_id'];
+
+                                                    if(!empty($data['payment_mode_name'])) {
+                                                        $data['payment_mode_name'] = $obj->encode_decode('decrypt', $data['payment_mode_name']);
+                                                        echo $data['payment_mode_name'];
+                                                    } ?>
+                                                </option>
+                                                <?php
                                             }
-                                        ?>
+                                        } ?>
                                     </select>
                                 </div>
                             </div>
@@ -208,8 +214,13 @@
             </div>
             <script src="include/select2/js/select2.min.js"></script>
             <script src="include/select2/js/select.js"></script>
-            <script>
+            <script type="text/javascript">
                 jQuery(document).ready(function(){
+                    <?php 
+                     if($payment_mode_count == 1){ ?>
+                             getBankDetails('<?php if(!empty($selected_payment_mode)){ echo $selected_payment_mode; } ?>');
+                    <?php } ?>
+                    
                     jQuery('.add_update_form_content').find('select').select2();
                     jQuery(".select2").on("select2:open", function () {
                         // Find the inner search field of the opened dropdown

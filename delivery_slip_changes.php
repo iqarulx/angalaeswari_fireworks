@@ -202,6 +202,9 @@
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_user_magazine_id, '');
             }
         }
+        $magazine_count = 0;
+        $magazine_count = count($magazine_list);
+
         $other_charges_list = array();
         $other_charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
         $bank_list =array();
@@ -353,7 +356,7 @@
                                     foreach ($magazine_list as $list) { ?>
                                         <option value="<?php if (!empty($list['magazine_id'])) {
                                             echo $list['magazine_id'];
-                                        } ?>" <?php if(!empty($magazine_id) && $magazine_id == $list['magazine_id']) { echo "selected"; } ?>>
+                                        } ?>" <?php if(!empty($magazine_id) && $magazine_id == $list['magazine_id'] || (!empty($magazine_count) && $magazine_count == 1)) { echo "selected"; } ?>>
                                             <?php if (!empty($list['magazine_name'])) {
                                                 echo $obj->encode_decode('decrypt', $list['magazine_name']);
                                             } ?>
@@ -479,7 +482,7 @@
                                                                     foreach ($magazine_list as $list) { ?>
                                                                         <option value="<?php if (!empty($list['magazine_id'])) {
                                                                             echo $list['magazine_id'];
-                                                                        } ?>" <?php if(!empty($indv_magazine_ids[$i]) && $indv_magazine_ids[$i] == $list['magazine_id']) { echo "selected"; } ?>>
+                                                                        } ?>" <?php if(!empty($indv_magazine_ids[$i]) && $indv_magazine_ids[$i] == $list['magazine_id'] ||  (!empty($magazine_count) && $magazine_count == 1)) { echo "selected"; } ?>>
                                                                             <?php if (!empty($list['magazine_name'])) {
                                                                                 echo $obj->encode_decode('decrypt', $list['magazine_name']);
                                                                             } ?>

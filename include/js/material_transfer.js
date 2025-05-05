@@ -115,7 +115,7 @@ function loadProductForFromLocation() {
                             if (jQuery('select[name="selected_product"]').length > 0) {
                                 jQuery('select[name="selected_product"]').empty().append(result)
                             }
-
+                            GetProductdetails();
                         }
                     }
                 });

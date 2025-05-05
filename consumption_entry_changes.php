@@ -54,6 +54,9 @@
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], "", "", "");
         }
 
+        $count_of_godown = 0;
+        $count_of_godown = count($godown_list);
+
         $product_list = $obj->getProductWithGroup('semi finished', 'finished', '');
         ?>
         <form class="poppins pd-20" name="consumption_form" method="POST">
@@ -125,7 +128,7 @@
                                         <option value="">Select Godown</option>
                                         <?php if(!empty($godown_list)) {
                                             foreach($godown_list as $godown) { ?>
-                                                <option value="<?php echo $godown['godown_id']; ?>"  <?php if(!empty($godown['godown_id']) && $godown['godown_id'] == $first_godown_id){ ?>Selected <?php } ?> ><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                                <option value="<?php echo $godown['godown_id']; ?>"  <?php if(!empty($godown['godown_id']) && $godown['godown_id'] == $first_godown_id || !empty($count_of_godown) && $count_of_godown == 1){ ?>Selected <?php } ?> ><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                             <?php }
                                         } ?>
                                     </select>
@@ -143,7 +146,7 @@
                                         <option value="">Select Godown</option>
                                         <?php if(!empty($godown_list)) {
                                             foreach($godown_list as $godown) { ?>
-                                                <option value="<?php echo $godown['godown_id']; ?>" ><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                                <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($count_of_godown) && $count_of_godown == 1){ ?> selected <?php } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                             <?php }
                                         } ?>
                                     </select>
@@ -382,6 +385,7 @@
                     getGodownType('<?php if(!empty($godown_type)){ echo $godown_type; } ?>');
 
                     <?php } ?>
+
                 });
            
             </script>
@@ -1193,12 +1197,15 @@
         $$$
         <?php
         if($subunit_need == 1 && !empty($case_contains)){
+            $contains_count = 0;
+            $contains_count = count($case_contains);
+
         ?>
             <option value="">Select Content</option>
                 <?php 
             for($i=0; $i< count($case_contains); $i++){ 
                 if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
-                    <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
+                    <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>" <?php if(!empty($case_contains) && $case_contains[$i] != $GLOBALS['null_value'] && $contains_count == 1) { ?> selected <?php } ?>>
                         <?php
                     
                                 echo  $case_contains[$i];

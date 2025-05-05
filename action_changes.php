@@ -444,7 +444,9 @@
         $godown_id = $_REQUEST['godown_id'];
         $product_list = array(); $unit_type =""; $case_contains ="";
         $product_list = $obj->getGodownContractorStockProduct($godown_id, '');
-        
+        $product_count = 0;
+        $product_count = count($product_list);
+                
         ?>
         <option value="">Select Product</option>
         <?php
@@ -455,8 +457,8 @@
                     $product_name = "";
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
                     ?>
-                    <option value="<?php echo $data['product_id']; ?>">
-                        <?php
+                        <option value="<?php echo $data['product_id']; ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected <?php } ?>>
+                         <?php
                             if(!empty($product_name) && $product_name != $GLOBALS['null_value']) {
                                 echo $obj->encode_decode('decrypt', $product_name);
                             }
@@ -477,24 +479,16 @@
         $product_type = "finished";
         $product_type = $obj->encode_decode('encrypt',$product_type);
 
-        $product_group_ids = array();
-
         if($product_group == "1"){
-            $product_group_ids = ["4d5449774e4449774d6a55784d44557a4d444a664d444d3d", "4d5449774e4449774d6a55784d4455794e4464664d44493d"];
+            $product_list = $obj->getProducts("1");
         }
         else if($product_group == "2"){
-            $product_group_ids = ["4d5449774e4449774d6a55784d4455794d7a4e664d44453d"];
+            $product_list = $obj->getProducts("2");
         }
-
-        if(!empty($product_group_ids)) {
-            if(count($product_group_ids) == 2) {
-                $raw_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
-                $semi_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[1], '');
-                $product_list = array_merge($raw_list, $semi_list); 
-            } else {
-                $product_list =  $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
-            }    
-        }
+        
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group, '');
+        $product_count = 0;
+        $product_count = count($product_list);
 
         ?>
         <option value="">Select</option>
@@ -509,7 +503,7 @@
                     $product_name = $obj->encode_decode('decrypt', $product_name);
                 }
                 ?>
-                <option value="<?php if(!empty($product_id)){ echo $product_id; } ?>"><?php if(!empty($product_name)){ echo $product_name; } ?></option>
+                    <option value="<?php if(!empty($product_id)){ echo $product_id; } ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected <?php } ?>><?php if(!empty($product_name)){ echo $product_name; } ?></option>
                 <?php
             }
         }

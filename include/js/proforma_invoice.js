@@ -2128,6 +2128,7 @@ function GetFinishedGroupProducts() {
                             jQuery.ajax({
                                 url: post_url, success: function (result) {
                                     jQuery('select[name="selected_product_id"]').html(result);
+                                    GetProdetails();
                                 }
                             });
                         }

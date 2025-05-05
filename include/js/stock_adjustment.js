@@ -1,5 +1,4 @@
 
-
 function show_godown_magazine(product_group) {
 
     if (jQuery('input[name="product_group"]').length > 0) {
@@ -13,9 +12,12 @@ function show_godown_magazine(product_group) {
         if ($(".div_selected_magazine").length > 0) {
             $(".div_selected_magazine").addClass("d-none")
         }
-        if ($("select[name='selected_magazine_id']").length > 0) {
-            $("select[name='selected_magazine_id']").val("").trigger("change")
+        if ($("select[name='selected_magazine_id']").find('option').length > 2) {
+            if ($("select[name='selected_magazine_id']").length > 0) {
+                $("select[name='selected_magazine_id']").val("").trigger("change")
+            }
         }
+
     }
     else if (product_group == "2") {
         if ($(".div_selected_magazine").length > 0) {
@@ -24,8 +26,11 @@ function show_godown_magazine(product_group) {
         if ($(".div_selected_godown").length > 0) {
             $(".div_selected_godown").addClass("d-none")
         }
-        if ($("select[name='selected_godown_id']").length > 0) {
-            $("select[name='selected_godown_id']").val("").trigger("change")
+        if ($("select[name='selected_godown_id']").find('option').length > 2) {
+
+            if ($("select[name='selected_godown_id']").length > 0) {
+                $("select[name='selected_godown_id']").val("").trigger("change")
+            }
         }
     }
 }
@@ -45,13 +50,13 @@ function show_product(product_group) {
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                post_url = "action_changes.php?show_purchase_product=1&selected_product_group=" + product_group;
+                post_url = "stock_adjustment_table.php?show_purchase_product=1&selected_product_group=" + product_group;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (result != "") {
 
                             if ($("select[name='product']").length > 0) {
-                                $("select[name='product']").html(result);
+                                $("select[name='product']").html(result); GetProdetails();
                             }
                         }
                     }

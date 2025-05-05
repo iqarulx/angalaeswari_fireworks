@@ -190,6 +190,21 @@
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
 
+        $count_of_product = 0;
+        $count_of_product = count($product_list);
+
+        $count_of_customer = 0;
+        $count_of_customer = count($customer_list);
+
+        $count_of_transport = 0;
+        $count_of_transport = count($transport_list);
+
+        $count_of_bank = 0;
+        $count_of_bank = count($bank_list);
+
+        
+        $count_of_group = 0;
+        $count_of_group = count($finished_group_list);
     ?>
         <form class="poppins pd-20" name="proforma_invoice_form" method="POST">
             <div class="card-header">
@@ -250,7 +265,7 @@
                                     foreach ($customer_list as $customer) { ?>
                                         <option value="<?php if (!empty($customer['customer_id'])) {
                                             echo $customer['customer_id'];
-                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id']) { echo "selected"; } ?>>
+                                        } ?>" <?php if(!empty($customer_id) && $customer_id == $customer['customer_id'] || (!empty($count_of_customer) && $count_of_customer == 1)) { echo "selected"; } ?>>
                                             <?php
                                                 if(!empty($customer['name_mobile_city']) && $customer['name_mobile_city'] != $GLOBALS['null_value']) {
                                                     echo $obj->encode_decode('decrypt', $customer['name_mobile_city']);
@@ -274,7 +289,7 @@
                                     foreach ($transport_list as $list) { ?>
                                         <option value="<?php if (!empty($list['transport_id'])) {
                                             echo $list['transport_id'];
-                                        } ?>" <?php if(!empty($transport_id) && $transport_id == $list['transport_id']) { echo "selected"; } ?>>
+                                        } ?>" <?php if(!empty($transport_id) && $transport_id == $list['transport_id'] || (!empty($count_of_transport) && $count_of_transport == 1)) { echo "selected"; } ?>>
                                             <?php if (!empty($list['transport_name'])) {
                                                 echo $obj->encode_decode('decrypt', $list['transport_name']);
                                             } ?>
@@ -295,7 +310,7 @@
                                     foreach ($bank_list as $list) { ?>
                                         <option value="<?php if (!empty($list['bank_id'])) {
                                             echo $list['bank_id'];
-                                        } ?>" <?php if(!empty($bank_id) && $bank_id == $list['bank_id']) { echo "selected"; } ?>>
+                                        } ?>" <?php if(!empty($bank_id) && $bank_id == $list['bank_id'] || (!empty($count_of_bank) && $count_of_bank == 1)) { echo "selected"; } ?>>
                                             <?php if (!empty($list['bank_name'])) {
                                                 echo $obj->encode_decode('decrypt', $list['bank_name']);
                                             } ?>
@@ -415,7 +430,7 @@
                                     foreach ($finished_group_list as $fg) { ?>
                                         <option value="<?php if (!empty($fg['finished_group_id'])) {
                                             echo $fg['finished_group_id'];
-                                        } ?>">
+                                        } ?>" <?php if(!empty($count_of_group) && $count_of_group == 1){ ?> Selected<?php }  ?>>
                                             <?php if (!empty($fg['finished_group_name'])) {
                                                 echo $obj->encode_decode('decrypt', $fg['finished_group_name']);
                                             } ?>
@@ -438,7 +453,7 @@
                                     foreach ($product_list as $Pro_list) { ?>
                                         <option value="<?php if (!empty($Pro_list['product_id'])) {
                                             echo $Pro_list['product_id'];
-                                        } ?>">
+                                        } ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected<?php } ?>>
                                             <?php if (!empty($Pro_list['product_name'])) {
                                                 echo $obj->encode_decode('decrypt', $Pro_list['product_name']);
                                             } ?>
@@ -825,6 +840,8 @@
         <script>
             jQuery(document).ready(function(){
                 <?php if(!empty($show_proforma_invoice_id)) { ?> calTotal(); <?php }?>
+                <?php if(!empty($count_of_group) && $count_of_group == 1) { ?>  GetFinishedGroupProducts();
+                    GetProdetails(); <?php } ?>
             });
         </script>                    
         <script src="include/select2/js/select2.min.js"></script>
@@ -1962,7 +1979,8 @@
 
             $case_contents_list = $obj->getQueryRecords('', $case_contents_query);
         }
-
+        $contains_count = 0;
+        $contains_count = count($case_contents_list);
         $type_option = "";
     
         ?>
@@ -1984,9 +2002,9 @@
                 <?php
                     foreach($case_contents_list as $case_contents) {
                         ?>
-                        <option value="<?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?>"><?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?></option>
+                        <option value="<?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?>" <?php if(!empty($contains_count) && $case_contents['case_contains'] != $GLOBALS['null_value'] && $contains_count == 1){ ?> selected <?php } ?> ><?php if(!empty($case_contents['case_contains'])) { echo $case_contents['case_contains']; } ?></option>
                         <?php
-                    }    
+                    }
                 ?>
             <?php
         }
@@ -2000,13 +2018,16 @@
             $product_list = array();
             $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'finished_group_id', $finished_group_id, '');
             
+            $count_of_product = 0;
+            $count_of_product = count($product_list);
+
             if(!empty($product_list)) {
                 ?>
                 <option value="">Select</option>
                 <?php
                 foreach($product_list as $pl) {
                     ?>
-                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>">
+                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>" <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> Selected<?php } ?> >
                         <?php if (!empty($pl['product_name'])) {
                             echo $obj->encode_decode('decrypt', $pl['product_name']);
                         } ?>
@@ -2017,14 +2038,16 @@
         } else {
             $product_list = array();
             $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
-            
+            $count_of_product = 0;
+            $count_of_product = count($product_list);
+
             if(!empty($product_list)) {
                 ?>
                 <option value="">Select</option>
                 <?php
                 foreach($product_list as $pl) {
                     ?>
-                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>">
+                    <option value="<?php if (!empty($pl['product_id'])) { echo $pl['product_id']; } ?>"  <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> Selected<?php } ?> >
                         <?php if (!empty($pl['product_name'])) {
                             echo $obj->encode_decode('decrypt', $pl['product_name']);
                         } ?>

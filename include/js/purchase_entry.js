@@ -1331,8 +1331,11 @@ function show_godown_magazine(product_group) {
         if ($(".div_selected_magazine").length > 0) {
             $(".div_selected_magazine").addClass("d-none")
         }
-        if ($("select[name='selected_magazine_id']").length > 0) {
-            $("select[name='selected_magazine_id']").val("").trigger("change")
+        if ($("select[name='selected_magazine_id']").find('option').length > 2) {
+
+            if ($("select[name='selected_magazine_id']").length > 0) {
+                $("select[name='selected_magazine_id']").val("").trigger("change")
+            }
         }
     } else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
         if ($(".div_selected_magazine").length > 0) {
@@ -1341,8 +1344,11 @@ function show_godown_magazine(product_group) {
         if ($(".div_selected_godown").length > 0) {
             $(".div_selected_godown").addClass("d-none")
         }
-        if ($("select[name='selected_godown_id']").length > 0) {
-            $("select[name='selected_godown_id']").val("").trigger("change")
+        if ($("select[name='selected_godown_id']").find('option').length > 2) {
+
+            if ($("select[name='selected_godown_id']").length > 0) {
+                $("select[name='selected_godown_id']").val("").trigger("change")
+            }
         }
     }
 }
@@ -1358,7 +1364,7 @@ function show_product(product_group) {
                     url: post_url, success: function (result) {
                         if (result != "") {
                             if ($("select[name='product']").length > 0) {
-                                $("select[name='product']").html(result);
+                                $("select[name='product']").html(result); GetProdetails();
                             }
                         }
                     }

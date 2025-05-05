@@ -24,7 +24,17 @@
         
         // print_r($bank_list);
         $current_date = date("Y-m-d");
+        $selected_payment_mode = "";
         
+        $category_count = 0;
+        $category_count = count($expense_category_list);
+
+        $bank_count = 0;
+        $bank_count = count($bank_list);
+
+        $payment_mode_count = 0;
+        $payment_mode_count = count($payment_mode_list);
+       
         ?>
 
         <form class="poppins pd-20 redirection_form" name="expense_entry_form" method="POST">
@@ -54,7 +64,7 @@
                                     <option value = "">Select Expense Category</option> <?php 
                                     if(!empty($expense_category_list)) {
                                         foreach($expense_category_list as $data) { ?>
-                                            <option value="<?php if(!empty($data['expense_category_id'])) { echo $data['expense_category_id']; } ?>"> <?php
+                                            <option value="<?php if(!empty($data['expense_category_id'])) { echo $data['expense_category_id']; } ?>" <?php if(!empty($category_count) && $category_count == 1){ ?> selected <?php } ?>> <?php
                                                 if(!empty($data['expense_category_name'])) {
                                                     echo $obj->encode_decode('decrypt', $data['expense_category_name']);
                                                 } ?>
@@ -83,7 +93,10 @@
                                 <option value="">Select Payment Mode</option> <?php
                                     if(!empty($payment_mode_list)) {
                                         foreach($payment_mode_list as $data) { ?>
-                                            <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>"> <?php
+                                            <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>" <?php if(!empty($payment_mode_count) && $payment_mode_count == 1){ ?> selected <?php } ?>> <?php
+
+                                                $selected_payment_mode = $data['payment_mode_id'];
+
                                                 if(!empty($data['payment_mode_name'])) {
                                                     $data['payment_mode_name'] = $obj->encode_decode('decrypt', $data['payment_mode_name']);
                                                     echo $data['payment_mode_name'];
@@ -103,7 +116,7 @@
                                     <option value="">Select Bank</option> <?php 
                                     if(!empty($bank_list)){
                                         foreach($bank_list as $col) { ?>
-                                            <option value="<?php if(!empty($col['bank_id'])){echo $col['bank_id'];} ?>" <?php if(!empty($bank_id) && $col['bank_id'] == $bank_id){ ?>selected<?php } ?>> <?php 
+                                            <option value="<?php if(!empty($col['bank_id'])){echo $col['bank_id'];} ?>" <?php if(!empty($bank_id) && $col['bank_id'] == $bank_id || !empty($bank_count) && $bank_count == 1){ ?>selected<?php } ?>> <?php 
                                                 if(!empty($col['bank_id'])){
                                                     echo "hello";
                                                     echo $obj->encode_decode('decrypt',$col['bank_name'])." - ".$obj->encode_decode('decrypt',$col['account_number']);
@@ -166,8 +179,13 @@
             <script src="include/select2/js/select.js"></script>
             <script type="text/javascript" src="include/js/payment.js"></script>
 
-            <script>
+            <script type="text/javascript">
                 jQuery(document).ready(function(){
+                    <?php 
+                     if($payment_mode_count == 1){ ?>
+                             getBankDetails('<?php if(!empty($selected_payment_mode)){ echo $selected_payment_mode; } ?>');
+                    <?php } ?>
+                    
                     jQuery('.add_update_form_content').find('select').select2();
                     jQuery(".select2").on("select2:open", function () {
                         // Find the inner search field of the opened dropdown

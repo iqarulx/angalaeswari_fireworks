@@ -57,14 +57,14 @@
                     $quantity = $data['quantity'];
                     $quantity = explode(",", $quantity);
                 }
-                if(!empty($data['cooly_per_qty']) && $data['cooly_per_qty'] != $GLOBALS['null_value']) {
-                    $cooly_per_qty = $data['cooly_per_qty'];
-                    $cooly_per_qty = explode(",", $cooly_per_qty);
-                }
-                if(!empty($data['cooly_rate']) && $data['cooly_rate'] != $GLOBALS['null_value']) {
-                    $cooly_rate = $data['cooly_rate'];
-                    $cooly_rate = explode(",", $cooly_rate);
-                }
+                // if(!empty($data['cooly_per_qty']) && $data['cooly_per_qty'] != $GLOBALS['null_value']) {
+                //     $cooly_per_qty = $data['cooly_per_qty'];
+                //     $cooly_per_qty = explode(",", $cooly_per_qty);
+                // }
+                // if(!empty($data['cooly_rate']) && $data['cooly_rate'] != $GLOBALS['null_value']) {
+                //     $cooly_rate = $data['cooly_rate'];
+                //     $cooly_rate = explode(",", $cooly_rate);
+                // }
                 if(!empty($data['total_amount']) && $data['total_amount'] != $GLOBALS['null_value']) {
                     $total_amount = $data['total_amount'];
                 }
@@ -83,10 +83,15 @@
         else {
             $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         }
+        $magazine_count = 0;
+        $magazine_count = count($magazine_list);
 
         $product_list =array();
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794d7a4e664d44453d', '');
 
+        $count_of_product = 0; $selected_product_id = "";
+        $count_of_product = count($product_list);
+    
         // $contractor_list = array();
         // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
         ?>
@@ -157,7 +162,7 @@
                                                 foreach($magazine_list as $data) {
                                                     if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value']) {
                                                         ?>
-                                                        <option value="<?php echo $data['magazine_id']; ?>" <?php if((!empty($magazine_id) && $magazine_id == $data['magazine_id'])) { ?>selected<?php } ?>>
+                                                        <option value="<?php echo $data['magazine_id']; ?>" <?php if((!empty($magazine_id) && $magazine_id == $data['magazine_id']) || !empty($magazine_count) && $magazine_count == 1) { ?>selected<?php } ?>>
                                                             <?php
                                                                 if(!empty($data['name_location']) && $data['name_location'] != $GLOBALS['null_value']) {
                                                                     echo $obj->encode_decode('decrypt', $data['name_location']);
@@ -186,8 +191,13 @@
                                             foreach ($product_list as $Pro_list) { ?>
                                                 <option value="<?php if (!empty($Pro_list['product_id'])) {
                                                     echo $Pro_list['product_id'];
-                                                } ?>">
-                                                    <?php if (!empty($Pro_list['product_name'])) {
+                                                } ?>" <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> Selected <?php } ?>>
+                                                    <?php 
+                                                        if($count_of_product == 1){
+                                                             $selected_product_id = $Pro_list['product_id'];
+                                                         }
+                                                    
+                                                    if (!empty($Pro_list['product_name'])) {
                                                         echo $obj->encode_decode('decrypt', $Pro_list['product_name']);
                                                     } ?>
                                                 </option>
@@ -244,8 +254,8 @@
                                             <th style="width:150px;">Unit</th>
                                             <th style="width:100px;">Content</th>
                                             <th style="width:100px;">Qty</th>
-                                            <th style="width:100px;">Cooly/Qty</th>
-                                            <th style="width:100px;">Total Cooly</th>
+                                            <!-- <th style="width:100px;">Cooly/Qty</th>
+                                            <th style="width:100px;">Total Cooly</th> -->
                                             <th style="width:100px;">Action</th>
                                         </tr>
                                     </thead>
@@ -294,12 +304,14 @@
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity[$i])) { echo $quantity[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
                                                         </th>
+                                                        <?php /*
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty[$i])) { echo $cooly_per_qty[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
                                                         </th>
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_rate[$i])) { echo $cooly_rate[$i]; } ?>" readonly>
                                                         </th>
+                                                        */ ?>
                                                         <th class="text-center px-2 py-2">
                                                             <?php
                                                             $negative_stock_allowed = "";
@@ -342,12 +354,12 @@
                             </div>
                         </div>
                         <div class="row mx-0 my-3">
-                            <div class="col-lg-5 col-md-6 col-12 text-end">
+                            <div class="col-lg-8 col-md-6 col-12 text-end">
                                 <h4>Total Quantity : <span class="overall_qty"></span></h3>
                             </div>
-                            <div class="col-lg-4 col-md-6 col-12 text-end">
+                            <!-- <div class="col-lg-4 col-md-6 col-12 text-end">
                                 <h4>Total Cooly : <span class="overall_total"></span></h3>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="col-md-12 py-3 text-center">
                             <button class="btn btn-danger submit_button" type="button" onClick="Javascript:SaveModalContent(event,'daily_production_form', 'daily_production_changes.php', 'daily_production.php');">
@@ -367,6 +379,11 @@
                             <?php 
                         }
                     ?>
+                    
+                    <?php
+                          if(empty($show_daily_production_id)) { 
+                              if($count_of_product == 1){ ?>  GetUnit('<?php if(!empty($selected_product_id)) { echo  $selected_product_id; } ?>'); <?php } 
+                           } ?>
                 });
             </script>
             <script type="text/javascript">     
@@ -488,12 +505,12 @@
         if(isset($_POST['contains'])) {
             $case_contains = $_POST['contains'];
         }
-        if(isset($_POST['cooly_per_qty'])) {
-            $cooly_per_qty = $_POST['cooly_per_qty'];
-        }
-        if(isset($_POST['cooly_amount'])) {
-            $cooly_amount = $_POST['cooly_amount'];
-        }
+        // if(isset($_POST['cooly_per_qty'])) {
+        //     $cooly_per_qty = $_POST['cooly_per_qty'];
+        // }
+        // if(isset($_POST['cooly_amount'])) {
+        //     $cooly_amount = $_POST['cooly_amount'];
+        // }
         $total_cooly = 0; $total_quantity = 0; $overall_cooly_total = 0; 
         if(!empty($product_ids)) {
             for($i=0; $i < count($product_ids); $i++) {
@@ -538,9 +555,9 @@
                                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) {
                                     $total_quantity += $quantity[$i];
 
-                                    if(!empty($cooly_amount[$i])){
-                                        $overall_cooly_total += $cooly_amount[$i];
-                                    }
+                                    // if(!empty($cooly_amount[$i])){
+                                    //     $overall_cooly_total += $cooly_amount[$i];
+                                    // }
 
 
                                     // $negative_stock_allowed = "";
@@ -597,10 +614,10 @@
             $product_error = "Add Products";
         }
 
-        if(!empty($overall_cooly_total)) { 
-            $overall_cooly_total = number_format($overall_cooly_total,2); 
-            $overall_cooly_total = trim(str_replace(",", "", $overall_cooly_total));
-        }
+        // if(!empty($overall_cooly_total)) { 
+        //     $overall_cooly_total = number_format($overall_cooly_total,2); 
+        //     $overall_cooly_total = trim(str_replace(",", "", $overall_cooly_total));
+        // }
         $total_amount = number_format((float)$total_amount, 2, '.', '');
 
 		$round_off = 0;
@@ -858,8 +875,8 @@
 
                     $null_value = $GLOBALS['null_value'];
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'daily_production_id', 'daily_production_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate','total_quantity', 'overall_cooly_total','cancelled', 'deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'","'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'daily_production_id', 'daily_production_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'total_quantity', 'cancelled', 'deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$total_quantity."'" ,"'0'", "'0'");
                     $daily_production_insert_id = $obj->InsertSQL($GLOBALS['daily_production_table'], $columns, $values,'daily_production_id', 'daily_production_number', $action);
 
                     if(preg_match("/^\d+$/", $daily_production_insert_id)) {
@@ -880,8 +897,8 @@
                         $action = "Daily Production Updated.";
 
                         $columns = array(); $values = array();						
-                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'cooly_per_qty','cooly_rate',  'total_quantity', 'overall_cooly_total');
-                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'",  "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$cooly_per_qty."'","'".$cooly_amount."'", "'".$total_quantity."'", "'".$overall_cooly_total."'");    
+                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'magazine_id', 'magazine_name_location', 'magazine_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'total_quantity');
+                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$magazine_id."'", "'".$magazine_name_location."'", "'".$magazine_details."'",  "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$total_quantity."'");    
 
                         $daily_production_update_id = $obj->UpdateSQL($GLOBALS['daily_production_table'], $getUniqueID, $columns, $values, $action);
 
@@ -915,9 +932,9 @@
                         }
                     }
                 }
-
+                /*
                 if ($update_payment == 1) {
-                    /* $bill_date = date("Y-m-d");   $bill_number = $daily_production_number; $bill_type = "Daily Production";
+                    $bill_date = date("Y-m-d");   $bill_number = $daily_production_number; $bill_type = "Daily Production";
                     $party_id = $contractor_id;  $party_name = $contractor_name_mobile_city; $party_type = 'Contractor';
                     $payment_mode_id = $GLOBALS['null_value']; $payment_mode_name = $GLOBALS['null_value']; $bank_id = $GLOBALS['null_value'];
                     $bank_name = $GLOBALS['null_value'];  $credit  = 0; $debit = 0; $opening_balance = $GLOBALS['null_value']; $opening_balance_type = $GLOBALS['null_value']; $agent_id = $GLOBALS['null_value']; $agent_name = $GLOBALS['null_value'];
@@ -931,8 +948,8 @@
                     }
 
                     $update_balance = "";
-                    $update_balance = $obj->UpdateBalance($daily_production_id,$bill_number,$bill_date,$bill_type, $agent_id, $agent_name,$contractor_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit, $opening_balance_type); */
-                }
+                    $update_balance = $obj->UpdateBalance($daily_production_id,$bill_number,$bill_date,$bill_type, $agent_id, $agent_name,$contractor_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit, $opening_balance_type); 
+                } */
             }
             else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
@@ -1057,7 +1074,7 @@
                     <th>Daily Production No</th>
                     <th>Magazine</th>
                     <!-- <th>Contractor</th> -->
-                    <th>Total Amount</th>
+                    <!-- <th>Total Amount</th> -->
                     <th>Action</th>
                 </tr>
             </thead>
@@ -1108,7 +1125,7 @@
                                             }
                                         ?>
                                     </td>
-                                    */ ?>
+                                   ?>
                                     <td>
                                         <?php
                                             if(!empty($list['overall_cooly_total']) && $list['overall_cooly_total'] != $GLOBALS['null_value']) {
@@ -1116,6 +1133,7 @@
                                             }
                                         ?>
                                     </td>
+                                     */ ?>
                                     <td>
                                           <?php 
                                             $edit_access_error = "";
@@ -1259,7 +1277,7 @@ if(isset($_REQUEST['products_contractor_id'])) {
 
 if(isset($_REQUEST['get_unit'])) {
     $product_id = $_REQUEST['get_unit'];
-    $product_id = trim($product_id);
+    echo $product_id = trim($product_id);
     $magazine_id = $_REQUEST['product_magazine_id'];
     $magazine_id = trim($magazine_id);
 
@@ -1269,7 +1287,7 @@ if(isset($_REQUEST['get_unit'])) {
     $subunit_id = "";
     $subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
     $subunit_need = 0;
-    $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
+     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
     // $current_stock_unit = 0;
     // $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_magazine_table'],'', $magazine_id, $product_id, $case_contains);
 
@@ -1324,9 +1342,11 @@ if(isset($_REQUEST['get_unit'])) {
         <option value="">Select Content</option>
             <?php 
             if(!empty($case_contains)){
+                $contains_count = 0;
+                $contains_count = count($case_contains);
                 for($i=0; $i< count($case_contains); $i++){ 
                     if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
-                        <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>">
+                        <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>" <?php if(!empty($case_contains) && $case_contains[$i] != $GLOBALS['null_value'] && $contains_count == 1) { ?> selected <?php } ?>>
                             <?php
                         
                                     echo  $case_contains[$i];
@@ -1376,7 +1396,7 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
     else if($unit_id == $product_subunit_id) {
         $unit_type = "Subunit";
     }
-
+    /*
     $cooly_per_qty = 0; $total_cooly = 0; $rate_list = array();
     if(!empty($contractor_id) && $contractor_id != "undefined") {
         $rate_list = $obj->getCoolyRate($contractor_id, $product_id, $unit_type);
@@ -1425,7 +1445,7 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
     if(!empty($cooly_amount)) { 
         $cooly_amount = number_format($cooly_amount,2); 
         $cooly_amount = trim(str_replace(",", "", $cooly_amount));
-    }
+    } */
     ?>
     <tr class="product_row" id="product_row<?php if(!empty($product_daily_production_row_index)) { echo $product_daily_production_row_index; } ?>">
         <th class="text-center px-2 py-2 sno"><?php if(!empty($product_daily_production_row_index)) { echo $product_daily_production_row_index; } ?></th>
@@ -1465,12 +1485,14 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
         <th class="text-center px-2 py-2">
             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity)) { echo $quantity; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
+        <?php /*
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_amount)) { echo $cooly_amount; } ?>"  readonly>
         </th>
+        */ ?>
         <th class="text-center px-2 py-2">
             <button class="btn btn-danger" type="button" onclick="Javascript:DeleteDailyProductionRow('<?php if(!empty($product_daily_production_row_index)) { echo $product_daily_production_row_index; } ?>', 'product_row');"><i class="fa fa-trash"></i></button>
         </th>

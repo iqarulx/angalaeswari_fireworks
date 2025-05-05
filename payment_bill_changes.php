@@ -64,13 +64,16 @@ if(isset($_REQUEST['selected_bank_payment_mode'])) {
             }
         }
 
+        $count_of_bank = 0;
+        $count_of_bank = count($filtered_banks);
+
 		if(!empty($filtered_banks)){
 		    ?>
                 <option value="">Select Bank</option>
                 <?php
                     foreach ($filtered_banks as $list){
                         ?>
-                        <option value="<?php if(!empty($list['bank_id'])){echo $list['bank_id'];} ?>" <?php if(!empty($bank_id) && $list['bank_id'] == $bank_id){ ?>selected<?php } ?>> 
+                        <option value="<?php if(!empty($list['bank_id'])){echo $list['bank_id'];} ?>" <?php if(!empty($bank_id) && $list['bank_id'] == $bank_id || !empty($count_of_bank) && $count_of_bank == 1){ ?>selected<?php } ?>> 
                         <?php
                             $account_name = "";
                             $account_name = $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $list['bank_id'], 'bank_name');
@@ -96,6 +99,9 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
 	if($party_type == '1'){
 		$party_list = array();
         $party_list =$obj->getTableRecords($GLOBALS['supplier_table'],'','','');
+
+        $party_count = 0;
+        $party_count = count($party_list);
 		?>
             <div class="form-group">
                 <div class="form-label-group in-border" >
@@ -104,7 +110,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                         <?php
                             if(!empty($party_list)) {
                                 foreach($party_list as $data) { ?>
-                                    <option value="<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>" <?php if(!empty($party_id) && $data['supplier_id'] == $party_id) { ?> selected <?php } ?> >
+                                    <option value="<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>" <?php if(!empty($party_id) && $data['supplier_id'] == $party_id || (!empty($party_count) && $party_count == 1)) { ?> selected <?php } ?> >
                                     <?php
                                         if(!empty($data['name_mobile_city'])) {
                                             $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
@@ -137,6 +143,9 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
 	}else if($party_type == '2'){
 		$agent_list = array();
 	    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'','','');
+
+        $agent_count = 0;
+        $agent_count = count($agent_list);
 		?>
         <div class="form-group">
             <div class="form-label-group in-border" >
@@ -145,7 +154,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                     <?php
                         if(!empty($agent_list)) {
                             foreach($agent_list as $data) { ?>
-                                <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>">
+                                <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>" <?php if(!empty($agent_id) && $data['agent_id'] == $agent_id || (!empty($agent_count) && $agent_count == 1)) { ?> selected <?php } ?> >
                                 <?php
                                     if(!empty($data['name_mobile_city'])) {
                                         $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);

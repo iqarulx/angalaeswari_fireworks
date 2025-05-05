@@ -12,10 +12,13 @@
 	if(isset($_REQUEST['show_voucher_id'])) {
         $show_voucher_id = $_REQUEST['show_voucher_id'];
         $voucher_date = date("Y-m-d"); 
+        $selected_payment_mode = "";
 
         $payment_mode_list = array();
 		$payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '','','');
         
+        $payment_mode_count = 0;
+        $payment_mode_count = count($payment_mode_list);  
         
         ?>
         <form class="poppins pd-20 redirection_form" name="voucher_form" method="POST">
@@ -92,8 +95,10 @@
                                         <?php
                                             if(!empty($payment_mode_list)) {
                                                 foreach($payment_mode_list as $data) { ?>
-                                                    <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>">
+                                                    <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>" <?php if(!empty($payment_mode_count) && $payment_mode_count == 1){ ?> selected <?php } ?>>
                                                         <?php
+                                                            $selected_payment_mode = $data['payment_mode_id'];
+
                                                             if(!empty($data['payment_mode_name'])) {
                                                                 $data['payment_mode_name'] = $obj->encode_decode('decrypt', $data['payment_mode_name']);
                                                                 echo $data['payment_mode_name'];
@@ -179,11 +184,15 @@
                             Submit
                         </button>
                     </div>
-                    
                 </div>     
             </div>
-            <script>
-                jQuery(document).ready(function(){
+            <script type="text/javascript">
+                jQuery(document).ready(function() {
+                    <?php 
+                    if($payment_mode_count == 1){ ?>
+                            getBankDetails('<?php if(!empty($selected_payment_mode)){ echo $selected_payment_mode; } ?>');
+                    <?php } ?>
+
                     jQuery('.add_update_form_content').find('select').select2();
                     jQuery(".select2").on("select2:open", function () {
                         // Find the inner search field of the opened dropdown

@@ -1394,6 +1394,7 @@ function GetStockProduct() {
                     url: post_url, success: function (result) {
                         if (jQuery('select[name="product"]').length > 0) {
                             jQuery('select[name="product"]').html(result);
+                            GetProdetails();
                         }
                     }
                 });
@@ -1411,6 +1412,7 @@ function getGodownType(godown_type) {
     else if (godown_type == '2') {
         jQuery('.indv_godown').removeClass('d-none');
     }
+    GetStockProduct();
 }
 
 function AddConsumptionProducts() {

@@ -19,7 +19,7 @@
         $purchase_entry_date = date('Y-m-d'); $current_date = date('Y-m-d');$purchase_entry_number = "";$gst_option = 0; $tax_type = 0; $tax_option = 0; $overall_tax = "";$purchase_godown_ids = "";
         $godown_ids = array();$brand_ids = array();$product_id = array(); $product_names = array();$cases = array();$piece_per_cases = array();$rate_per_piece = array();$rate_per_cases = array(); $product_amount = array();$discount = ""; $discount_value = "";$extra_charges = ""; $extra_charges_value = "";$hsn_codes=array(); $round_off = "";$total_amount = "";
         $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array(); $product_group = ""; $location_type = ""; $location_id = array();
-        $cancelled = 0; $location_name =array();
+        $cancelled = 0;
         $purchase_entry_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $show_purchase_entry_id, '');
         if(!empty($purchase_entry_list)) {
             foreach($purchase_entry_list as $data) {
@@ -206,8 +206,12 @@
         $supplier_list = array();
         $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
 
+        $supplier_count = 0;
+        $supplier_count = count($supplier_list);
+
         $group_list = array();
         $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
+
 
         $godown_list = array(); $magazine_list = array();
         if(!empty($show_purchase_entry_id)){
@@ -219,14 +223,32 @@
             }
         }
         else{
-            $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
-
-            $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+            if(!empty($login_godown_id)) {
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+            }else{
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+            }
+            if(!empty($login_magazine_id)) {
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
+            }else{
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+            }
         }
+
+                
+        $godown_count = 0;
+        $godown_count = count($godown_list);
+        
+        $magazine_count = 0;
+        $magazine_count = count($magazine_list);
+
         $product_list = array();
         if(!empty($edit_id)){
             $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
         }
+         
+        $count_of_product = 0;
+        $count_of_product = count($product_list);
         
         $charges_list = array();
         $charges_list = $obj->getTableRecords($GLOBALS['charges_table'], '', '', '');
@@ -277,10 +299,12 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" name="supplier_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="SupplierState(this.value);">
+                                
                                 <option value="">Select Supplier</option>    
-                                <?php if(!empty($supplier_list)) {
+                                <?php 
+                                if(!empty($supplier_list)) {
                                     foreach($supplier_list as $supplier) { ?>
-                                        <option value="<?php echo $supplier['supplier_id']; ?>" <?php if(!empty($supplier_id) && $supplier_id == $supplier['supplier_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $supplier['supplier_name']); ?></option>
+                                        <option value="<?php echo $supplier['supplier_id']; ?>" <?php if(!empty($supplier_id) && $supplier_id == $supplier['supplier_id'] ||  ($supplier_count == '1')) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $supplier['supplier_name']); ?></option>
                                 <?php } 
                                 } ?>
                             </select>
@@ -394,7 +418,7 @@
                                 <option value="">Select Godown</option>
                                 <?php if(!empty($godown_list)) {
                                     foreach($godown_list as $godown) { ?>
-                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']  || (!empty($godown_count) && $godown_count == 1)) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -409,7 +433,7 @@
                                 <option value="">Select Magazine</option>
                                 <?php if(!empty($magazine_list)) {
                                     foreach($magazine_list as $magazine) { ?>
-                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($magazine_id) && $magazine_id == $magazine['magazine_id']) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
+                                        <option value="<?php echo $magazine['magazine_id']; ?>" <?php if(!empty($magazine_id) && $magazine_id == $magazine['magazine_id'] || (!empty($magazine_count) && $magazine_count == 1)) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $magazine['magazine_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -424,7 +448,7 @@
                                 <option value="">Select Product</option>
                                 <?php if(!empty($product_list)) {
                                     foreach($product_list as $product) { ?>
-                                        <option value="<?php echo $product['product_id']; ?>"><?php echo $obj->encode_decode('decrypt', $product['product_name']); ?></option>
+                                        <option value="<?php echo $product['product_id']; ?>" <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> Selected<?php } ?> ><?php echo $obj->encode_decode('decrypt', $product['product_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -523,16 +547,12 @@
                                     for($i=0; $i < count($product_id); $i++) {    
                                         $unit_display = "";
                                         $unit_display = $obj->encode_decode('decrypt', $unit_name[$i]);
-
-                                        if(empty($location_name[$i])){
-                                            $location_name[$i] ="'";
-                                        }
                                         ?>
                                         <tr class="purchase_product_row" id="purchase_product_row<?php echo $i; ?>">
                                             <td class="sno text-center px-2 py-2"><?php echo $i+1; ?></td>
                                             <td class="text-center px-2 py-2">
                                                 <?php
-                                                if (!empty($location_name[$i]) && ($location_name[$i] != $GLOBALS['null_value'])) {
+                                                if ($location_name[$i] != $GLOBALS['null_value']) {
                                                     echo $obj->encode_decode('decrypt', $location_name[$i]);
                                                 }
                                                 ?>
@@ -834,7 +854,8 @@
                     calcPurchaseEntrySubTotal();
                     CheckCharges();
                     getRateByTaxOption();
-                    <?php } ?>
+                    <?php } 
+                    ?>
                 });
 
             </script>

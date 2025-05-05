@@ -88,7 +88,13 @@
         $finished_group_list = array();
         $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
 
+        $count_group = 0;
+        $count_group = count($finished_group_list);
+
         $unit_list = $obj->getTableRecords($GLOBALS['unit_table'], '', '', '');
+        $unit_count = 0;
+        $unit_count = count($unit_list);
+
 
         $linked_count = 0;
         if(!empty($show_product_id)) {
@@ -172,7 +178,7 @@
                                         foreach ($unit_list as $data) {
                                             if (!empty($data['unit_id'])) {
                                                 ?>
-                                                <option value="<?php echo $data['unit_id']; ?>" <?php if (!empty($unit_id) && $data['unit_id'] == $unit_id) { ?>selected<?php } ?>>
+                                                <option value="<?php echo $data['unit_id']; ?>" <?php if (!empty($unit_id) && $data['unit_id'] == $unit_id || (!empty($unit_count) && $unit_count == 1)) { ?>selected<?php } ?>>
                                                     <?php
                                                     if (!empty($data['unit_name'])) {
                                                         $data['unit_name'] = $obj->encode_decode('decrypt', $data['unit_name']);
@@ -298,7 +304,7 @@
                                         foreach ($finished_group_list as $data) {
                                             if (!empty($data['finished_group_id'])) {
                                                 ?>
-                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id) { ?>selected<?php } ?>>
+                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
                                                     <?php
                                                     if (!empty($data['finished_group_name'])) {
                                                         $data['finished_group_name'] = $obj->encode_decode('decrypt', $data['finished_group_name']);
@@ -756,17 +762,30 @@
         if(!empty($getUniquename)) {
             if ($getUniquename == 'finished') {
                 $getUniqueID = 2;
-                $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+                 if(!empty($login_magazine_id)) {
+                    $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
+                 }else{
+                    $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
+                 }
+                 $location_count = 0;
+                 $location_count = count($location_list);
                 if(!empty($location_list)) {
                     foreach($location_list as $list) {
-                        $option = $option."<option value='".$list['magazine_id']."'>".$obj->encode_decode('decrypt',$list['magazine_name'])."</option>";
+                        $selected = ' selected';
+                        $option = $option."<option value='".$list['magazine_id']."' $selected >".$obj->encode_decode('decrypt',$list['magazine_name'])."</option>";
                     }
                 }
             } else {
-                $location_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+                if(!empty($login_godown_id)) {
+                    $location_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
+                 }else{
+                    $location_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+                 }
                 if(!empty($location_list)) {
                     foreach($location_list as $list) {
-                        $option = $option."<option value='".$list['godown_id']."'>".$obj->encode_decode('decrypt',$list['godown_name'])."</option>";
+                        $selected = ' selected';
+
+                        $option = $option."<option value='".$list['godown_id']."' $selected>".$obj->encode_decode('decrypt',$list['godown_name'])."</option>";
                     }   
                 }
             }
