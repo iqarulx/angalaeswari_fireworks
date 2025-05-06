@@ -785,7 +785,7 @@
                                 <td> <?php
                                     if(!empty($data['name_mobile_city'])) {
                                         $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                        echo $data['name_mobile_city'];
+                                        echo html_entity_decode($data['name_mobile_city']);
                                     } ?>
                                     <div class="w-100 py-2">
                                         Creator : <?php
@@ -881,7 +881,7 @@
                     $action = "customer Deleted. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
                 }
                 $linked_count = 0;
-                // $linked_count = $obj->GetcustomerLinkedCount($delete_customer_id); 
+                $linked_count = $obj->GetcustomerLinkedCount($delete_customer_id); 
                 if(empty($linked_count)) {
                     $delete_id = $obj->DeletePayment($delete_customer_id);	
                     $columns = array(); $values = array();			

@@ -189,6 +189,11 @@
             $account_number = trim($account_number);
             $account_number_error = $valid->valid_number($account_number, 'Account Number', '1', '18');
         }
+        if(!empty($account_number) && empty($account_number_error)) {
+            if(strlen($account_number) < 8) {
+                $account_number_error = "Minimum 8 digits required";
+            }
+        }
         if(!empty($account_number_error)) {
             if(!empty($valid_bank)) {
                 $valid_bank = $valid_bank." ".$valid->error_display($form_name, "account_number", $account_number_error, 'text');
@@ -618,8 +623,7 @@
                 }
                 
                 $linked_count = 0;
-                // $linked_count = $obj->GetBankLinkedCount($delete_bank_id); 
-            
+                $linked_count = $obj->GetBankLinkedCount($delete_bank_id); 
                 if(empty($linked_count)) {
                     $columns = array(); $values = array();			
                     $columns = array('deleted');

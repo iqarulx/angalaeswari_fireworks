@@ -237,20 +237,22 @@
 			return $list;
 		}
 
-		public function getConsumptionQtyList($contractor_id) {
-			$select_query = ""; $list = array(); $where = "";
+		public function getConsumptionQtyList($group_id) {
+            $select_query = ""; $list = array(); $where = "";
 
-			if(!empty($contractor_id)) {
-				if(!empty($where)) {
-					$where = $where." party_id = '".$contractor_id."' AND ";
-				} else {
-					$where = "party_id = '".$contractor_id."' AND ";
-				}
-			}
-			 $select_query = "SELECT DISTINCT(product_id) as product_id,party_id FROM ".$GLOBALS['stock_table']." WHERE ".$where."  stock_type = 'Consumption Entry' AND deleted = '0'";
-			$list = $this->getQueryRecords('', $select_query);
-			return $list;
-		}
+            if(!empty($group_id)) {
+                if(!empty($where)) {
+                    $where = $where." group_id = '".$group_id."' AND ";
+                } else {
+                    $where = "group_id = '".$group_id."' AND ";
+                }
+            }
+    
+             $select_query = "SELECT DISTINCT(product_id) as product_id,party_id FROM ".$GLOBALS['stock_table']." WHERE ".$where." stock_type = 'Consumption Entry' AND deleted = '0'";
+            $list = $this->getQueryRecords('', $select_query);
+            return $list;
+        }
+
 		public function getConsumptionQtyByProduct($product_id, $unit_type) {
 			$select_query = ""; $list = array(); $quantity = 0;
 			if(!empty($product_id)) {
@@ -270,7 +272,29 @@
 					}
 				}
 			}
-			return $quantity;
+
+			$unit_name = "";
+			if($unit_type == "Unit") {
+				$unit_id = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_id');
+
+				if(!empty($unit_id)) {
+					$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+					if(!empty($unit_name)) {
+						$unit_name = $this->encode_decode('decrypt', $unit_name);
+					}
+				}
+			} else {
+				$unit_id = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
+
+				if(!empty($unit_id)) {
+					$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+					if(!empty($unit_name)) {
+						$unit_name = $this->encode_decode('decrypt', $unit_name);
+					}
+				}
+			}			
+
+			return ["quantity" => $quantity, 'unit_name' => $unit_name];
 		}
 
 		public function getPurchaseTaxReport($filter_supplier_id,$from_date, $to_date) {
@@ -354,17 +378,17 @@
 			$select_query = "";
 				$select_query = "SELECT bill_id,bill_number, bill_date,agent_id, party_id, party_name, amount, payment_type, type,payment_mode_id,bank_id FROM ( 
 			
-				(SELECT vo.voucher_id as bill_id,vo.voucher_number as bill_number, vo.voucher_date as bill_date, '' as agent_id,vo.party_id as party_id, party_name as party_name, vo.total_amount as amount, payment_mode_name as payment_type, 'voucher' as type,vo.payment_mode_id as payment_mode_id,vo.bank_id as bank_id FROM ".$GLOBALS['voucher_table']." as vo WHERE vo.deleted = '0' ORDER BY vo.created_date_time ASC) 
+				(SELECT vo.voucher_id as bill_id,vo.voucher_number as bill_number, vo.voucher_date as bill_date, '' as agent_id,vo.party_id as party_id, party_name as party_name, vo.total_amount as amount, payment_mode_name as payment_type, 'Voucher' as type,vo.payment_mode_id as payment_mode_id,vo.bank_id as bank_id FROM ".$GLOBALS['voucher_table']." as vo WHERE vo.deleted = '0' ORDER BY vo.created_date_time ASC) 
 				UNION ALL
-				(SELECT re.receipt_id as bill_id,re.receipt_number as bill_number, re.receipt_date as bill_date,'' as agent_id, re.party_id as party_id, party_name as party_name, re.total_amount as amount, payment_mode_name as payment_type,  'receipt' as type,re.payment_mode_id as payment_mode_id,re.bank_id as bank_id FROM ".$GLOBALS['receipt_table']." as re WHERE re.deleted = '0' ORDER BY re.created_date_time ASC) 
+				(SELECT re.receipt_id as bill_id,re.receipt_number as bill_number, re.receipt_date as bill_date,'' as agent_id, re.party_id as party_id, party_name as party_name, re.total_amount as amount, payment_mode_name as payment_type,  'Receipt' as type,re.payment_mode_id as payment_mode_id,re.bank_id as bank_id FROM ".$GLOBALS['receipt_table']." as re WHERE re.deleted = '0' ORDER BY re.created_date_time ASC) 
 				UNION ALL 
-				(SELECT py.expense_id as bill_id,py.expense_number as bill_number, (py.expense_date) as bill_date,'' as agent_id,py.narration as party_id, narration as party_name, py.total_amount as amount,payment_mode_name as payment_type,  'expense' as type,py.payment_mode_id as payment_mode_id,'' as bank_id FROM ".$GLOBALS['expense_table']." as py WHERE py.deleted = '0'  ORDER BY py.id ASC)
+				(SELECT py.expense_id as bill_id,py.expense_number as bill_number, (py.expense_date) as bill_date,'' as agent_id,py.narration as party_id, narration as party_name, py.total_amount as amount,payment_mode_name as payment_type,  'Expense' as type,py.payment_mode_id as payment_mode_id,'' as bank_id FROM ".$GLOBALS['expense_table']." as py WHERE py.deleted = '0'  ORDER BY py.id ASC)
 				   UNION ALL 
 				(SELECT e.estimate_id as bill_id,e.estimate_number as bill_number, (e.estimate_date) as bill_date,e.agent_id as agent_id,e.customer_id as party_id, e.customer_name_mobile_city as party_name, e.bill_total as amount,'' as payment_type,  'Estimate' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['estimate_table']." as e WHERE e.deleted = '0'  ORDER BY e.id ASC)
 				UNION ALL 
 				(SELECT pb.purchase_entry_id as bill_id,pb.purchase_entry_number as bill_number, (pb.purchase_entry_date) as bill_date,'' as agent_id,pb.supplier_id as party_id, pb.supplier_name_mobile_city as party_name, pb.total_amount as amount,'' as payment_type,  'Purchase Entry' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['purchase_entry_table']." as pb WHERE pb.deleted = '0'  ORDER BY pb.id ASC)
 				) as g where ".$where." ORDER BY bill_date DESC";
-			   
+			    
 				// UNION ALL
 				// (SELECT pb.purchase_bill_id as bill_id,pb.purchase_bill_number as bill_number, (pb.purchase_bill_date) as bill_date, pb.party_id as party_id, pb.total_amount as amount, '' as payment_type, 'purchase' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['purchase_bill_table']." as pb WHERE pb.deleted = '0' AND pb.cancelled='0' AND pb.bill_company_id = '".$GLOBALS['bill_company_id']."' ORDER BY pb.id ASC)
 				// UNION ALL 
@@ -395,12 +419,11 @@
 			return $total_records_list;
 		}
 
-		public function balance_report($type, $party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date) {
+		public function balance_report($type, $party_id,$bill_company_id,$filter_agent_party,$from_date,$to_date){
 			$con = $this->connect();
 			$select_query = ""; $list = array(); $reports = array(); $payment_query = "";
-			$bill_where = ""; 
-			// echo $type."hello".$party_id;
-			if(!empty($type) && !empty($party_id)) {
+			$bill_where = "";
+			if(!empty($type) && !empty($party_id)){
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
 					$bill_where = "bill_date >='".$from_date."' AND ";
@@ -562,7 +585,7 @@
 					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0'  GROUP BY e.party_id) as debit,
 					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
 					WHERE ".$bill_where." e.party_id = sp.customer_id AND e.deleted = '0' GROUP BY e.party_id) as credit 
-					FROM ".$GLOBALS['customer_table']." as sp WHERE sp.deleted = '0'   ";
+					FROM ".$GLOBALS['customer_table']." as sp WHERE  (sp.agent_id='' OR sp.agent_id ='NULL') AND sp.deleted = '0'   ";
 				}
 				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,debit,credit FROM ((".$payment_query.") ) as g";
 				if(!empty($select_query)) {
@@ -1090,6 +1113,124 @@
 			}
 
 			return $list;
+		}
+
+		public function GetInwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
+			if(!empty($magazine_id)) {
+				$where = " magazine_id = '".$magazine_id."' AND ";
+			}
+			if(!empty($godown_id)) {
+				if(!empty($where)) {
+					$where = $where." godown_id = '".$godown_id."' AND ";
+				}
+				else {
+					$where = " godown_id = '".$godown_id."' AND ";
+				}
+			}
+			if(!empty($case_contains)) {
+				if(!empty($where)) {
+					$where = $where." case_contains = '".$case_contains."' AND ";
+				}
+				else {
+					$where = " case_contains = '".$case_contains."' AND ";
+				}
+			}
+			if(!empty($product_id)) {
+				$select_query = "SELECT SUM(FLOOR(inward_unit * case_contains / case_contains)) AS unit_stock,
+								SUM(MOD(inward_unit * case_contains, case_contains)) AS subunit_stock FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND case_contains != '".$GLOBALS['null_value']."' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['unit_stock']) && $data['unit_stock'] != $GLOBALS['null_value']) {
+						$unit_stock = round($data['unit_stock']);
+					}
+					if(!empty($data['subunit_stock']) && $data['subunit_stock'] != $GLOBALS['null_value']) {
+						$subunit_stock = round($data['subunit_stock']);
+					}
+				}
+			}
+			$return_array = array($unit_stock, $subunit_stock);
+			return $return_array;
+		}
+	
+		public function GetOutwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
+			if(!empty($magazine_id)) {
+				$where = " magazine_id = '".$magazine_id."' AND ";
+			}
+			if(!empty($godown_id)) {
+				if(!empty($where)) {
+					$where = $where." godown_id = '".$godown_id."' AND ";
+				}
+				else {
+					$where = " godown_id = '".$godown_id."' AND ";
+				}
+			}
+			if(!empty($case_contains)) {
+				if(!empty($where)) {
+					$where = $where." case_contains = '".$case_contains."' AND ";
+				}
+				else {
+					$where = " case_contains = '".$case_contains."' AND ";
+				}
+			}
+			if(!empty($product_id)) {
+				$select_query = "SELECT SUM(FLOOR(outward_unit * case_contains / case_contains)) AS unit_stock,
+								SUM(MOD(outward_unit * case_contains, case_contains)) AS subunit_stock FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND case_contains != '".$GLOBALS['null_value']."' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['unit_stock']) && $data['unit_stock'] != $GLOBALS['null_value']) {
+						$unit_stock = round($data['unit_stock']);
+					}
+					if(!empty($data['subunit_stock']) && $data['subunit_stock'] != $GLOBALS['null_value']) {
+						$subunit_stock = round($data['subunit_stock']);
+					}
+				}
+			}
+			$return_array = array($unit_stock, $subunit_stock);
+			return $return_array;
+		}
+		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
+			if(!empty($magazine_id)) {
+				$where = " magazine_id = '".$magazine_id."' AND ";
+			}
+			if(!empty($godown_id)) {
+				if(!empty($where)) {
+					$where = $where." godown_id = '".$godown_id."' AND ";
+				}
+				else {
+					$where = " godown_id = '".$godown_id."' AND ";
+				}
+			}
+			if(!empty($case_contains)) {
+				if(!empty($where)) {
+					$where = $where." case_contains = '".$case_contains."' AND ";
+				}
+				else {
+					$where = " case_contains = '".$case_contains."' AND ";
+				}
+			}
+			if(!empty($product_id)) {
+				$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND deleted = '0' group by case_contains";
+                $list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['net_cases']) && $data['net_cases'] != $GLOBALS['null_value']) {
+						$unit_stock = round($data['net_cases']);
+					}
+					if(!empty($data['net_pcs']) && $data['net_pcs'] != $GLOBALS['null_value']) {
+						$subunit_stock = round($data['net_pcs']);
+					}
+				}
+			}
+			$return_array = array($unit_stock, $subunit_stock);
+			return $return_array;
 		}
     }
 ?>

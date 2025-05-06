@@ -170,7 +170,7 @@
                 </div>
                 <div class="col-lg-3 col-md-4 col-6 py-2">
                     <div class="form-group">
-                        <div class="form-label-group in-border">
+                        <div class="form-label-group in-border" id="div_selected_unit">
                             <select class="select2 select2-danger Product_Fix_field" name="unit_id" data-dropdown-css-class="select2-danger" onchange="AddUnitForStock();" style="width: 100%;" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                                 <option value="">Select Unit</option>
                                 <?php
@@ -214,7 +214,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="input-group">
-                                <div class="input-group-append" style="width:100%;">
+                                <div class="input-group-append" style="width:100%;" id="div_selected_subunit">
                                     <select name="subunit_id" class="select2 select2-danger select2-hidden-accessible Product_Fix_field" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="AddUnitForStock()" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?> >
                                     <option value="">Select SubUnit</option>
                                     <?php
@@ -769,25 +769,39 @@
                  }
                  $location_count = 0;
                  $location_count = count($location_list);
-                if(!empty($location_list)) {
-                    foreach($location_list as $list) {
-                        $selected = ' selected';
-                        $option = $option."<option value='".$list['magazine_id']."' $selected >".$obj->encode_decode('decrypt',$list['magazine_name'])."</option>";
+                 if (!empty($location_list)) {
+                    $count = count($location_list);
+                    foreach ($location_list as $list) {
+                        if ($count === 1) {
+                            $selected = ' selected';
+                        } else {
+                            $selected = '';
+                        }  
+                        $option .= "<option value='" . $list['magazine_id'] . "'$selected>" . 
+                                   $obj->encode_decode('decrypt', $list['magazine_name']) . 
+                                   "</option>";
                     }
                 }
+                
             } else {
                 if(!empty($login_godown_id)) {
                     $location_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
                  }else{
                     $location_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
                  }
-                if(!empty($location_list)) {
-                    foreach($location_list as $list) {
-                        $selected = ' selected';
-
-                        $option = $option."<option value='".$list['godown_id']."' $selected>".$obj->encode_decode('decrypt',$list['godown_name'])."</option>";
-                    }   
-                }
+                 if (!empty($location_list)) {
+                    $count = count($location_list);
+                    foreach ($location_list as $list) {
+                        if ($count === 1) {
+                            $selected = ' selected';
+                        } else {
+                            $selected = '';
+                        } 
+                        $option .= "<option value='" . $list['godown_id'] . "'$selected>" . 
+                                   $obj->encode_decode('decrypt', $list['godown_name']) . 
+                                   "</option>";
+                    }
+                }                
             }
         }
         echo $option . "$$$" .  $getUniqueID;

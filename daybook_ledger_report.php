@@ -109,36 +109,10 @@
                                                 </div>
                                             </div>        
                                         </div>
-                                        <div class="col-lg-3 col-md-5 col-5">
+                                        <div class="col-lg-3 col-md-5 col-5 py-2">
                                             <button class="btn btn-secondary float-right " style="font-size:11px;" type="button" onClick="ExportToExcel()"><i class="fa fa-download"></i>&ensp; Export </button>
                                             <button  onclick="window.open('reports/rpt_daybook.php?from_date=<?php echo $from_date ?>&to_date=<?php echo $to_date; ?>&party_id=<?php if(!empty($party_id)){ echo $party_id; }?>&payment_mode_id=<?php if(!empty($payment_mode_id)){ echo $payment_mode_id; }?>','_blank')"  class="btn btn-secondary float-right mr-2" style="font-size:11px;" type="button"> <i class="bi bi-file-pdf-fill"></i> &ensp; PDF </button>
                                         </div>
-                                        <!-- <div class="col-lg-6 col-md-6 col-12 py-2">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered nowrap cursor text-center smallfnt">
-                                                    <thead class="bg-light">
-                                                        <tr>
-                                                            <th>Type</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Cash</td>
-                                                            <td>5000.00</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Bank</td>
-                                                            <td>5000.00</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>TMB</td>
-                                                            <td>5000.00</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table> 
-                                            </div>
-                                        </div> -->
                                         <form name="table_listing_form" method="post">
                                             <div class="col-sm-6 col-xl-8">
                                                 <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
@@ -153,13 +127,14 @@
                                         <table class="table table-bordered nowrap cursor text-center smallfnt" id="tbl_daybook_list">
                                             <thead class="bg-light">
                                                 <tr>
-                                                    <th colspan="7" class="text-center py-2 px-2">
+                                                    <th colspan="8" class="text-center py-2 px-2">
                                                         Daybook - <?php echo "( ".date('d-m-Y', strtotime($from_date)). "&nbsp;  to &nbsp; ".date('d-m-Y', strtotime($to_date))." )"; ?> <br>
                                                     </th>
                                                 </tr>
                                                 <tr>
                                                     <th>S.No</th>
                                                     <th>Date <br> Bill Number</th>
+                                                    <th>Bill Type</th>
                                                     <th>Name</th>
                                                     <th>Payment Type</th>
                                                     <th>Account</th>
@@ -168,31 +143,10 @@
                                                 </tr>
                                             </thead>
                                             <?php 
-                                            // print_r($total_records_list);
                                             $individual_record = array();
-                                            // if(!empty($total_records_list)){
-                                            //     foreach($total_records_list as $data){
-                                            //         $data['bill_number'] = $data['bill_number'];
-                                            //         $individual_record[] = array('bill_number' => $data['bill_number'],'bill_date' => $data['bill_date'],'agent_id' => $data['agent_id'],'party_id' => $data['party_id'],'payment_type' => $data['payment_type'],'amount' => $data['amount'],'type' => $data['type'],'bank_id' => $data['bank_id']);
-                                            //     }
-                                            // }
                                             if(!empty($total_records_list)) { 
                                                 ?>
                                                 <tbody>
-                                                    <!-- <tr>
-                                                        <td>01</td>
-                                                        <td>01-03-2025</td>
-                                                        <td>2025SOER</td>
-                                                        <td>Fathima</td>
-                                                        <td>5000.00</td>
-                                                        <td>5000.00</td>
-                                                    </tr>
-                                                    <tr class="fw-bold">
-                                                        <td colspan="4" class="text-end">Total</td>
-                                                        <td>5000.00</td>
-                                                        <td>5000.00</td>
-                                                    </tr> -->
-
                                                     <?php
                                                     $credit_amount = 0; $debit_amount = 0; $total =0; 
                                                     foreach($total_records_list as $val => $data) {
@@ -210,11 +164,18 @@
                                                                 echo date('d-m-Y', strtoTime($data['bill_date']));
                                                                 ?>
                                                             </td>
+                                                            <td  class="text-center px-2 py-2">
+                                                                <?php
+                                                                if(!empty($data['type'])) {
+                                                                    echo $data['type'];
+                                                                }
+                                                                ?>
+                                                            </td>
                                                             <td  class="text-center py-2 px-2">
                                                                 <?php
                                                                     if(!empty($data['party_name']) && $data['party_name'] != 'NULL')
                                                                     {
-                                                                        echo $obj->encode_decode("decrypt",$data['party_name']);
+                                                                        echo html_entity_decode($obj->encode_decode("decrypt",$data['party_name']));
                                                                     }
                                                                 ?>
                                                             </td>
@@ -257,7 +218,7 @@
                                                             </td>
                                                             <td  class="text-right px-2 py-2">
                                                                 <?php
-                                                                if(($data['type'] == "receipt" || $data['type'] == 'Purchase Entry')) {
+                                                                if(($data['type'] == "Receipt" || $data['type'] == 'Purchase Entry')) {
                                                                     if(!empty($data['amount'])) {
                                                                         
                                                                         $credit = explode(",",$data['amount']);
@@ -272,7 +233,7 @@
                                                                             }
                                                                         }  
                                                                     }
-                                                                }else if ($data['type'] == "purchase") {
+                                                                }else if ($data['type'] == "Purchase Entry") {
                                                                     if(!empty($data['amount'])) {
                                                                         echo $obj->numberFormat($data['amount'],2);
                                                                         $credit_amount += $data['amount'];
@@ -284,7 +245,7 @@
                                                             </td>
                                                             <td class="text-right px-2 py-2">
                                                                 <?php               
-                                                                if(($data['type'] == "voucher") || ($data['type'] == "expense") || ($data['type'] == 'Estimate')) {
+                                                                if(($data['type'] == "Voucher") || ($data['type'] == "Expense") || ($data['type'] == 'Estimate')) {
                                                                     if(!empty($data['amount'])) {
                                                                         $debit = explode(",",$data['amount']);
                                                                         for($i=0; $i < count($debit); $i++) {
@@ -301,19 +262,12 @@
                                                                         }  
                                                                     
                                                                     }
-                                                                }else if ($data['type'] == 'estimate') {
+                                                                }else if ($data['type'] == 'Estimate') {
                                                                     if(!empty($data['amount'])) {
                                                                         $amount = explode(",",$data['amount']);
                                                                         echo $obj->numberFormat(array_sum($amount), 2);
                                                                         $debit_amount += array_sum($amount);
                                                                     }
-                                                                }else if ($data['type'] == 'invoice') {
-                                                                        
-                                                                        if(!empty($data['amount'])) {
-                                                                            $amount = explode(",",$data['amount']);
-                                                                            echo $obj->numberFormat(array_sum($amount), 2);
-                                                                            $debit_amount += array_sum($amount);
-                                                                        }
                                                                 }else{
                                                                     echo "-";
                                                                 } ?>
@@ -349,12 +303,12 @@
                                                 ?>
                                                 <tfoot>
                                                     <tr>
-                                                        <th colspan="5" class="text-right py-2 px-2">Total</th>
+                                                        <th colspan="6" class="text-right py-2 px-2">Total</th>
                                                         <th class="sales_total text-right" ><?php if(!empty($credit_amount)){ echo $obj->numberFormat($credit_amount,2); } ?></th>
                                                         <th class="receipt_total text-right" ><?php if(!empty($debit_amount)){ echo $obj->numberFormat($debit_amount,2); } ?></th>
                                                     </tr>
                                                     <tr style="color:red;">
-                                                        <th class="text-center px-2 py-2" colspan="5" >Balance</th>
+                                                        <th class="text-center px-2 py-2" colspan="6" >Balance</th>
                                                         <td class="text-right py-2 px-2"><?php if($credit_amount > $debit_amount) { echo $obj->numberFormat(($credit_amount- $debit_amount),2)." Cr"; } ?>
                                                         <td  class="text-right px-2 py-2"> <?php if($debit_amount > $credit_amount){ 
                                                             $total_pending_amount = $debit_amount - $credit_amount; echo $obj->numberFormat($total_pending_amount,2)." Dr"; } ?></td>
@@ -364,7 +318,7 @@
                                                 <?php 
                                             } else { ?>
                                                 <tr>
-                                                    <td colspan="7" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
+                                                    <td colspan="8" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
                                                         No Records Found
                                                     </td>
                                                 </tr>

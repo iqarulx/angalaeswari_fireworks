@@ -84,9 +84,10 @@ include("../include_user_check.php");
         $starty = $pdf->GetY();
         $pdf->SetX(10);
         $pdf->Cell(10,10,'S.No.',1,0,'C',0);
-        $pdf->Cell(40,10,'Entry Number & Date',1,0,'C',0);
-        $pdf->Cell(60,10,'Party Name',1,0,'C',0);
-        $pdf->Cell(40,10,'Payment Mode',1,0,'C',0);
+        $pdf->Cell(30,10,'Entry Number & Date',1,0,'C',0);
+        $pdf->Cell(30,10,'Bill Type',1,0,'C',0);
+        $pdf->Cell(50,10,'Party Name',1,0,'C',0);
+        $pdf->Cell(30,10,'Payment Mode',1,0,'C',0);
         $pdf->Cell(20,10,'Credit',1,0,'C',0);
         $pdf->Cell(20,10,'Debit',1,1,'C',0);
         $pdf->SetFont('Arial','',7);
@@ -125,12 +126,13 @@ include("../include_user_check.php");
                     $pdf->SetFont('Arial', 'B', 9);
                     $starty = $pdf->GetY();
                     $pdf->SetX(10);
-                    $pdf->Cell(10, 10, 'S.No.', 1, 0, 'C', 0);
-                    $pdf->Cell(40, 10, 'Entry Number & Date', 1, 0, 'C', 0);
-                    $pdf->Cell(60, 10, 'Party Name', 1, 0, 'C', 0);
-                    $pdf->Cell(40, 10, 'Payment Mode', 1, 0, 'C', 0);
-                    $pdf->Cell(20, 10, 'Credit', 1, 0, 'C', 0);
-                    $pdf->Cell(20, 10, 'Debit', 1, 1, 'C', 0);
+                    $pdf->Cell(10,10,'S.No.',1,0,'C',0);
+                    $pdf->Cell(30,10,'Entry Number & Date',1,0,'C',0);
+                    $pdf->Cell(30,10,'Bill Type',1,0,'C',0);
+                    $pdf->Cell(50,10,'Party Name',1,0,'C',0);
+                    $pdf->Cell(30,10,'Payment Mode',1,0,'C',0);
+                    $pdf->Cell(20,10,'Credit',1,0,'C',0);
+                    $pdf->Cell(20,10,'Debit',1,1,'C',0);
                     $pdf->SetFont('Arial', '', 7);
                 }
                 $starty = $pdf->GetY();
@@ -143,39 +145,32 @@ include("../include_user_check.php");
                 $pdf->SetX(20);
                 if(!empty($data['bill_number'])) {
                     $bill_number = $data['bill_number'];
-                    $pdf->Cell(40,4,$bill_number,0,1,'C',0);
+                    $pdf->Cell(30,4,$bill_number,0,1,'C',0);
                 }
                 $pdf->SetX(20);
                 if(!empty($data['bill_date'])) {
                     $bill_date = date('d-m-Y', strtotime($data['bill_date'])); 
-                    $pdf->Cell(40,4,$bill_date,0,0,'C',0);
+                    $pdf->Cell(30,4,$bill_date,0,0,'C',0);
                 }
                 $bill_date_y = $pdf->getY();
                 $pdf->SetY($starty);
-                $pdf->SetX(20);
-                $pdf->Cell(40,8,'',0,0,'C',0);
+                $pdf->SetX(50);
+                $pdf->Cell(30,8,'',0,0,'C',0);
+                $pdf->SetX(50);
+                if(!empty($data['type'])) {
+                    $pdf->Cell(30,8,$data['type'],0,0,'C',0);
+                }
+               
                 if (!empty($data['party_name'])) {
-                //    $customer_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $data['party_id'], 'name_mobile_city');
                     if(!empty($data['party_name'])){ 
                         $name =html_entity_decode($obj->encode_decode('decrypt', $data['party_name'])); 
                     }
-                    
-                    // $pdf->SetX(60);
-                    // $pdf->MultiCell(60, 8, substr($name, 0, 50), 0, 'C', 0);
-                    $pdf->MultiCell(60, 8,$name, 0, 'C', 0);
+                    $pdf->MultiCell(50, 8,$name, 0, 'C', 0);
                 }
-                // if (!empty($data['agent_id'])) {
-                //     $customer_name ="";
-                //     $customer_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $data['agent_id'], 'name_mobile_city');
-                //     if(!empty($customer_name)){ 
-                //         $name =html_entity_decode($obj->encode_decode('decrypt', $customer_name)); 
-                //     }
-                //     $pdf->SetX(60);
-                //     $pdf->MultiCell(60, 8, substr($name, 0, 50), 0, 'C', 0);
-                // }
+               
                 else {
                     $pdf->SetX(60);
-                    $pdf->Cell(60, 8, ' - ', 0, 0, 'C', 0);
+                    $pdf->Cell(50, 8, ' - ', 0, 0, 'C', 0);
                 }
                 
                 $customer_name_y = $pdf->GetY();
@@ -208,16 +203,16 @@ include("../include_user_check.php");
                     }
                     
                    
-                    $pdf->SetX(120);
-                    $pdf->MultiCell(40, 8, $payment_bank_str ?: ' - ', 0,  'C', 0);
+                    $pdf->SetX(130);
+                    $pdf->MultiCell(30, 8, $payment_bank_str ?: ' - ', 0,  'C', 0);
                     
                 }else {
-                    $pdf->SetX(120);
-                    $pdf->MultiCell(40, 8, ' - ', 0,  'C', 0);
+                    $pdf->SetX(130);
+                    $pdf->MultiCell(30, 8, ' - ', 0,  'C', 0);
                 }
                 $pdf->SetY($starty);
                 if (!empty($data['type'])) {
-                    if ($data['type'] == "receipt" || $data['type'] == "Purchase Entry") {
+                    if ($data['type'] == "Receipt" || $data['type'] == "Purchase Entry") {
                         if (!empty($data['amount'])) {
                             $amount_credit = $data['amount'];
                             $amounts_credit = explode(",", $amount_credit);
@@ -234,7 +229,7 @@ include("../include_user_check.php");
                             $pdf->SetX(180);
                             $pdf->Cell(20, 8, '-', 0, 1, 'C', 0);
                         }
-                    }else if ($data['type'] == "voucher" || $data['type'] == "expense" || ($data['type'] == 'Estimate')) {
+                    }else if ($data['type'] == "Voucher" || $data['type'] == "Expense" || ($data['type'] == 'Estimate')) {
                         if (!empty($data['amount'])) {
                             $amount = $data['amount'];
                             $amounts = explode(",", $amount);
@@ -251,7 +246,7 @@ include("../include_user_check.php");
                             $pdf->SetX(180);
                             $pdf->Cell(20, 8, '-', 0, 1, 'C', 0);
                         }
-                    }else if ($data['type'] == 'estimate' || $data['type'] == 'invoice' || $data['type'] == 'quotation') {
+                    }else if ($data['type'] == 'estimate' || $data['type'] == 'quotation') {
                         if (!empty($data['amount'])) {
                             $amounts = explode(",", $data['amount']);
                             $total_amount = array_sum(array_map('floatval', $amounts));
@@ -279,9 +274,10 @@ include("../include_user_check.php");
                 // echo $final_end_y;
                 $pdf->SetY($starty);
                 $pdf->Cell(10,$final_end_y - $starty, '', 1, 0, 'C', 0);
-                $pdf->Cell(40,$final_end_y - $starty, '', 1, 0, 'C', 0);
-                $pdf->Cell(60,$final_end_y - $starty, '', 1, 0, 'C', 0);
-                $pdf->Cell(40,$final_end_y - $starty, '', 1, 0, 'C', 0);
+                $pdf->Cell(30,$final_end_y - $starty, '', 1, 0, 'C', 0);
+                $pdf->Cell(30,$final_end_y - $starty, '', 1, 0, 'C', 0);
+                $pdf->Cell(50,$final_end_y - $starty, '', 1, 0, 'C', 0);
+                $pdf->Cell(30,$final_end_y - $starty, '', 1, 0, 'C', 0);
                 $pdf->Cell(20,$final_end_y - $starty, '', 1, 0, 'C', 0);
                 $pdf->Cell(20,$final_end_y - $starty, '', 1, 1, 'C', 0);
 

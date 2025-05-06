@@ -71,17 +71,37 @@ if(isset($_REQUEST['get_limit_product'])) {
     
     if($product_group == 1){
         if($unit_type == '2') {
-            $limit = $obj->getCurrentStockSubUnit($GLOBALS['stock_by_godown_table'], $godown_id, $GLOBALS['null_value'], $product_id, $case_contains);
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
+            $outward = $obj->getOutwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
         } 
         else if($unit_type == '1') {
-            $limit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $godown_id, $GLOBALS['null_value'], $product_id, $case_contains);
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardQty('', $godown_id, '', $product_id, $case_contains);
+            $outward = $obj->getOutwardQty('', $godown_id, '', $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
         }
     }else if($product_group == 2){
         if($unit_type == '2') {
-            $limit = $obj->getCurrentStockSubUnit($GLOBALS['stock_by_magazine_table'], $GLOBALS['null_value'], $magazine_id, $product_id, $case_contains);
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardSubunitQty('', '', $magazine_id, $product_id, $case_contains);
+            $outward = $obj->getOutwardSubunitQty('', '', $magazine_id, $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
         } 
         else if($unit_type == '1') {
-            $limit = $obj->getCurrentStockUnit($GLOBALS['stock_by_magazine_table'], $GLOBALS['null_value'], $magazine_id, $product_id, $case_contains);
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardQty('', '', $magazine_id, $product_id, $case_contains);
+            $outward = $obj->getOutwardQty('', '', $magazine_id, $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
         }
     }
   

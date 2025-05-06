@@ -709,7 +709,7 @@
 			return $list;
 		}
 			
-		public function getMaterialTransferList($from_date, $to_date) {
+		public function getMaterialTransferList($from_date, $to_date , $show_bill) {
 			$list = array(); $select_query = ""; $where = "";
 			// $bill_company_id = $GLOBALS['bill_company_id'];
 
@@ -720,8 +720,7 @@
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
 					$where = $where." AND material_transfer_date >= '".$from_date."'";
-				}
-				else {
+				} else {
 					$where = "material_transfer_date >= '".$from_date."'";
 				}
 			}
@@ -729,21 +728,29 @@
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
 					$where = $where." AND material_transfer_date <= '".$to_date."'";
-				}
-				else {
+				} else {
 					$where = " material_transfer_date <='".$to_date."'";
 				}
 			}
-			
+
+			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-						$select_query = " SELECT * FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." AND deleted='0' ORDER BY
-						id DESC"; 
-				} else{ 
-						$select_query="SELECT * FROM " .$GLOBALS['material_transfer_table']." WHERE AND deleted='0' ORDER
-						BY id DESC"; } if(!empty($select_query)) { $list=$this->getQueryRecords($GLOBALS['material_transfer_table'],
-						$select_query);
+					$where = $where." AND deleted = '".$show_bill."' ";
+				} else {
+					$where = "deleted = '".$show_bill."' ";
 				}
-				return $list;
+			}
+			
+			if(!empty($where)) {
+				$select_query = " SELECT * FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." ORDER BY id DESC"; 
+			} else{ 
+				$select_query="SELECT * FROM " .$GLOBALS['material_transfer_table']." WHERE AND deleted='0' ORDER BY id DESC"; 
+			} 
+
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['material_transfer_table'], $select_query);
+			}
+			return $list;
 		}
 
 		public function getContractorProductUniqueIds($contractor_id, $product_id, $unit_type){
@@ -969,19 +976,24 @@
 			if(empty($cancel_bill_btn)) {
 				$cancel_bill_btn = 0;
 				if(!empty($where)) {
-					$where = $where." AND cancelled = '0'";
+					$where = $where." AND deleted = '0'";
+				} else {
+					$where = "deleted = '0'";
 				}
-				else {
-					$where = "cancelled = '0'";
+			} else {
+				if(!empty($where)) {
+					$where = $where." AND deleted = '1'";
+				} else {
+					$where = "deleted = '1'";
 				}
 			}
 			
 			if(!empty($where)) {
-				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." AND  deleted='0' ORDER BY id DESC";
-			} 
-			else{ 
-				$select_query="SELECT * FROM " .$GLOBALS['estimate_table']." WHERE  deleted='0'   ORDER BY id DESC"; 
+				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." ORDER BY id DESC";
+			} else { 
+				$select_query="SELECT * FROM " .$GLOBALS['estimate_table']." ORDER BY id DESC"; 
 			}
+
 			if(!empty($select_query)) { 
 				$list = $this->getQueryRecords($GLOBALS['estimate_table'],$select_query);
 			}

@@ -16,11 +16,15 @@ $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
 $entry_date = date('Y-m-d'); $bill_number = ""; $entry_date = date('Y-m-d');
 $contractor_id = ""; $magazine_id = ""; $contractor_name_mobile_city = ""; $dailyproduction_entry_number = "";
 $product_ids = array(); $product_names = array(); $unit_ids = array(); $unit_names = array(); $quantity = array();
- $total_amount = 0; $party_type = ""; $godown_id ="";
+$total_amount = 0; $party_type = ""; $godown_id ="";
 $daily_production_list = array();$factory_details =array();$factory_details1 =array(); $total_quantity = 0; $contractor_details = array();
 $party_details = array(); $outsourceparty_details = array(); $godown_details = array(); $godown_details = array(); 
- $quantity_values = array(); $company_name = "";  $magazine_details = array();
+$quantity_values = array(); $company_name = "";  $magazine_details = array();
 $case_contains = array();
+
+$company_logo = "";
+$company_logo = $obj->getTableColumnValue($GLOBALS['company_table'],'primary_company','1','logo');
+$cancelled = 0;
 
 if (!empty($view_daily_production_id)) {
     $daily_production_list = array();
@@ -105,6 +109,10 @@ if (!empty($view_daily_production_id)) {
                 $total_amount = $data['total_amount'];
             }
 
+            if(!empty($data['cancelled']) && $data['cancelled'] != $GLOBALS['null_value']) {
+                $cancelled = $data['cancelled'];
+            }
+
             if($contractor_details != "NULL" && !empty($contractor_details)){
                 $party_details = $contractor_details;
             }
@@ -145,6 +153,14 @@ $pdf->SetY(5);
 $pdf->Cell(0, 5, 'Daily Production Entry', 0, 0, 'C', 0);
 $pdf->SetFont('Arial', 'BI', 10);
 
+if($cancelled == '1') {
+    if(file_exists('../include/images/cancelled.jpg')) {
+        $pdf->SetAlpha(0.3);
+        $pdf->Image('../include/images/cancelled.jpg',40,80,70,30);
+        $pdf->SetAlpha(1);
+    }
+}
+
 $height = 0;
 $display = '';
 $y2 = $pdf->GetY();
@@ -165,6 +181,11 @@ if(!empty($company_details)) {
     }
 }
 
+if(!empty($company_logo)) {
+    if(file_exists('../include/images/upload/'.$company_logo)){
+        $pdf->Image('../include/images/upload/'.$company_logo,15,15,20,20);
+    }
+}
 
 $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
 $y1 = $pdf->GetY();

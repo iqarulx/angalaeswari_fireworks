@@ -111,7 +111,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-4 col-12 pb-3">
+                <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group pb-3">
                         <div class="form-label-group in-border mb-0">
                             <div class="w-100" style="display:none;">
@@ -729,7 +729,7 @@
                                 </td>
                                 <td> <?php
                                     if(!empty($data['name_mobile_city'])) {
-                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                        $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                         echo $data['name_mobile_city'];
                                     } ?>
                                     <div class="w-100 py-2">
@@ -811,7 +811,7 @@
                     $action = "supplier Deleted. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
                 }
                 $linked_count = 0;
-                // $linked_count = $obj->GetsupplierLinkedCount($delete_supplier_id); 
+                $linked_count = $obj->GetsupplierLinkedCount($delete_supplier_id); 
                 if(empty($linked_count)) {
                     $delete_id = $obj->DeletePayment($delete_supplier_id);	
                     $columns = array(); $values = array();			

@@ -12,13 +12,9 @@
         }
     }
     
-    
-    $from_date=""; $to_date="";
-    $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
-
+    $from_date=""; $to_date="";$current_date="";
+    $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');$current_date = date('Y-m-d');
     $party_list = array(); $party_count = 0;
-   
-
     $payment_mode_list = array(); 
     $payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '', '', '');
 
@@ -88,7 +84,7 @@
     if(!empty($company_list)){
         foreach($company_list as $data){
             if(!empty($data['name']) && $data['name'] != 'NULL'){
-                $company_name = $data['name'];
+                $company_name = html_entity_decode($data['name']);
             }
             if(!empty($data['address1']) && $data['address1'] != 'NULL'){
                 $address1 = $data['address1'];
@@ -136,7 +132,7 @@
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border">
-                                                    <input type="date" id="from_date" name="from_date" value="<?php if(!empty($from_date)) { echo $from_date; } ?>" onchange="Javascript:getOverallReport();checkDateCheck();"class="form-control shadow-none" placeholder="" required>
+                                                    <input type="date" id="from_date" name="from_date" value="<?php if(!empty($from_date)) { echo $from_date; } ?>" onchange="Javascript:getOverallReport();checkDateCheck();"class="form-control shadow-none" placeholder="" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                     <label>From Date</label>
                                                 </div>
                                             </div>
@@ -144,7 +140,7 @@
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border">
-                                                    <input type="date" id="to_date" name="to_date"  value="<?php if(!empty($to_date)) { echo $to_date; } ?>" onchange="Javascript:getOverallReport();checkDateCheck()" class="form-control shadow-none" placeholder="" required>
+                                                    <input type="date" id="to_date" name="to_date"  value="<?php if(!empty($to_date)) { echo $to_date; } ?>" onchange="Javascript:getOverallReport();checkDateCheck()" class="form-control shadow-none" placeholder="" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                     <label>To Date</label>
                                                 </div>
                                             </div>
@@ -153,12 +149,12 @@
                                             <div class="form-group">
                                                 <div class="form-label-group in-border mb-0">
                                                     <select class="select2 select2-danger" name="filter_bill_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getBillType(this.value);">
-                                                        <option value="">Select </option>
+                                                        <option value="">Select</option>
                                                         <option value="1" <?php if(!empty($filter_bill_type)){ if($filter_bill_type == '1'){ echo "selected"; } } ?>>Voucher</option>
                                                         <option value="2" <?php if(!empty($filter_bill_type)){ if($filter_bill_type == '2'){ echo "selected"; } } ?>>Receipt</option>
                                                         <option value="3" <?php if(!empty($filter_bill_type)){ if($filter_bill_type == '3'){ echo "selected"; } } ?>>Expense</option>
                                                     </select>
-                                                    <label>Select Bill Type</label>
+                                                    <label>Bill Type</label>
                                                 </div>
                                             </div>        
                                         </div> <?php 
@@ -167,7 +163,7 @@
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border mb-0">
                                                         <select class="select2 select2-danger" name="filter_party_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getPartyType(this.value);">
-                                                            <option value="">Select </option> <?php 
+                                                            <option value="">Select</option><?php 
                                                             if($filter_bill_type == "1") { ?>
                                                                 <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
@@ -181,7 +177,7 @@
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
                                                             } ?>
                                                         </select>
-                                                        <label>Select Party Type</label>
+                                                        <label>Party Type</label>
                                                     </div>
                                                 </div>        
                                             </div>
@@ -189,7 +185,7 @@
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border mb-0" id="party_list">
                                                         <select class="select2 select2-danger" name="filter_party_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport();">
-                                                            <option value="">Select Party Name</option> <?php
+                                                            <option value="">Select</option> <?php
                                                             if(!empty($party_list)) {
                                                                 foreach($party_list as $data) { 
                                                                     if(!empty($data['party_id']) && $data['party_id'] != "NULL") {
@@ -197,7 +193,7 @@
                                                                         <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>"<?php if(!empty($filter_party_id)){ if($filter_party_id == $data['party_id']){ echo "selected"; } } ?>> <?php
                                                                             if(!empty($data['party_name']) && $data['party_name'] != "NULL") {
                                                                                 $data['party_name'] = $obj->encode_decode('decrypt', $data['party_name']);
-                                                                                echo $data['party_name'];
+                                                                                echo html_entity_decode($data['party_name']);
                                                                                 if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
                                                                                     $data['mobile_number'] = $obj->encode_decode('decrypt', $data['mobile_number']);
                                                                                     echo " - ".$data['mobile_number'];
@@ -209,7 +205,7 @@
                                                                 }
                                                             } ?>
                                                         </select>
-                                                        <label>Select Party Name</label>
+                                                        <label>Party Name</label>
                                                     </div>
                                                 </div>        
                                             </div> <?php 
@@ -219,19 +215,19 @@
                                                 <div class="form-group">
                                                     <div class="form-label-group in-border mb-0">
                                                         <select class="select2 select2-danger" name="filter_category_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport();">
-                                                            <option value="">Select Category</option> <?php
+                                                            <option value="">Select</option> <?php
                                                             if(!empty($category_list)) {
                                                                 foreach($category_list as $data) { ?>
                                                                     <option value="<?php if(!empty($data['expense_category_id'])) { echo $data['expense_category_id']; } ?>"<?php if(!empty($filter_category_id)){ if($filter_category_id == $data['expense_category_id']){ echo "selected"; } } ?>> <?php
                                                                         if(!empty($data['expense_category_name'])) {
-                                                                            $data['expense_category_name'] = $obj->encode_decode('decrypt', $data['expense_category_name']);
+                                                                            $data['expense_category_name'] = html_entity_decode($obj->encode_decode('decrypt', $data['expense_category_name']));
                                                                             echo $data['expense_category_name'];
                                                                         } ?>
                                                                     </option> <?php
                                                                 }
                                                             } ?>
                                                         </select>
-                                                        <label>Select Category</label>
+                                                        <label>Category</label>
                                                     </div>
                                                 </div>        
                                             </div> <?php 
@@ -240,19 +236,19 @@
                                             <div class="form-group">
                                                 <div class="form-label-group in-border mb-0" id="payment_mode_list">
                                                     <select class="select2 select2-danger" name="filter_payment_mode_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport();">
-                                                        <option value="">Select Payment Mode</option> <?php
+                                                        <option value="">Select</option> <?php
                                                         if(!empty($payment_mode_list)) {
                                                             foreach($payment_mode_list as $data) { ?>
                                                                 <option value="<?php if(!empty($data['payment_mode_id'])) { echo $data['payment_mode_id']; } ?>"<?php if(!empty($filter_payment_mode_id)){ if($filter_payment_mode_id == $data['payment_mode_id']){ echo "selected"; } } ?>> <?php
                                                                     if(!empty($data['payment_mode_name'])) {
-                                                                        $data['payment_mode_name'] = $obj->encode_decode('decrypt', $data['payment_mode_name']);
+                                                                        $data['payment_mode_name'] = html_entity_decode($obj->encode_decode('decrypt', $data['payment_mode_name']));
                                                                         echo $data['payment_mode_name'];
                                                                     } ?>
                                                                 </option> <?php
                                                             }
                                                         } ?>
                                                     </select>
-                                                    <label>Select Payment Mode</label>
+                                                    <label>Payment Mode</label>
                                                 </div>
                                             </div>        
                                         </div>
@@ -260,7 +256,7 @@
                                             <div class="form-group">
                                                 <div class="form-label-group in-border mb-0" id="bank_list">
                                                     <select class="select2 select2-danger" name="filter_bank_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport(this.value);">
-                                                        <option value="">Select Bank Name</option> <?php
+                                                        <option value="">Select</option> <?php
                                                         if(!empty($bank_list)) {
                                                             foreach($bank_list as $data) { ?>
                                                                 <option value="<?php if(!empty($data['bank_id'])) { echo $data['bank_id']; } ?>"<?php if(!empty($filter_bank_id)){ if($filter_bank_id == $data['bank_id']){ echo "selected"; } } ?>> <?php
@@ -277,7 +273,7 @@
                                                             }
                                                         } ?>
                                                     </select>
-                                                    <label>Select Bank Name</label>
+                                                    <label>Bank Name</label>
                                                 </div>
                                             </div>        
                                         </div>
@@ -285,7 +281,7 @@
                                             <div class="ps-2 ">
                                                 <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>" target="_blank" > <i class="fa fa-print"></i> Print </a>
 
-                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>&from=D" target="_blank" > <i class="fa fa-print"></i> PDF </a>
+                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>&from=D" target="_blank" > <i class="fa fa-download"></i> PDF </a>
 
                                                 <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
                                             </div>
@@ -405,10 +401,7 @@
                                                                             </td>
                                                                             <td>
                                                                                 <?php 
-                                                                                    echo $obj->encode_decode('decrypt', $data['party_name']);
-                                                                                   
-    
-                                                                                    
+                                                                                    echo html_entity_decode($obj->encode_decode('decrypt', $data['party_name'])); 
                                                                                 ?>
                                                                             </td>
                                                                             <td class="">

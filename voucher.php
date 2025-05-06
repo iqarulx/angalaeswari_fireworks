@@ -78,13 +78,13 @@
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
                                                         <select name="filter_party_id" class="select2 select2-danger smallfnt" data-dropdown-css-class="select2-danger" onchange="Javascript:table_listing_records_filter();">
-                                                            <option value="">Select Party</option>
+                                                            <option value="">Select</option>
                                                             <?php
                                                             if(!empty($customer_list)) {
                                                                 foreach($customer_list as $data) { ?>
                                                                     <option value="<?php if(!empty($data['party_id'])) { echo $data['party_id']; } ?>"> <?php
                                                                         if(!empty($data['name_mobile_city'])) {
-                                                                            $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                            $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                                                             echo $data['name_mobile_city'];
                                                                         } ?>
                                                                     </option> <?php

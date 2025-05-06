@@ -1003,9 +1003,11 @@
         if(isset($_POST['magazine'])) {
             $magazine = $_POST['magazine'];
         }
-        
+        if(isset($_POST['show_bill'])) {
+            $show_bill = $_POST['show_bill'];
+        }
         $total_records_list = array();
-        $total_records_list = $obj->getMaterialTransferList($from_date, $to_date);
+        $total_records_list = $obj->getMaterialTransferList($from_date, $to_date, $show_bill);
 
         if(!empty($magazine)) {
             $magazine = strtolower($magazine);
@@ -1133,7 +1135,7 @@
                                                 $permission_action = $edit_action;
                                                 include('permission_action.php');
                                             }
-                                            if(empty($edit_access_error) && empty($list['cancelled'])) {
+                                            if(empty($edit_access_error) && empty($list['deleted'])) {
                                             ?> 
                                             <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
                                             <?php } ?>
@@ -1143,7 +1145,7 @@
                                                     $permission_action = $delete_action;
                                                     include('permission_action.php');
                                                 }
-                                                if(empty($delete_access_error) && empty($list['cancelled'])) {
+                                                if(empty($delete_access_error) && empty($list['deleted'])) {
                                             ?>     
                                         <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;Delete</a></li>
                                         <?php } ?>

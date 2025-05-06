@@ -1752,7 +1752,7 @@
                                 
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                        <br><span style="color: red;">Cancelled</span>
+                                        <span style="color: red;">Cancelled</span>
                                     <?php	
                                 }	 ?>
                             </td>

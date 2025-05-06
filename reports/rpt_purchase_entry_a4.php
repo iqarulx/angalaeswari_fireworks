@@ -262,11 +262,11 @@
                     $pdf->SetX(15);
                     if($i==0) {
                         $pdf->SetFont('Arial','B',8);
-                        $pdf->Cell(95,4,$supplier_details[$i],0,1,'L',0);
+                        $pdf->Cell(95,4,html_entity_decode($supplier_details[$i]),0,1,'L',0);
                         $pdf->Cell(0,1,'',0,1,'L',0);
                     }
                     else {
-                        $pdf->MultiCell(95,4,$supplier_details[$i],0,'L',0);
+                        $pdf->MultiCell(95,4,html_entity_decode($supplier_details[$i]),0,'L',0);
                         $pdf->Cell(0,1,'',0,1,'L',0);
                     }
                 }
@@ -930,16 +930,15 @@
 
                     $pdf->SetX(10);
                     $pdf->Cell(42,$get_final_Y - $get_total_y,'',1,0,'C',0);
-                    $pdf->Cell(15,$get_final_Y - $get_total_y,'',1,0,'C',0);
+                    $pdf->Cell(37,$get_final_Y - $get_total_y,'',1,0,'C',0);
 
-                    // $pdf->Cell(15,5,$total_quantity,1,0,'C',0);
                 }            
                 if(!empty($sub_total)) {
                     $sub_total_val = $obj->numberFormat($sub_total,2);
                     $pdf->SetY($get_final_Y);
-                    $pdf->SetX(67);
+                    $pdf->SetX(89);
                     $pdf->SetFont('Arial','B',8);
-                    $pdf->Cell(110,5,'Sub Total',1,0,'R',0);
+                    $pdf->Cell(88,5,'Sub Total',1,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(23,5,$sub_total_val,1,1,'R',0);
                 }
@@ -959,6 +958,7 @@
                             }
                             else {
                                 $other_charges_value = $other_charges_values[$i];
+                                $other_percentage = "Rs. ". $other_charges_values[$i];
                             }
                         
                             if(strpos($other_charges_values[$i], '%') !== false) {
@@ -1106,6 +1106,8 @@
                                 $other_charges_value = trim($other_charges_value);
                             }
                             else {
+                                $other_percentage = "Rs. ". $other_charges_values[$i];
+
                                 $other_charges_value = $other_charges_values[$i];
                             }
                         

@@ -235,6 +235,22 @@
                     }
                 }
             }
+
+            $ds_list = $obj->getTableRecords($GLOBALS['delivery_slip_table'], 'proforma_invoice_id', $proforma_invoice_id, '');
+
+            if(!empty($ds_list)) {
+                foreach($ds_list as $ds) {
+                    $ds_product_ids = explode(',', $ds['product_id']);
+                    $quantitys = explode(',', $ds['quantity']);
+                    if(!empty($ds_product_ids)) {
+                        for($i = 0; $i < count($ds_product_ids); $i++) {
+                            if(!empty($proforma_products[$ds_product_ids[$i]]['quantity'])) {
+                                $proforma_products[$ds_product_ids[$i]]['quantity'] = $proforma_products[$ds_product_ids[$i]]['quantity'] - $quantitys[$i];
+                            }
+                        }
+                    }
+                }
+            }
         }
         
     ?>
@@ -2034,7 +2050,7 @@
                                 
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                            <br><span style="color: red;">Cancelled</span>
+                                        <span style="color: red;">Cancelled</span>
                                     <?php	
                                 }	 ?>
                             </td>

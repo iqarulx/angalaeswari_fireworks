@@ -57,7 +57,6 @@
     $pdf->Cell(20,10,'State',1,1,'C');
     
     $start_y = $pdf->GetY();
-
     if(!empty($total_records_list)) {
         foreach($total_records_list as $key => $list) {
             if($pdf->GetY() > 260) {
@@ -101,7 +100,7 @@
                 $list['agent_name'] = html_entity_decode($obj->encode_decode('decrypt',$list['agent_name']));
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
-                $pdf->MultiCell(30,6,$list['agent_name'],0,'C');
+                $pdf->MultiCell(30,6,html_entity_decode($list['agent_name']),0,'C');
             }
             else {
                 $pdf->SetY($start_y);

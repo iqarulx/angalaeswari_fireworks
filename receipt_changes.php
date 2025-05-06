@@ -79,7 +79,7 @@
                                                         ?>
                                                             <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php  } ?>> <?php
                                                                 if(!empty($data['name_mobile_city'])) {
-                                                                    $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                    $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                                                     echo $data['name_mobile_city'];
                                                                 } ?>
                                                             </option>
@@ -88,7 +88,7 @@
                                                         ?>
                                                             <option value="<?php if(!empty($data['agent_id'])) { echo 'agent_' . $data['agent_id']; } ?>"  <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php  } ?>> <?php
                                                                 if(!empty($data['name_mobile_city'])) {
-                                                                    $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                    $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                                                     echo $data['name_mobile_city'];
                                                                 } ?>
                                                             </option>

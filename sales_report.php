@@ -11,13 +11,8 @@
             include("permission_check.php");
         }
     }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
-	<?php include "link_style_script.php"; 
-     $from_date = ""; $to_date = ""; 
+
+    $from_date = ""; $to_date = ""; 
     $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
     $total_records_list = $obj->getTableRecords($GLOBALS['estimate_table'], '', '', '');
     $excel_name = ""; $transport_id =""; $agent_id = "";
@@ -27,30 +22,29 @@
     //     $page_number = $_POST['page_number'];
     //     $page_limit = $_POST['page_limit'];
     //     $page_title = $_POST['page_title']; 
-       $customer_id = ""; $bill = "";
-        if(isset($_POST['from_date'])) {
-            $from_date = $_POST['from_date'];
-        }
-        if(isset($_POST['to_date'])) {
-            $to_date = $_POST['to_date'];
-        }
-        if(isset($_POST['customer_id'])) {
-            $customer_id = $_POST['customer_id'];
-        }
-        if(isset($_POST['filter_agent_id'])) {
-            $agent_id = $_POST['filter_agent_id'];
-        }
-        if(isset($_POST['transport_id'])) {
-            $transport_id = $_POST['transport_id'];
-        }
-        $cancel_bill_btn = "";
-        if(isset($_POST['cancel_bill_btn'])){
-           $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
-        }
-    
+    $customer_id = ""; $bill = "";
+    if(isset($_POST['from_date'])) {
+        $from_date = $_POST['from_date'];
+    }
+    if(isset($_POST['to_date'])) {
+        $to_date = $_POST['to_date'];
+    }
+    if(isset($_POST['customer_id'])) {
+        $customer_id = $_POST['customer_id'];
+    }
+    if(isset($_POST['filter_agent_id'])) {
+        $agent_id = $_POST['filter_agent_id'];
+    }
+    if(isset($_POST['transport_id'])) {
+        $transport_id = $_POST['transport_id'];
+    }
+    $cancel_bill_btn = "";
+    if(isset($_POST['cancel_bill_btn'])){
+        $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
+    }
         
-        $total_records_list = array();
-        $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn);
+    $total_records_list = array();
+    $total_records_list = $obj->getSalesReportList($from_date, $to_date, $customer_id, $agent_id, $transport_id,$cancel_bill_btn);
     // }
 
     $agent_list =array();
@@ -64,8 +58,12 @@
 
     $transport_list =array();
     $transport_list = $obj->getTableRecords($GLOBALS['transport_table'], '', '', '');
-
-    ?>
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<?php include "link_style_script.php"; ?>
 </head>	
 <body>
 <?php include "header.php"; ?>
@@ -158,7 +156,7 @@
                                             <div class="form-group mb-1">
                                                 <div class="flex-shrink-0">
                                                     <div class="form-check form-switch form-switch-right form-switch-md">
-                                                        <label for="FormSelectDefault" class="form-label text-muted smallfnt">Show Cancelled Bill Also</label>
+                                                        <label for="FormSelectDefault" class="form-label text-muted smallfnt">Show Cancelled Bill</label>
                                                         <input class="form-check-input" type="checkbox" name="cancel_bill_btn" <?php if($cancel_bill_btn == "1"){ ?> checked <?php } ?> id="FormSelectDefault"  value="0"  onChange='Javascript:show_cancelled_bill(this.checked);'>
                                                     </div>
                                                 </div>
@@ -208,7 +206,7 @@
                                                                 
                                                                 if (!empty($list['cancelled'])) {
                                                                     ?>
-                                                                    <br><span style="color: red;">Cancelled</span>
+                                                                    <span style="color: red;">Cancelled</span>
                                                                     <?php
                                                                 }?>
                                                             </td>

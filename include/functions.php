@@ -308,11 +308,11 @@
 			$list = $create_obj->getPurchaseList($from_date, $to_date,$search_text,$show_bill, $product_group);
 			return $list;
 		}
-		public function getMaterialTransferList($from_date, $to_date) {
+		public function getMaterialTransferList($from_date, $to_date, $show_bill) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$list = array();
-			$list = $create_obj->getMaterialTransferList($from_date, $to_date);
+			$list = $create_obj->getMaterialTransferList($from_date, $to_date, $show_bill);
 			return $list;
 		}	
 		public function getContractorProductUniqueIds($contractor_id, $product_id, $unit_type){
@@ -934,6 +934,27 @@
 			$create_obj = $this->creation_function_object();
 			$list = array();
 			$list = $create_obj->PaymentlinkedAgent($agent_id);
+			return $list;
+		}
+		public function GetInwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->GetInwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains);
+			return $list;
+		}
+		public function GetOutwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->GetOutwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains);
+			return $list;
+		}
+		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains);
 			return $list;
 		}
 	}

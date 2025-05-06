@@ -223,7 +223,6 @@ function DeleteRow(row_index, id_name) {
                 if (id_name == "product_row") {
                     var opening_stock_count = jQuery('.product_row').length;
                     if (opening_stock_count == 0) {
-
                         if (jQuery('#subunit_input').length > 0) {
                             jQuery('#subunit_input').val('');
                             jQuery('#subunit_input').attr('disabled', true);
@@ -232,6 +231,38 @@ function DeleteRow(row_index, id_name) {
                             jQuery('#subunit_need').attr('disabled', false);
                         }
                     }
+
+                    //    console.log(jQuery('.'+id_name).length);
+                    if (jQuery('.' + id_name).length == 0) {
+                        if (jQuery('#div_selected_unit').length > 0) {
+                            jQuery('#div_selected_unit').css({
+                                'pointer-events': 'auto',
+                                'background-color': ''
+                            });
+                        }
+
+                        if (jQuery('#div_selected_subunit').length > 0) {
+                            jQuery('#div_selected_subunit').css({
+                                'pointer-events': 'auto',
+                                'background-color': ''
+                            });
+                        }
+
+                        if (jQuery('#subunit_need').length > 0) {
+                            jQuery('#subunit_need').css({
+                                'pointer-events': 'auto',
+                                'background-color': ''
+                            });
+                        }
+
+                        if (jQuery('#negative_stock_button').length > 0) {
+                            jQuery('#negative_stock_button').css({
+                                'pointer-events': 'auto',
+                                'background-color': ''
+                            });
+                        }
+                    }
+
                 }
                 if (jQuery('.purchase_entry_table tbody').find('tr').length > 0) {
 
@@ -1636,18 +1667,18 @@ function AddPurchaseProducts() {
                                     location_type = $("select[name='location_type']").val();
                                     $("select[name='product_group']").attr("disabled", true)
                                     if (location_type == "1") {
-                                        if (product_group == "1") {
+                                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                             $("select[name='selected_godown_id']").attr("disabled", true)
-                                        }
-                                        else if (product_group == "2") {
+
+                                        } else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                             $("select[name='selected_magazine_id']").attr("disabled", true)
                                         }
                                     }
                                     else if (location_type == "2") {
-                                        if (product_group == "1") {
+                                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                             $("select[name='selected_godown_id']").attr("disabled", false)
                                         }
-                                        else if (product_group == "2") {
+                                        else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                             $("select[name='selected_magazine_id']").attr("disabled", false)
                                         }
                                     }

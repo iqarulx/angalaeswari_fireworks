@@ -538,7 +538,7 @@
                     $action = "Transport Deleted. Details - ".$obj->encode_decode('decrypt', $transport_name);
                 }
                 $linked_count = 0;
-                // $linked_count = $obj->GetAgentLinkedCount($delete_transport_id); 
+                $linked_count = $obj->GetTransportLinkedCount($delete_transport_id); 
                 if(empty($linked_count)) {
                     $columns = array(); $values = array();			
                     $columns = array('deleted');

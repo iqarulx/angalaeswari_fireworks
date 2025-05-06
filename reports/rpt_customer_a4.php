@@ -115,7 +115,7 @@
                 $list['customer_name'] = html_entity_decode($obj->encode_decode('decrypt',$list['customer_name']));
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
-                $pdf->MultiCell(25,6,$list['customer_name'],0,'C');
+                $pdf->MultiCell(25,6,html_entity_decode($list['customer_name']),0,'C');
             }
             else {
                 $pdf->SetY($start_y);

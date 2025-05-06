@@ -731,7 +731,7 @@
                                         <?php
                                         if(!empty($list['deleted'] =='1')) {
                                             ?>
-                                                    <br><span style="color: red;">Cancelled</span>
+                                                    <span style="color: red;">Cancelled</span>
                                             <?php	
                                         }	 
                                         ?>

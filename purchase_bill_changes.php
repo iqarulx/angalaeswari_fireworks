@@ -108,7 +108,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                                     <?php
                                         if(!empty($data['name_mobile_city'])) {
                                             $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                            echo $data['name_mobile_city'];
+                                            echo html_entity_decode($data['name_mobile_city']);
                                         }
                                     ?>
                                     </option>
@@ -149,7 +149,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                                 <?php
                                     if(!empty($data['name_mobile_city'])) {
                                         $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                        echo $data['name_mobile_city'];
+                                        echo html_entity_decode($data['name_mobile_city']);
                                     }
                                 ?>
                                 </option>
@@ -192,21 +192,21 @@ if(isset($_REQUEST['details_type'])) {
             foreach($details_list as $data) {
                 if($type == 'contractor') {
                     if(!empty($data[$type.'_name']) && $data[$type.'_name'] != $GLOBALS['null_value']) {
-                        $name = $obj->encode_decode('decrypt', $data[$type.'_name']);
+                        $name = html_entity_decode($obj->encode_decode('decrypt', $data[$type.'_name']));
                     }
                     if(!empty($data['mobile']) && $data['mobile'] != $GLOBALS['null_value']) {
                         $mobile_number = $obj->encode_decode('decrypt', $data['mobile']);
                     }
                     if(!empty($data['location']) && $data['location'] != $GLOBALS['null_value']) {
-                        $location = $obj->encode_decode('decrypt', $data['location']);
+                        $location = html_entity_decode($obj->encode_decode('decrypt', $data['location']));
                     }
                 }
                 else {
                     if(!empty($data[$type.'_name']) && $data[$type.'_name'] != $GLOBALS['null_value']) {
-                        $name = $obj->encode_decode('decrypt', $data[$type.'_name']);
+                        $name = html_entity_decode($obj->encode_decode('decrypt', $data[$type.'_name']));
                     }
                     if(!empty($data['address']) && $data['address'] != $GLOBALS['null_value']) {
-                        $address = $obj->encode_decode('decrypt', $data['address']);
+                        $address = html_entity_decode($obj->encode_decode('decrypt', $data['address']));
                     }
                     if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
                         $city = $obj->encode_decode('decrypt', $data['city']);
@@ -325,7 +325,7 @@ if(isset($_REQUEST['get_filter_party_list_voucher'])) {
                                     <?php
                                         if(!empty($data['name_mobile_city'])) {
                                             $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                            echo $data['name_mobile_city'];
+                                            echo html_entity_decode($data['name_mobile_city']);
                                         }
                                     ?>
                                     </option>
@@ -360,7 +360,7 @@ if(isset($_REQUEST['get_filter_party_list_voucher'])) {
                                 <?php
                                     if(!empty($data['name_mobile_city'])) {
                                         $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
-                                        echo $data['name_mobile_city'];
+                                        echo html_entity_decode($data['name_mobile_city']);
                                     }
                                 ?>
                                 </option>
@@ -557,7 +557,6 @@ if(isset($_REQUEST['party_type'])) {
                                         {
                                             $payment_mode =$obj->encode_decode("decrypt", $payment_mode_name[$i]);
                                         
-                                            // echo $data['credit'];
                                             if (!empty($data['credit']) || !empty($data['debit'])) {
                                                 $amounts= array();
                                                 if($data['bill_type'] == 'Receipt' || $data['bill_type'] == 'Daily Production'){

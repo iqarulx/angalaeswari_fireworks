@@ -170,7 +170,7 @@
                 $pdf->Cell(15,10,$index,0,0,'C',0);
                 
                 $pdf->SetX(25);
-                $pdf->Cell(85,10,html_entity_decode($obj->encode_decode('decrypt',$data['party_name']),ENT_QUOTES),0,0,'L',0); 
+                $pdf->Cell(85, 10, utf8_decode(html_entity_decode($obj->encode_decode('decrypt', $data['party_name']), ENT_QUOTES)), 0, 0, 'L', 0);
                 if(!empty($data['opening_balance']) && (!empty($data['opening_balance_type']) && $data['opening_balance_type'] == 'Credit') ) {
                     $credit_total = $credit_total + $data['opening_balance'];
                     $credit = $credit + $credit_total;
@@ -299,7 +299,7 @@
 
 
         if(!empty($party_name)) { 
-            $party_name = $obj->encode_decode('decrypt', $party_name);
+            $party_name = html_entity_decode($obj->encode_decode('decrypt', $party_name));
             $pdf->SetX(10);
             $pdf->Cell(0,5,'Customer Name - '.html_entity_decode($party_name,ENT_QUOTES),1,1,'C',0); 
         }
@@ -339,7 +339,7 @@
                     $pdf->SetX(10);
                     $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
                     if(!empty($party_name)) { 
-                        $party_name = $obj->encode_decode('decrypt', $party_name);
+                        $party_name = html_entity_decode($obj->encode_decode('decrypt', $party_name));
                         $pdf->SetX(10);
                         $pdf->Cell(0,5,'Customer Name - '.html_entity_decode($party_name,ENT_QUOTES),1,1,'C',0); 
                     }
@@ -415,7 +415,7 @@
 
                             $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
                             if(!empty($party_name)) { 
-                                $party_name = $obj->encode_decode('decrypt', $party_name);
+                                $party_name = html_entity_decode($obj->encode_decode('decrypt', $party_name));
                                 $pdf->SetX(10);
                                 $pdf->Cell(0,5,'Customer Name - '.html_entity_decode($party_name,ENT_QUOTES),1,1,'C',0); 
                             }

@@ -41,8 +41,7 @@
 <html lang="en">
 <head>
 	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
-	<?php 
-	include "link_style_script.php"; ?>
+	<?php include "link_style_script.php"; ?>
 </head>	
 <body>
 <?php include "header.php"; ?>

@@ -23,13 +23,18 @@ include("../include/number2words.php");
        $bill = $_REQUEST['bill'];
     }
 
+    $from = "";
+    if(isset($_REQUEST['from'])){
+       $from = $_REQUEST['from'];
+    }
+
     $cancel_bill_btn = "";
     if(isset($_REQUEST['cancel_bill_btn'])) {
         $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
     }
 
     $pdf_download_name ="";
-    $pdf_download_name = "Purchase Report PDF -"." (".$from_date ." to ".$to_date .")";
+    $pdf_download_name = "Purchase Report PDF -"." (".$from_date ." to ".$to_date .").pdf";
 
     $total_records_list = array();
     $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $filter_party_id,$cancel_bill_btn);
@@ -210,6 +215,8 @@ include("../include/number2words.php");
         ,10,number_format($grand_amount,2),1,1,'R',0);
     }
 
-    $pdf->Output('',$pdf_download_name . '.pdf');
+    // $pdf->Output('',$pdf_download_name . '.pdf');
+    $pdf->Output($from, $pdf_download_name);
+
 
 ?>

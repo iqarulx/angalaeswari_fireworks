@@ -18,8 +18,8 @@
 
         $purchase_entry_date = date('Y-m-d'); $current_date = date('Y-m-d');$purchase_entry_number = "";$gst_option = 0; $tax_type = 0; $tax_option = 0; $overall_tax = "";$purchase_godown_ids = "";
         $godown_ids = array();$brand_ids = array();$product_id = array(); $product_names = array();$cases = array();$piece_per_cases = array();$rate_per_piece = array();$rate_per_cases = array(); $product_amount = array();$discount = ""; $discount_value = "";$extra_charges = ""; $extra_charges_value = "";$hsn_codes=array(); $round_off = "";$total_amount = "";
-        $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array(); $product_group = ""; $location_type = ""; $location_id = array();
-        $cancelled = 0;
+        $purchase_entry_list = array();$godown_type ="";$purchase_godown_ids =""; $purchase_godown_names = "";$stockupdate = 0;$received_slip_id =""; $selected_rate =""; $selected_per =""; $per_type =array(); $unit_ids =array(); $unit_names=array(); $other_charges_id = array(); $charges_type = array(); $other_charges_value = array();  $product_tax =array(); $product_group = ""; $location_type = ""; $location_id = array(); $first_location_id = "";
+        $cancelled = 0; $content = array();
         $purchase_entry_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], 'purchase_entry_id', $show_purchase_entry_id, '');
         if(!empty($purchase_entry_list)) {
             foreach($purchase_entry_list as $data) {
@@ -36,7 +36,7 @@
                 if(!empty($data['godown_name']) && $data['godown_name'] != $GLOBALS['null_value']) {
                     $godown_name = $data['godown_name'];
                 }
-                
+            
                 if(!empty($data['supplier_id']) && $data['supplier_id'] != $GLOBALS['null_value']) {
                     $supplier_id = $data['supplier_id'];
                 }
@@ -71,6 +71,7 @@
                     $location_id = $data['location_id'];
                     $location_id = explode(",", $location_id);
                     $location_id = array_reverse($location_id);
+                    $first_location_id = $location_id[0];
                 }
                 if(!empty($data['location_name']) && $data['location_name'] != $GLOBALS['null_value']) {
                     $location_name = $data['location_name'];
@@ -140,7 +141,7 @@
                     $unit_type = explode(",", $unit_type);
                     $unit_type = array_reverse($unit_type);
                 }
-                if(!empty($data['content']) && $data['content'] != $GLOBALS['null_value']) {
+                if(!empty($data['content'])) {
                     $content = $data['content'];
                     $content = explode(",", $content);
                     $content = array_reverse($content);
@@ -215,11 +216,16 @@
 
         $godown_list = array(); $magazine_list = array();
         if(!empty($show_purchase_entry_id)){
-            if($product_group == "1" && $location_type == "1"){
+            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d" && $location_type == "1"){
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $location_id[0], '');
             }
-            else if($product_group == "2" && $location_type == "1"){
+            else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "1"){
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $location_id[0], '');
+            } else if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d" && $location_type == "2"){
+                $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '','', '');
+
+            } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "2"){
+                $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
             }
         }
         else{
@@ -304,7 +310,7 @@
                                 <?php 
                                 if(!empty($supplier_list)) {
                                     foreach($supplier_list as $supplier) { ?>
-                                        <option value="<?php echo $supplier['supplier_id']; ?>" <?php if(!empty($supplier_id) && $supplier_id == $supplier['supplier_id'] ||  ($supplier_count == '1')) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $supplier['supplier_name']); ?></option>
+                                        <option value="<?php echo $supplier['supplier_id']; ?>" <?php if(!empty($supplier_id) && $supplier_id == $supplier['supplier_id'] ||  ($supplier_count == '1')) { echo "selected"; } ?>><?php echo html_entity_decode($obj->encode_decode('decrypt', $supplier['supplier_name'])); ?></option>
                                 <?php } 
                                 } ?>
                             </select>
@@ -418,7 +424,7 @@
                                 <option value="">Select Godown</option>
                                 <?php if(!empty($godown_list)) {
                                     foreach($godown_list as $godown) { ?>
-                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($godown_id) && $godown_id == $godown['godown_id']  || (!empty($godown_count) && $godown_count == 1)) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
+                                        <option value="<?php echo $godown['godown_id']; ?>" <?php if(!empty($first_location_id) && ($location_type == '1') == $godown['godown_id']  || (!empty($godown_count) && $godown_count == 1)) { echo "selected"; } ?>><?php echo $obj->encode_decode('decrypt', $godown['godown_name']); ?></option>
                                 <?php }
                                 } ?>
                             </select>
@@ -441,6 +447,7 @@
                         </div>
                     </div>        
                 </div>
+
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -631,13 +638,14 @@
                                                $product_unit_id = ""; $product_subunit_id = "";
                                                $product_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'unit_id');
                                                $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'subunit_id');
-                                               
+                                                if(empty($content[$i]) || $content[$i] == $GLOBALS['null_value']){
+                                                        $content[$i] = "";
+                                                }
                                                 $inward_quantity = 0; $outward_quantity = 0;
                                                 $show_button = 0;
-                                                    
                                                     $inward_quantity = 0; $outward_quantity = 0;
                                                     if(!empty($location_id[$i])) {
-                                                        if($product_group == 1){
+                                                        if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                                                             if($unit_id[$i] == $product_unit_id){
                                                                 $inward_quantity = $obj->getInwardQty($show_purchase_entry_id, $location_id[$i], '', $product_id[$i], $content[$i]);
                                                                 $outward_quantity = $obj->getOutwardQty('',$location_id[$i],'', $product_id[$i], $content[$i]);
@@ -1054,7 +1062,7 @@
                                     }
                                 ?>
                                 <div class="dropdown">
-                                    <button class="btn btn-dark" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
@@ -1362,15 +1370,15 @@
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'product_name');
                     $product_names[$i] = $product_name;
 
-                    if($product_group == "1"){
+                    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                         $location_name = "";
                         $location_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_ids[$i], 'godown_name');
-                        $location_names[$i] = $location_name;
+                        $location_names[] = $location_name;
                     }
-                    else if($product_group == "2"){
+                    else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                         $location_name = "";
                         $location_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
-                        $location_names[$i] = $location_name;
+                        $location_names[] = $location_name;
                     }
                     // $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'unit_id');
                     $unit_ids[$i] = trim($unit_ids[$i]);
@@ -1388,10 +1396,10 @@
                             if(!empty($unit_types[$i])) {
                                 $contents[$i] = trim($contents[$i]);
                                 if(!empty($edit_id)) {
-                                    if($product_group == "1"){
+                                    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                                         $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $location_ids[$i],'',$product_ids[$i], $unit_ids[$i],$contents[$i]);
                                     }
-                                    else if($product_group == "2"){
+                                    else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                                         $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, '', $location_ids[$i],$product_ids[$i], $unit_ids[$i],$contents[$i]);
                                     }
                                 }
@@ -1729,7 +1737,7 @@
             {
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $subunit_need = 0; $product ="";
                 $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
-                if($product_group =='1'){
+                if($product_group =='4d5449774e4449774d6a55784d44557a4d444a664d444d3d' || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                     $inward_unit = $obj->getInwardQty($edit_id,$data['location_id'],'',$data['product_id'],$data['subunit_contains']);
                     $outward_unit = $obj->getOutwardQty('',$data['location_id'], '',$data['product_id'],$data['subunit_contains']);
                 }else{
@@ -1737,7 +1745,7 @@
                     $outward_unit = $obj->getOutwardQty('','', $data['location_id'],$data['product_id'],$data['subunit_contains']);
                 }
                 
-                if($product_group =='1'){
+                if($product_group =='4d5449774e4449774d6a55784d44557a4d444a664d444d3d' || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                     $inward_subunit = $obj->getInwardSubunitQty($edit_id,$data['location_id'],'',$data['product_id'],$data['subunit_contains']);
                     $outward_subunit = $obj->getOutwardSubunitQty('',$data['location_id'],'',$data['product_id'],$data['subunit_contains']); 
                 }else{
@@ -1860,13 +1868,13 @@
                       
                     // }
 
-                    if($product_group == "1"){
+                    if($product_group =='4d5449774e4449774d6a55784d44557a4d444a664d444d3d' || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                         $stock_unique_table = $GLOBALS['stock_by_godown_table'];
                         $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                         $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                         $stock_table_unique_id = $obj->getStockTablesUniqueID($stock_unique_table, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                     }
-                    else if($product_group == "2"){
+                    else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                         $stock_unique_table = $GLOBALS['stock_by_magazine_table'];
                         $current_stock_unit = $obj->getCurrentStockUnit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
                         $current_stock_subunit = $obj->getCurrentStockSubunit($stock_unique_table, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
@@ -2252,10 +2260,10 @@
                                 $unit_sub = $subunit_id;
                             }
 
-                            if($product_group == "1"){
+                            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['purchase_entry_table'], "In", $purchase_entry_id, '', $product_id[$i], $remarks, date('Y-m-d'), $location_id[$i], $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 1);
                             }
-                            else if($product_group == "2"){
+                            else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['purchase_entry_table'], "In", $purchase_entry_id, '', $product_id[$i], $remarks, date('Y-m-d'), $GLOBALS['null_value'] ,$location_id[$i], $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
                             }
                         }
@@ -2312,6 +2320,10 @@
                         $product_id = $data['product_id'];
                         $product_id = explode(",", $product_id);
                     }
+                    if(!empty($data['unit_id'])) {
+                        $unit_ids = $data['unit_id'];
+                        $unit_ids = explode(",", $unit_ids);
+                    }
                     if(!empty($data['content'])) {
                         $case_contains = $data['content'];
                         $case_contains = explode(",", $case_contains);
@@ -2323,30 +2335,32 @@
                 for($i=0; $i < count($product_id); $i++) {
                     if(!empty($product_id[$i])) {
                         $product_subunit_id = "";
-                        $product_subunit_id = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'subunit_id');
-                            $inward_quantity = 0; $outward_quantity = 0;$inward_subquantity = 0; $outward_subquantity = 0;
-                            if(!empty($godown_id[$i])) {
-                                if($unit_ids[$i] == $product_subunit_id){
-                                    $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardSubunitQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
-                                }else{
-                                    $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
-                                }    
-                            }
-                            else if(!empty($location_id[$i])) {
-                                if($unit_ids[$i] == $product_subunit_id){
-                                    $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, '', $location_id[$i], $product_id[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardSubunitQty('', '', $location_id[$i], $product_id[$i], $case_contains[$i]);
-                                }else{
-                                    $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, '', $location_id[$i], $product_id[$i], $case_contains[$i]);
-                                    $outward_quantity = $obj->getOutwardQty('', '', $location_id[$i], $product_id[$i], $case_contains[$i]);
-                                }    
-                            }
-                       
-                            if($inward_quantity < $outward_quantity) {
-                                $can_delete = 0;
-                            } 
+                        $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'subunit_id');
+                        if(empty($case_contains[$i]) || $case_contains[$i] == $GLOBALS['null_value']){
+                            $case_contains[$i] = "";
+                        }
+                        $inward_quantity = 0; $outward_quantity = 0;$inward_subquantity = 0; $outward_subquantity = 0;
+                        if(!empty($godown_id[$i])) {
+                            if($unit_ids[$i] == $product_subunit_id){
+                                $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardSubunitQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
+                            }else{
+                                $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
+                            }    
+                        } else if(!empty($location_id[$i])) {
+                            if($unit_ids[$i] == $product_subunit_id){
+                                $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, '', $location_id[$i], $product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardSubunitQty('', '', $location_id[$i], $product_id[$i], $case_contains[$i]);
+                            }else{
+                                $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, '', $location_id[$i], $product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardQty('', '', $location_id[$i], $product_id[$i], $case_contains[$i]);
+                            }    
+                        }
+                    
+                        if($inward_quantity < $outward_quantity) {
+                            $can_delete = 0;
+                        }
                     }
                 }
             }
@@ -2399,13 +2413,13 @@
                         }
                         $current_stock_unit = 0;
                         $current_stock_subunit = 0;
-                        if($product_group == "1"){
+                        if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                             $current_stock_unit = $obj->getCurrentStockUnit($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                             $current_stock_subunit = $obj->getCurrentStockSubunit($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                             $stock_table_unique_id = "";
                             $stock_table_unique_id = $obj->getStockTablesUniqueID($tables, $stock_godown_id, '', $stock_product_id, $stock_case_contains);
                         }
-                        else if($product_group == "2"){
+                        else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                             $current_stock_unit = $obj->getCurrentStockUnit($tables, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
                             $current_stock_subunit = $obj->getCurrentStockSubunit($tables, '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
                             $stock_table_unique_id = "";

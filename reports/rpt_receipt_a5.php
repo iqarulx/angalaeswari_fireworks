@@ -33,7 +33,7 @@ if(!empty($receipt_list)) {
             $party_id = $data['party_id'];
         }
         if(!empty($data['party_name']) && $data['party_name'] != $GLOBALS['null_value']) {
-            $party_name = $obj->encode_decode('decrypt', $data['party_name']);
+            $party_name = html_entity_decode($obj->encode_decode('decrypt', $data['party_name']));
         }
         if(!empty($data['narration']) && $data['narration'] != $GLOBALS['null_value']) {
             $narration = $obj->encode_decode('decrypt', $data['narration']);
@@ -79,7 +79,7 @@ if(!empty($party_list)) {
             $party_mobile_number = $obj->encode_decode('decrypt', $data['mobile_number']);
         }
         if(!empty($data['address']) && $data['address'] != $GLOBALS['null_value']) {
-            $party_address = $obj->encode_decode('decrypt', $data['address']);
+            $party_address = html_entity_decode($obj->encode_decode('decrypt', $data['address']));
             $party_address = str_replace("\r\n", " ", $party_address);
         }
         if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
@@ -118,7 +118,7 @@ $pdf->Cell(93,5,'To',0,1,'L');
 $pdf->SetTextColor(0,0,0);
 $pdf->SetFont('Arial','B',8);
 $pdf->SetX(20);
-$pdf->Cell(85,4,'Mr/Mrs. '.$party_name.',',0,1,'L');
+$pdf->Cell(85,4,'Mr/Mrs. '.html_entity_decode($party_name).',',0,1,'L');
 if(!empty($party_address)){
     $pdf->SetX(20);
     $pdf->MultiCell(85,4,$party_address.'.',0,'L');

@@ -73,7 +73,7 @@
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
                                                         <select name="filter_party_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:table_listing_records_filter();">
-                                                            <option value = "">Select Party</option>
+                                                            <option value = "">Select</option>
                                                             <?php
                                                                 if(!empty($party_list)) {
                                                                     foreach($party_list as $data) { 
@@ -81,7 +81,7 @@
                                                                             ?>
                                                                                 <option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>"> <?php
                                                                                     if(!empty($data['name_mobile_city'])) {
-                                                                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                                        $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                                                                         echo $data['name_mobile_city'];
                                                                                     } ?>
                                                                                 </option>
@@ -90,7 +90,7 @@
                                                                             ?>
                                                                                 <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>"> <?php
                                                                                     if(!empty($data['name_mobile_city'])) {
-                                                                                        $data['name_mobile_city'] = $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                                        $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
                                                                                         echo $data['name_mobile_city'];
                                                                                     } ?>
                                                                                 </option>
@@ -100,7 +100,7 @@
                                                                 } 
                                                             ?>
                                                         </select>
-                                                        <label>Select Party</label>
+                                                        <label>Party</label>
                                                     </div>
                                                 </div>        
                                             </div>

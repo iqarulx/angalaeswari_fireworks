@@ -25,11 +25,11 @@ $case_contains = array();  $group_id = ""; $group_name = "";
 
 $company_logo = "";
 $company_logo = $obj->getTableColumnValue($GLOBALS['company_table'],'primary_company','1','logo');
-
+$cancelled = 0;
 
 if (!empty($view_consumption_entry_id)) {
     $consumption_list = array();
-    $consumption_list = $obj->getTableRecords($GLOBALS['consumption_entry_table'], 'consumption_id', $view_consumption_entry_id, '');    
+    $consumption_list = $obj->getTableRecords($GLOBALS['consumption_entry_table'], 'consumption_id', $view_consumption_entry_id, '');
 
     if(!empty($consumption_list)) {
         foreach($consumption_list as $consumption_entry) {
@@ -94,6 +94,9 @@ if (!empty($view_consumption_entry_id)) {
                 $contractor_details = explode("$$$", $contractor_details);
             }
 
+            if(!empty($consumption_entry['cancelled'])) {
+                $cancelled = $consumption_entry['cancelled'];
+            }
 
             if(!empty($company_details)){
                 for($n=0;$n<count($company_details);$n++){
@@ -119,7 +122,13 @@ $pdf->Cell(0, 5, 'Consumption Entry', 0, 1, 'C', 0);
 $pdf->SetFont('Arial', 'BI', 10);
 $height = 0;
 
-
+if($cancelled == '1') {
+    if(file_exists('../include/images/cancelled.jpg')) {
+        $pdf->SetAlpha(0.3);
+        $pdf->Image('../include/images/cancelled.jpg',40,80,70,30);
+        $pdf->SetAlpha(1);
+    }
+}
 
 $y = $pdf->GetY(); 
 $pdf->SetFont('Arial','B',8);
@@ -157,9 +166,6 @@ if(!empty($company_logo)) {
         $pdf->Image('../include/images/upload/'.$company_logo,15,15,20,20);
     }
 }
-
-
-
 
 $pdf->SetY(10);
 $pdf->SetX(10);

@@ -22,7 +22,7 @@ if (isset($_REQUEST['view_material_transfer_id'])) {
     exit;
 }
 
-$material_transfer_date = date('Y-m-d'); $current_date = date('Y-m-d');$material_transfer_number = "";$from_godown_ids = "";$from_location = "";$to_godown_ids = "";$to_location = "";$product_ids = array();$product_names = array();$case_contains = array();$unit_id = array();$unit_names = array();$quantity = ""; $quantity_values = array(); $total_quantity = 0; $cancelled = ""; $unit_type = "";
+$material_transfer_date = date('Y-m-d'); $current_date = date('Y-m-d');$material_transfer_number = "";$from_godown_ids = "";$location = ""; $from_location = "";$to_godown_ids = "";$to_location = "";$product_ids = array();$product_names = array();$case_contains = array();$unit_id = array();$unit_names = array();$quantity = ""; $quantity_values = array(); $total_quantity = 0; $deleted = ""; $unit_type = "";
 $from_godown_name = ""; $to_godown_name = ""; $from_magazine_name = ""; $to_magazine_name = "";
 $total_unit = 0; $total_subunit = 0; $get_final_y =0; 
         
@@ -30,8 +30,8 @@ $total_unit = 0; $total_subunit = 0; $get_final_y =0;
 
 if (!empty($view_material_transfer_id)) {
     $material_transfer_list = array();
-    $material_transfer_list = $obj->getTableRecords($GLOBALS['material_transfer_table'], 'material_transfer_id', $view_material_transfer_id, '');
-            
+    $material_transfer_list = $obj->getAllRecords($GLOBALS['material_transfer_table'], 'material_transfer_id', $view_material_transfer_id);
+
     if(!empty($material_transfer_list)) {
         foreach($material_transfer_list as $data) {
             if(!empty($data['material_transfer_date'])) {
@@ -90,7 +90,7 @@ if (!empty($view_material_transfer_id)) {
             if(!empty($data['unit_type']) && $data['unit_type'] != $GLOBALS['null_value']) {
                 $unit_type = explode(",", $data['unit_type']);
             }
-            $cancelled = $data['cancelled'];
+            $deleted = $data['deleted'];
         }
     }
 
@@ -114,6 +114,13 @@ $pdf->Cell(0, 5, 'Material Transfer', 0, 1, 'C', 0);
 $pdf->SetFont('Arial', 'BI', 10);
 $height = 0;
 
+if($deleted == '1') {
+    if(file_exists('../include/images/cancelled.jpg')) {
+        $pdf->SetAlpha(0.3);
+        $pdf->Image('../include/images/cancelled.jpg',40,80,70,30);
+        $pdf->SetAlpha(1);
+    }
+}
 
 $y = $pdf->GetY(); 
 $pdf->SetFont('Arial','B',8);
@@ -392,10 +399,10 @@ if (!empty($view_material_transfer_id) && !empty($product_ids)) {
 
             $pdf->SetY($header_end);
 
-            if($cancelled == '1') {
-                if(file_exists('../include/images/cancelled.jpg')) {
+            if($deleted == '1') {
+                if(file_exists('../include/images/deleted.jpg')) {
                     $pdf->SetAlpha(0.3);
-                    $pdf->Image('../include/images/cancelled.jpg',45,110,125,70);
+                    $pdf->Image('../include/images/deleted.jpg',45,110,125,70);
                     $pdf->SetAlpha(1);
                 }
             }
@@ -676,10 +683,10 @@ if (($footer_height + $end_y) > 190) {
 
 
 
-    if($cancelled == '1') {
-        if(file_exists('../include/images/cancelled.jpg')) {
+    if($deleted == '1') {
+        if(file_exists('../include/images/deleted.jpg')) {
             $pdf->SetAlpha(0.3);
-            $pdf->Image('../include/images/cancelled.jpg',45,110,125,70);
+            $pdf->Image('../include/images/deleted.jpg',45,110,125,70);
             $pdf->SetAlpha(1);
         }
     }

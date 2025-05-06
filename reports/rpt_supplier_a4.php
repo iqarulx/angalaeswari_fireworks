@@ -102,9 +102,10 @@
 
             if(!empty($list['supplier_name'])) {
                 $list['supplier_name'] = html_entity_decode($obj->encode_decode('decrypt',$list['supplier_name']));
+              
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
-                $pdf->MultiCell(25,6,$list['supplier_name'],0,'C');
+                $pdf->MultiCell(25,6,html_entity_decode($list['supplier_name']),0,'C');
             }
             else {
                 $pdf->SetY($start_y);

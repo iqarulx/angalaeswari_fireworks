@@ -11,6 +11,10 @@
             include("permission_check.php");
         }
     }
+
+    $cancelled_bill = ""; $cancelled_count = 0;
+    $cancelled_bill = $obj->getAllRecords($GLOBALS['material_transfer_table'], 'deleted', 1);
+    $cancelled_count = count($cancelled_bill);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,10 +109,18 @@
                                                     <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
                                                 </div>
                                             <?php } ?>
+                                            <?php if(!empty($cancelled_count)) { ?>
+                                                <div class="row justify-content-end inactive_btn_row p-2">
+                                                    <div class="col-lg-4 col-6">
+                                                        <button class="btn btn-dark float-end" id='show_button' style="font-size:11px;" type="button" onclick="Javascript:assign_bill_value();">Show Inactive Bill</button>
+                                                    </div>
+                                                </div>
+                                            <?php } ?>
                                             <div class="col-sm-6 col-xl-8">
                                                 <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
                                                 <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
                                                 <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                                <input type="hidden" name='show_bill' value="0" id='show_bill'>
                                             </div>	
                                         </div>
                                     </div>

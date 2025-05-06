@@ -43,7 +43,7 @@
 
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
-        $total_records_list = $obj->getConsumptionQtyList($contractor_id);
+        $total_records_list = $obj->getConsumptionQtyList($group_id);
     }
     else if(!empty($product_id)) {
         if($subunit_hide == '1') {
@@ -149,25 +149,20 @@
                     $pdf->Cell(90,6,' - ',1,0,'C',0);
                 }
 
-                $consumption_qty = 0; $subunit_need = 0;
+                $consumption_qty = []; $subunit_need = 0;
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $consumption_qty = $obj->getConsumptionQtyByProduct($data['product_id'], $unit_type);
                 }
                 
-                
                 if(!empty($consumption_qty)) {
-                    $pdf->Cell(80,6, $consumption_qty,1,1,'R',0);
-                    $total_quantity += $consumption_qty;
+                    $pdf->Cell(80,6, $consumption_qty['quantity'] . " " . $consumption_qty['unit_name'],1,1,'R',0);
+                    $total_quantity += $consumption_qty['quantity'];
                 }
                 else {
                     $pdf->Cell(80,6,' - ',1,1,'R',0);
                 }
                 $s_no++;
             }
-
-            
-
-            
 
             $end_y = $pdf->GetY();
 
@@ -427,8 +422,6 @@
                     $party_name = $obj->encode_decode('decrypt', $party_name);
                     $pdf->MultiCell(35, 7, $party_name, 0, 'C', 0);
 
-                    
-                    
                 }
                 else {
                     $pdf->SetY($start_y);
@@ -469,13 +462,36 @@
             
                 $case_y = $pdf->GetY() - $start_y;
             
+                $unit_name = "";
+                if($unit_type == "Unit") {
+                    if(!empty($product_id)) {
+                        $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_id');
+
+                        if(!empty($unit_id)) {
+                            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                            if(!empty($unit_name)) {
+                                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                            }
+                        }
+                    }
+                } else {
+                    $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
+    
+                    if(!empty($unit_id)) {
+                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                        if(!empty($unit_name)) {
+                            $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                        }
+                    }
+                }
+
                 if($unit_type == "Unit") {
                     if($data['outward_unit'] != $GLOBALS['null_value']) {
                         $total_outward += $data['outward_unit'];
                         $outward = $data['outward_unit'];
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
-                        $pdf->MultiCell(30, 7, $outward , 0,  'R', 0);
+                        $pdf->MultiCell(30, 7, $outward . " " . $unit_name, 0,  'R', 0);
                     }else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
@@ -488,7 +504,7 @@
                         $outward_subunit = $data['outward_subunit'];
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
-                        $pdf->MultiCell(30, 7, $outward_subunit , 0,  'R', 0);
+                        $pdf->MultiCell(30, 7, $outward_subunit . " " . $unit_name, 0,  'R', 0);
                     }
                     else {
                         $pdf->SetY($start_y);

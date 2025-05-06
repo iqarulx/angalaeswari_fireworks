@@ -57,7 +57,7 @@ $from_date = ""; $to_date = "";
             $list = array();
             if(!empty($total_records_list)) {
                 foreach($total_records_list as $val) {
-                    if( (strpos($val['purchase_entry_number'], $bill) !== false) ) {
+                    if((strpos(strtolower($val['purchase_entry_number']), $bill) !== false) ) {
                         $list[] = $val;
                     }
                 }
@@ -100,7 +100,7 @@ $from_date = ""; $to_date = "";
                                         <div class="col-lg-2 col-md-3 col-12">
                                                 <div class="form-group pb-1">
                                                     <div class="form-label-group in-border pb-1">
-                                                    <input type="date" class="form-control shadow-none" placeholder="" required="" name="from_date" onchange="Javascript:getOverallReport();" value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                                    <input type="date" class="form-control shadow-none" placeholder="" required="" name="from_date" onchange="Javascript:getOverallReport();checkDateCheck();"  value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                         <label>From Date</label>
                                                     </div>
                                                 </div> 
@@ -108,7 +108,7 @@ $from_date = ""; $to_date = "";
                                             <div class="col-lg-2 col-md-3 col-12">
                                                 <div class="form-group pb-1">
                                                     <div class="form-label-group in-border pb-1">
-                                                        <input type="date" class="form-control shadow-none" placeholder="" required="" name="to_date" onchange="Javascript:getOverallReport();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                                        <input type="date" class="form-control shadow-none" placeholder="" required="" name="to_date" onchange="Javascript:getOverallReport();checkDateCheck();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                         <label>To Date</label>
                                                     </div>
                                                 </div> 
@@ -123,15 +123,27 @@ $from_date = ""; $to_date = "";
                                                 </div>
                                             </div>
                                         </div>   
-                                        <div class="col-lg-3 col-6 text-end">
+                                        <!-- <div class="col-lg-3 col-6 text-end">
                                             <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_purchase_report_a4.php?filter_party_id=<?php if(!empty($supplier_id)) { echo $supplier_id; } ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&bill=<?php if(!empty($bill)) { echo $bill; }?>&cancel_bill_btn=<?php echo $cancel_bill_btn; ?>')"> <i class="fa fa-print"></i> Print </button>
                                             <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Export </button>  
                                         </div> 
-                                            <div class="col-sm-6 col-xl-8">
-                                                <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
-                                                <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
-                                                <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
-                                            </div>	
+                                        <div class="col-sm-6 col-xl-8">
+                                            <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
+                                            <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
+                                            <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                        </div>	 -->
+                                        <div class="row p-2">   
+                                        <div class="col-lg-12 col-6 text-end">
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_purchase_report_a4.php?filter_party_id=<?php if(!empty($supplier_id)) { echo $supplier_id; } ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&bill=<?php if(!empty($bill)) { echo $bill; }?>&cancel_bill_btn=<?php echo $cancel_bill_btn; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_purchase_report_a4.php?filter_party_id=<?php if(!empty($supplier_id)) { echo $supplier_id; } ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&bill=<?php if(!empty($bill)) { echo $bill; }?>&cancel_bill_btn=<?php echo $cancel_bill_btn; ?>&from=D')"> <i class="fa fa-print"></i> PDF </button>
+                                            <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Export </button>  
+                                            </div> 
+                                                <div class="col-sm-6 col-xl-8">
+                                                    <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
+                                                    <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
+                                                    <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                                </div>	
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -163,7 +175,7 @@ $from_date = ""; $to_date = "";
                                                                 } 
                                                                 if (!empty($list['cancelled'])) {
                                                                     ?>
-                                                                    <br><span style="color: red;">Cancelled</span>
+                                                                    <span style="color: red;">Cancelled</span>
                                                                     <?php
                                                                 }
                                                                ?>

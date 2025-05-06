@@ -12,6 +12,7 @@
             include("permission_check.php");
         }
     }
+
     $product_id = ""; $group_id = ""; $godown_id = ""; $unit_type = ""; $stock_type = "Consumption Entry"; $case_contains = "";
     
     if(!empty($login_user_factory_id)) {
@@ -85,7 +86,7 @@
 
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
-        $total_records_list = $obj->getConsumptionQtyList($contractor_id);
+        $total_records_list = $obj->getConsumptionQtyList($group_id);
     } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
@@ -122,7 +123,10 @@
                                 </div>
                                 
                             </div>
+
                             <div class="row px-2 mx-0 mt-3">
+                            <?php if(!empty($product_id)) { ?>
+
                                 <div class="col-lg-2 col-md-4 col-6">
                                     <div class="form-group mb-1">
                                         <div class="form-label-group in-border pb-2">
@@ -150,6 +154,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php } ?>
                                 <?php if(empty($product_id)) { ?>
                                 <div class="col-lg-2 col-md-4 col-6">
                                     <div class="form-group mb-1">
@@ -312,12 +317,12 @@
                                                                     </th>
                                                                     <th>
                                                                         <?php
-                                                                            $consumption_qty = 0; $subunit_need = 0;
+                                                                            $consumption_qty = []; $subunit_need = 0;
                                                                             if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                                                                                 $consumption_qty = $obj->getConsumptionQtyByProduct($data['product_id'], $unit_type);
                                                                             }
-                                                                            echo $consumption_qty;
-                                                                            $total_quantity += $consumption_qty;
+                                                                            echo $consumption_qty['quantity'] . " " . $consumption_qty['unit_name'];
+                                                                            $total_quantity += $consumption_qty['quantity'];
                                                                         ?>
                                                                     </th>
                                                                 </tr>
@@ -469,16 +474,39 @@
                                                                     <?php } ?>
                                                                     <th>
                                                                         <?php
+                                                                            $unit_name = "";
+                                                                            if($unit_type == "Unit") {
+                                                                                if(!empty($product_id)) {
+                                                                                    $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_id');
+
+                                                                                    if(!empty($unit_id)) {
+                                                                                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                                                                                        if(!empty($unit_name)) {
+                                                                                            $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            } else {
+                                                                                $unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
+                                                                
+                                                                                if(!empty($unit_id)) {
+                                                                                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                                                                                    if(!empty($unit_name)) {
+                                                                                        $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                                                                                    }
+                                                                                }
+                                                                            }
+
                                                                             if($unit_type == "Unit") {
                                                                                 if($data['outward_unit'] != $GLOBALS['null_value']) {
                                                                                     $total_outward += $data['outward_unit'];
-                                                                                    echo $data['outward_unit'];
+                                                                                    echo $data['outward_unit'] . " " . $unit_name;
                                                                                 }
                                                                             }
                                                                             else if($unit_type == "Subunit") {
                                                                                 if($data['outward_subunit'] != $GLOBALS['null_value']) {
                                                                                     $total_outward += $data['outward_subunit'];
-                                                                                    echo $data['outward_subunit'];
+                                                                                    echo $data['outward_subunit'] . " " . $unit_name;
                                                                                 }
                                                                             }
                                                                         ?>

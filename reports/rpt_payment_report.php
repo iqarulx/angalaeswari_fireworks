@@ -3,7 +3,9 @@
     include("../include_user_check.php");
     
     $from = "";
-    
+    if(isset($_REQUEST['from'])) {
+        $from = $_REQUEST['from'];
+    }
     $payment_mode_list = array(); 
     $payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '', '', '');
 
@@ -59,6 +61,7 @@
     $payment_list =array();
     $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id);
 
+   
     if(!empty($from_date)){
         $from_date = date('d-m-Y', strtotime($from_date));
     }
@@ -261,7 +264,7 @@
             $party_type_y = $pdf->GetY() - $start_y;
 
             if(!empty($data['party_name'] && $data['party_name'] != $GLOBALS['null_value'])){
-                $party_name =$obj->encode_decode('decrypt',$data['party_name']);
+                $party_name =html_entity_decode($obj->encode_decode('decrypt',$data['party_name']));
                 if(!empty($party_name)) {
                     // $pdf->SetTextColor(10, 51, 147);
                     $pdf->SetY($start_y);

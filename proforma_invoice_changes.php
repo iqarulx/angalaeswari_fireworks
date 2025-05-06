@@ -144,19 +144,16 @@
                     if(!empty($pi['other_charges_id'])) {
                         $other_charges_id = $pi['other_charges_id'];
                         $other_charges_id = explode(",", $other_charges_id);
-                        $other_charges_id = array_reverse($other_charges_id);
                         $charges_count = count($other_charges_id);
                     }      
             
                     if(!empty($pi['charges_type'])) {
                         $charges_type = $pi['charges_type'];
                         $charges_type = explode(",", $charges_type);
-                        $charges_type = array_reverse($charges_type);
                     } 
                     if(!empty($pi['other_charges_value'])) {
                         $other_charges_value = $pi['other_charges_value'];
                         $other_charges_value = explode(",", $other_charges_value);
-                        $other_charges_value = array_reverse($other_charges_value);
                     }    
                     if(!empty($pi['agent_commission'])) {
                         $agent_commission = $pi['agent_commission'];
@@ -1111,17 +1108,14 @@
 
         if(isset($_POST['other_charges_id'])) {
             $other_charges_id = $_POST['other_charges_id'];
-            $other_charges_id = array_reverse($other_charges_id);
         }
 
         if(isset($_POST['charges_type'])) {
             $charges_type = $_POST['charges_type'];
-            $charges_type = array_reverse($charges_type);
         }   
         
         if(isset($_POST['other_charges_value'])) {
             $other_charges_values = $_POST['other_charges_value'];
-            $other_charges_values = array_reverse($other_charges_values);
         }   
 
         if(isset($_POST['agent_commission'])) {
@@ -1777,7 +1771,7 @@
                                 
                                 if(!empty($list['cancelled'])) {
                                     ?>
-                                    <br><span style="color: red;">Cancelled</span>
+                                    <span style="color: red;">Cancelled</span>
                                     <?php	
                                 } ?>
                             </td>
@@ -1800,11 +1794,15 @@
                                                     }
                                                     echo ") / ";
                                                     echo "(";
-                                                    if(!empty($status_list['total_stock_unit'])) {
-                                                        echo $status_list['total_stock_unit'];
-                                                    }
-                                                    if(!empty($status_list['total_stock_sub_unit'])) {
-                                                        echo " + " . $status_list['total_stock_sub_unit'];
+                                                    if(!empty($status_list['total_stock_unit']) && !empty($status_list['total_stock_sub_unit'])) {
+                                                        if(!empty($status_list['total_stock_unit'])) {
+                                                            echo $status_list['total_stock_unit'];
+                                                        }
+                                                        if(!empty($status_list['total_stock_sub_unit'])) {
+                                                            echo " + " . $status_list['total_stock_sub_unit'];
+                                                        }
+                                                    } else {
+                                                        echo "0";
                                                     }
                                                     echo ")";
                                                 ?>
@@ -1816,7 +1814,7 @@
                                                         }
                                                         if(!empty($status_list['unit_name'])) {
                                                             echo " " . $status_list['unit_name'];
-                                                        }
+                                                        }   
                                                         if(!empty($status_list['total_sub_unit'])) {
                                                             echo " + " . $status_list['total_sub_unit'];
                                                         }
@@ -1824,18 +1822,23 @@
                                                             echo " " . $status_list['sub_unit_name'];
                                                         }
                                                         echo " ) / (";
-                                                        if(!empty($status_list['total_stock_unit'])) {
-                                                            echo $status_list['total_stock_unit'];
+                                                        if(!empty($status_list['total_stock_unit']) && !empty($status_list['total_stock_sub_unit'])) {
+                                                            if(!empty($status_list['total_stock_unit'])) {
+                                                                echo $status_list['total_stock_unit'];
+                                                            }
+                                                            if(!empty($status_list['stock_unit_name'])) {
+                                                                echo " " . $status_list['stock_unit_name'];
+                                                            }
+                                                            if(!empty($status_list['total_stock_sub_unit'])) {
+                                                                echo " + " . $status_list['total_stock_sub_unit'];
+                                                            }
+                                                            if(!empty($status_list['stock_sub_unit_name'])) {
+                                                                echo " " . $status_list['stock_sub_unit_name'];
+                                                            }
+                                                        } else {
+                                                            echo "0";
                                                         }
-                                                        if(!empty($status_list['stock_unit_name'])) {
-                                                            echo " " . $status_list['stock_unit_name'];
-                                                        }
-                                                        if(!empty($status_list['total_stock_sub_unit'])) {
-                                                            echo " + " . $status_list['total_stock_sub_unit'];
-                                                        }
-                                                        if(!empty($status_list['stock_sub_unit_name'])) {
-                                                            echo " " . $status_list['stock_sub_unit_name'];
-                                                        }
+                                                        
                                                         echo " )";
                                                     ?>
                                                 </div>
