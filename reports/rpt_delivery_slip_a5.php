@@ -276,7 +276,7 @@
             $customer_details[$i] = trim($customer_details[$i]);
             if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                 $pdf->SetX(20);
-                $pdf->Cell(40,5,$customer_details[$i],0,1,'L',0);
+                $pdf->Cell(40,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
             }
         }
     }
@@ -285,7 +285,7 @@
     $pdf->SetY($header_end);
     $pdf->SetX(80);
     $pdf->Cell(20,10,'Bill Date',0,0,'L',0);
-    $pdf->Cell(30,10,":  ".$delivery_slip_date,0,1,'L',0);
+    $pdf->Cell(30,10,":  ".$proforma_invoice_date,0,1,'L',0);
     $pdf->SetX(80);
     $pdf->Cell(20,10,'Bill No',0,0,'L',0);
     $pdf->Cell(30,10,":  ".$delivery_slip_number,0,1,'L',0);
@@ -321,7 +321,7 @@
     $y_axis=$pdf->GetY();
 
     $index = 0;
-    $total_unit = $total_subunit = $purchase_subtotal = 0; $total_cal_y = 0;
+    $total_unit = $total_subunit = $purchase_subtotal = 0; $total_cal_y = 0; $unit_name_array = []; $sub_unit_name_array = [];
 
     for($i = 0; $i < count( $product_ids); $i++) {
         if($pdf->GetY() >= 190){
@@ -395,7 +395,7 @@
                     $customer_details[$i] = trim($customer_details[$i]);
                     if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                         $pdf->SetX(20);
-                        $pdf->Cell(40,5,$customer_details[$i],0,1,'L',0);
+                        $pdf->Cell(40,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
                     }
                 }
             }
@@ -404,7 +404,7 @@
             $pdf->SetY($header_end);
             $pdf->SetX(80);
             $pdf->Cell(20,10,'Bill Date',0,0,'L',0);
-            $pdf->Cell(30,10,":  ".$delivery_slip_date,0,1,'L',0);
+            $pdf->Cell(30,10,":  ".$proforma_invoice_date,0,1,'L',0);
             $pdf->SetX(80);
             $pdf->Cell(20,10,'Bill No',0,0,'L',0);
             $pdf->Cell(30,10,":  ".$delivery_slip_number,0,1,'L',0);
@@ -446,9 +446,11 @@
             foreach($product_list as $p_list) {
                 if(!empty($p_list['unit_name'])) {
                     $unit_name = $obj->encode_decode('decrypt', $p_list['unit_name']);
+                    $unit_name_array[] = $unit_name;
                 }
                 if(!empty($p_list['subunit_name']) && $p_list['subunit_name'] != $GLOBALS['null_value']) {
                     $subunit_name = $obj->encode_decode('decrypt',$p_list['subunit_name']);
+                    $sub_unit_name_array[] = $unit_name;
                 }
             }
         }
@@ -472,9 +474,30 @@
     $pdf->SetFont('Arial','B',8);
     $pdf->SetX(10);
     $pdf->Cell(85,10,'Total',1,0,'R',0);
-    $pdf->Cell(45 ,10,$total_unit.' Unit '. $total_subunit . ' Subunit',1,1,'C',0);
+
+    $total_display = "";
+    if(!empty($total_unit)) {
+        $total_display = $total_unit;
+        if(!empty($unit_name_array)) {
+            $unique_unit_names = array_unique($unit_name_array);
+            if(count($unique_unit_names) == 1) {
+                $total_display .= " " . $unique_unit_names[0];
+            }
+        }
+    }
+
+    if(!empty($total_subunit)) {
+        $total_display .= $total_subunit;
+        if(!empty($sub_unit_name_array)) {
+            $unique_sub_unit_names = array_unique($sub_unit_name_array);
+            if(count($unique_sub_unit_names) == 1) {
+                $total_display .= " " . $unique_sub_unit_names[0];
+            }
+        }
+    }
 
 
+    $pdf->Cell(45 ,10, $total_display ,1,1,'C',0);
     
-    $pdf->Output('',$pdf_download_name . '.pdf');
+    $pdf->Output('', $pdf_download_name . '.pdf');
 ?>

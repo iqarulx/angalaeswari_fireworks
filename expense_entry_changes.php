@@ -194,10 +194,6 @@
                             searchField.focus();
                         }
                     });
-                });
-            </script>
-            <script type="text/javascript">     
-                jQuery(document).ready(function(){
                     jQuery('input[name="selected_amount"]').on("keypress", function(e) {
                         if (e.keyCode == 13) {
                             if(jQuery('.add_payment_button').length > 0) {

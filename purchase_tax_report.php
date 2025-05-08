@@ -756,38 +756,31 @@
         </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
-    $(document).ready(function(){
+
+<script type="text/javascript" src="include/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        if(jQuery('.date_field').length > 0) {
+            jQuery('.date_field').datepicker({
+                format: "dd-mm-yyyy",
+                autoclose: true,
+                startDate: "<?php if(!empty($prev_date)) { echo $prev_date; } ?>",
+                endDate: "today"
+            });
+        }
         $("#purchasetax_report").addClass("active");
         table_listing_records_filter();
     });
-</script>
-
-
-<script type="text/javascript">
+    
     function getOverallReport(){
         if(jQuery('form[name="purchase_tax_report_form"]').length > 0){
                 jQuery('form[name="purchase_tax_report_form"]').submit();
         }
         
     }
-</script>
-<script type="text/javascript" src="include/js/bootstrap-datepicker.min.js"></script>
-<script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
-<script type="text/javascript">
-    jQuery(document).ready(function(){
-        if(jQuery('.date_field').length > 0) {
-        jQuery('.date_field').datepicker({
-            format: "dd-mm-yyyy",
-            autoclose: true,
-            startDate: "<?php if(!empty($prev_date)) { echo $prev_date; } ?>",
-            endDate: "today"
-        });
-        }
-    }); 
-</script>
 
-<script>
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_purchase_tax_list');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

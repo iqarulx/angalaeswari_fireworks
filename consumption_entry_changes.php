@@ -319,7 +319,7 @@
                                                         </td>
                                                         <td class="text-center px-2 py-2">
                                                         <?php
-                                                            $negative_stock_allowed = "";
+                                                            /* $negative_stock_allowed = "";
                                                             $negative_stock_allowed = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'negative_stock');
                                                             $inward_quantity = 0; $outward_quantity = 0;
                                                              if(!empty($consumption_content[$i]) && $consumption_content[$i] != $GLOBALS['null_value']){ 
@@ -340,13 +340,13 @@
                                                                 $show_button = 1;
                                                             }
                                                             // if($inward_quantity >= $outward_quantity) {
-                                                            if($show_button == '1') { ?>
+                                                            if($show_button == '1') { */?>
                                                                 <button class="btn btn-danger" type="button" onclick="Javascript:DeleteConsumptionRow('<?php echo $product_count; ?>', 'product_row');">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
-                                                            <?php } else { ?>
+                                                            <?php /* } else { ?>
                                                                 <span class="text-danger" style="font-weight:bold!important;">Can't Delete</span>
-                                                           <?php } ?>
+                                                           <?php } */ ?>
                                                         </td>
                                                     </tr>
                                                 <?php
@@ -383,11 +383,8 @@
                     calQtyTotal();
                     GetStockProduct();
                     getGodownType('<?php if(!empty($godown_type)){ echo $godown_type; } ?>');
-
                     <?php } ?>
-
                 });
-           
             </script>
         </form>
 		<?php
@@ -1162,7 +1159,7 @@
         <?php
         if(!empty($unit_id) && $unit_id != $GLOBALS['null_value']) {
             ?>
-                <option value="<?php echo $unit_id; ?>" selected>
+                <option value="<?php echo $unit_id; ?>" <?php if($subunit_need == 0) { ?> selected <?php } ?>>
                     <?php
                         if(!empty($unit_name) && $unit_name != $GLOBALS['null_value']) {
                             echo $unit_name;

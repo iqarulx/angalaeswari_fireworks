@@ -1326,19 +1326,14 @@ class Stock_functions extends Basic_Functions
 
         if(!empty($profroma_list)) {
             $product_ids = array();
-            $sub_unit_needs = array();
             $quantitys = array();
             $unit_types = array();
             $unit_ids = array();
             $contents = array();
-            $ds_product_ids = array();
 
             foreach($profroma_list as $data) {
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_ids = explode(',', $data['product_id']);
-                }
-                if(!empty($data['sub_unit_need']) && $data['sub_unit_need'] != $GLOBALS['null_value']) {
-                    $sub_unit_needs = explode(',', $data['sub_unit_need']);
                 }
                 if(!empty($data['content']) && $data['content'] != $GLOBALS['null_value']) {
                     $contents = explode(',', $data['content']);
@@ -1362,34 +1357,51 @@ class Stock_functions extends Basic_Functions
 
                 $stock_unit_arrays = array();
                 $stock_sub_unit_arrays = array();
+                $stock_product_array = array();
 
                 for($i = 0; $i < count($product_ids); $i++) {
-                    $current_stock = array();
+                    $current_stock = 0;
                     $current_stock_unit = 0;
                     $current_stock_sub_unit = 0;
-                    if(!empty($sub_unit_needs[$i])) {
-                        $current_stock = $this->getCurrentStockDetails($product_ids[$i], $contents[$i]);
+                    
+                    $sub_unit_need = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'subunit_need');
+
+                    if(!empty($sub_unit_need) && isset($contents[$i])) {
+                        $inward_unit = 0; $outward_unit = 0;
+                        $inward_unit = $this->getInwardQty('', '', '', $product_ids[$i], $contents[$i]);
+                        $outward_unit = $this->getOutwardQty('', '', '', $product_ids[$i], $contents[$i]);
+                        $current_stock = $inward_unit - $outward_unit;
                     } else {
-                        $current_stock = $this->getCurrentStockDetails($product_ids[$i], '');
+                        $inward_unit = 0; $outward_unit = 0;
+                        $inward_unit = $this->getInwardQty('', '', '', $product_ids[$i], '');
+                        $outward_unit = $this->getOutwardQty('', '', '', $product_ids[$i], '');
+                        $current_stock = $inward_unit - $outward_unit;
                     }
 
-                    if(!empty($current_stock)) {
-                        foreach($current_stock as $data) {
-                            if(!empty($data['current_stock_unit']) && $data['current_stock_unit'] != $GLOBALS['null_value']) {
-                                $current_stock_unit += $data['current_stock_unit'];
-                            }
-                            if(!empty($data['current_stock_subunit']) && $data['current_stock_subunit'] != $GLOBALS['null_value']) {
-                                $current_stock_sub_unit += $data['current_stock_subunit'];
-                            }
+                    $unit_id = "";
+                    $sub_unit_id = "";
+                    $product_list = $this->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
 
-                            if(!empty($data['unit_id']) && $data['unit_id'] != $GLOBALS['null_value']) {
-                                $stock_unit_arrays[] = $data['unit_id'];
+                    if(!empty($product_list)) {
+                        foreach($product_list as $product) {
+                            if(!empty($product['unit_id'])) {
+                                $unit_id = $product['unit_id'];
                             }
-                            if(!empty($data['subunit_id']) && $data['subunit_id'] != $GLOBALS['null_value']) {
-                                $stock_sub_unit_arrays[] = $data['subunit_id'];
+                            if(!empty($product['subunit_need']) && !empty($product['subunit_id'])) {
+                                $sub_unit_id = $product['subunit_id'];
                             }
                         }
                     }
+
+                    if(!empty($current_stock)) {
+                        $point_before_value = floor($current_stock);
+                        $point_after_value = $current_stock - $point_before_value;
+                        $current_stock_unit = $point_before_value;
+                        $current_stock_sub_unit = round($point_after_value * 100);
+                    }
+
+                    $stock_unit_arrays[] = $unit_id;
+                    $stock_sub_unit_arrays[] = $sub_unit_id;
                   
                     if(!empty($unit_types[$i]) && $unit_types[$i] == "1") {
                         $total_unit += $quantitys[$i];
@@ -1397,11 +1409,12 @@ class Stock_functions extends Basic_Functions
                         $total_subunit += $quantitys[$i];
                     }
 
-                    $total_stock_unit += $current_stock_unit;
-                    $total_stock_sub_unit += $current_stock_sub_unit;
+                    if(!isset($stock_product_array[$product_ids[$i]])) {
+                        $total_stock_unit += $current_stock_unit;
+                        $total_stock_sub_unit += $current_stock_sub_unit;
+                    }
+                    $stock_product_array[$product_ids[$i]] = $product_ids[$i];
                 }
-
-                
 
                 /** Find out only one unit exists */
                 $unit_name = "";
@@ -1465,6 +1478,44 @@ class Stock_functions extends Basic_Functions
         return [];
     }
 
+
+    public function getStockReportByMagazine($product_id, $case_contains) {
+        $list = array(); $where = "";
+        
+        if(!empty($product_id)) {
+            $where = " product_id = '" . $product_id . "' AND";
+        }
+
+        if(!empty($case_contains)) {
+            $where .= " case_contains = '" . $case_contains . "' AND";
+        }
+
+        if(!empty($product_id)) {
+            $select_query = "SELECT magazine_id, SUM(inward_unit) as inward, SUM(outward_unit) as outward, SUM(inward_subunit) as inward_sub, SUM(outward_subunit) as outward_sub FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " (godown_id = 'NULL' OR godown_id = '') AND deleted = '0' GROUP BY magazine_id";
+
+            $records = $this->getQueryRecords('', $select_query);
+
+            if(!empty($records)) {
+                foreach($records as $record) {
+                    $current_stock_unit = 0;
+                    $current_stock_unit = $record['inward'] - $record['outward'];
+
+                    $point_before_value = floor($current_stock_unit);
+                    $point_after_value = $current_stock_unit - $point_before_value;
+                    $current_stock_unit = $point_before_value;
+                    $current_stock_sub_unit = round($point_after_value * 100);
+
+                    $list[] = [
+                        "magazine_id" => $record['magazine_id'],
+                        "current_stock_unit" => $current_stock_unit,
+                        "current_stock_sub_unit" => $current_stock_sub_unit,
+                    ];
+                }
+            }
+        }
+
+        return $list;
+    }
 }
 
 ?>

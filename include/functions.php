@@ -950,11 +950,18 @@
 			$list = $report_obj->GetOutwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains);
 			return $list;
 		}
-		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains, $screen) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains);
+			$list = $report_obj->getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains, $screen);
+			return $list;
+		}
+		public function getStockReportByMagazine($product_id, $case_contains) {
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$list = array();
+			$list = $stock_obj->getStockReportByMagazine($product_id, $case_contains);
 			return $list;
 		}
 	}

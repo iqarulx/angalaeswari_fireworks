@@ -55,7 +55,7 @@
         // }  
         $role_list = array();
         $role_list = $obj->getTableRecords($GLOBALS['role_table'], '', '', '');
-?>
+    ?>
         <form class="poppins pd-20 redirection_form" name="user_form" method="POST">
 			<div class="card-header">
 				<div class="row p-2">
@@ -201,7 +201,7 @@
             <script src="include/select2/js/select2.min.js"></script>
             <script src="include/select2/js/select.js"></script>
         </form>
-		<?php
+	<?php
     } 
     
     if(isset($_POST['name'])) {	
@@ -217,8 +217,7 @@
                 $admin = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $edit_id, 'admin');
                 if(empty($admin)) {
                     $type = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $edit_id, 'type');
-                }
-                else {
+                } else {
                     $type = $GLOBALS['admin_user_type'];
                 }
             }
@@ -228,8 +227,7 @@
         $name = trim($name);
         if(!empty($name) && strlen($name) > 25) {
             $name_error = "Only 25 characters allowed";
-        }
-        else {
+        } else {
             $name_error = $valid->valid_company_name($name,'name','1');
         }
         if(empty($name_error) && empty($edit_id)) {
@@ -262,15 +260,13 @@
         $username = trim($username);
         if(!empty($username) && strlen($username) > 25) {
             $username_error = "Only 25 digits allowed";
-        }
-        else {
+        } else {
             $username_error = $valid->valid_company_name($username,'user ID','1');
         }        
         if(!empty($username_error)) {
             if(!empty($valid_user)) {
                 $valid_user = $valid_user." ".$valid->error_display($form_name, "username", $username_error, 'text');
-            }
-            else {
+            } else {
                 $valid_user = $valid->error_display($form_name, "username", $username_error, 'text');
             }
         }
@@ -285,15 +281,13 @@
                 if(!preg_match("/^\d+$/", $role_unique_id)) {
                     $role_id_error = "Invalid role";
                 }
-            }
-            else {
+            } else {
                 $role_id_error = "Select the role";
             }
             if(!empty($role_id_error)) {
                 if(!empty($valid_user)) {
                     $valid_user = $valid_user." ".$valid->error_display($form_name, "role_id", $role_id_error, 'select');
-                }
-                else {
+                } else {
                     $valid_user = $valid->error_display($form_name, "role_id", $role_id_error, 'select');
                 }
             }
@@ -302,30 +296,27 @@
         $password = trim($password);
         if(strpos($password," ") == true) {
             $password_error = "Password should not contain spaces";
-        }
-        else if(strlen($password) > 20) {
+        } else if(strlen($password) > 20) {
             $password_error = "Only 20 digits allowed(recommended)";
-        }
-        else {
+        } else {
             $password_error = $valid->valid_password($password, "Password", "1");
         }        
         if(!empty($password_error)) {
             if(!empty($valid_user)) {
                 $valid_user = $valid_user." ".$valid->error_display($form_name, "password", $password_error, 'input_group');
-            }
-            else {
+            } else {
                 $valid_user = $valid->error_display($form_name, "password", $password_error, 'input_group');
             }
         }  
-        if($type == $GLOBALS['godown_user_type']) {
-            $user_access_pages_list = $GLOBALS['godown_access_pages_list']; 
-        }
-        else if($type == $GLOBALS['magazine_user_type']) {
-            $user_access_pages_list = $GLOBALS['magazine_access_pages_list']; 
-        }
-        else {
+        // if($type == $GLOBALS['godown_user_type']) {
+        //     $user_access_pages_list = $GLOBALS['godown_access_pages_list']; 
+        // }
+        // else if($type == $GLOBALS['magazine_user_type']) {
+        //     $user_access_pages_list = $GLOBALS['magazine_access_pages_list']; 
+        // }
+        // else {
             $user_access_pages_list = $GLOBALS['access_pages_list']; 
-        }
+        // }
         
         $module_selected = 0;
 		if(!empty($user_access_pages_list)) {
@@ -416,8 +407,7 @@
                         $factory_unique_id = $obj->getTableColumnValue($GLOBALS['factory_table'], 'factory_id', $factory_id, 'id');
                         $godown_unique_id = $obj->getTableColumnValue($GLOBALS['godown_table'], 'factory_id', $factory_id, 'id');
                         $magazine_unique_id = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'factory_id', $factory_id, 'id');
-                    }
-                    else {
+                    } else {
                         if(!empty($godown_id) && $godown_id != $GLOBALS['null_value']) {
                             $godown_unique_id = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $godown_id, 'id');
                         }
@@ -481,8 +471,7 @@
                 }
                 if(!empty($access_page_actions)) {
                     $access_page_actions = implode(",", $access_page_actions);
-                }
-                else {
+                } else {
                     $access_page_actions = $GLOBALS['null_value'];
                 }
                 if(!empty($name_mobile)) {
@@ -526,12 +515,10 @@
                         $user_insert_id = $obj->InsertSQL($GLOBALS['user_table'], $columns, $values, 'user_id', '', $action);
                         if(preg_match("/^\d+$/", $user_insert_id)) {								
                             $result = array('number' => '1', 'msg' => 'User Successfully Created');
-                        }
-                        else {
+                        } else {
                             $result = array('number' => '2', 'msg' => $user_insert_id);
                         }
-                    }
-                    else {
+                    } else {
                         $result = array('number' => '2', 'msg' => $user_error);
                     }
                 }
@@ -633,6 +620,7 @@
         }
         echo $result; exit;
     }
+
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number'];
 		$page_limit = $_POST['page_limit'];
@@ -711,10 +699,10 @@
                 <?php
                 if(!empty($show_records_list)) { 
                     foreach($show_records_list as $key => $data) {
-                            $index = $key + 1;
-                            if(!empty($prefix)) { $index = $index + $prefix; } 
-                            $incharger = ""; $role_name = "";
-                             ?>
+                        $index = $key + 1;
+                        if(!empty($prefix)) { $index = $index + $prefix; } 
+                        $incharger = ""; $role_name = "";
+                    ?>
                         <tr>
                             <td style="cursor:default;"><?php echo $index; ?></td>
                             <td>
@@ -739,29 +727,29 @@
                                     }
                                 ?>
                             </td>
-                            <?php if(!empty($data['admin']) || $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
+                            <?php // if(!empty($data['admin']) || $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']) { ?>
                                 <td>
                                     <div class="dropdown">
                                         <a href="#" role="button" id="dropdownMenuLink1" class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                            <?php if($data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
+                                            <?php // if($data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
                                 
                                                 <li> <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['user_id'])) { echo $data['user_id']; } ?>');"><i class="fa fa-pencil" aria-hidden="true"></i> &ensp;Edit</a></li>
-                                            <?php  } ?>
-                                            <?php if(empty($data['admin']) && $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
+                                            <?php  // } ?>
+                                            <?php /* if(empty($data['admin']) && $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ */ if(!empty($data['type']) && $data['type'] != "Super Admin" && $data['factory_id'] == $GLOBALS['null_value'] && $data['godown_id'] == $GLOBALS['null_value'] && $data['magazine_id'] == $GLOBALS['null_value']){ ?>
                                                 <li> <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['user_id'])) { echo $data['user_id']; } ?>');"><i class="fa fa-trash" aria-hidden="true"></i> &ensp;Delete </a></li>
-                                             <?php  } ?>
+                                             <?php } ?>
                                         </ul>
                                     </div> 
                                 </td>
-                                <?php } ?>
+                            <?php // } ?>
                         </tr>
-                        <?php 
-                    } 
-                }  
-                else {   ?>
+                    <?php 
+                    }
+                } else {   
+                    ?>
                         <tr>
                             <td colspan="3" class="text-center">Sorry! No records found</td>
                         </tr>
@@ -769,8 +757,7 @@
                 } 
                 ?>
             </tbody>
-        </table>   
-                      
+        </table>        
 		<?php	
 	}
 
@@ -812,4 +799,4 @@
         echo $msg;
         exit;	
     }
-    ?>
+?>

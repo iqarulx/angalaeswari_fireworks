@@ -334,25 +334,19 @@
         </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
-    $(document).ready(function(){
-        $("#daybookreport").addClass("active");
-        table_listing_records_filter();
-    });
-</script>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
 <script>
     $(document).ready(function(){
-        $("#daybook").addClass("active");
+        $("#daybookledgerreport").addClass("active");
         table_listing_records_filter();
     });
+    
     function getReport(){
         if(jQuery('form[name="daybook_report_form"]').length > 0){
             jQuery('form[name="daybook_report_form"]').submit();
         } 
     }
-</script>
-<script>
+    
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_daybook_list');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

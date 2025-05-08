@@ -18,13 +18,13 @@
     $cancelled_bill = $obj->getAllRecords($GLOBALS['proforma_invoice_table'], 'deleted', 1);
     $cancelled_count = count($cancelled_bill);
 
-    $customer_list =array();
+    $customer_list = array();
     $customer_list = $obj->getCustomerList();
 
-    $agent_list =array();
+    $agent_list = array();
     $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'','','');
 
-    $transport_list =array();
+    $transport_list = array();
     $transport_list = $obj->getTableRecords($GLOBALS['transport_table'],'','','');
 
 ?>
@@ -184,18 +184,14 @@
                                             }
                                             if(empty($add_access_error)) { 
                                         ?>
-                                            <div class="col-lg-2 col-md-2 col-6 text-end">
-                                                <button class="btn btn-danger m-1 " style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>   
+                                            <div class="col-lg-12 col-md-2 col-6 text-end">
+                                                <?php if(!empty($cancelled_count)) { ?>
+                                                    <button class="btn btn-dark m-1" id='show_button' style="font-size:11px;" type="button" onclick="Javascript:assign_bill_value();">Show Inactive Bill</button>
+                                                <?php } ?>
+                                                <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="openPdf();"> <i class="fa fa-print"></i> Print </button>
+                                                <button class="btn btn-danger m-1 " style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
                                             </div>
                                         <?php } ?>
-
-                                        <div class="row justify-content-end inactive_btn_row p-2">
-                                            <?php if(!empty($cancelled_count)) { ?>
-                                                <div class="col-lg-2 col-6">
-                                                    <button class="btn btn-dark float-end" id='show_button' style="font-size:11px;" type="button" onclick="Javascript:assign_bill_value();">Show Inactive Bill</button>
-                                                </div>
-                                            <?php } ?>
-                                        </div>
                                         <form name="table_listing_form" method="post">
                                             <div class="col-sm-6 col-xl-8">
                                                 <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
@@ -221,4 +217,40 @@
         $("#proformainvoice").addClass("active");
         table_listing_records_filter();
     });
+
+    function openPdf() {
+        var from_date = "";
+        var to_date = "";
+        var agent_id = "";
+        var customer_id = "";
+        var transport_id = "";
+        var search_text = "";
+        var show_bill = "";
+
+        if(jQuery('input[name="from_date"]').length > 0) {
+            from_date = jQuery('input[name="from_date"]').val();
+        }
+        if(jQuery('input[name="to_date"]').length > 0) {
+            to_date = jQuery('input[name="to_date"]').val();
+        }
+        if(jQuery('select[name="agent_id"]').length > 0) {
+            agent_id = jQuery('select[name="agent_id"]').val();
+        }
+        if(jQuery('select[name="customer_id"]').length > 0) {
+            customer_id = jQuery('select[name="customer_id"]').val();
+        }
+        if(jQuery('select[name="transport_id"]').length > 0) {
+            transport_id = jQuery('select[name="transport_id"]').val();
+        }
+        if(jQuery('input[name="search_text"]').length > 0) {
+            search_text = jQuery('input[name="search_text"]').val();
+        }
+        if(jQuery('input[name="show_bill"]').length > 0) {
+            show_bill = jQuery('input[name="show_bill"]').val();
+        }
+
+        var url = "reports/rpt_proforma_invoice_listing.php?from_date=" + encodeURIComponent(from_date) + "&to_date=" + encodeURIComponent(to_date) + "&agent_id=" + encodeURIComponent(agent_id) + "&customer_id=" + encodeURIComponent(customer_id) + "&transport_id=" + encodeURIComponent(transport_id) + "&search_text=" + encodeURIComponent(search_text) + "&show_bill=" + encodeURIComponent(show_bill);
+
+        window.open(url);
+    }
 </script>

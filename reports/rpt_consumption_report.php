@@ -1,7 +1,5 @@
 <?php
-
 	include("../include_user_check.php");
-
     
     $product_id = ""; $group_id = ""; $godown_id = ""; $unit_type = ""; $stock_type = "Consumption Entry"; $case_contains = "";
     $contractor_id = ""; $from = "";
@@ -44,8 +42,7 @@
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
         $total_records_list = $obj->getConsumptionQtyList($group_id);
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
@@ -92,7 +89,7 @@
             $footer_height += 15;
         }
         if(!empty($total_records_list)) {
-            $total_quantity = 0;
+            $total_quantity = 0; $unit_names = [];
 
             foreach($total_records_list as $key => $data) {
                 $inward_unit = 0; $outward_unit = 0; $unit_name = ""; $subunit_name = ""; $outward_unit = 0; $outward_subunit = 0;
@@ -144,8 +141,7 @@
                     $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
                     $product_name = $obj->encode_decode('decrypt', $product_name);
                     $pdf->Cell(90,6,$product_name,1,0,'C',0);
-                }
-                else{
+                } else{
                     $pdf->Cell(90,6,' - ',1,0,'C',0);
                 }
 
@@ -157,9 +153,12 @@
                 if(!empty($consumption_qty)) {
                     $pdf->Cell(80,6, $consumption_qty['quantity'] . " " . $consumption_qty['unit_name'],1,1,'R',0);
                     $total_quantity += $consumption_qty['quantity'];
-                }
-                else {
+                } else {
                     $pdf->Cell(80,6,' - ',1,1,'R',0);
+                }
+
+                if(!empty($consumption_qty['unit_name'])) {
+                    $unit_names[] = $consumption_qty['unit_name'];
                 }
                 $s_no++;
             }
@@ -214,8 +213,7 @@
                 $pdf->Cell(90,($content_height-$y_axis),'',1,0);
                 $pdf->Cell(80,($content_height-$y_axis),'',1,1);
                 $pdf->SetY($content_height);
-            } 
-            else {
+            } else {
                 
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
@@ -227,13 +225,20 @@
             
             $pdf->SetFont('Arial','B',8);
         
+            $unit_name_display = "";
+            if(!empty($unit_names)) {
+                $unique_unit_names = array_unique($unit_names);
+                if(count($unique_unit_names) == 1) {
+                    $unit_name_display = $unique_unit_names[0];
+                }
+            }
+
             $pdf->SetX(10);
             $pdf->Cell(110,8,'Total',1,0,'R',0);
             if(!empty($total_quantity)){
                 $pdf->SetX(120);
-                $pdf->Cell(80,8,$total_quantity,1,1,'R',0);
-            }
-            else{
+                $pdf->Cell(80,8,$total_quantity . " " . $unit_name_display,1,1,'R',0);
+            } else {
                 $pdf->SetX(120);
                 $pdf->Cell(80,8,' 0 ',1,1,'C',0);
             }
@@ -243,8 +248,7 @@
         $pdf->SetY(285);
         $pdf->SetX(10);
         $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         $total_pages = array(1);
         $page_number = 1;
         $last_count = 0;
@@ -259,8 +263,7 @@
             if($unit_name != $GLOBALS['null_value']) {
                 $stock_unit_name = $obj->encode_decode('decrypt', $unit_name);
             }
-        }
-        else if($unit_type == "Subunit") {
+        } else if($unit_type == "Subunit") {
             $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_name');
             if($unit_name != $GLOBALS['null_value']) {
                 $stock_unit_name = $obj->encode_decode('decrypt', $unit_name);
@@ -373,8 +376,7 @@
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
                     $pdf->MultiCell(20, 7, $stock_date, 0, 'C', 0);
-                }
-                else{
+                } else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
                     $pdf->MultiCell(20, 7,'-', 0, 'C', 0);
@@ -389,8 +391,7 @@
                     $pdf->SetY($start_y);
                     $pdf->SetX(40);
                     $pdf->MultiCell(25, 7, $stock_type, 0, 'C', 0);
-                }
-                else{
+                } else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(40);
                     $pdf->MultiCell(25, 7, '-', 0, 'C', 0);
@@ -404,8 +405,7 @@
                     $pdf->SetY($start_y);
                     $pdf->SetX(65);
                     $pdf->MultiCell(20, 7, $remarks, 0,  'C', 0);
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(65);
                     $pdf->MultiCell(20, 7, '-', 0,  'C', 0);
@@ -422,8 +422,7 @@
                     $party_name = $obj->encode_decode('decrypt', $party_name);
                     $pdf->MultiCell(35, 7, $party_name, 0, 'C', 0);
 
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(85);
                     $pdf->MultiCell(35, 7, '-', 0, 'C', 0);
@@ -437,8 +436,7 @@
                     $pdf->SetY($start_y);
                     $pdf->SetX(120);
                     $pdf->MultiCell(30, 7,  $godown_name, 0, 'C', 0);
-                }
-                else{
+                } else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(120);
                     $pdf->MultiCell(30, 7, '-', 0, 'C', 0);
@@ -452,8 +450,7 @@
                         $pdf->SetY($start_y);
                         $pdf->SetX(150);
                         $pdf->MultiCell(20, 7,$data['case_contains'], 0, 'R', 0);
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(150);
                         $pdf->MultiCell(20, 7, '-', 0,  'C', 0);
@@ -492,21 +489,19 @@
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
                         $pdf->MultiCell(30, 7, $outward . " " . $unit_name, 0,  'R', 0);
-                    }else {
+                    } else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
                         $pdf->MultiCell(30, 7, '-', 0,  'R', 0);
                     }
-                }
-                else if($unit_type == "Subunit") {
+                } else if($unit_type == "Subunit") {
                     if($data['outward_subunit'] != $GLOBALS['null_value']) {
                         $total_outward += $data['outward_subunit'];
                         $outward_subunit = $data['outward_subunit'];
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
                         $pdf->MultiCell(30, 7, $outward_subunit . " " . $unit_name, 0,  'R', 0);
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(170);
                         $pdf->MultiCell(30, 7, '-', 0,  'R', 0);
@@ -533,13 +528,10 @@
 
             }
 
-
             $end_y = $pdf->GetY();
-
             $last_page_count = $s_no - $last_count;
             
             if(($footer_height+$end_y) >= 270){
-    
                 $y = $pdf->GetY();
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -600,8 +592,7 @@
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(30,$content_height - $y_axis,'',1,1,'C');
                 $pdf->SetY($content_height);
-            } 
-            else {
+            } else {
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);                
@@ -614,15 +605,14 @@
                 $pdf->Cell(20,$content_height - $y_axis,'',1,0,'C');
                 $pdf->Cell(30,$content_height - $y_axis,'',1,1,'C');
             }
-
             
             $pdf->SetFont('Arial','B',7);
             $pdf->SetX(10);
-            $pdf->Cell(160,8,'T0tal',1,0,'R',0);
+            $pdf->Cell(160,8,'Total',1,0,'R',0);
+
             if(!empty($total_outward)){
-                $pdf->Cell(30,8,$total_outward,1,1,'R',0);
-            }
-            else{
+                $pdf->Cell(30,8,$total_outward . (!empty($unit_name) ? " " . $unit_name : ""),1,1,'R',0);
+            } else{
                 $pdf->SetX(160);
                 $pdf->Cell(30,8,' - ',1,1,'C',0);
             }

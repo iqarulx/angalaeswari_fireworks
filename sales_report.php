@@ -257,19 +257,15 @@
 <script>
     jQuery(document).ready(function(){
         jQuery('.add_update_form_content').find('select').select2();
-    });
-</script>
-<script>
-    $(document).ready(function(){
         $("#salesreport").addClass("active");
-        // getOverallReport();
     });
+
     function getOverallReport(){
-    
         if(jQuery('form[name="sales_form"]').length > 0){
             jQuery('form[name="sales_form"]').submit();
         }
     }
+
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_sales_list');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
@@ -279,19 +275,14 @@
         window.open("sales_report.php","_self");
     }
 
-    function show_cancelled_bill(chk_value){
-       
+    function show_cancelled_bill(chk_value) {
         if(chk_value == true) {
             $("input[name='cancel_bill_btn']").val("1");
-          
-        }
-        else{
+        } else {
             $("input[name='cancel_bill_btn']").val("0");
-           
         }
         getOverallReport();
-    }           
-   
+    }
 </script>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
 <script type="text/javascript" src="include/js/bootstrap-datepicker.min.js"></script>

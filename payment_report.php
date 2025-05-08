@@ -510,18 +510,11 @@
         </div>         
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     jQuery(document).ready(function(){
         jQuery('.add_update_form_content').find('select').select2();
-    });
-</script>
-<script>
-    $(document).ready(function(){
         $("#payment_report").addClass("active");
-        // table_listing_records_filter();
     });
-</script>
-<script type="text/javascript">
     function getOverallReport(){
         if(jQuery('form[name="payment_report_form"]').length > 0){
             jQuery('form[name="payment_report_form"]').submit();

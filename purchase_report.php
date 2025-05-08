@@ -228,12 +228,9 @@ $from_date = ""; $to_date = "";
 <script>
     jQuery(document).ready(function(){
         jQuery('.add_update_form_content').find('select').select2();
-    });
-</script>
-<script>
-    $(document).ready(function(){
         $("#purchasereport").addClass("active");
     });
+    
     function getOverallReport(){
         if(jQuery('form[name="purchase_report_form"]').length > 0){
             jQuery('form[name="purchase_report_form"]').submit();
@@ -249,14 +246,10 @@ $from_date = ""; $to_date = "";
     }
 
     function show_cancelled_bill(chk_value){
-       
        if(chk_value == true) {
            $("input[name='cancel_bill_btn']").val("1");
-         
-       }
-       else{
+       } else {
            $("input[name='cancel_bill_btn']").val("0");
-          
        }
        getOverallReport();
    }           

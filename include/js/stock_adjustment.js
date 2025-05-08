@@ -5,7 +5,7 @@ function show_godown_magazine(product_group) {
         product_group = jQuery('select[name="product_group"]').val();
         jQuery('input[name="product_group"]').val(product_group);
     }
-    if (product_group == "1") {
+    if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
         if ($(".div_selected_godown").length > 0) {
             $(".div_selected_godown").removeClass("d-none")
         }
@@ -19,7 +19,7 @@ function show_godown_magazine(product_group) {
         }
 
     }
-    else if (product_group == "2") {
+    else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
         if ($(".div_selected_magazine").length > 0) {
             $(".div_selected_magazine").removeClass("d-none")
         }
@@ -391,7 +391,7 @@ function AddStockAdjustmentProducts() {
                     }
                 }
 
-                if (product_group == 1) {
+                if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                     var selected_godown_id = ""; var error = "";
                     if (jQuery('select[name="selected_godown_id"]').length > 0) {
                         selected_godown_id = jQuery('select[name="selected_godown_id"]').val();
@@ -563,18 +563,18 @@ function AddStockAdjustmentProducts() {
 
 
                                     if (location_type == "1") {
-                                        if (product_group == "1") {
+                                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                             $("select[name='selected_godown_id']").attr("disabled", true)
                                         }
-                                        else if (product_group == "2") {
+                                        else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                             $("select[name='selected_magazine_id']").attr("disabled", true)
                                         }
                                     }
                                     else if (location_type == "2") {
-                                        if (product_group == "1") {
+                                        if (product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                             $("select[name='selected_godown_id']").attr("disabled", false)
                                         }
-                                        else if (product_group == "2") {
+                                        else if (product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                             $("select[name='selected_magazine_id']").attr("disabled", false)
                                         }
                                     }

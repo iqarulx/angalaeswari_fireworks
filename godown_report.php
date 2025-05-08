@@ -276,7 +276,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                        $total_stock = 0; $sno = 1; $total_unit_stock = 0; $total_subunit_stock = 0;
+                                                        $total_stock = 0; $sno = 1; $total_unit_stock = 0; $total_subunit_stock = 0; $unit_name_array = []; $sub_unit_name_array = [];
                                                         if(!empty($total_records_list)) { 
                                                             foreach($total_records_list as $key => $data) {
                                                                 $inward_unit = 0; $outward_unit = 0; $current_stock = "";
@@ -293,41 +293,42 @@
 
                                                                 if($unit_type == "Unit") {
                                                                     if($subunit_need == '1') {
-                                                                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $data['product_id'], '');
+                                                                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $data['product_id'], '', 1);
                                                                         $current_unit_stock = $current_stock_array[0];
                                                                         $current_subunit_stock = $current_stock_array[1];
                                                                         if(!empty($current_unit_stock)) {
                                                                             $current_stock = $current_unit_stock." ".($obj->encode_decode('decrypt', $unit_name));
                                                                             $total_unit_stock += $current_unit_stock;
+                                                                            $unit_name_array[] = $unit_name;
                                                                         }
                                                                         if(!empty($current_subunit_stock)) {
                                                                             if(!empty($current_stock)) {
                                                                                 $current_stock = $current_stock." ".$current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                                                            }
-                                                                            else {
+                                                                                $sub_unit_name_array[] = $subunit_name;
+                                                                            } else {
                                                                                 $current_stock = $current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
+                                                                                $sub_unit_name_array[] = $subunit_name;
                                                                             }
                                                                             $total_subunit_stock += $current_subunit_stock;
                                                                         }
-                                                                    }
-                                                                    else {
+                                                                    } else {
                                                                         $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
                                                                         $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
                                                                         $current_stock = $inward_unit - $outward_unit;
                                                                         $total_unit_stock += $current_stock;
                                                                         $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
+                                                                        $unit_name_array[] = $unit_name;
                                                                     }
-                                                                }
-                                                                else if($unit_type == "Subunit") {
+                                                                } else if($unit_type == "Subunit") {
                                                                     $inward_unit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], '');
                                                                     $outward_unit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], '');
                                                                     $current_stock = $inward_unit - $outward_unit;
                                                                     $total_subunit_stock += $current_stock;
                                                                     $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $subunit_name));
+                                                                    $sub_unit_name_array[] = $subunit_name;
                                                                 }
                                                                 if(preg_match('/^[0]+$/', $current_stock) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
-                                                                    
-
+                                              
                                                     ?>
                                                                 <tr>
                                                                     <th><?php echo $sno++; ?></th>
@@ -356,9 +357,23 @@
                                                                     <?php
                                                                         if(!empty($total_unit_stock)) {
                                                                             echo $total_unit_stock;
+
+                                                                            if(!empty($unit_name_array)) {
+                                                                                $unique_unit_names = array_unique($unit_name_array);
+                                                                                if(count($unique_unit_names) == 1) {
+                                                                                    echo " " . $obj->encode_decode('decrypt', $unique_unit_names[0]);
+                                                                                }
+                                                                            }
                                                                         }
                                                                         if(!empty($total_subunit_stock)) {
                                                                             echo $total_subunit_stock;
+
+                                                                            if(!empty($sub_unit_name_array)) {
+                                                                                $unique_sub_unit_names = array_unique($sub_unit_name_array);
+                                                                                if(count($unique_sub_unit_names) == 1) {
+                                                                                    echo " " . $obj->encode_decode('decrypt', $unique_sub_unit_names[0]);
+                                                                                }
+                                                                            }
                                                                         }
                                                                     ?>
                                                                 </th>
@@ -395,7 +410,7 @@
 
                                                                 if($unit_type == "Unit") {
                                                                     if($subunit_need == '1') {
-                                                                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $product_id, $case_contains);
+                                                                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $product_id, $case_contains, 1);
                                                                         $current_unit_stock = $current_stock_array[0];
                                                                         $current_subunit_stock = $current_stock_array[1];
                                                                         if(!empty($current_unit_stock)) {
@@ -533,8 +548,7 @@
                                                                                         echo $data['inward_subunit']." ".($obj->encode_decode('decrypt', $subunit_name)); 
                                                                                         $total_inward_subunit += $data['inward_subunit'];
                                                                                     }
-                                                                                }
-                                                                                else {
+                                                                                } else {
                                                                                     if(!empty($data['inward_unit'])) { 
                                                                                         $multiplied_value = 0; $quotient = 0; $remainder = 0;
                                                                                         if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
@@ -607,9 +621,15 @@
                                                                     <?php
                                                                         if(!empty($total_inward_unit)) {
                                                                             echo $total_inward_unit;
+                                                                            if(!empty($unit_name)) {
+                                                                                echo " " . $obj->encode_decode('decrypt', $unit_name);
+                                                                            }
                                                                         }
                                                                         if(!empty($total_inward_subunit)) {
                                                                             echo $total_inward_subunit;
+                                                                            if(!empty($subunit_name)) {
+                                                                                echo " " . $obj->encode_decode('decrypt', $subunit_name);
+                                                                            }
                                                                         }
                                                                     ?>
                                                                 </th>
@@ -617,9 +637,15 @@
                                                                     <?php
                                                                         if(!empty($total_outward_unit)) {
                                                                             echo $total_outward_unit;
+                                                                            if(!empty($unit_name)) {
+                                                                                echo " " . $obj->encode_decode('decrypt', $unit_name);
+                                                                            }
                                                                         }
                                                                         if(!empty($total_outward_subunit)) {
                                                                             echo $total_outward_subunit;
+                                                                            if(!empty($subunit_name)) {
+                                                                                echo " " . $obj->encode_decode('decrypt', $subunit_name);
+                                                                            }
                                                                         }
                                                                     ?>
                                                                 </th>
@@ -649,13 +675,11 @@
     </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         $("#godown_report").addClass("active");
         table_listing_records_filter();
     });
-</script>
-<script type="text/javascript">
     function getReport() {
         if(jQuery('form[name="godown_report_form"]').length > 0) {
             jQuery('form[name="godown_report_form"]').submit();
@@ -667,9 +691,7 @@
         }
         getReport();
     }
-</script>
-
-<script>
+    
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_godown_report');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

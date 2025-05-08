@@ -298,7 +298,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                        $total_quantity = 0; $sno = 1;
+                                                        $total_quantity = 0; $sno = 1; $unit_names = [];
                                                         if(!empty($total_records_list)) { 
                                                             foreach($total_records_list as $key => $data) {
                                                     ?>
@@ -323,6 +323,9 @@
                                                                             }
                                                                             echo $consumption_qty['quantity'] . " " . $consumption_qty['unit_name'];
                                                                             $total_quantity += $consumption_qty['quantity'];
+                                                                            if(!empty($consumption_qty['unit_name'])) {
+                                                                                $unit_names[] = $consumption_qty['unit_name'];
+                                                                            }
                                                                         ?>
                                                                     </th>
                                                                 </tr>
@@ -331,7 +334,17 @@
                                                             ?>
                                                             <tr>
                                                                 <th colspan="2" class="text-end">Total</th>
-                                                                <th><?php echo $total_quantity; ?></th>
+                                                                <th>
+                                                                    <?php
+                                                                        echo $total_quantity;
+                                                                        if(!empty($unit_names)) {
+                                                                            $unique_unit_names = array_unique($unit_names);
+                                                                            if(count($unique_unit_names) == 1) {
+                                                                                echo " " . $unique_unit_names[0];
+                                                                            }
+                                                                        }
+                                                                    ?>
+                                                                </th>
                                                             </tr>
                                                             <?php
                                                         }  
@@ -362,8 +375,7 @@
                                                                     if($unit_name != $GLOBALS['null_value']) {
                                                                         $stock_unit_name = $obj->encode_decode('decrypt', $unit_name);
                                                                     }
-                                                                }
-                                                                else if($unit_type == "Subunit") {
+                                                                } else if($unit_type == "Subunit") {
                                                                     $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_name');
                                                                     if($unit_name != $GLOBALS['null_value']) {
                                                                         $stock_unit_name = $obj->encode_decode('decrypt', $unit_name);
@@ -396,9 +408,7 @@
                                                         <th>Remarks</th>
                                                         <th>Contractor</th>
                                                         <th>Godown</th>
-                                                        <?php if($subunit_hide == '1') { ?>
-                                                            <th>Contains</th>
-                                                        <?php } ?>
+                                                        <?php if($subunit_hide == '1') { ?> <th>Contains</th> <?php } ?>
                                                         <th>Quantity in (<?php echo $stock_unit_name; ?>)</th>
                                                     </tr>
                                                 </thead>
@@ -428,8 +438,7 @@
                                                                         <?php
                                                                             if(!empty($data['remarks']) && $data['remarks'] != $GLOBALS['null_value']) {
                                                                                 echo $obj->encode_decode('decrypt', $data['remarks']);
-                                                                            }
-                                                                            else {
+                                                                            } else {
                                                                                 echo '-';
                                                                             }
                                                                         ?>
@@ -441,12 +450,10 @@
                                                                                 $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $data['party_id'], 'name_mobile_city');
                                                                                 if(!empty($party_name) && $party_name != $GLOBALS['null_value']) {
                                                                                     echo $obj->encode_decode('decrypt', $party_name);
-                                                                                }
-                                                                                else {
+                                                                                } else {
                                                                                     echo '-';
                                                                                 }
-                                                                            }
-                                                                            else {
+                                                                            } else {
                                                                                 echo '-';
                                                                             }
                                                                         ?>
@@ -457,8 +464,7 @@
                                                                                 $godown_name = "";
                                                                                 $godown_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $data['godown_id'], 'godown_name');
                                                                                 echo $obj->encode_decode('decrypt', $godown_name);
-                                                                            }
-                                                                            else {
+                                                                            } else {
                                                                                 echo '-';
                                                                             }
                                                                         ?>
@@ -502,8 +508,7 @@
                                                                                     $total_outward += $data['outward_unit'];
                                                                                     echo $data['outward_unit'] . " " . $unit_name;
                                                                                 }
-                                                                            }
-                                                                            else if($unit_type == "Subunit") {
+                                                                            } else if($unit_type == "Subunit") {
                                                                                 if($data['outward_subunit'] != $GLOBALS['null_value']) {
                                                                                     $total_outward += $data['outward_subunit'];
                                                                                     echo $data['outward_subunit'] . " " . $unit_name;
@@ -517,11 +522,10 @@
                                                             ?>
                                                             <tr>
                                                                 <th colspan="<?php if($subunit_hide == '1') { ?>7<?php } else { ?>6<?php } ?>" class="text-end">Total &ensp;</th>
-                                                                <th><?php echo $total_outward; ?></th>
+                                                                <th><?php echo $total_outward; if(!empty($unit_name)) { echo " " . $unit_name; } ?></th>
                                                             </tr>
                                                             <?php
-                                                        } 
-                                                        else {
+                                                        } else {
                                                     ?>
                                                             <tr>
                                                                 <td colspan="<?php if($subunit_hide == '1') { ?>8<?php } else { ?>7<?php } ?>" class="text-center">Sorry! No records found</td>
@@ -544,13 +548,11 @@
     </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         $("#consumption_report").addClass("active");
         table_listing_records_filter();
     });
-</script>
-<script type="text/javascript">
     function getReport() {
         if(jQuery('form[name="consumption_report_form"]').length > 0) {
             jQuery('form[name="consumption_report_form"]').submit();
@@ -562,9 +564,6 @@
         }
         getReport();
     }
-</script>
-
-<script>
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_consumption_report');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

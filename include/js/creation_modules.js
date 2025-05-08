@@ -606,10 +606,12 @@ function ChangeLocation() {
         }
     });
 
-    if (group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+    if (group === "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
         if (jQuery('.finished_group_div').length > 0) {
             jQuery('.finished_group_div').removeClass('d-none');
-        } else {
+        }
+    } else {
+        if (jQuery('.finished_group_div').length > 0) {
             jQuery('.finished_group_div').addClass('d-none');
         }
     }

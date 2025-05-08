@@ -501,10 +501,7 @@
                     <?php if(count($location_ids) > 0) { ?>
                         // DisableProduct_Fix_field();
                     <?php } ?>
-                   
-                    
                 });
-               
             </script>
         </form>
 		<?php
@@ -971,6 +968,8 @@
         }
         if (isset($_POST['negative_stock'])) {
             $negative_stock = $_POST['negative_stock'];
+        } else {
+            $negative_stock = 0;
         }
         if (isset($_POST['rate_per_case'])) {
             $rate_per_case = $_POST['rate_per_case'];

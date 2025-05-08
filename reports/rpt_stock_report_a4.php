@@ -40,8 +40,7 @@
     $product_list = array();
     if(!empty($group_id)) {
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $group_id, '');
-    }
-    else {
+    } else {
         $product_list = $obj->getProducts('2');
     }
 
@@ -63,8 +62,7 @@
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
         $total_records_list = $product_list;
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
@@ -117,6 +115,7 @@
             }
 
             $total_stock = 0; $sno = 1; $total_unit_stock = 0; $total_subunit_stock = 0;
+            $unit_name_array = []; $sub_unit_name_array = [];
 
             foreach($total_records_list as $key => $data) {
                 $inward_unit = 0; $outward_unit = 0; $current_stock = "";
@@ -133,37 +132,39 @@
 
                 if($unit_type == "Unit") {
                     if($subunit_need == '1') {
-                        $current_stock_array = $obj->getCurrentStockCasewise('', $magazine_id, $data['product_id'], '');
+                        $current_stock_array = $obj->getCurrentStockCasewise('', $magazine_id, $data['product_id'], '', 2);
                         $current_unit_stock = $current_stock_array[0];
                         $current_subunit_stock = $current_stock_array[1];
                         if(!empty($current_unit_stock)) {
                             $current_stock = $current_unit_stock." ".($obj->encode_decode('decrypt', $unit_name));
+                            $unit_name_array[] = $unit_name;
                             $total_unit_stock += $current_unit_stock;
                         }
                         if(!empty($current_subunit_stock)) {
                             if(!empty($current_stock)) {
                                 $current_stock = $current_stock." ".$current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                            }
-                            else {
+                                $sub_unit_name_array[] = $subunit_name;
+                            } else {
                                 $current_stock = $current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
+                                $sub_unit_name_array[] = $subunit_name;
                             }
                             $total_subunit_stock += $current_subunit_stock;
                         }
-                    }
-                    else {
+                    } else {
                         $inward_unit = $obj->getInwardQty('', '', $magazine_id, $data['product_id'], '');
                         $outward_unit = $obj->getOutwardQty('', '', $magazine_id, $data['product_id'], '');
                         $current_stock = $inward_unit - $outward_unit;
                         $total_unit_stock += $current_stock;
                         $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
+                        $unit_name_array[] = $unit_name;
                     }
-                }
-                else if($unit_type == "Subunit") {
+                } else if($unit_type == "Subunit") {
                     $inward_unit = $obj->getInwardSubunitQty('', '', $magazine_id, $data['product_id'], '');
                     $outward_unit = $obj->getOutwardSubunitQty('', '', $magazine_id, $data['product_id'], '');
                     $current_stock = $inward_unit - $outward_unit;
                     $total_subunit_stock += $current_stock;
                     $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $subunit_name));
+                    $sub_unit_name_array[] = $subunit_name;
                 }
 
                 $index = $key + 1; 
@@ -215,29 +216,23 @@
                         $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
                         $product_name =html_entity_decode($obj->encode_decode('decrypt', $product_name));
                         $pdf->Cell(90,6,$product_name,1,0,'C',0);
-                    }
-                    else{
+                    } else {
                         $pdf->Cell(90,6,' - ',1,0,'C',0);
                     }
                     
                     if(!empty($current_stock)) {
                         $pdf->Cell(80,6, $current_stock,1,1,'R',0);
-                    }
-                    else {
+                    } else {
                         $pdf->Cell(80,6,' - ',1,1,'R',0);
                     }
                     $s_no++;
                 }
             }
 
-            
-
             $end_y = $pdf->GetY();
-
             $last_page_count = $s_no - $last_count;
             
             if(($footer_height+$end_y) >= 270){
-        
                 $y = $pdf->GetY();
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -282,9 +277,7 @@
                 $pdf->Cell(90,($content_height-$y_axis),'',1,0);
                 $pdf->Cell(80,($content_height-$y_axis),'',1,1);
                 $pdf->SetY($content_height);
-            } 
-            else {
-                
+            } else {
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -297,11 +290,24 @@
         
             $total_display = "";
             if(!empty($total_unit_stock)) {
-                $total_display = $total_unit_stock;
-            }
+                $total_display .= $total_unit_stock;
 
+                if(!empty($unit_name_array)) {
+                    $unique_unit_names = array_unique($unit_name_array);
+                    if(count($unique_unit_names) == 1) {
+                        $total_display .= " " . $obj->encode_decode('decrypt', $unique_unit_names[0]);
+                    }
+                }
+            }
+            
             if(!empty($total_subunit_stock)) {
-                $total_display .= $total_subunit_stock;
+                $total_display .= " + " .$total_subunit_stock;
+                if(!empty($sub_unit_name_array)) {
+                    $unique_sub_unit_names = array_unique($sub_unit_name_array);
+                    if(count($unique_sub_unit_names) == 1) {
+                        $total_display .= " " . $obj->encode_decode('decrypt', $unique_sub_unit_names[0]);
+                    }
+                }
             }
 
             $pdf->SetX(10);
@@ -309,8 +315,7 @@
             if(!empty($total_display)){
                 $pdf->SetX(120);
                 $pdf->Cell(80,8,$total_display,1,1,'R',0);
-            }
-            else{
+            } else {
                 $pdf->SetX(120);
                 $pdf->Cell(80,8,' - ',1,1,'R',0);
             }
@@ -320,8 +325,7 @@
         $pdf->SetY(285);
         $pdf->SetX(10);
         $pdf->Cell(190,3,'Page No : '.$pdf->PageNo().' / {nb}',0,0,'R');
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         $product_name = "";
         $product_names = $obj->GetTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
         if(!empty($product_names) && $product_names != $GLOBALS['null_value']) {
@@ -350,7 +354,7 @@
             }
             if($unit_type == "Unit") {
                 if($subunit_need == '1') {
-                    $current_stock_array = $obj->getCurrentStockCasewise('', $magazine_id, $product_id, $case_contains);
+                    $current_stock_array = $obj->getCurrentStockCasewise('', $magazine_id, $product_id, $case_contains, 2);
                     $current_unit_stock = $current_stock_array[0];
                     $current_subunit_stock = $current_stock_array[1];
                     if(!empty($current_unit_stock)) {
@@ -359,20 +363,17 @@
                     if(!empty($current_subunit_stock)) {
                         if(!empty($current_stock)) {
                             $current_stock = $current_stock." ".$current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                        }
-                        else {
+                        } else {
                             $current_stock = $current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
                         }
                     }
-                }
-                else {
+                } else {
                     $inward_unit = $obj->getInwardQty('', '', $magazine_id, $product_id, $case_contains);
                     $outward_unit = $obj->getOutwardQty('', '', $magazine_id, $product_id, $case_contains);
                     $current_stock = $inward_unit - $outward_unit;
                     $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
                 }
-            }
-            else if($unit_type == "Subunit") {
+            } else if($unit_type == "Subunit") {
                 $inward_unit = $obj->getInwardSubunitQty('', '', $magazine_id, $product_id, $case_contains);
                 $outward_unit = $obj->getOutwardSubunitQty('', '', $magazine_id, $product_id, $case_contains);
                 $current_stock = $inward_unit - $outward_unit;
@@ -398,17 +399,14 @@
                 $pdf->SetX(160);
                 $pdf->Cell(20, 10, 'Inward', 1, 0, 'C', 0);
                 $pdf->Cell(20, 10, 'Outward', 1, 1, 'C', 0);
-            } 
-            else {
+            } else {
                 $pdf->SetY($product_start_y);
                 $pdf->SetX(140);
                 $pdf->Cell(30, 10, 'Inward', 1, 0, 'C', 0);
                 $pdf->Cell(30, 10, 'Outward', 1, 1, 'C', 0);
             }
-            
 
             $start_y = $pdf->GetY();
-
             $y_axis = $pdf->GetY();
 
             $total_inward = 0; $total_outward = 0; $s_no='1'; $content_height = 0;
@@ -421,8 +419,7 @@
             $total_inward_unit = 0; $total_inward_subunit = 0; $total_outward_unit = 0;  $total_outward_subunit = 0;
 
             foreach($total_records_list as $data) {
-                if($pdf->GetY() > 260){
-                    
+                if($pdf->GetY() > 260) {
                     $y = $pdf->GetY();
                     $pdf->SetY($y_axis);
                     $pdf->SetX(10);
@@ -436,8 +433,7 @@
                         $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(20,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(20,277-$y_axis,'',1,1,'C',0);
-                    }
-                    else {
+                    } else {
                         $pdf->Cell(30,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(30,277-$y_axis,'',1,1,'C',0);
                     }
@@ -479,8 +475,7 @@
                         $pdf->SetX(160);
                         $pdf->Cell(20, 10, 'Inward', 1, 0, 'C', 0);
                         $pdf->Cell(20, 10, 'Outward', 1, 1, 'C', 0);
-                    } 
-                    else {
+                    } else {
                         $pdf->SetY($product_start_y);
                         $pdf->SetX(140);
                         $pdf->Cell(30, 10, 'Inward', 1, 0, 'C', 0);
@@ -504,14 +499,12 @@
                     $pdf->SetX(20);
                     $pdf->MultiCell(15, 5, $stock_date, 0, 'C', 0);
                     $date_y = $pdf->GetY();
-                }
-                else{
+                } else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
                     $pdf->MultiCell(15, 5,'-', 0, 'C', 0);
                     $date_y = $pdf->GetY();
                 }
-
                 
                 if(!empty($data['stock_type'])) {
                     $stock_type = "";
@@ -520,8 +513,7 @@
                     $pdf->SetX(35);
                     $pdf->MultiCell(20, 5, $stock_type, 0, 'C', 0);
                     $type_y = $pdf->GetY();
-                }
-                else{
+                } else{
                     $pdf->SetY($start_y);
                     $pdf->SetX(35);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -536,8 +528,7 @@
                     $pdf->SetX(55);
                     $pdf->MultiCell(30, 5, $remarks, 0,  'C', 0);
                     $remarks_y = $pdf->GetY();
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(55);
                     $pdf->MultiCell(30, 5, '-', 0,  'C', 0);
@@ -549,21 +540,24 @@
                 if(!empty($data['party_id']) && $data['party_id'] != $GLOBALS['null_value']) {
                     $pdf->SetY($start_y);
                     $pdf->SetX(85);
-                    if(!empty($party_id)) {
-                        $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
+                    if(!empty($data['party_id'])) {
+                        $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $data['party_id'], 'supplier_name');
+                        if(empty($party_name)) {
+                            $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $data['party_id'], 'agent_name');
+                            if(empty($party_name)) {
+                                $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $data['party_id'], 'customer_name');
+                            }
+                        }
                         $party_name = $obj->encode_decode('decrypt', $party_name);
                         $pdf->MultiCell(30, 5, $party_name, 0, 'C', 0);
                         $party_y = $pdf->GetY();
                     }
-                    
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(85);
                     $party_y = $pdf->GetY();
                     $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
                 }
-
         
                 if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value']) {
                     $magazine_name = $obj->getTableColumnValue($GLOBALS['magazine_table'],'magazine_id',$data['magazine_id'],'magazine_name');
@@ -572,8 +566,7 @@
                     $pdf->SetX(115);
                     $pdf->MultiCell(25, 5,  $magazine_name, 0, 'C', 0);
                     $magazine_y = $pdf->GetY();
-                }
-                else{
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(115);
                     $pdf->MultiCell(25, 5, '-', 0, 'C', 0);
@@ -586,15 +579,13 @@
                         $pdf->SetX(140);
                         $pdf->MultiCell(20, 5, $data['case_contains'], 0, 'R', 0);
                         $case_y = $pdf->GetY();
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(140);
                         $pdf->MultiCell(20, 5, '-', 0,  'R', 0);
                         $case_y = $pdf->GetY();
                     }
 
-                    
                     $inward_display = "";
                     if(!empty($unit_type)) {
                         if($unit_type == "Subunit") {
@@ -602,16 +593,14 @@
                                 $inward_display .= $data['inward_subunit']." ".($obj->encode_decode('decrypt', $subunit_name)); 
                                 $total_inward_subunit += $data['inward_subunit'];
                             }
-                        }
-                        else {
+                        } else {
                             if(!empty($data['inward_unit'])) { 
                                 $multiplied_value = 0; $quotient = 0; $remainder = 0;
                                 if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
                                     $multiplied_value = $data['inward_unit'] * $data['case_contains'];
                                     $quotient = floor($multiplied_value / $data['case_contains']); 
                                     $remainder = round(fmod($multiplied_value, $data['case_contains']));
-                                }
-                                else {
+                                } else {
                                     $quotient = $data['inward_unit'];
                                 }
                                 if(!empty($quotient)) {
@@ -649,16 +638,14 @@
                                 $outward_display .= $data['outward_subunit']." ".($obj->encode_decode('decrypt', $subunit_name)); 
                                 $total_outward_subunit += $data['outward_subunit'];
                             }
-                        }
-                        else {
+                        } else {
                             if(!empty($data['outward_unit'])) { 
                                 $multiplied_value = 0; $quotient = 0; $remainder = 0;
                                 if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
                                     $multiplied_value = $data['outward_unit'] * $data['case_contains'];
                                     $quotient = floor($multiplied_value / $data['case_contains']); 
                                     $remainder = round(fmod($multiplied_value, $data['case_contains']));
-                                }
-                                else {
+                                } else {
                                     $quotient = $data['outward_unit'];
                                 }
                                 if(!empty($quotient)) {
@@ -688,8 +675,7 @@
                         $outward_y = $pdf->GetY();
                     }
                     
-                }
-                else {
+                } else {
                     $inward_display = "";
                     if(!empty($unit_type)) {
                         if($unit_type == "Subunit") {
@@ -697,16 +683,14 @@
                                 $inward_display .= $data['inward_subunit']." ".($obj->encode_decode('decrypt', $subunit_name)); 
                                 $total_inward_subunit += $data['inward_subunit'];
                             }
-                        }
-                        else {
+                        } else {
                             if(!empty($data['inward_unit'])) { 
                                 $multiplied_value = 0; $quotient = 0; $remainder = 0;
                                 if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
                                     $multiplied_value = $data['inward_unit'] * $data['case_contains'];
                                     $quotient = floor($multiplied_value / $data['case_contains']); 
                                     $remainder = round(fmod($multiplied_value, $data['case_contains']));
-                                }
-                                else {
+                                } else {
                                     $quotient = $data['inward_unit'];
                                 }
                                 if(!empty($quotient)) {
@@ -744,16 +728,14 @@
                                 $outward_display .= $data['outward_subunit']." ".($obj->encode_decode('decrypt', $subunit_name)); 
                                 $total_outward_subunit += $data['outward_subunit'];
                             }
-                        }
-                        else {
+                        } else {
                             if(!empty($data['outward_unit'])) { 
                                 $multiplied_value = 0; $quotient = 0; $remainder = 0;
                                 if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
                                     $multiplied_value = $data['outward_unit'] * $data['case_contains'];
                                     $quotient = floor($multiplied_value / $data['case_contains']); 
                                     $remainder = round(fmod($multiplied_value, $data['case_contains']));
-                                }
-                                else {
+                                } else {
                                     $quotient = $data['outward_unit'];
                                 }
                                 if(!empty($quotient)) {
@@ -783,23 +765,17 @@
                         $outward_y = $pdf->GetY();
                     }
                 }
-                
 
                 $max_y = max(array($date_y,$type_y,$remarks_y,$party_y,$magazine_y,$case_y,$inward_y, $outward_y));
-
                 $pdf->SetY($max_y);
-
                 $s_no++;
                 $start_y = $pdf->GetY();
-
             }
 
             $end_y = $pdf->GetY();
-
             $last_page_count = $s_no - $last_count;
             
             if(($footer_height+$end_y) >= 270){
-    
                 $y = $pdf->GetY();
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -813,16 +789,13 @@
                     $pdf->Cell(20,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,270-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(30,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(30,270-$y_axis,'',1,1,'C',0);
                 }
                 
                 // $pdf->SetFont('Arial','B',9);
-    
                 // $next_page = $pdf->PageNo()+1;
-        
                 // $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
                 $pdf->SetFont('Arial','I',7);
                 $pdf->SetY(285);
@@ -857,8 +830,7 @@
                     $pdf->SetX(160);
                     $pdf->Cell(20, 10, 'Inward', 1, 0, 'C', 0);
                     $pdf->Cell(20, 10, 'Outward', 1, 1, 'C', 0);
-                } 
-                else {
+                } else {
                     $pdf->SetY($product_start_y);
                     $pdf->SetX(140);
                     $pdf->Cell(30, 10, 'Inward', 1, 0, 'C', 0);
@@ -880,14 +852,12 @@
                     $pdf->Cell(20,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,$content_height-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(30,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(30,$content_height-$y_axis,'',1,1,'C',0);
                 }
                 $pdf->SetY($content_height);
-            } 
-            else {
+            } else {
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);                
@@ -901,8 +871,7 @@
                     $pdf->Cell(20,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(20,$content_height-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(30,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(30,$content_height-$y_axis,'',1,1,'C',0);
                 }
@@ -916,16 +885,21 @@
                 $inward_display = "";
                 if(!empty($total_inward_unit)) {
                     $inward_display .= $total_inward_unit;
+                    if(!empty($unit_name)) {
+                        $inward_display .= " " . $obj->encode_decode('decrypt', $unit_name);
+                    }
                 }
                 if(!empty($total_inward_subunit)) {
-                    $inward_display .= " ".$total_inward_subunit;
+                    $inward_display .= " " . $total_inward_subunit;
+                    if(!empty($subunit_name)) {
+                        $inward_display .= " " . $obj->encode_decode('decrypt', $subunit_name);
+                    }
                 }
 
                 if(!empty($inward_display)){
                     $pdf->SetX(160);
                     $pdf->Cell(20,8,$inward_display,1,0,'R',0);
-                }
-                else{
+                } else {
                     $pdf->SetX(160);
                     $pdf->Cell(20,8,' - ',1,0,'R',0);
                 }
@@ -933,34 +907,37 @@
                 $outward_display = "";
                 if(!empty($total_outward_unit)) {
                     $outward_display .= $total_outward_unit;
+                    if(!empty($unit_name)) {
+                        $outward_display .= " " . $obj->encode_decode('decrypt', $unit_name);
+                    }
                 }
                 if(!empty($total_outward_subunit)) {
-                    $outward_display .= " ".$total_outward_subunit;
+                    $outward_display .= " " . $total_outward_subunit;
+                    if(!empty($subunit_name)) {
+                        $outward_display .= " " . $obj->encode_decode('decrypt', $subunit_name);
+                    }
                 }
 
                 if(!empty($outward_display)){
                     $pdf->SetX(180);
                     $pdf->Cell(20,8,$outward_display,1,1,'R',0);
-                }
-                else{
+                } else{
                     $pdf->SetX(180);
                     $pdf->Cell(20,8,' - ',1,1,'R',0);
                 }
-                $pdf->SetFont('Arial','B',7);
-                $pdf->SetX(10);
-                $pdf->Cell(150,8,'Current Stock',1,0,'R',0);
-                $current_stock = 0;
-                $current_stock = $total_inward_unit - $total_outward_unit;
-                if(!empty($current_stock)){
-                    $pdf->SetX(160);
-                    $pdf->Cell(40,8,$current_stock,1,1,'C',0);
-                }
-                else{
-                    $pdf->SetX(160);
-                    $pdf->Cell(40,8,' - ',1,1,'C',0);
-                }
-            }
-            else {
+                // $pdf->SetFont('Arial','B',7);
+                // $pdf->SetX(10);
+                // $pdf->Cell(150,8,'Current Stock',1,0,'R',0);
+                // $current_stock = 0;
+                // $current_stock = $total_inward_unit - $total_outward_unit;
+                // if(!empty($current_stock)){
+                //     $pdf->SetX(160);
+                //     $pdf->Cell(40,8,$current_stock,1,1,'C',0);
+                // } else{
+                //     $pdf->SetX(160);
+                //     $pdf->Cell(40,8,' - ',1,1,'C',0);
+                // }
+            } else {
                 $pdf->SetFont('Arial','B',7);
                 $pdf->SetX(10);
                 $pdf->Cell(130,8,'Total Stock',1,0,'R',0);
@@ -968,16 +945,21 @@
                 $inward_display = "";
                 if(!empty($total_inward_unit)) {
                     $inward_display .= $total_inward_unit;
+                    if(!empty($unit_name)) {
+                        $inward_display .= " " . $obj->encode_decode('decrypt', $unit_name);
+                    }
                 }
                 if(!empty($total_inward_subunit)) {
-                    $inward_display .= " ".$total_inward_subunit;
+                    $inward_display .= " " . $total_inward_subunit;
+                    if(!empty($subunit_name)) {
+                        $inward_display .= " " . $obj->encode_decode('decrypt', $subunit_name);
+                    }
                 }
 
                 if(!empty($inward_display)){
                     $pdf->SetX(140);
                     $pdf->Cell(30,8,$inward_display,1,0,'R',0);
-                }
-                else{
+                } else {
                     $pdf->SetX(140);
                     $pdf->Cell(30,8,' - ',1,0,'R',0);
                 }
@@ -985,34 +967,38 @@
                 $outward_display = "";
                 if(!empty($total_outward_unit)) {
                     $outward_display .= $total_outward_unit;
+                    if(!empty($unit_name)) {
+                        $outward_display .= " " . $obj->encode_decode('decrypt', $unit_name);
+                    }
                 }
                 if(!empty($total_outward_subunit)) {
-                    $outward_display .= " ".$total_outward_subunit;
+                    $outward_display .= " " . $total_outward_subunit;
+                    if(!empty($subunit_name)) {
+                        $outward_display .= " " . $obj->encode_decode('decrypt', $subunit_name);
+                    }
                 }
 
                 if(!empty($outward_display)){
                     $pdf->SetX(170);
                     $pdf->Cell(30,8,$outward_display,1,1,'R',0);
-                }
-                else{
+                } else{
                     $pdf->SetX(170);
                     $pdf->Cell(30,8,' - ',1,1,'R',0);
                 }
-                $pdf->SetFont('Arial','B',7);
-                $pdf->SetX(10);
-                $pdf->Cell(130,8,'Current Stock',1,0,'R',0);
-                $current_stock = 0;
-                $current_stock = $total_inward_unit - $total_outward_unit;
-                if(!empty($current_stock)){
-                    $pdf->SetX(140);
-                    $pdf->Cell(60,8,$current_stock,1,1,'C',0);
-                }
-                else{
-                    $pdf->SetX(140);
-                    $pdf->Cell(60,8,' - ',1,1,'C',0);
-                }
+                // $pdf->SetFont('Arial','B',7);
+                // $pdf->SetX(10);
+                // $pdf->Cell(130,8,'Current Stock',1,0,'R',0);
+                // $current_stock = 0;
+                // $current_stock = $total_inward_unit - $total_outward_unit;
+                // if(!empty($current_stock)){
+                //     $pdf->SetX(140);
+                //     $pdf->Cell(60,8,$current_stock,1,1,'C',0);
+                // }
+                // else{
+                //     $pdf->SetX(140);
+                //     $pdf->Cell(60,8,' - ',1,1,'C',0);
+                // }
             }
-            
         }
         $pdf->SetFont('Arial','I',7);
         $pdf->SetY(285);

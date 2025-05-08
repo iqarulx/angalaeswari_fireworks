@@ -27,19 +27,19 @@
                 }
             }
         }
-        if($incharger == 1){
-            if($role_name == "Factory Incharger"){
-                $access_pages_list = $GLOBALS['factory_access_pages_list'];     
-            }else if($role_name == "Godown Incharger"){
-                $access_pages_list = $GLOBALS['godown_access_pages_list'];     
-            }else if($role_name == "Magazine Incharger"){
-                $access_pages_list = $GLOBALS['magazine_access_pages_list'];     
-            }else{
-                $access_pages_list = $GLOBALS['access_pages_list'];     
-            }
-        }else{
-            $access_pages_list = $GLOBALS['access_pages_list'];     
-        }
+        // if($incharger == 1){
+        //     if($role_name == "Factory Incharger"){
+        //         $access_pages_list = $GLOBALS['factory_access_pages_list'];     
+        //     }else if($role_name == "Godown Incharger"){
+        //         $access_pages_list = $GLOBALS['godown_access_pages_list'];     
+        //     }else if($role_name == "Magazine Incharger"){
+        //         $access_pages_list = $GLOBALS['magazine_access_pages_list'];     
+        //     }else{
+        //         $access_pages_list = $GLOBALS['access_pages_list'];     
+        //     }
+        // } else {
+            $access_pages_list = $GLOBALS['access_pages_list'];
+        // }
 ?>
         <form class="poppins pd-20 redirection_form" name="role_form" method="POST">
 			<div class="card-header">
@@ -77,7 +77,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php				
+                                <?php		
                                     if(!empty($access_pages_list)) {
                                         foreach($access_pages_list as $module) {
                                             if(!empty($module)) {
@@ -148,7 +148,7 @@
                                                                 </label>
                                                             </div>
                                                             <?php 
-                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['group_module']) {
+                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['dashboard_module'] && $module != $GLOBALS['group_module']) {
                                                             ?>
                                                                 <div class="form-check pe-3">
                                                                     <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>" value="<?php if(!empty($add_checkbox_value)) { echo $add_checkbox_value; } ?>" <?php if(!empty($add_checkbox_value) && $add_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_add"; } ?>');">
@@ -161,7 +161,7 @@
                                                             ?>
                                                 
                                                             <?php 
-                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['group_module'] && $module != $GLOBALS['receipt_module'] && $module != $GLOBALS['voucher_module'] && $module != $GLOBALS['expense_module']) {
+                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['dashboard_module'] && $module != $GLOBALS['group_module'] && $module != $GLOBALS['receipt_module'] && $module != $GLOBALS['voucher_module'] && $module != $GLOBALS['expense_module']) {
                                                             ?>
                                                                 <div class="form-check pe-3">
                                                                     <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_edit"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_edit"; } ?>" value="<?php if(!empty($edit_checkbox_value)) { echo $edit_checkbox_value; } ?>" <?php if(!empty($edit_checkbox_value) && $edit_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_edit"; } ?>');">
@@ -171,7 +171,7 @@
                                                                 </div>
                                                             <?php } ?>
                                                             <?php 
-                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['group_module']) {
+                                                                if($module != $GLOBALS['reports_module'] && $module != $GLOBALS['dashboard_module'] && $module != $GLOBALS['group_module']) {
                                                             ?>
                                                             <div class="form-check pe-3">
                                                                 <input class="form-check-input" type="checkbox" name="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_delete"; } ?>" id="<?php if(!empty($module_encrypted)) { echo $module_encrypted."_delete"; } ?>" value="<?php if(!empty($delete_checkbox_value)) { echo $delete_checkbox_value; } ?>" <?php if(!empty($delete_checkbox_value) && $delete_checkbox_value == 1) { ?>checked="checked"<?php } ?> onClick="Javascript:CustomCheckboxToggle(this, '<?php if(!empty($module_encrypted)) { echo $module_encrypted."_delete"; } ?>');">

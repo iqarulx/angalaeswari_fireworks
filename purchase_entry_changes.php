@@ -865,9 +865,7 @@
                     <?php } 
                     ?>
                 });
-
             </script>
-
         </form>
 		<?php
     } 
@@ -2340,13 +2338,13 @@
                             $case_contains[$i] = "";
                         }
                         $inward_quantity = 0; $outward_quantity = 0;$inward_subquantity = 0; $outward_subquantity = 0;
-                        if(!empty($godown_id[$i])) {
+                        if(!empty($location_id[$i])) {
                             if($unit_ids[$i] == $product_subunit_id){
-                                $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
-                                $outward_quantity = $obj->getOutwardSubunitQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
+                                $inward_quantity = $obj->getInwardSubunitQty($delete_purchase_entry_id, $location_id[$i], '',$product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardSubunitQty('', $location_id[$i], '', $product_id[$i],$case_contains[$i]);
                             }else{
-                                $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, $godown_id[$i], '',$product_id[$i], $case_contains[$i]);
-                                $outward_quantity = $obj->getOutwardQty('', $godown_id[$i], '', $product_id[$i],$case_contains[$i]);
+                                $inward_quantity = $obj->getInwardQty($delete_purchase_entry_id, $location_id[$i], '',$product_id[$i], $case_contains[$i]);
+                                $outward_quantity = $obj->getOutwardQty('', $location_id[$i], '', $product_id[$i],$case_contains[$i]);
                             }    
                         } else if(!empty($location_id[$i])) {
                             if($unit_ids[$i] == $product_subunit_id){

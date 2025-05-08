@@ -43,8 +43,6 @@
 					$select_query = $select_query." ORDER BY id ".$order;
 			}
 			
-			
-			
 			if(!empty($select_query)) {
 				$data_values = $this->getQueryRecords($table, $select_query);
 			}
@@ -65,9 +63,9 @@
 				//$output = gzuncompress($string);
 				$output = hex2bin($string);
 				$output = base64_decode($output);
-				$output = htmlentities($output, ENT_QUOTES);
+				$output = html_entity_decode(htmlentities($output, ENT_QUOTES));
 			}
-			return html_entity_decode($output);
+			return $output;
 		}
 
 		public function getLastRecordIDFromTable($table) {

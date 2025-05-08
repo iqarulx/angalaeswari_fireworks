@@ -24,7 +24,7 @@ if(isset($_REQUEST['estimate_id'])) {
                     $customer_details = explode("$$$", $customer_details);
                 }
                 if(!empty($pi['estimate_date'])) {
-                    $estimate_date = date('d-m-Y', strtotime($estimate_date));
+                    $estimate_date = date('d-m-Y', strtotime($pi['estimate_date']));
                 }
                 if(!empty($pi['agent_id'])) {
                     $agent_id = $pi['agent_id'];
@@ -237,7 +237,7 @@ if(isset($_REQUEST['estimate_id'])) {
             $customer_details[$i] = trim($customer_details[$i]);
             if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                 $pdf->SetX(30);
-                $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
             }
         }
     }
@@ -342,7 +342,7 @@ if(isset($_REQUEST['estimate_id'])) {
                     $customer_details[$i] = trim($customer_details[$i]);
                     if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                         $pdf->SetX(30);
-                        $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                        $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
                     }
                 }
             }
@@ -500,7 +500,7 @@ if(isset($_REQUEST['estimate_id'])) {
                 $customer_details[$i] = trim($customer_details[$i]);
                 if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                     $pdf->SetX(30);
-                    $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                    $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
                 }
             }
         }
@@ -661,7 +661,28 @@ if(isset($_REQUEST['estimate_id'])) {
         }
     }
     $total_amount_ = $purchase_subtotal;
-    
+
+    if(!empty($agent_id) && $agent_id != "NULL"){
+        $pdf->SetX(100);
+        $pdf->SetFont('Arial','B',8);
+        if(!empty($agent_commission)) { 
+            if(strpos($agent_commission, "%") !== false) {
+                $pdf->Cell(80,5,"Commission " . $agent_commission ,1,0,'R',0);
+            } else {
+                $pdf->Cell(80,5,"Commission " . $agent_commission . "%",1,0,'R',0);
+            }
+        }
+
+        $agent_commision_value = 0;
+        $agent_commission_per = str_replace("%", "", $agent_commission);
+        if(!empty($agent_commission_per)) {
+            $agent_commision_value = $purchase_subtotal * $agent_commission_per / 100;
+        }
+       
+        $pdf->SetFont('Arial','',8);
+        $pdf->Cell(20,5, number_format($agent_commision_value, 2),1,1,'R',0);
+    }
+
     if(!empty($other_charges_id) && $other_charges_id != $GLOBALS['null_value']) {
         $total_charge = 0; 
         
@@ -683,6 +704,13 @@ if(isset($_REQUEST['estimate_id'])) {
             $pdf->Cell(80,5,'Total',1,0,'R',0);
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
+        }
+    }
+
+    if(!empty($customer_id)) {
+        $party_state = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'state');
+        if(!empty($party_state)) {
+            $party_state = $obj->encode_decode('decrypt', $party_state);
         }
     }
 

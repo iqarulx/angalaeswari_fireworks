@@ -59,6 +59,35 @@ function ShowGST(obj, gst_option) {
     checkOverallAmount();
 }
 
+function AssingAddress() {
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                var option = 1;
+                if (jQuery('#same_as_billing_address').prop('checked') == false) {
+                    option = 0;
+                }
+
+                if (option === 1) {
+                    var address = "";
+                    if (jQuery('textarea[name="address"]').length > 0 && jQuery('textarea[name="address"]').val().trim() !== "") {
+                        address = jQuery('textarea[name="address"]').val().trim();
+                    }
+                    if (jQuery('textarea[name="billing_address"]').length > 0) {
+                        jQuery('textarea[name="billing_address"]').val(address);
+                    }
+                } else {
+                    if (jQuery('textarea[name="billing_address"]').length > 0) {
+                        jQuery('textarea[name="billing_address"]').val('');
+                    }
+                }
+            }
+        }
+    })
+}
+
 // function ShowGST() {
 //     if (jQuery('.cgst_amount').length > 0) {
 //         jQuery('.cgst_amount').html('');
@@ -2330,6 +2359,8 @@ function GetProdetails() {
                         if (result != "") {
                             result = result.split("$$$");
 
+                            console.log(result);
+
                             if ($("select[name='selected_unit_type']").length > 0) {
                                 $("select[name='selected_unit_type']").html(result[0]);
                             }
@@ -2340,7 +2371,7 @@ function GetProdetails() {
                                 $("input[name='selected_per']").val(result[2]);
                             }
                             if ($("select[name='selected_per_type']").length > 0) {
-                                $("select[name='selected_per_type']").html(result[0]);
+                                $("select[name='selected_per_type']").html(result[8]);
                             }
                             if ($("input[name='selected_subunit_need']").length > 0) {
                                 $("input[name='selected_subunit_need']").val(result[4]);

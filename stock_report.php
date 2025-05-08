@@ -122,10 +122,6 @@
 <script>
     jQuery(document).ready(function(){
         jQuery('.add_update_form_content').find('select').select2();
-    });
-</script>
-<script>
-    $(document).ready(function(){
         $("#stockreport").addClass("active");
         table_listing_records_filter();
     });

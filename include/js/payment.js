@@ -269,8 +269,7 @@ function HideDetails(type) {
 		if (jQuery('.details_element').length > 0) {
 			jQuery('.details_element').removeClass('d-none');
 		}
-	}
-	else {
+	} else {
 		if (jQuery('.details_element').length > 0) {
 			jQuery('.details_element').addClass('d-none');
 		}

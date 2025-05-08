@@ -41,57 +41,42 @@
 
     $sales_list =array(); $total_records_list =array();
     $type ="";
-    if($view_type == '1')
-    {
+    if($view_type == '1') {
         $type ="Agent";
-    }
-    elseif($view_type == '2')
-    {
+    } else if($view_type == '2') {
         $type = "Supplier";
-    }
-    elseif($view_type == '3')
-    {
+    } else if($view_type == '3') {
         $type ="Contractor";
-    }
-    elseif($view_type == '4')
-    {
+    } else if($view_type == '4') {
         $type ="Customer";
     }
-    if(!empty($view_type))
-    {
+    if(!empty($view_type)) {
         $party_list = $obj->getPartyList($view_type);
     }
     // print_r($party_list);
     // echo $filter_party_id;
-    if(!empty($party_id))
-    {
+    if(!empty($party_id)) {
         // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
         // echo $party_name."hello";
         if(!empty($party_name)){
             // $total_records_list = $obj->balance_report($bill_company_id,$party_id,$from_date,$to_date);
             $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             $view_type = 2;
-        }else{
+        } else {
             if(!empty($filter_agent_party)){
              
                 $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],$filter_agent_party,$from_date,$to_date);
-            }
-            else{
+            } else{
                 $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             }
         }
-    }
-    else {
-        if(!empty($view_type))
-        {
+    } else {
+        if(!empty($view_type)) {
             $sales_list = ""; 
             $sales_list= $obj->balance_report($type,'',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-        }
-        else
-        {   
+        } else {   
             $sales_list = ""; 
             $sales_list= $obj->balance_report('','',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-
         }
     }
 
@@ -252,8 +237,7 @@
                 $pdf->Cell(45,10,$obj->numberFormat($grand_debit_total,2),1,0,'R',0);
             
         }
-    }
-    else{
+    } else {
         require_once('../fpdf/fpdf.php');
         $pdf = new FPDF('P','mm','A4');
         $pdf->AliasNbPages(); 
@@ -285,23 +269,29 @@
         $party_name = "";
         $pdf->SetFont('Arial', 'B', 10);
 
-    if($view_type =='1'){
-        $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
-    }else if($view_type =='2'){
-        $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $party_id, 'supplier_name');
-    }
-    else if($view_type =='3'){
-        $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'contractor_name');
-    }
-    else if($view_type =='4'){
-        $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $party_id, 'customer_name');
-    }
+        if($view_type =='1') {
+            $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
+        } else if($view_type =='2') {
+            $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $party_id, 'supplier_name');
+        } else if($view_type =='3') {
+            $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'contractor_name');
+        } else if($view_type =='4') {
+            $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $party_id, 'customer_name');
+        }
 
+        $party_type = "";
+        if($view_type =='1') {
+            $party_type = "Agent";
+        } else if($view_type =='2') {
+            $party_type = "Supplier";
+        } else if($view_type =='4') {
+            $party_type = "Customer";
+        }
 
         if(!empty($party_name)) { 
             $party_name = html_entity_decode($obj->encode_decode('decrypt', $party_name));
             $pdf->SetX(10);
-            $pdf->Cell(0,5,'Customer Name - '.html_entity_decode($party_name,ENT_QUOTES),1,1,'C',0); 
+            $pdf->Cell(0,5, $party_type . ' Name - '.html_entity_decode($party_name,ENT_QUOTES),1,1,'C',0); 
         }
         
         $pdf->SetFont('Arial','B',9);
@@ -310,14 +300,28 @@
         $pdf->Cell(15,10,'S.No.',1,0,'C',0);
         $pdf->SetX(25);
         $pdf->Cell(25,10,'Date',1,0,'C',0);
-        $pdf->SetX(50);
-        $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
-        $pdf->SetX(90);
-        $pdf->Cell(40,10,'Type',1,0,'C',0);
-        $pdf->SetX(130);
-        $pdf->Cell(35,10,'Credit',1,0,'C',0);
-        $pdf->SetX(165);
-        $pdf->Cell(35,10,'Debit',1,1,'C',0);
+        if($view_type =='1') {
+            $pdf->SetX(50);
+            $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
+            $pdf->SetX(80);
+            $pdf->Cell(30,10,'Customer',1,0,'C',0);
+            $pdf->SetX(110);
+            $pdf->Cell(30,10,'Type',1,0,'C',0);
+            $pdf->SetX(140);
+            $pdf->Cell(30,10,'Credit',1,0,'C',0);
+            $pdf->SetX(170);
+            $pdf->Cell(30,10,'Debit',1,1,'C',0);
+        } else {
+            $pdf->SetX(50);
+            $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
+            $pdf->SetX(90);
+            $pdf->Cell(40,10,'Type',1,0,'C',0);
+            $pdf->SetX(130);
+            $pdf->Cell(35,10,'Credit',1,0,'C',0);
+            $pdf->SetX(165);
+            $pdf->Cell(35,10,'Debit',1,1,'C',0);
+        }
+        
         $pdf->SetFont('Arial','',8);
 
         $index = 0;
@@ -350,15 +354,27 @@
                     $pdf->Cell(15,10,'S.No.',1,0,'C',0);
                     $pdf->SetX(25);
                     $pdf->Cell(25,10,'Date',1,0,'C',0);
-                    $pdf->SetX(50);
-                    $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
-                    $pdf->SetX(90);
-                    $pdf->Cell(40,10,'Type',1,0,'C',0);
-                    $pdf->SetX(130);
-                    $pdf->Cell(35,10,'Credit',1,0,'C',0);
-                    $pdf->SetX(165);
-                    $pdf->Cell(35,10,'Debit',1,1,'C',0);
-                    $pdf->SetFont('Arial','',8);
+                    if($view_type =='1') {
+                        $pdf->SetX(50);
+                        $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
+                        $pdf->SetX(80);
+                        $pdf->Cell(30,10,'Customer',1,0,'C',0);
+                        $pdf->SetX(110);
+                        $pdf->Cell(30,10,'Type',1,0,'C',0);
+                        $pdf->SetX(140);
+                        $pdf->Cell(30,10,'Credit',1,0,'C',0);
+                        $pdf->SetX(170);
+                        $pdf->Cell(30,10,'Debit',1,1,'C',0);
+                    } else {
+                        $pdf->SetX(50);
+                        $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
+                        $pdf->SetX(90);
+                        $pdf->Cell(40,10,'Type',1,0,'C',0);
+                        $pdf->SetX(130);
+                        $pdf->Cell(35,10,'Credit',1,0,'C',0);
+                        $pdf->SetX(165);
+                        $pdf->Cell(35,10,'Debit',1,1,'C',0);
+                    }
                     
                 }
                 $opening_balance_list = array();
@@ -427,15 +443,27 @@
                             $pdf->Cell(15,10,'S.No.',1,0,'C',0);
                             $pdf->SetX(25);
                             $pdf->Cell(25,10,'Date',1,0,'C',0);
-                            $pdf->SetX(50);
-                            $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
-                            $pdf->SetX(90);
-                            $pdf->Cell(40,10,'Type',1,0,'C',0);
-                            $pdf->SetX(130);
-                            $pdf->Cell(35,10,'Credit',1,0,'C',0);
-                            $pdf->SetX(165);
-                            $pdf->Cell(35,10,'Debit',1,1,'C',0);
-                            $pdf->SetFont('Arial','',8);
+                            if($view_type =='1') {
+                                $pdf->SetX(50);
+                                $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
+                                $pdf->SetX(80);
+                                $pdf->Cell(30,10,'Customer',1,0,'C',0);
+                                $pdf->SetX(110);
+                                $pdf->Cell(30,10,'Type',1,0,'C',0);
+                                $pdf->SetX(140);
+                                $pdf->Cell(30,10,'Credit',1,0,'C',0);
+                                $pdf->SetX(170);
+                                $pdf->Cell(30,10,'Debit',1,1,'C',0);
+                            } else {
+                                $pdf->SetX(50);
+                                $pdf->Cell(40,10,'Bill Number',1,0,'C',0);
+                                $pdf->SetX(90);
+                                $pdf->Cell(40,10,'Type',1,0,'C',0);
+                                $pdf->SetX(130);
+                                $pdf->Cell(35,10,'Credit',1,0,'C',0);
+                                $pdf->SetX(165);
+                                $pdf->Cell(35,10,'Debit',1,1,'C',0);
+                            }
                             
                         }
                         $index = $key + 1;
@@ -443,60 +471,121 @@
                         $pdf->SetX(10);
                         $pdf->Cell(15,10,$index,0,0,'C',0);
                         $pdf->SetX(25);
-                        if(!empty($data['bill_date']))
-                        {
+                        if(!empty($data['bill_date'])) {
                             $pdf->SetX(25);
                             $pdf->Cell(25,10,date('d-m-Y',strtotime($data['bill_date'])),0,0,'C',0);
                         }
                         
-                        if(!empty($data['bill_number'])) {
-                            $bill_number = $data['bill_number'];
-                            if (!preg_match('/^[A-Fa-f0-9]{32,}$/', $bill_number) && !base64_decode($bill_number, true)) {
-                                $pdf->SetX(50);
-                                $pdf->Cell(40,10,$bill_number,0,0,'L',0);
-                            }else{
-                                $pdf->SetX(50);
-                                $pdf->Cell(40,10,"-",0,0,'C',0);
-                            }
-                        }
-                        if(!empty($data['bill_type'])) {
-                            $pdf->SetX(90);
-                            $pdf->Cell(40,10,$data['bill_type'],0,0,'L',0);
-                        }
-                        if(!empty($data['credit']))
-                        {
-                            $credit_amount+=$data['credit']; 
-                            $pdf->SetX(130);
-                            $pdf->Cell(35,10,$obj->numberFormat($data['credit'],2),0,0,'R',0);
-                            
-                        }else{
-                            $pdf->SetX(130);
-                            $pdf->Cell(35,10,"-",0,0,'C',0);
-                        }
-                        if(!empty($data['debit']))
-                        {
-                            $debit_amount+=$data['debit']; 
-                            $pdf->SetX(165);
-                            $pdf->Cell(35,10,$obj->numberFormat($data['debit'],2),0,0,'R',0);
-                            
-                        }else{
-                            $pdf->SetX(165);
-                            $pdf->Cell(35,10,"-",0,0,'C',0);
-                        }
+                     
 
+                        if($view_type == "1") {
+                            if(!empty($data['bill_number'])) {
+                                $bill_number = $data['bill_number'];
+                                if (!preg_match('/^[A-Fa-f0-9]{32,}$/', $bill_number) && !base64_decode($bill_number, true)) {
+                                    $pdf->SetX(50);
+                                    $pdf->Cell(30,10,$bill_number,0,0,'L',0);
+                                } else {
+                                    $pdf->SetX(50);
+                                    $pdf->Cell(30,10,"-",0,0,'C',0);
+                                }
+                            }
+                            $customer_name = "";
+                            if(!empty($data['bill_id']) && $data['bill_id'] != "NULL") {
+                                $customer_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id', $data['bill_id'], 'customer_id');
+
+                                if(!empty($customer_id)) {
+                                    $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id', $customer_id, 'customer_name');
+                                    if(!empty($customer_name)) {
+                                        $customer_name = $obj->encode_decode('decrypt', $customer_name);
+                                    }
+                                }
+                            }
+                            if(!empty($customer_name)) {
+                                $pdf->SetX(80);
+                                $pdf->Cell(30,10,$customer_name,0,0,'L',0);
+                            } else {
+                                $pdf->SetX(80);
+                                $pdf->Cell(30,10,'',0,0,'L',0);
+                            }
+                            if(!empty($data['bill_type'])) {
+                                $pdf->SetX(110);
+                                $pdf->Cell(30,10,$data['bill_type'],0,0,'L',0);
+                            }
+                            if(!empty($data['credit'])) {
+                                $credit_amount+=$data['credit']; 
+                                $pdf->SetX(140);
+                                $pdf->Cell(30,10,$obj->numberFormat($data['credit'],2),0,0,'R',0);  
+                            } else {
+                                $pdf->SetX(140);
+                                $pdf->Cell(30,10,"-",0,0,'C',0);
+                            }
+                            if(!empty($data['debit'])) {
+                                $debit_amount+=$data['debit']; 
+                                $pdf->SetX(165);
+                                $pdf->Cell(35,10,$obj->numberFormat($data['debit'],2),0,0,'R',0);  
+                            } else {
+                                $pdf->SetX(165);
+                                $pdf->Cell(35,10,"-",0,0,'C',0);
+                            }
+    
+                        } else {
+                            if(!empty($data['bill_number'])) {
+                                $bill_number = $data['bill_number'];
+                                if (!preg_match('/^[A-Fa-f0-9]{32,}$/', $bill_number) && !base64_decode($bill_number, true)) {
+                                    $pdf->SetX(50);
+                                    $pdf->Cell(40,10,$bill_number,0,0,'L',0);
+                                } else {
+                                    $pdf->SetX(50);
+                                    $pdf->Cell(40,10,"-",0,0,'C',0);
+                                }
+                            }
+                            if(!empty($data['bill_type'])) {
+                                $pdf->SetX(90);
+                                $pdf->Cell(40,10,$data['bill_type'],0,0,'L',0);
+                            }
+                            if(!empty($data['credit'])) {
+                                $credit_amount+=$data['credit']; 
+                                $pdf->SetX(130);
+                                $pdf->Cell(35,10,$obj->numberFormat($data['credit'],2),0,0,'R',0);  
+                            } else {
+                                $pdf->SetX(130);
+                                $pdf->Cell(35,10,"-",0,0,'C',0);
+                            }
+                            if(!empty($data['debit'])) {
+                                $debit_amount+=$data['debit']; 
+                                $pdf->SetX(170);
+                                $pdf->Cell(30,10,$obj->numberFormat($data['debit'],2),0,0,'R',0);  
+                            } else {
+                                $pdf->SetX(170);
+                                $pdf->Cell(30,10,"-",0,0,'C',0);
+                            }    
+                        }
+                        
                         $pdf->SetX(10);
                         $pdf->Cell(15,10,'',1,0,'C',0);
                         $pdf->SetX(25);
                         $pdf->Cell(25,10,'',1,0,'C',0);
-                        $pdf->SetX(50);
-                        $pdf->Cell(40,10,'',1,0,'C',0);
-                        $pdf->SetX(90);
-                        $pdf->Cell(40,10,'',1,0,'C',0);
-                        $pdf->SetX(130);
-                        $pdf->Cell(35,10,'',1,0,'C',0);
-                        $pdf->SetX(165);
-                        $pdf->Cell(35,10,'',1,1,'C',0);
-                            
+                        if($view_type == "1") {
+                            $pdf->SetX(50);
+                            $pdf->Cell(30,10,'',1,0,'C',0);
+                            $pdf->SetX(80);
+                            $pdf->Cell(30,10,'',1,0,'C',0);
+                            $pdf->SetX(110);
+                            $pdf->Cell(30,10,'',1,0,'C',0);
+                            $pdf->SetX(140);
+                            $pdf->Cell(30,10,'',1,0,'C',0);
+                            $pdf->SetX(170);
+                            $pdf->Cell(30,10,'',1,1,'C',0);
+                        } else {
+                            $pdf->SetX(50);
+                            $pdf->Cell(40,10,'',1,0,'C',0);
+                            $pdf->SetX(90);
+                            $pdf->Cell(40,10,'',1,0,'C',0);
+                            $pdf->SetX(130);
+                            $pdf->Cell(35,10,'',1,0,'C',0);
+                            $pdf->SetX(165);
+                            $pdf->Cell(35,10,'',1,1,'C',0);
+                        }    
                     }
                     
                 }    
@@ -505,42 +594,74 @@
             $display_status ="";
             $pdf->SetFont('Arial','B',8);
 
-            if($credit_amount < $debit_amount )
-            {
+            if($credit_amount < $debit_amount ) {
                 $display_status="Current Balance";
-            }   
-            else{
+            } else {
                 $display_status ="Current Balance";
             }
-            $pdf->SetX(10);
-            $pdf->Cell(120,10,'Total',1,0,'R',0);
-            if(!empty($credit_amount)){ 
-                $pdf->SetX(130);
-                $pdf->Cell(35,10,$obj->numberFormat($credit_amount,2),0,0,'R',0);   
-            } 
-            if(!empty($debit_amount)){ 
-                $pdf->SetX(165);
-                $pdf->Cell(35,10,$obj->numberFormat($debit_amount,2),0,0,'R',0);
-            }
-            $pdf->SetX(130);
-            $pdf->Cell(35,10,'',1,0,'R',0);
-            $pdf->SetX(165);
-            $pdf->Cell(35,10,'',1,1,'R',0);
 
-            $pdf->SetX(10);
-            $pdf->Cell(120,10,$display_status,1,0,'R',0);
-            if($credit_amount > $debit_amount) { 
+            if($view_type == "1") {
+                $pdf->SetX(10);
+                $pdf->Cell(130,10,'Total',1,0,'R',0);
+                if(!empty($credit_amount)){ 
+                    $pdf->SetX(140);
+                    $pdf->Cell(30,10,$obj->numberFormat($credit_amount,2),0,0,'R',0);   
+                } 
+                if(!empty($debit_amount)){ 
+                    $pdf->SetX(170);
+                    $pdf->Cell(30,10,$obj->numberFormat($debit_amount,2),0,0,'R',0);
+                }
+                $pdf->SetX(140);
+                $pdf->Cell(30,10,'',1,0,'R',0);
+                $pdf->SetX(170);
+                $pdf->Cell(30,10,'',1,1,'R',0);
+    
+                $pdf->SetX(10);
+                $pdf->Cell(130,10,$display_status,1,0,'R',0);
+                if($credit_amount > $debit_amount) { 
+                    $pdf->SetX(140);
+                    $pdf->Cell(30,10,$obj->numberFormat(($credit_amount  -$debit_amount),2),1,0,'R',0); 
+                    $pdf->SetX(170);
+                    $pdf->Cell(30,10,'',1,0,'R',0);
+                } 
+                if($debit_amount > $credit_amount){ 
+                    $pdf->SetX(140);
+                    $pdf->Cell(30,10,'',1,0,'R',0); 
+                    $pdf->SetX(170);
+                    $pdf->Cell(30,10,$obj->numberFormat(($debit_amount - $credit_amount),2),1,1,'R',0);
+                }
+            } else {
+                $pdf->SetX(10);
+                $pdf->Cell(120,10,'Total',1,0,'R',0);
+                if(!empty($credit_amount)){ 
+                    $pdf->SetX(130);
+                    $pdf->Cell(35,10,$obj->numberFormat($credit_amount,2),0,0,'R',0);   
+                } 
+                if(!empty($debit_amount)){ 
+                    $pdf->SetX(165);
+                    $pdf->Cell(35,10,$obj->numberFormat($debit_amount,2),0,0,'R',0);
+                }
                 $pdf->SetX(130);
-                $pdf->Cell(35,10,$obj->numberFormat(($credit_amount  -$debit_amount),2),1,0,'R',0); 
-                $pdf->SetX(165);
                 $pdf->Cell(35,10,'',1,0,'R',0);
-            } 
-            if($debit_amount > $credit_amount){ 
-                $pdf->SetX(130);
-                $pdf->Cell(35,10,'',1,0,'R',0); 
                 $pdf->SetX(165);
-                $pdf->Cell(35,10,$obj->numberFormat(($debit_amount - $credit_amount),2),1,1,'R',0);
+                $pdf->Cell(35,10,'',1,1,'R',0);
+
+                $pdf->SetX(10);
+                $pdf->Cell(120,10,$display_status,1,0,'R',0);
+                if($credit_amount > $debit_amount) { 
+                    $pdf->SetX(130);
+                    $pdf->Cell(35,10,$obj->numberFormat(($credit_amount  -$debit_amount),2),1,0,'R',0); 
+                    $pdf->SetX(165);
+                    $pdf->Cell(35,10,'',1,0,'R',0);
+                } 
+                if($debit_amount > $credit_amount){ 
+                    $pdf->SetX(130);
+                    $pdf->Cell(35,10,'',1,0,'R',0); 
+                    $pdf->SetX(165);
+                    $pdf->Cell(35,10,$obj->numberFormat(($debit_amount - $credit_amount),2),1,1,'R',0);
+                }
             }
+            
         }
 
     }

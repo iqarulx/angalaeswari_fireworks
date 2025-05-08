@@ -144,19 +144,16 @@
     </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         $("#product").addClass("active");
         table_listing_records_filter();
     });
-</script>
 
-<script type="text/javascript">
     function ExcelDownload() {
         var search_text = ""; var url = ""; 
         search_text = jQuery('input[name="search_text"]').val();
         url = "product_download.php?search_text="+search_text;
         window.open(url,'_blank');
     }
-    
 </script>

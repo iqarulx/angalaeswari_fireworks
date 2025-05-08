@@ -1194,7 +1194,7 @@
 			$return_array = array($unit_stock, $subunit_stock);
 			return $return_array;
 		}
-		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
+		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains, $screen) {
 			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
 			if(!empty($magazine_id)) {
 				$where = " magazine_id = '".$magazine_id."' AND ";
@@ -1218,27 +1218,45 @@
 			if(!empty($product_id)) {
 				$case_contents_list = array();
 				if(!empty($subunit_need) && $subunit_need == "1") {
-					$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_by_magazine_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
-		
-					$case_contents_list = $this->getQueryRecords('', $case_contents_query);
-				}
+					if($screen == 1) {
+						$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_by_godown_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
+					} else {
+						$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_by_magazine_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
+					}
 
-				if(!empty($case_contents_list)) {
-					foreach($case_contents_list as $ccl) {
-						$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND deleted = '0' group by case_contains";
-						$list = $this->getQueryRecords('', $select_query);
-		
-						if(!empty($list)) {
-							foreach($list as $data) {
-								if(!empty($data['net_cases']) && $data['net_cases'] != $GLOBALS['null_value']) {
-									$unit_stock += round($data['net_cases']);
-								}
-								if(!empty($data['net_pcs']) && $data['net_pcs'] != $GLOBALS['null_value']) {
-									$subunit_stock += round($data['net_pcs']);
+					$case_contents_list = $this->getQueryRecords('', $case_contents_query);
+
+					if(!empty($case_contents_list)) {
+						foreach($case_contents_list as $ccl) {
+							$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND deleted = '0' group by case_contains";
+							$list = $this->getQueryRecords('', $select_query);
+			
+							if(!empty($list)) {
+								foreach($list as $data) {
+									if(!empty($data['net_cases']) && $data['net_cases'] != $GLOBALS['null_value']) {
+										$unit_stock += round($data['net_cases']);
+									}
+									if(!empty($data['net_pcs']) && $data['net_pcs'] != $GLOBALS['null_value']) {
+										$subunit_stock += round($data['net_pcs']);
+									}
 								}
 							}
+						} 
+					}
+				} else {
+					$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND deleted = '0' group by case_contains";
+					$list = $this->getQueryRecords('', $select_query);
+	
+					if(!empty($list)) {
+						foreach($list as $data) {
+							if(!empty($data['net_cases']) && $data['net_cases'] != $GLOBALS['null_value']) {
+								$unit_stock = round($data['net_cases']);
+							}
+							if(!empty($data['net_pcs']) && $data['net_pcs'] != $GLOBALS['null_value']) {
+								$subunit_stock = round($data['net_pcs']);
+							}
 						}
-					} 
+					}
 				}
 			}
 			

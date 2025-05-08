@@ -18,7 +18,7 @@
             $conversion_update = $_REQUEST['conversion_update'];
         }
         $current_date = date('Y-m-d');
-        $proforma_invoice_id = ""; $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0; $address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $old_quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = ""; $charges_count = 0;
+        $proforma_invoice_id = ""; $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0; $address = ""; $billing_address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $old_quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = ""; $charges_count = 0;
 
         if(!empty($show_delivery_slip_id)) {
             $delivery_slip_list = $obj->getDeliverySlipIndex($show_delivery_slip_id, $conversion_update);
@@ -60,6 +60,9 @@
                 }
                 if(!empty($ds['address'])) {
                     $address = $ds['address'];
+                }
+                if(!empty($ds['billing_address'])) {
+                    $billing_address = $ds['billing_address'];
                 }
                 if(!empty($ds['tax_option'])) {
                     $tax_option = $ds['tax_option'];
@@ -162,19 +165,16 @@
                 if(!empty($ds['other_charges_id'])) {
                     $other_charges_id = $ds['other_charges_id'];
                     $other_charges_id = explode(",", $other_charges_id);
-                    $other_charges_id = array_reverse($other_charges_id);
                     $charges_count = count($other_charges_id);
                 }      
                     
                 if(!empty($ds['charges_type'])) {
                     $charges_type = $ds['charges_type'];
                     $charges_type = explode(",", $charges_type);
-                    $charges_type = array_reverse($charges_type);
                 } 
                 if(!empty($ds['other_charges_value'])) {
                     $other_charges_value = $ds['other_charges_value'];
                     $other_charges_value = explode(",", $other_charges_value);
-                    $other_charges_value = array_reverse($other_charges_value);
                 }    
                 if(!empty($ds['agent_commission'])) {
                     $agent_commission = $ds['agent_commission'];
@@ -420,6 +420,14 @@
                         <div class="form-label-group in-border">
                             <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address" readonly><?php if(!empty($address)) { echo $address; } ?></textarea>
                             <label>Delivery Address</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-3 col-12 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <textarea class="form-control" id="billing_address" name="billing_address" placeholder="Enter Your Address" readonly><?php if(!empty($billing_address)) { echo $billing_address; } ?></textarea>
+                            <label>Billing Address</label>
                         </div>
                     </div>
                 </div>
@@ -792,7 +800,7 @@
 
     if(isset($_POST['edit_id'])) {
         // Strings
-        $proforma_invoice_id = ""; $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_delivery_slip = "";  $edit_id = ""; $delivery_slip_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; $gst_option = ""; $address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = "";  $magazine_type = ""; $magazine_type_error = "";  $magazine_id = ""; $magazine_id_error = ""; $delivery_slip_id = ""; $delivery_slip_number = ""; $delivery_slip_date = date('Y-m-d');
+        $proforma_invoice_id = ""; $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_delivery_slip = "";  $edit_id = ""; $delivery_slip_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; $gst_option = ""; $address = ""; $billing_address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = "";  $magazine_type = ""; $magazine_type_error = "";  $magazine_id = ""; $magazine_id_error = ""; $delivery_slip_id = ""; $delivery_slip_number = ""; $delivery_slip_date = date('Y-m-d');
         
         // Arrays
         $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $old_quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array();$other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
@@ -1008,6 +1016,11 @@
         if(isset($_POST['address'])) {
             $address = $_POST['address'];
             $address = trim($address);
+        }
+
+        if(isset($_POST['billing_address'])) {
+            $billing_address = $_POST['billing_address'];
+            $billing_address = trim($billing_address);
         }
 
         if(isset($_POST['company_state'])) {
@@ -1796,8 +1809,8 @@
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date',  'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'magazine_type', 'magazine_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'indv_magazine_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $delivery_slip_date . "'", "'" . $proforma_invoice_id . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $magazine_type . "'", "'" . $magazine_id . "'", "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $indv_magazine_id . "'", "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date',  'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'magazine_type', 'magazine_id', 'gst_option', 'address', 'billing_address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'indv_magazine_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $delivery_slip_date . "'", "'" . $proforma_invoice_id . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $magazine_type . "'", "'" . $magazine_id . "'", "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $billing_address . "'", "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $indv_magazine_id . "'", "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'", "'0'", "'0'");
 
                     $delivery_slip_insert_id = $obj->InsertSQL($GLOBALS['delivery_slip_table'], $columns, $values, 'delivery_slip_id', 'delivery_slip_number', $action);
 
@@ -1820,8 +1833,8 @@
                         }
 
                         $columns = array(); $values = array();		
-                        $columns = array('delivery_slip_date', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'magazine_type', 'magazine_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'indv_magazine_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total');
-                        $values = array("'" . $delivery_slip_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $magazine_type . "'", "'" . $magazine_id . "'", "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $indv_magazine_id . "'", "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'");
+                        $columns = array('delivery_slip_date', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'magazine_type', 'magazine_id', 'gst_option', 'address', 'billing_address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'indv_magazine_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'bill_total');
+                        $values = array("'" . $delivery_slip_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $magazine_type . "'", "'" . $magazine_id . "'", "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $billing_address . "'", "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $indv_magazine_id . "'", "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $total_amount . "'");
 
                         $delivery_slip_update_id = $obj->UpdateSQL($GLOBALS['delivery_slip_table'], $getUniqueID, $columns, $values, $action);
 
@@ -1879,7 +1892,7 @@
                                 $unit_sub = $subunit_id;
                             }
                     
-                            $stock_update_id = $obj->StockUpdate($GLOBALS['delivery_slip_table'], "Out", $delivery_slip_id, '', $product_id[$i], $remarks, date('Y-m-d'), $location_id[$i], $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
+                            $stock_update_id = $obj->StockUpdate($GLOBALS['delivery_slip_table'], "Out", $delivery_slip_id, '', $product_id[$i], $remarks, date('Y-m-d'), $GLOBALS['null_value'], $location_id[$i], $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
                         }
                     }
                 }
@@ -2034,8 +2047,8 @@
                                 ?>
                                 <br>
                                 <?php
-                                    if(!empty($list['delivery_slip_date'])) {
-                                        echo date('d-m-Y', strtotime($list['delivery_slip_date']));
+                                    if(!empty($list['proforma_invoice_date'])) {
+                                        echo date('d-m-Y', strtotime($list['proforma_invoice_date']));
                                     }
                                 ?>
                             </td>

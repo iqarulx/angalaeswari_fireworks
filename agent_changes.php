@@ -204,17 +204,15 @@
                     </button>
                 </div>
             </div>
-            <script type="text/javascript">
-                getCountries('agent','<?php if(!empty($country)) { echo $country; } ?>', '<?php if(!empty($state)) { echo $state; } ?>', '<?php if(!empty($district)) { echo $district; } ?>', '<?php if(!empty($city)) { echo $city; } ?>');
-            </script>
-             <script type="text/javascript">                
-				jQuery(document).ready(function(){
-					jQuery('select').select2();
-				});
-            </script>
             <script src="include/select2/js/select2.min.js"></script>
             <script src="include/select2/js/select.js"></script>
-            <script>
+            <script type="text/javascript">   
+                getCountries('agent','<?php if(!empty($country)) { echo $country; } ?>', '<?php if(!empty($state)) { echo $state; } ?>', '<?php if(!empty($district)) { echo $district; } ?>', '<?php if(!empty($city)) { echo $city; } ?>');             
+				
+                jQuery(document).ready(function(){
+					jQuery('select').select2();
+				});
+                
                 <?php if(isset($add_custom_agent) && $add_custom_agent == '1') { ?>
                     jQuery('#CustomAgentModal').on('shown.bs.modal', function () {
                         jQuery('form[name="agent_form"]').find('select').select2({

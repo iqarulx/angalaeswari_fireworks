@@ -76,14 +76,14 @@
                                                     </div>  
                                                 </div>  
                                             </div>  
-                                            <div class="col-lg-3 col-md-4 col-6">
+                                            <div class="col-lg-6 col-md-4 col-6">
                                             <?php if($customer_count > 0) { ?>
-                                                <button class="btn btn-success py-2 mx-2" style="font-size:12px; width:140px;" type="button" onclick="Javascript:ExcelDownload();"> <i class="fa fa-cloud-download"></i> Excel Download </button>
-                                                <button class="btn btn-primary py-2 mx-2" style="font-size:12px; width:75px;" type="button" onclick="Javascript:PrintCustomer('');"> <i class="fa fa-print"></i> Print </button>
+                                                    <button class="btn btn-success py-2 mx-2" style="font-size:12px; width:140px;" type="button" onclick="Javascript:ExcelDownload();"> <i class="fa fa-cloud-download"></i> Excel Download </button>
+                                                    <button class="btn btn-primary py-2 mx-2" style="font-size:12px; width:75px;" type="button" onclick="Javascript:PrintCustomer('');"> <i class="fa fa-print"></i> Print </button>
                                                 <?php
-                                            } ?> 
-                                            </div>
-                                            <div class="col-lg-2 col-md-4 col-6 ps-2"> <?php
+                                                } 
+                                            ?> 
+                                            <?php
                                                 $add_access_error = "";
                                                 if(!empty($login_staff_id)) {
                                                     $permission_action = $add_action;
@@ -110,13 +110,12 @@
         </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         $("#customer").addClass("active");
         table_listing_records_filter();
     });
-</script>
-<script type="text/javascript">
+
     function ExcelDownload() {
         var search_text = ""; var url = ""; var filter_agent_id = "";
         filter_agent_id = jQuery('select[name="filter_agent_id"]').val();

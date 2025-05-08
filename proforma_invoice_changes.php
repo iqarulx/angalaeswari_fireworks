@@ -12,7 +12,7 @@
 	if(isset($_REQUEST['show_proforma_invoice_id'])) { 
         $show_proforma_invoice_id = $_REQUEST['show_proforma_invoice_id'];
         $current_date = date('Y-m-d');
-        $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0;$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
+        $proforma_invoice_number = ""; $proforma_invoice_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = 0;$address = ""; $billing_address = 0; $same_as_billing_address = false; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
         $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $ds_product_ids = array();
 
         if(!empty($show_proforma_invoice_id)) {
@@ -48,6 +48,12 @@
                     }
                     if(!empty($pi['address'])) {
                         $address = $pi['address'];
+                    }
+                    if(!empty($pi['billing_address'])) {
+                        $billing_address = $pi['billing_address'];
+                    }
+                    if($address == $billing_address) {
+                        $same_as_billing_address = true;
                     }
                     if(!empty($pi['tax_option'])) {
                         $tax_option = $pi['tax_option'];
@@ -368,6 +374,20 @@
                         <div class="form-label-group in-border">
                             <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address"><?php if(!empty($address)) { echo $address; } ?></textarea>
                             <label>Delivery Address</label>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="form-check form-switch form-switch-right form-switch-md">
+                                <label for="BillingAddress" class="form-label text-muted smallfnt">Same as Billing Address</label>
+                                <input id="same_as_billing_address" class="form-check-input code-switcher" name="same_as_billing_address" onchange="Javascript:AssingAddress();" type="checkbox" <?php if($same_as_billing_address){ ?>checked<?php } ?> id="BillingAddress">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-3 col-12 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <textarea class="form-control" id="billing_address" name="billing_address" placeholder="Enter Your Address"><?php if(!empty($billing_address)) { echo $billing_address; } ?></textarea>
+                            <label>Billing Address</label>
                         </div>
                     </div>
                 </div>
@@ -846,7 +866,7 @@
 
     if(isset($_POST['edit_id'])) {
         // Strings
-        $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_proforma_invoice = "";  $edit_id = ""; $proforma_invoice_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; /* $magazine_type = 0; $magazine_id = ""; */ $gst_option = ""; $address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = "";
+        $proforma_invoice_date = ""; $proforma_invoice_date_error = ""; $proforma_invoice_number = ""; $proforma_invoice_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_proforma_invoice = "";  $edit_id = ""; $proforma_invoice_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; /* $magazine_type = 0; $magazine_id = ""; */ $gst_option = ""; $address = ""; $billing_address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = "";
         
         // Arrays
         $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array();$other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
@@ -1014,6 +1034,11 @@
         if(isset($_POST['address'])) {
             $address = $_POST['address'];
             $address = trim($address);
+        }
+
+        if(isset($_POST['billing_address'])) {
+            $billing_address = $_POST['billing_address'];
+            $billing_address = trim($billing_address);
         }
 
         if(isset($_POST['company_state'])) {
@@ -1573,8 +1598,8 @@
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'", "'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'proforma_invoice_id', 'proforma_invoice_number', 'proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'billing_address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $proforma_invoice_number . "'", "'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $billing_address . "'", "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'", "'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
 
                     $proforma_invoice_insert_id = $obj->InsertSQL($GLOBALS['proforma_invoice_table'], $columns, $values, 'proforma_invoice_id', 'proforma_invoice_number', $action);
 
@@ -1597,8 +1622,8 @@
                         }
 
                         $columns = array(); $values = array();		
-                        $columns = array('proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total');
-                        $values = array("'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'",  "'" . $total_amount . "'");
+                        $columns = array('proforma_invoice_date',  'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'billing_address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total');
+                        $values = array("'" . $proforma_invoice_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'","'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $billing_address . "'", "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'","'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'",  "'" . $total_amount . "'");
 
                         $proforma_invoice_update_id = $obj->UpdateSQL($GLOBALS['proforma_invoice_table'], $getUniqueID, $columns, $values, $action);
 
@@ -1831,19 +1856,21 @@
                                                             echo " " . $status_list['sub_unit_name'];
                                                         }
                                                         echo " ) / (";
-                                                        if(!empty($status_list['total_stock_unit']) && !empty($status_list['total_stock_sub_unit'])) {
+                                                        if(!empty($status_list['total_stock_unit']) || (!empty($status_list['total_stock_unit']) && !empty($status_list['total_stock_sub_unit']))) {
                                                             if(!empty($status_list['total_stock_unit'])) {
                                                                 echo $status_list['total_stock_unit'];
-                                                            }
-                                                            if(!empty($status_list['stock_unit_name'])) {
-                                                                echo " " . $status_list['stock_unit_name'];
+                                                                if(!empty($status_list['stock_unit_name'])) {
+                                                                    echo " " . $status_list['stock_unit_name'];
+                                                                }
                                                             }
                                                             if(!empty($status_list['total_stock_sub_unit'])) {
                                                                 echo " + " . $status_list['total_stock_sub_unit'];
+
+                                                                if(!empty($status_list['stock_sub_unit_name'])) {
+                                                                    echo " " . $status_list['stock_sub_unit_name'];
+                                                                }
                                                             }
-                                                            if(!empty($status_list['stock_sub_unit_name'])) {
-                                                                echo " " . $status_list['stock_sub_unit_name'];
-                                                            }
+                                                            
                                                         } else {
                                                             echo "0";
                                                         }
@@ -2016,6 +2043,17 @@
                 ?>
             <?php
         }
+        echo "$$$";
+        ?>
+        <option value="">Select</option>
+        <option value="1" <?php if($per_type == 1) { ?> selected <?php } ?>><?php if(!empty($unit_id)){ echo $unit_name; }?> </option>
+        <?php
+            if($subunit_need =='1')
+            {
+        ?>
+        <option value="2" <?php if($per_type == 2) { ?> selected <?php } ?>><?php if(!empty($subunit_id)){ echo $subunit_name; }?> </option>
+        <?php } ?>
+        <?php
 
     }
 
@@ -2500,11 +2538,37 @@
                     $group_name = "";
                     $group_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'group_name');
 
-                    $getCurrentStock = array();
-                    if(!empty($contents[$i])){
-                        $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], $contents[$i]);
+                    $current_stock = array();
+                    if(!empty($contents[$i])) {
+                        $current_stock = $obj->getStockReportByMagazine($product_ids[$i], $contents[$i]);
                     } else {
-                        $getCurrentStock = $obj->getCurrentStockDetails($product_ids[$i], '');
+                        $current_stock = $obj->getStockReportByMagazine($product_ids[$i], '');
+                    }
+
+                    $product_list = array();
+                    $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
+                    
+                    $unit_id = "";
+                    $unit_name = "";
+                    $sub_unit_id = "";
+                    $sub_unit_name = "";
+
+                    if(!empty($product_list)) {
+                        foreach($product_list as $product) {
+                            if(!empty($product['unit_id'])) {
+                                $unit_id = $product['unit_id'];
+                            }
+                            if(!empty($product['subunit_need']) && !empty($product['subunit_id'])) {
+                                $sub_unit_id = $product['subunit_id'];
+                            }
+                        }
+                    }
+
+                    if(!empty($unit_id)) {
+                        $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                    }
+                    if(!empty($sub_unit_id)) {
+                        $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $sub_unit_id, 'unit_name');
                     }
 
                     ?>
@@ -2526,35 +2590,24 @@
                             <th> Current Stock Subunit</th>
                         </thead>
                         <tbody>
-                           <?php
-                           if(!empty($getCurrentStock)){
-                                $magazine_name = "";
-                                $current_stock_unit = 0;
-                                $current_stock_subunit = 0;
-                                foreach($getCurrentStock as $data){
-                                    if(!empty($data['current_stock_unit']) && $data['current_stock_unit'] != $GLOBALS['null_value']) {
-                                        $current_stock_unit += $data['current_stock_unit'];
+                            <?php
+                            if(!empty($current_stock)) {
+                                foreach($current_stock as $stock) {
+                                    $magazine_name = "";
+                                    if(!empty($stock['magazine_id'])){
+                                        $magazine_name = $obj->getTableColumnValue($GLOBALS['magazine_table'],'magazine_id', $stock['magazine_id'],'magazine_name');
+                                        $magazine_name =  $obj->encode_decode('decrypt', $magazine_name);
                                     }
-                                    if(!empty($data['current_stock_subunit']) && $data['current_stock_subunit'] != $GLOBALS['null_value']) {
-                                        $current_stock_subunit += $data['current_stock_subunit'];
-                                    }
-                                    if(!empty($data['magazine_id']) && $data['magazine_id'] != $GLOBALS['null_value'] ) {
-                                        $magazine_id = $data['magazine_id'];
-                                    }
-                                }
-
-                                if(!empty($magazine_id)){
-                                    $magazine_name = $obj->getTableColumnValue($GLOBALS['magazine_table'],'magazine_id',$magazine_id,'magazine_name');
-                                    $magazine_name =  $obj->encode_decode('decrypt', $magazine_name);
-                                } ?>
-                                <td><?php if(!empty($magazine_name)){ echo $magazine_name; } ?></td>
-                                <td><?php if(!empty($current_stock_unit)){ echo $current_stock_unit; } ?></td>
-                                <td><?php if(!empty($current_stock_subunit)){ echo $current_stock_subunit; }else{ echo "-"; } ?></td>
-
-
-                                <?php
-                           }
-                           ?>
+                                    ?>
+                                    <tr>
+                                        <td><?php if(!empty($magazine_name)){ echo $magazine_name; } ?></td>
+                                        <td><?php if(!empty($stock['current_stock_unit'])){ echo $stock['current_stock_unit'] . (!empty($unit_name) ? " " . $obj->encode_decode('decrypt', $unit_name) : ''); } else { echo "-"; } ?></td>
+                                        <td><?php if(!empty($stock['current_stock_sub_unit'])){ echo $stock['current_stock_sub_unit'] . (!empty($sub_unit_name) ? " " . $obj->encode_decode('decrypt', $sub_unit_name) : ''); } else { echo "-"; }?></td>
+                                    </tr>
+                                    <?php
+                                }    
+                            }                            
+                            ?>
                         </tbody>
                     </table><br><br><br>
                      <?php

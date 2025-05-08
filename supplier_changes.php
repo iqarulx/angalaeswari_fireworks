@@ -194,9 +194,7 @@
             </div>
             <script type="text/javascript">
                 getCountries('supplier','<?php if(!empty($country)) { echo $country; } ?>', '<?php if(!empty($state)) { echo $state; } ?>', '<?php if(!empty($district)) { echo $district; } ?>', '<?php if(!empty($city)) { echo $city; } ?>');
-            </script>
-             <script type="text/javascript">                
-				jQuery(document).ready(function(){
+                jQuery(document).ready(function(){
 					jQuery('select').select2();
 				});
             </script>

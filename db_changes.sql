@@ -1,37 +1,5 @@
-TRUNCATE `af_agent`;
-TRUNCATE `af_bank`;
-TRUNCATE `af_charges`;
-TRUNCATE `af_consumption_entry`;
-TRUNCATE `af_customer`;
-TRUNCATE `af_daily_production`;
-TRUNCATE `af_delivery_slip`;
-TRUNCATE `af_estimate`;
-TRUNCATE `af_expense`;
-TRUNCATE `af_expense_category`;
-TRUNCATE `af_factory`;
-TRUNCATE `af_finished_group`;
-TRUNCATE `af_godown`;
-TRUNCATE `af_login`;
-TRUNCATE `af_magazine`;
-TRUNCATE `af_material_transfer`;
-TRUNCATE `af_payment`;
-TRUNCATE `af_payment_mode`;
-TRUNCATE `af_product`;
-TRUNCATE `af_proforma_invoice`;
-TRUNCATE `af_purchase_entry`;
-TRUNCATE `af_receipt`;
-TRUNCATE `af_role`;
-TRUNCATE `af_semifinished_inward`;
-TRUNCATE `af_stock`;
-TRUNCATE `af_stock_adjustment`;
-TRUNCATE `af_stock_by_godown`;
-TRUNCATE `af_stock_by_magazine`;
-TRUNCATE `af_stock_conversion`;
-TRUNCATE `af_supplier`;
-TRUNCATE `af_transport`;
-TRUNCATE `af_unit`;
-TRUNCATE `af_user`;
-TRUNCATE `af_voucher`;
+ALTER TABLE `af_proforma_invoice` ADD `billing_address` MEDIUMTEXT NULL DEFAULT NULL AFTER `address`; 
 
-INSERT INTO `af_user` (`id`, `created_date_time`, `creator`, `creator_name`, `user_id`, `role_id`, `login_id`, `lower_case_login_id`, `name`, `mobile_number`, `name_mobile`, `password`, `admin`, `type`, `factory_id`, `godown_id`, `magazine_id`, `deleted`) VALUES
-(1, '2025-04-29 17:16:03', '4d6a67774e4449774d6a55774d5441344e5464664d44453d', '55334a706332396d64486468636d5636', '4d6a6b774e4449774d6a55774e5445324d444e664d44453d', '', '55334a706332396d64486468636d5636', '63334a706332396d64486468636d5636', '55334a706332396d64486468636d5636', '4f5459794f546b314d4441774d513d3d', '55334a706332396d64486468636d5636494367354e6a49354f5455774d4441784b513d3d', '51575274615734784d6a4e41', 1, 'Super Admin', 'NULL', 'NULL', 'NULL', 0);
+ALTER TABLE `af_delivery_slip` ADD `billing_address` MEDIUMTEXT NULL DEFAULT NULL AFTER `address`; 
+
+ALTER TABLE `af_estimate` ADD `billing_address` MEDIUMTEXT NULL DEFAULT NULL AFTER `address`; 

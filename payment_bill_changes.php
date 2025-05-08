@@ -137,10 +137,11 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
             <script type="text/javascript">
 				jQuery(document).ready(function(){
 					jQuery('.add_update_form_content').find('select').select2();
+                    HideDetails('supplier');
 				}); 
 			</script>
 		<?php
-	}else if($party_type == '2'){
+	} else if($party_type == '2'){
 		$agent_list = array();
 	    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'],'','','');
 
@@ -171,6 +172,7 @@ if(isset($_REQUEST['get_party_list_voucher'])) {
                 <script type="text/javascript">
                         jQuery(document).ready(function(){
                             jQuery('.add_update_form_content').find('select').select2();
+                            HideDetails('agent');
                         }); 
                 </script>
             </div>
@@ -314,6 +316,39 @@ if(isset($_REQUEST['details_type'])) {
                             $identification = $obj->encode_decode('decrypt', $data['identification']);
                         }
                     }	
+                } else {
+                    $details_list = $obj->getTableRecords($GLOBALS['supplier_table'], 'supplier_id', $type_id, '');
+                    if(!empty($details_list)) {
+                        foreach($details_list as $data) {
+                            if(!empty($data['supplier_name']) && $data['supplier_name'] != $GLOBALS['null_value']) {
+                                $name = $obj->encode_decode('decrypt', $data['supplier_name']);
+                            }
+                            if(!empty($data['address']) && $data['address'] != $GLOBALS['null_value']) {
+                                $address = $obj->encode_decode('decrypt', $data['address']);
+                            }
+                            if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                $city = $obj->encode_decode('decrypt', $data['city']);
+                            }
+                            if(!empty($data['district']) && $data['district'] != $GLOBALS['null_value']) {
+                                $district = $obj->encode_decode('decrypt', $data['district']);
+                            }
+                            if(!empty($data['state']) && $data['state'] != $GLOBALS['null_value']) {
+                                $state = $obj->encode_decode('decrypt', $data['state']);
+                            }
+                            if(!empty($data['pincode']) && $data['pincode'] != $GLOBALS['null_value']) {
+                                $pincode = $obj->encode_decode('decrypt', $data['pincode']);
+                            }
+                            if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
+                                $mobile_number = $obj->encode_decode('decrypt', $data['mobile_number']);
+                            }
+                            if(!empty($data['email']) && $data['email'] != $GLOBALS['null_value']) {
+                                $email = $obj->encode_decode('decrypt', $data['email']);
+                            }
+                            if(!empty($data['identification']) && $data['identification'] != $GLOBALS['null_value']) {
+                                $identification = $obj->encode_decode('decrypt', $data['identification']);
+                            }
+                        }	
+                    }
                 }
             }
         }
@@ -546,6 +581,7 @@ if(isset($_REQUEST['party_type'])) {
                     <th>#</th>
                     <th>Bill No<br>Date</th>
                     <th>Bill Type</th>
+                    <th>Customer</th>
                     <th>Particulars</th>
                     <th>Credit</th>
                     <th>Debit</th>
@@ -647,6 +683,20 @@ if(isset($_REQUEST['party_type'])) {
                             if(!empty($data['agent_name']) && $data['agent_name'] != "NULL") {
                                 $party_name = $obj->encode_decode('decrypt', $data['agent_name']);
                             }
+
+                            $customer_name = "";
+                            if(!empty($data['bill_id']) && $data['bill_id'] != "NULL") {
+                                if($data['bill_type'] == "Estimate") {
+                                    $customer_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id', $data['bill_id'], 'customer_id');
+
+                                    if(!empty($customer_id)) {
+                                        $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id', $customer_id, 'customer_name');
+                                        if(!empty($customer_name)) {
+                                            $customer_name = $obj->encode_decode('decrypt', $customer_name);
+                                        }
+                                    }
+                                }
+                            }
         ?>
                         <tr>
                             <td><?php echo $s_no ?></td>
@@ -658,6 +708,7 @@ if(isset($_REQUEST['party_type'])) {
                                 }  ?>
                                 <?php echo date('d-m-Y', strtotime($data['bill_date'])); ?></td>
                             <td><?php echo $data['bill_type']; ?></td>
+                            <td><?php if(!empty($customer_name)) { echo $customer_name; } else { echo "-";} ?></td>
                             <td class="">
                                 <?php 
 
@@ -757,6 +808,11 @@ if(isset($_REQUEST['party_type'])) {
                         <?php
                     }  */ ?>
                     <tr>
+                        <td class="text-danger text-end" colspan="5" style="font-weight:bold;">Total</td>
+                        <td class="text-danger text-end"><?php if(!empty($total_credit)) { echo number_format($total_credit, 2); } else { echo "0"; } ?></td>
+                        <td class="text-danger text-end"><?php if(!empty($total_debit)) { echo number_format($total_debit, 2); } else { echo "0"; } ?></td>
+                    </tr>
+                    <tr>
                         <?php
                             if($total_credit > $total_debit) {
                                 $current_balance = $total_credit - $total_debit;
@@ -767,7 +823,7 @@ if(isset($_REQUEST['party_type'])) {
                                 $current_type = " Dr";
                             }
                         ?>
-                        <td class="text-danger" colspan="6" style="font-weight:bold;">
+                        <td class="text-danger" colspan="7" style="font-weight:bold;">
                             Current Balance : 
                             <?php
                                 echo $obj->numberFormat($current_balance,2).$current_type;

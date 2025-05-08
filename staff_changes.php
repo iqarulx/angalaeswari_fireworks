@@ -137,23 +137,22 @@
     </table>              
 <?php	}?>
 <script>
-        $(document).ready(function() {
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip();
+    $(document).ready(function() {
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        const passBtn = $("#passwordBtn");
+
+        passBtn.click(togglePassword);
+
+        function togglePassword() {
+            const passInput = $("#password");
+            if (passInput.attr("type") === "password") {
+                passInput.attr("type", "text");
+            } else {
+                passInput.attr("type", "password");
+            }
+        }
     });
-
-    const passBtn = $("#passwordBtn");
-
-    passBtn.click(togglePassword);
-
-    function togglePassword() {
-        const passInput = $("#password");
-    if (passInput.attr("type") === "password") {
-        passInput.attr("type", "text");
-    } 
-    else {
-        passInput.attr("type", "password");
-    }
-  }
-});
 </script>    

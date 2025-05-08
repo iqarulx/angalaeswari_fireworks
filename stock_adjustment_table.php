@@ -69,7 +69,7 @@ if(isset($_REQUEST['get_limit_product'])) {
     $magazine_id = trim($magazine_id);
     $product_group = trim($product_group);
     
-    if($product_group == 1){
+    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
         if(!empty($product_id) && (!empty($godown_id))){
             if($unit_type == '2') {
                 $inward = 0; $outward = 0;
@@ -88,7 +88,7 @@ if(isset($_REQUEST['get_limit_product'])) {
                 $limit = $current_unit;
             }
         }
-    } else if($product_group == 2){
+    } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
         if(!empty($product_id) && (!empty($magazine_id))){
             if($unit_type == '2') {
                 $inward = 0; $outward = 0;
@@ -126,7 +126,8 @@ if(isset($_REQUEST['product_row_index'])) {
         $product_group = $_REQUEST['product_group'];
     }
  
-    if($product_group == "1"){
+
+    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
         if(isset($_REQUEST['selected_godown_id'])){
             $location_id = $_REQUEST['selected_godown_id'];
         }
@@ -140,11 +141,11 @@ if(isset($_REQUEST['product_row_index'])) {
     $unit_subunit = explode(",", $_REQUEST['unit_subunit']);
     $group_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product, 'group_name');
 
-    if($product_group == "1"){
+    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
         $lcoation_name = '';
         $lcoation_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_id, 'godown_name');
     }
-    else if($product_group == "2"){
+    else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
         $lcoation_name = '';
         $lcoation_name = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_id, 'magazine_name');
     } ?>
@@ -159,15 +160,18 @@ if(isset($_REQUEST['product_row_index'])) {
             ?>
             <input type="hidden" name="location_id[]" id="location_id_<?php echo $product_row_index;?>" value="<?php echo $location_id; ?>">
         </td>
+        <?php /*
         <td class="text-center px-2 py-2">
                 <?php
                 if ($group_name != $GLOBALS['null_value']) {
                     echo $obj->encode_decode('decrypt', $group_name);
                 }
                 ?>
-            <input type="hidden" name="group_name[]" value="<?php echo $group_name; ?>">
 
         </td>
+        */ ?>
+        <input type="hidden" name="group_name[]" value="<?php echo $group_name; ?>">
+
         <td class="text-center px-2 py-2">
             <?php
             $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product, 'product_name');
@@ -241,22 +245,26 @@ if(isset($_REQUEST['show_purchase_product'])){
 
     $product_group_ids = array();
 
-    if($product_group == "1"){
-        $product_group_ids = ["4d5449774e4449774d6a55784d44557a4d444a664d444d3d", "4d5449774e4449774d6a55784d4455794e4464664d44493d"];
-    }
-    else if($product_group == "2"){
-        $product_group_ids = ["4d5449774e4449774d6a55784d4455794d7a4e664d44453d"];
-    }
+    // if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d"){
+    //     $product_group_ids = ["4d5449774e4449774d6a55784d44557a4d444a664d444d3d"];
+
+    // }else if($product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
+    //     $product_group_ids = ["4d5449774e4449774d6a55784d4455794e4464664d44493d"];
+    // }
+    // else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
+    //     $product_group_ids = ["4d5449774e4449774d6a55784d4455794d7a4e664d44453d"];
+    // }
 
 
-    if(!empty($product_group_ids)) {
-        if(count($product_group_ids) == 2) {
-            $raw_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
-            $semi_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[1], '');
-            $product_list = array_merge($raw_list, $semi_list);
-        } else {
-            $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
-        }    
+    if(!empty($product_group)) {
+        // if(count($product_group_ids) == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+        //     $raw_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
+        //     $semi_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[1], '');
+        //     $product_list = array_merge($raw_list, $semi_list);
+        // } else {
+        //     $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group_ids[0], '');
+        // }   
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $product_group, ''); 
     }
     $product_count = 0;
     $product_count = count($product_list);

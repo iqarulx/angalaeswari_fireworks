@@ -489,13 +489,11 @@
     </div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         $("#pendingorderreport").addClass("active");
         table_listing_records_filter();
     });
-</script>
-<script type="text/javascript">
     function getReport() {
         if(jQuery('form[name="current_stock_report_form"]').length > 0) {
             jQuery('form[name="current_stock_report_form"]').submit();
@@ -538,9 +536,6 @@
         window.open('reports/rpt_pending_order_report.php?from_date=' + from_date + '&to_date=' + to_date + '&filter_product_id=' + product_id + '&filter_unit_type=' + unit_type + '&filter_agent_id=' + agent_id + '&filter_customer_id=' + customer_id, '_blank');
     }
 
-</script>
-
-<script>
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_por');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

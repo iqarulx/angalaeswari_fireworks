@@ -748,22 +748,20 @@
     ?>
     <script>
         $(document).ready(function() {
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
+            $(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
 
-    const passBtn = $("#passwordBtn");
+            const passBtn = $("#passwordBtn");
+            passBtn.click(togglePassword);
 
-    passBtn.click(togglePassword);
-
-    function togglePassword() {
-        const passInput = $("#password");
-    if (passInput.attr("type") === "password") {
-        passInput.attr("type", "text");
-    } 
-    else {
-        passInput.attr("type", "password");
-    }
-  }
-});
+            function togglePassword() {
+                const passInput = $("#password");
+                if (passInput.attr("type") === "password") {
+                    passInput.attr("type", "text");
+                } else {
+                    passInput.attr("type", "password");
+                }
+            }
+        });
     </script>

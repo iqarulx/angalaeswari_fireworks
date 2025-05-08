@@ -369,7 +369,7 @@
                     </div>
                 </div>     
             </div>
-            <script>
+            <script type="text/javascript">     
                 jQuery(document).ready(function(){
                     <?php
                         if(!empty($show_semifinished_inward_id)) { 
@@ -383,10 +383,7 @@
                           if(empty($show_daily_production_id)) { 
                               if($count_of_product == 1){ ?>  GetUnit('<?php if(!empty($selected_product_id)) { echo  $selected_product_id; } ?>'); <?php } 
                            } ?>
-                });
-            </script>
-            <script type="text/javascript">     
-                jQuery(document).ready(function(){
+
                     jQuery('input[name="selected_quantity"]').on("keypress", function(e) {
                         if (e.keyCode == 13) {
                             if(jQuery('.add_products_button').length > 0) {

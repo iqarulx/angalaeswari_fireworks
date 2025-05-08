@@ -100,6 +100,9 @@
             $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
         }
 
+        $group_list = array();
+        $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
+
         $count_of_godown = 0;
         $count_of_godown = count($godown_list);
 
@@ -136,8 +139,21 @@
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" name="product_group" data-dropdown-css-class="select2-danger" style="width: 100%!important;" onchange="Javascript:show_godown_magazine(this.value);Javascript:show_product(this.value)" <?php if(!empty($show_stock_adjustment_id)){ ?> disabled <?php } ?>>
                                 <option value="">Select</option>
-                                <option value="1" <?php if(!empty($product_group) && $product_group =='1'){ ?>selected <?php } ?>>UnFinished</option>
-                                <option value="2"  <?php if(!empty($product_group) && $product_group =='2'){ ?>selected <?php } ?>>Finished</option>
+                                <?php
+                                    if(!empty($group_list)) {
+                                        foreach($group_list as $group) { 
+                                            ?>
+                                            <option value="<?php echo $group['group_id']; ?>" <?php if(!empty($product_group) && $product_group == $group['group_id']) { echo "selected"; } ?>>
+                                                <?php 
+                                                    if(!empty($group['group_name'])) {
+                                                        echo $obj->encode_decode('decrypt', $group['group_name']);
+                                                    }
+                                                ?>
+                                            </option>
+                                            <?php
+                                        }
+                                    }
+                                ?>
                             </select>
                             <label>Product Group <span class="text-danger">*</span></label>
                         </div>
@@ -275,7 +291,7 @@
                                 <tr style="white-space:pre;">
                                     <th>#</th>
                                     <th>Location</th>
-                                    <th>Product Group</th>
+                                    <!-- <th>Product Group</th> -->
                                     <th>Product</th>
                                     <th>Unit</th>
                                     <th>Content</th>
@@ -301,16 +317,19 @@
                                                 ?>
                                                 <input type="hidden" name="location_id[]" id="location_id_<?php echo $i;?>" value="<?php echo $location_id[$i]; ?>">
                                             </td>
+                                            <?php /*
                                             <td class="text-center px-2 py-2">
                                                 <?php
                                                 if ($group_name[$i] != $GLOBALS['null_value']) {
                                                     echo $obj->encode_decode('decrypt', $group_name[$i]);
                                                 }
                                                 ?>
-                                               <input type="hidden" name="group_name[]" value="<?php echo $group_name[$i]; ?>">
-
-                                                <input type="hidden" name="group_id[]" value="<?php echo $group_id[$i]; ?>">
+                                        
                                             </td>
+                                            */ ?>
+                                            <input type="hidden" name="group_name[]" value="<?php echo $group_name[$i]; ?>">
+
+                                            <input type="hidden" name="group_id[]" value="<?php echo $group_id[$i]; ?>">
                                             <td class="text-center px-2 py-2">
                                                 <?php
                                                 if ($product_name[$i] != $GLOBALS['null_value']) {
@@ -369,7 +388,7 @@
                                                                 if(empty($content[$i]) || $content[$i] == $GLOBALS['null_value']){
                                                                     $content[$i] = "";
                                                                 }
-                                                                if($product_group == 1){
+                                                                if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                                                                     $inward_quantity = $obj->getInwardQty($show_stock_adjustment_id, $location_id[$i], '', $product_ids[$i], $content[$i]);
                                                                     $outward_quantity = $obj->getOutwardQty('',$location_id[$i],'', $product_ids[$i], $content[$i]);
                                                                 }else{
@@ -624,17 +643,17 @@
                             if(empty($case_contains[$i]) && $case_contains[$i] == $GLOBALS['null_value']){
                                 $case_contains[$i] = "";
                             }
-                            if($product_group == "1"){
+                            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                 $location_names[] = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_ids[$i], 'godown_name');
                             }
-                            else if($product_group  == "2"){
+                            else if($product_group  == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                                 $location_names[] = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
                             }
                             if(!empty($edit_id)) {
-                                if($product_group == 1){
+                                if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                     $stock_unique_ids[] = $obj->getStockUniqueID($edit_id, $location_ids[$i], '', $product_ids[$i], $unit_ids[$i], $case_contains[$i]);
                                 }
-                                else if($product_group == 2) {
+                                else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                     $stock_unique_ids[] = $obj->getStockUniqueID($edit_id,'', $location_ids[$i], $product_ids[$i], $unit_ids[$i],$case_contains[$i]);
                                 }
 
@@ -655,7 +674,7 @@
                                         if($stock_action[$i] == '1' || $stock_action[$i] == '2') {
                                             $inward_quantity = 0; $outward_quantity = 0; $current_stock = 0;
 
-                                            if($product_group == 1){
+                                            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                                 $inward_quantity = $obj->getInwardQty($edit_id,$location_ids[$i], '', $product_ids[$i],$case_contains[$i]);
                                                 $outward_quantity = $obj->getOutwardQty($edit_id, $location_ids[$i], '', $product_ids[$i],$case_contains[$i]);
                                             }else{
@@ -720,7 +739,7 @@
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
                 $subunit_need = 0; $product ="";
                 $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
-                if($product_group == 1) {
+                if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                     $inward_unit = $obj->getInwardQty($edit_id,$data['godown_id'],'',$data['product_id'],$data['subunit_content']);
                     $outward_unit = $obj->getOutwardQty($edit_id,$data['godown_id'], '',$data['product_id'],$data['subunit_content']);
 
@@ -855,14 +874,14 @@
                     // }
                     $current_stock_unit = 0; $current_stock_subunit = 0; $stock_table_unique_id = ""; $stock_unique_table = "";
 
-                    if($product_group == 1) {
+                    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
 
                         $stock_unique_table = $GLOBALS['stock_by_godown_table'];
                         $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $stock_godown_id, '',  $stock_product_id,$stock_case_contains);
                         $current_stock_subunit = $obj->getCurrentStockSubunit($GLOBALS['stock_by_godown_table'], $stock_godown_id, $stock_category_id, $stock_product_id, $stock_case_contains);
                         $stock_table_unique_id = $obj->getStockTablesUniqueID($GLOBALS['stock_by_godown_table'], $stock_godown_id, $stock_category_id, $stock_product_id, $stock_case_contains);
                     }
-                    else if($product_group == 2) {
+                    else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                         $stock_unique_table = $GLOBALS['stock_by_magazine_table'];
                         $current_stock_unit = $obj->getCurrentStockUnit($GLOBALS['stock_by_magazine_table'], '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
                         $current_stock_subunit = $obj->getCurrentStockSubunit($GLOBALS['stock_by_magazine_table'], '', $stock_magazine_id, $stock_product_id, $stock_case_contains);
@@ -1054,7 +1073,7 @@
                         for($i=0; $i < count($product_ids); $i++) {
 
                     
-                            if($product_group == 1){
+                            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
                                 if($stock_action[$i] == '1') {
                                     $stock_update = $obj->StockUpdate($GLOBALS['stock_adjustment_table'], "In",$stock_adjustment_id, $stock_adjustment_number,  $product_ids[$i],$remarks, $entry_date, $location_ids[$i], '', $unit_ids[$i], $quantity[$i],$case_contains[$i],$group_ids[$i],'1');
                                 }

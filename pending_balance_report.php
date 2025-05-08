@@ -296,21 +296,14 @@
                                                                     $party_name = "";
                                                                     if(!empty($filter_party_id)) {
                                                                         $party_name="";
-                                                                        if($view_type == '1')
-                                                                        {
+                                                                        if($view_type == '1') {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'],'agent_id',$filter_party_id,'agent_name');
-                                                                        }         
-                                                                        elseif($view_type == '2')
-                                                                        {
+                                                                        } else if($view_type == '2') {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$filter_party_id,'supplier_name');
-                                                                        }
-                                                                       
-                                                                        elseif($view_type == '4')
-                                                                        {
+                                                                        } else if($view_type == '4') {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$filter_party_id,'customer_name');
                                                                         }
-                                                                        if(!empty($party_name))
-                                                                        {
+                                                                        if(!empty($party_name)) {
                                                                             echo html_entity_decode($obj->encode_decode("decrypt",$party_name));
                                                                         }
                                                                     }
@@ -321,6 +314,7 @@
                                                             <th style="border-top: 1px solid #000!important; border-left: 1px solid #000!important; border-bottom: 1px solid #000!important; border-right: 1px solid #000!important; text-align: center; padding: 3px; font-size: 13px;">S.No</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Date</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Bill No</th>
+                                                            <?php if($view_type == "1") { ?> <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Customer</th> <?php } ?>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Type</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
@@ -330,35 +324,35 @@
                                                         <?php 
                                                             $credit_amount = 0; $debit_amount = 0; $total =0; 
                                                            
-                                                                $opening_balance_list = array();
-                                                                $opening_balance_list = $obj->getOpeningBalance($filter_party_id,$from_date,$to_date,$GLOBALS['bill_company_id'],$filter_agent_customer,$view_type);
-                                                                $opening_debit = 0; $opening_credit = 0;
-                                                                if(!empty($opening_balance_list)) {
-                                                                    foreach($opening_balance_list as $data) {
-                                                                        if(!empty($data['debit'])) {
-                                                                            $opening_debit += $data['debit'];
-                                                                        }
-
-                                                                        if(!empty($data['credit'])) {
-                                                                            $opening_credit += $data['credit'];
-                                                                        }
-                                                                        if(!empty($data['opening_balance']))
-                                                                        {
-                                                                            
-                                                                            if($data['opening_balance_type'] == 'Credit')
-                                                                            {
-                                                                                $opening_credit += $data['opening_balance'];
-                                                                            }
-                                                                            if($data['opening_balance_type'] == 'Debit')
-                                                                            {
-                                                                                $opening_debit += $data['opening_balance'];
-                                                                            }
-                                                                        }
-                                                                        
+                                                            $opening_balance_list = array();
+                                                            $opening_balance_list = $obj->getOpeningBalance($filter_party_id,$from_date,$to_date,$GLOBALS['bill_company_id'],$filter_agent_customer,$view_type);
+                                                            $opening_debit = 0; $opening_credit = 0;
+                                                            if(!empty($opening_balance_list)) {
+                                                                foreach($opening_balance_list as $data) {
+                                                                    if(!empty($data['debit'])) {
+                                                                        $opening_debit += $data['debit'];
                                                                     }
+
+                                                                    if(!empty($data['credit'])) {
+                                                                        $opening_credit += $data['credit'];
+                                                                    }
+                                                                    if(!empty($data['opening_balance']))
+                                                                    {
+                                                                        
+                                                                        if($data['opening_balance_type'] == 'Credit')
+                                                                        {
+                                                                            $opening_credit += $data['opening_balance'];
+                                                                        }
+                                                                        if($data['opening_balance_type'] == 'Debit')
+                                                                        {
+                                                                            $opening_debit += $data['opening_balance'];
+                                                                        }
+                                                                    }
+                                                                    
                                                                 }
-                                                                
-                                                                ?>
+                                                            }
+                                                            
+                                                            ?>
                                                                 <tr>
                                                                     <th colspan="4" style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
                                                                         Opening Balance
@@ -387,21 +381,18 @@
                                                             <tbody>
                                                                 <?php
                                                                     
-                                                                    $sno=0;
-                                                                
-                                                                    foreach($total_records_list as $key => $data) {
-                                                                    if(!empty($data['bill_list'])){
-                                                                        foreach($data['bill_list'] as $key => $list) {
-                                                                            
-                                                                            $credit =0; $debit =0; $total_credit =0; $total_debit =0;
-                                                                            if(!empty($list['credit']))
-                                                                            {
-                                                                                $credit =$list['credit'];
-                                                                            }
-                                                                            if(!empty($list['debit']))
-                                                                            {
-                                                                                $debit = $list['debit'];
-                                                                            }
+                                                                $sno=0;
+                                                            
+                                                                foreach($total_records_list as $key => $data) {
+                                                                if(!empty($data['bill_list'])){
+                                                                    foreach($data['bill_list'] as $key => $list) {
+                                                                        $credit =0; $debit =0; $total_credit =0; $total_debit =0;
+                                                                        if(!empty($list['credit'])) {
+                                                                            $credit =$list['credit'];
+                                                                        }
+                                                                        if(!empty($list['debit'])) {
+                                                                            $debit = $list['debit'];
+                                                                        }
                                                                         
                                                                         $sno++;
                                                                         ?>
@@ -417,20 +408,35 @@
                                                                                 <?php
                                                                                 if(!empty($list['bill_number'])) {
                                                                                     echo $bill_number =  $list['bill_number'];
-                                                                                
-                                                                                    // if (!preg_match('/^[A-Fa-f0-9]{32,}$/', $bill_number) && !base64_decode($bill_number, true)) {
-                                                                                    //     echo htmlspecialchars($bill_number);
-                                                                                    // } 
                                                                                 }
-                                                                                    
                                                                                 ?>
                                                                             </td>
-                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px; cursor: pointer;" class="text-center px-2">
+                                                                            <?php if($view_type == "1") { ?>
+                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer; x" class="text-center px-2 py-2" onClick="Javascript:getBillPDF('<?php if(!empty($list['bill_id'])) { echo $list['bill_id']; } ?>');">
+                                                                                <?php
+                                                                                    $customer_name = "";
+                                                                                    if(!empty($list['bill_id']) && $list['bill_id'] != "NULL") {
+                                                                                        $customer_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id', $list['bill_id'], 'customer_id');
+                                                    
+                                                                                        if(!empty($customer_id)) {
+                                                                                            $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id', $customer_id, 'customer_name');
+                                                                                            if(!empty($customer_name)) {
+                                                                                                $customer_name = $obj->encode_decode('decrypt', $customer_name);
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    if(!empty($customer_name)) {
+                                                                                        echo $customer_name;
+                                                                                    }
+                                                                                ?>
+                                                                            </td>
+                                                                            <?php } ?>
+                                                                            <td style="border: 1px solid #000; text-align: center; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer;" class="text-center px-2">
                                                                                 <?php
                                                                                 if (!empty($list['bill_type'])) {
                                                                                     if ($list['bill_type'] == "Estimate") {
                                                                                         ?>
-                                                                                        <div style="display: flex; justify-content: space-between;">
+                                                                                        <div style="display: flex;justify-content: space-between;">
                                                                                             <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>');" style="width: 50%; cursor: pointer;border-right:1px solid;">
                                                                                                 Estimate
                                                                                             </div>
@@ -469,26 +475,20 @@
                                                             </tbody>
                                                             <?php 
                                                                 $display_status =""; $id ="";
-
                                                                 
-                                                                    if(!empty($id)) { 
-                                                                        if($credit_amount > $debit_amount )
-                                                                        {
-                                                                            $display_status ="Total";
-                                                                        }
-                                                                        else {
-                                                                            $display_status ="Total";
-                                                                        }
+                                                                if(!empty($id)) { 
+                                                                    if($credit_amount > $debit_amount ) {
+                                                                        $display_status ="Total";
+                                                                    } else {
+                                                                        $display_status ="Total";
                                                                     }
-                                                                    else{
-                                                                        if($credit_amount < $debit_amount )
-                                                                        {
-                                                                            $display_status ="Total";
-                                                                        }
-                                                                        else{
-                                                                            $display_status ="Total";
-                                                                        }
+                                                                } else {
+                                                                    if($credit_amount < $debit_amount ) {
+                                                                        $display_status ="Total";
+                                                                    } else {
+                                                                        $display_status ="Total";
                                                                     }
+                                                                }
                                                             ?>
                                                             <tfoot>
                                                                 <tr>
@@ -514,7 +514,7 @@
                                                         <?php } ?>
                                                     </tbody>
                                                 <?php }
-                                                else{?>
+                                                else{ ?>
 
                                                     <thead>
                                                         <tr>
@@ -533,8 +533,7 @@
                                                     <tbody>
                                                         <?php
                                                             $grand_pending = 0; $credit = 0; $debit = 0; $estimate_debit = 0; $credit_total_amount =0; $debit_total_amount =0; $grand_credit_total = 0; $grand_debit_total =0; $sno = 1;
-                                                            foreach($sales_list as $key => $data) 
-                                                            {      
+                                                            foreach($sales_list as $key => $data) {      
                                                                 $index = $key + 1; $credit_total = 0; $debit_total=0;
                                                                     ?>
                                                                     <tr>
@@ -572,11 +571,9 @@
                                                                                 $debit = $debit + $debit_total;
                                                                             }
 
-                                                                            if($credit_total > $debit_total)
-                                                                            {
+                                                                            if($credit_total > $debit_total) {
                                                                                 $total_amount = $debit_total - $credit_total;
-                                                                            }   
-                                                                            else{
+                                                                            } else{
                                                                                 $total_amount = $credit_total - $debit_total;
                                                                             }
 
@@ -662,14 +659,13 @@
         $("#pending_balance_report").addClass("active");
         // table_listing_records_filter();
     });
-</script>
 
-<script>
     function getReport(){
         if(jQuery('form[name="pending_balance_report_form"]').length > 0){
             jQuery('form[name="pending_balance_report_form"]').submit();
         } 
     }
+
     function showpartyList(party_id,view_type) {
         if(jQuery('select[name="filter_party_id"]').length > 0) {
             jQuery('select[name="filter_party_id"]').prop('disabled', false);
@@ -678,16 +674,11 @@
             jQuery('select[name="filter_party_id"]').val(party_id);
         }
         var type ="";
-        if(view_type =='agent')
-        {
+        if(view_type =='agent') {
             type = '1';
-        }
-        else if(view_type =='supplier')
-        {
+        } else if(view_type =='supplier') {
             type = '2';
-        }
-        else if(view_type =='customer')
-        {
+        } else if(view_type =='customer') {
             type = '4';
         }
        
@@ -695,7 +686,6 @@
             jQuery('select[name="view_type"]').val(type);
         }
         getReport();
-
     }
 
     function viewpreview(type,bill_id){
@@ -705,7 +695,7 @@
         if (type == '1') {
             type ="Estimate";
             url = "reports/rpt_estimate_a4.php?estimate_id=" + bill_id;
-        }else if(type == '2'){
+        } else if(type == '2'){
             proforma_post_url = "action_changes.php?estimate_id=" + bill_id;
             jQuery.ajax({
                 url: proforma_post_url, success: function (result) {
@@ -730,11 +720,8 @@
                 }
             }
         });
-
-
     }
-</script>
-<script>
+    
     function ExportToExcel(type, fn, dl) {
         var elt = document.getElementById('tbl_pending_balance_list');
         var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });

@@ -35,8 +35,6 @@
         include "link_style_script.php"; ?>
         <script type="text/javascript" src="include/js/payment.js"></script>
         <script type="text/javascript" src="include/js/creation_modules.js"></script>
-
-
     </head>	
 <body>
 <?php include "header.php"; ?>

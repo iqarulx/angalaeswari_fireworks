@@ -61,12 +61,11 @@
         for ($i = 0; $i < count($company_details); $i++) {
             $company_details[$i] = trim($company_details[$i]);
             if (!empty($company_details[$i]) && $company_details[$i] != $GLOBALS['null_value']) {
-                
                 if ($i === 0) {  // Corrected comparison
                     $pdf->SetFont('Arial', 'B', 11);
                     $pdf->MultiCell(50, 7, $company_details[$i], 0, 'C');
                     $rt = $pdf->gety();
-                } elseif (strpos($company_details[$i], "GST") !== false) {
+                } else if (strpos($company_details[$i], "GST") !== false) {
                     $pdf->sety($y);
                     $pdf->setx(105);
                     $pdf->SetFont('Arial', 'B', 8);
@@ -109,18 +108,15 @@
 
     if(!empty($total_records_list)) {
         foreach($total_records_list as $key => $list) {
-           
             if ($pdf->GetY() >= 180) {
                 $y = $pdf->GetY();
                 $pdf->SetY($start_y);
                 $pdf->SetX(10);
                
-                    $pdf->Cell(15, 185 - $start_y, '', 1, 0, 'C', 0);
-                    $pdf->Cell(35, 185 - $start_y, '', 1, 0, 'C', 0);
-                    $pdf->Cell(30, 185 - $start_y, '', 1, 0, 'C', 0);
-                    $pdf->Cell(50, 185 - $start_y, '', 1, 1, 'C', 0);
-                    
-               
+                $pdf->Cell(15, 185 - $start_y, '', 1, 0, 'C', 0);
+                $pdf->Cell(35, 185 - $start_y, '', 1, 0, 'C', 0);
+                $pdf->Cell(30, 185 - $start_y, '', 1, 0, 'C', 0);
+                $pdf->Cell(50, 185 - $start_y, '', 1, 1, 'C', 0);
                 $pdf->SetFont('Arial', 'B', 9);
     
                 $next_page = $pdf->PageNo() + 1;
@@ -147,12 +143,11 @@
                     for ($i = 0; $i < count($company_details); $i++) {
                         $company_details[$i] = trim($company_details[$i]);
                         if (!empty($company_details[$i]) && $company_details[$i] != $GLOBALS['null_value']) {
-                            
                             if ($i === 0) {  // Corrected comparison
                                 $pdf->SetFont('Arial', 'B', 11);
                                 $pdf->MultiCell(50, 7, $company_details[$i], 0, 'C');
                                 $rt = $pdf->gety();
-                            } elseif (strpos($company_details[$i], "GST") !== false) {
+                            } else if (strpos($company_details[$i], "GST") !== false) {
                                 $pdf->sety($y);
                                 $pdf->setx(105);
                                 $pdf->SetFont('Arial', 'B', 8);
@@ -188,8 +183,6 @@
                 $pdf->Cell(30,10,'Mobile Number',1,0,'C');
                 $pdf->SetX(90);
                 $pdf->Cell(50,10,'Location',1,1,'C');
-                
-                
                 $pdf->SetFont('Arial', '', 8);
     
                 $start_y = $pdf->GetY();
@@ -209,8 +202,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(25);
                 $pdf->MultiCell(35,6,$list['contractor_name'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(25);
                 $pdf->MultiCell(35,6,'-',0,'C');
@@ -222,8 +214,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(60);
                 $pdf->Cell(30,6,$list['mobile'],0,0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(60);
                 $pdf->Cell(30,6,'-',0,0,'C');
@@ -234,15 +225,13 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(90);
                 $pdf->MultiCell(50,6,$list['location'],1,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(90);
                 $pdf->MultiCell(50,6,'-',0,'C');
             }
             $address_y = $pdf->GetY() - $start_y;
 
-            
             $y_array = array($name_y, $address_y);
             $max_y = max($y_array);
 
@@ -255,7 +244,6 @@
             $pdf->Cell(30,$max_y,'',1,0,'C');
             $pdf->SetX(90);
             $pdf->Cell(50,$max_y,'',1,1,'C');
-            
             $start_y += $max_y;
         }
         

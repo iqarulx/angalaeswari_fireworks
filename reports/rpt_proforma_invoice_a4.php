@@ -2,8 +2,6 @@
 include("../include_user_check.php");
 include("../include/number2words.php");
 
-
-
 if(isset($_REQUEST['proforma_invoice_id'])) {
     $proforma_invoice_id = $_REQUEST['proforma_invoice_id'];
     $pdf_download_name ="";
@@ -26,7 +24,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                     $customer_details = explode("$$$", $customer_details);
                 }
                 if(!empty($pi['proforma_invoice_date'])) {
-                    $proforma_invoice_date = date('d-m-Y', strtotime($proforma_invoice_date));
+                    $proforma_invoice_date = date('d-m-Y', strtotime($pi['proforma_invoice_date']));
                 }
                 if(!empty($pi['agent_id'])) {
                     $agent_id = $pi['agent_id'];
@@ -144,19 +142,16 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                 if(!empty($pi['other_charges_id'])) {
                     $other_charges_id = $pi['other_charges_id'];
                     $other_charges_id = explode(",", $other_charges_id);
-                    $other_charges_id = array_reverse($other_charges_id);
                     $charges_count = count($other_charges_id);
                 }      
         
                 if(!empty($pi['charges_type'])) {
                     $charges_type = $pi['charges_type'];
                     $charges_type = explode(",", $charges_type);
-                    $charges_type = array_reverse($charges_type);
                 } 
                 if(!empty($pi['other_charges_value'])) {
                     $other_charges_value = $pi['other_charges_value'];
                     $other_charges_value = explode(",", $other_charges_value);
-                    $other_charges_value = array_reverse($other_charges_value);
                 }    
                 if(!empty($pi['agent_commission'])) {
                     $agent_commission = $pi['agent_commission'];
@@ -196,7 +191,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $customer_details[$i] = trim($customer_details[$i]);
             if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                 $pdf->SetX(30);
-                $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
             }
         }
     }
@@ -275,7 +270,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                     $customer_details[$i] = trim($customer_details[$i]);
                     if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                         $pdf->SetX(30);
-                        $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                        $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
                     }
                 }
             }
@@ -346,7 +341,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $subunit_qty = $quantity[$i];
             $pdf->Cell(18,8,'-',1,0,'C',0);
         }
-        $pdf->Cell(25,8,$subunit_qty.' ' . (isset($subunit_needs[$i]) && $subunit_needs == '1' ? $subunit_name : $unit_name),1,0,'C',0);
+        $pdf->Cell(25,8,$subunit_qty.' ' . (!empty($subunit_name) ? $subunit_name : $unit_name),1,0,'C',0);
         $pdf->Cell(19,8,number_format($final_rate[$i],2),1,0,'C',0);
         $pdf->Cell(18,8,$per[$i]. ' '. ($per_type[$i] == '1' ? $unit_name : $subunit_name),1,0,'C',0);
         $pdf->Cell(20,8,$amount[$i],1,1,'C',0);
@@ -397,7 +392,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                     $customer_details[$i] = trim($customer_details[$i]);
                     if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                         $pdf->SetX(30);
-                        $pdf->Cell(50,5,$customer_details[$i],0,1,'L',0);
+                        $pdf->Cell(50,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
                     }
                 }
             }
