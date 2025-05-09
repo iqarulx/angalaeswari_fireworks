@@ -138,7 +138,7 @@
                                             }
                                         } ?>
                                     </select>
-                                    <label>Select From </label>
+                                    <label>Select From</label>
                                 </div>
                             </div>       
                         </div>

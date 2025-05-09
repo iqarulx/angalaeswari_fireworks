@@ -60,7 +60,6 @@
 
     $payment_list =array();
     $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id);
-
    
     if(!empty($from_date)){
         $from_date = date('d-m-Y', strtotime($from_date));
@@ -72,8 +71,7 @@
     $date_display ="";
     if($from_date == $to_date) {
         $date_display = '( '.$from_date.' )';
-    }
-    else {
+    } else {
         $date_display = '('.$from_date . ' to '. $to_date . ')';
     }
 
@@ -125,22 +123,17 @@
             }
             if ($data['party_type'] == '1') {
                 $party_type = "Supplier";
-            } 
-            else if ($data['party_type'] == '2') {
+            } else if ($data['party_type'] == '2') {
                 $party_type = "Agent";
-            } 
-            else if ($data['party_type'] == '3') {
+            } else if ($data['party_type'] == '3') {
                 $party_type = "Contractor";
-            } 
-            else if ($data['party_type'] == '4') {
+            } else if ($data['party_type'] == '4') {
                 $party_type = "Customer";
-            } 
-            else {
+            } else {
                 $party_type = $data['party_type'];
             }
 
             if($pdf->GetY() > 250) {
-
                 $pdf->SetFont('Arial','B',8);
                 $pdf->SetX(10);
 
@@ -151,8 +144,7 @@
                     $pdf->Cell(25,8,$obj->numberFormat($total_credit-$total_debit,2),1,0,'R',0);
                     $pdf->SetX(175);
                     $pdf->Cell(25,8,' ',1,0,'R',0);
-                }
-                else {
+                } else {
                     $opening_balance_debit = $total_debit-$total_credit;
                     $pdf->SetX(150);
                     $pdf->Cell(25,8,' ',1,0,'R',0);
@@ -200,8 +192,7 @@
                     $pdf->Cell(25,8,$obj->numberFormat($opening_balance_credit,2),1,0,'R',0);
                     $pdf->SetX(175);
                     $pdf->Cell(25,8,'  ',1,1,'R',0);
-                }
-                else {
+                } else {
                     $pdf->SetX(150);
                     $pdf->Cell(25,8,'  ',1,0,'R',0);
                     $pdf->SetX(175);
@@ -225,8 +216,7 @@
                 $pdf->SetX(20);
                 $pdf->SetFont('Arial','',7);
                 $pdf->MultiCell(17, 5, $combine_data, 0, 'L', 0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(17, 5,'-', 0, 'L', 0);
@@ -240,8 +230,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(37);
                 $pdf->MultiCell(20, 5, $bill_type, 0, 'L', 0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(17, 5,'-', 0, 'L', 0);
@@ -254,8 +243,7 @@
                 $pdf->SetX(57);
                 $pdf->MultiCell(20, 5, $party_type, 0, 'L', 0);
                 $pdf->SetTextColor(0,0,0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(57);
                 $pdf->MultiCell(20, 5, '-', 0, 'L', 0);
@@ -271,8 +259,7 @@
                     $pdf->SetX(77);
                     $pdf->MultiCell(33, 5, html_entity_decode($party_name,ENT_QUOTES), 0, 'L', 0);
                     $pdf->SetTextColor(0,0,0);
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(77);
                     $pdf->MultiCell(33, 5, '-', 0, 'L', 0);
@@ -290,15 +277,13 @@
                 $bank_id = array_reverse($bank_id);
                 for($i=0; $i < count($payment_mode_name); $i++) {
                     $payment_mode ="";
-
                     $payment_mode =$obj->encode_decode("decrypt", $payment_mode_name[$i]);
                     
                     if (!empty($data['credit']) || !empty($data['debit'])) {
                         $amounts= array();
                         if($data['bill_type'] == 'Receipt'){
                             $amounts = explode(",", $data['credit']);
-                        }
-                        else if($data['bill_type'] == 'Voucher' || $data['bill_type'] == 'Expense') {
+                        } else if($data['bill_type'] == 'Voucher' || $data['bill_type'] == 'Expense') {
                             $amounts = explode(",", $data['debit']);
                         }
                         $amounts = array_reverse($amounts);
@@ -316,22 +301,19 @@
                         $pdf->SetY($start_y);
                         $pdf->SetX(110);
                         $pdf->MultiCell(40, 5, $payment_mode ." - ( ".$bank_name." ) - ( ".$account_number." )", 0, 'L', 0);
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($start_y);
                         $pdf->SetX(110);
                         $pdf->MultiCell(40, 5, $payment_mode, 0, 'L', 0);
                     } 
 
                 }
-            }  
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(110);
                 $pdf->MultiCell(40, 5, '-', 0, 'C', 0);
             }
             $payment_y = $pdf->GetY() - $start_y;
-
 
             $pdf->SetY($start_y);
             $pdf->SetTextColor(0,130,0);
@@ -339,8 +321,7 @@
                 $pdf->SetX(150);
                 $total_credit+=$data['credit'];
                 $pdf->MultiCell(25, 5,$obj->numberFormat($data['credit'],2), 0, 'R', 0);
-            }
-            else {
+            } else {
                 $pdf->SetX(150);
                 $pdf->Cell(25, 5,'0.00', 0, 0,'R', 0);
             }
@@ -352,8 +333,7 @@
                 $pdf->SetX(175);
                 $total_debit+=$data['debit'];
                 $pdf->MultiCell(25, 5,$obj->numberFormat($data['debit'],2), 0, 'R', 0);
-            }
-            else {
+            } else {
                 $pdf->SetX(175);
                 $pdf->Cell(25, 5,'0.00', 0, 1,'R', 0);
             }
@@ -410,16 +390,14 @@
         if(!empty($total_credit)) {
             $pdf->SetX(150);
             $pdf->Cell(25,8,$obj->numberFormat($total_credit,2),1,0,'R',0);
-        }
-        else{
+        } else {
             $pdf->SetX(150);
             $pdf->Cell(25,8,' 0 ',1,0,'R',0);
         }
         if(!empty($total_debit)) {
             $pdf->SetX(175);
             $pdf->Cell(25,8,$obj->numberFormat($total_debit,2),1,1,'R',0);
-        }
-        else{
+        } else{
             $pdf->SetX(175);
             $pdf->Cell(25,8,' 0 ',1,1,'R',0);
         }
@@ -430,16 +408,14 @@
         if($total_credit > $total_debit) { 
             $pdf->SetX(150);
             $pdf->Cell(25,8,$obj->numberFormat($total_credit- $total_debit,2),1,0,'R',0);
-        }
-        else {
+        } else {
             $pdf->SetX(150);
             $pdf->Cell(25,8,' ',1,0,'R',0);
         }
         if($total_debit > $total_credit) { 
             $pdf->SetX(175);
             $pdf->Cell(25,8,$obj->numberFormat( $total_debit - $total_credit,2),1,1,'R',0);
-        }
-        else {
+        } else {
             $pdf->SetX(175);
             $pdf->Cell(25,8,'  ',1,1,'R',0);
         }   

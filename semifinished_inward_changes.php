@@ -1208,7 +1208,7 @@ if(isset($_REQUEST['delete_semifinished_inward_id'])) {
                 $action = "Daily Production Cancelled. Bill No. - ".$semifinished_inward_number;
             }
             $stock_delete = "";
-            $stock_delete = $obj->DeleteDailyProduction($delete_semifinished_inward_id);
+            $stock_delete = $obj->DeleteSemiFinishedInward($delete_semifinished_inward_id);
             if($stock_delete == '1') {
                 $columns = array(); $values = array();			
                 $columns = array('cancelled');

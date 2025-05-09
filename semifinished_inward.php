@@ -29,6 +29,10 @@
     // else {
         $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
     // }
+
+    $godown_list = array();
+    $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
+
     $current_date = date('Y-m-d');
 
     // $contractor_list = array();

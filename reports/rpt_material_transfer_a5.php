@@ -826,7 +826,7 @@ $line_y = $pdf->GetY();
 
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetX(95);
-$pdf->Cell(50, 5,html_entity_decode($company_name), 0, 1, 'L', 0);
+$pdf->MultiCell(50, 5,html_entity_decode($company_name), 0, 'L', 0);
 $pdf->Cell(50, 10,'', 0, 1, 'L', 0);
 $pdf->SetFont('Arial', '', 9);
 $pdf->SetX(95);

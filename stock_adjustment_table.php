@@ -9,8 +9,9 @@ if (isset($_REQUEST['change_product_id'])) {
     $magazine_id = $_REQUEST['selected_magazine_id'];
 
     $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_id, '');
-    $unit = $subunit = ""; $type_option = ""; $content_option = ""; $negative_stock = "";
+    $unit = $subunit = "";  $content_option = ""; $negative_stock = ""; $subunit_need = 0; $type_option = "";
     $content_list = $obj->getProductContainsListFromGodown($product_id,$godown_id,$magazine_id);
+
     // print_r($content_list);
     if (!empty($content_list)) {
         foreach($content_list as $C_list) {
@@ -30,11 +31,17 @@ if (isset($_REQUEST['change_product_id'])) {
             if(!empty($P_list['negative_stock'])) {
                 $negative_stock = $P_list['negative_stock'];
             }
+            if(!empty($P_list['subunit_need'])) {
+                $subunit_need = $P_list['subunit_need'];
+            }
         }
     }else {
         $type_option = $type_option . "<option value = '1'>Unit</option><option value = '2'>Subunit</option>";
     }
-
+    
+    if($subunit_need == 1){
+         $type_option = "<option value = ''>Select Unit</option>";
+    }
 
     if (!empty($unit) && $unit != $GLOBALS['null_value']) {
         $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit, 'unit_name');

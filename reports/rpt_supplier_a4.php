@@ -106,8 +106,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(25,6,html_entity_decode($list['supplier_name']),0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(25,6,'-',0,'C');
@@ -119,8 +118,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(45);
                 $pdf->Cell(20,6,$list['mobile_number'],0,0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(45);
                 $pdf->Cell(20,6,'-',0,0,'C');
@@ -131,8 +129,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(65);
                 $pdf->MultiCell(30,6,$list['gst_number'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(65);
                 $pdf->MultiCell(30,6,'-',0,'C');
@@ -144,8 +141,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(95);
                 $pdf->MultiCell(45,6,$list['address'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(95);
                 $pdf->MultiCell(45,6,'-',0,'C');
@@ -157,8 +153,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(140);
                 $pdf->MultiCell(20,6,$list['state'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(140);
                 $pdf->MultiCell(20,6,'-',0,'C');
@@ -170,8 +165,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(160);
                 $pdf->MultiCell(20,6,$list['district'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(160);
                 $pdf->MultiCell(20,6,'-',0,'C');
@@ -183,8 +177,7 @@
                 $pdf->SetY($start_y);
                 $pdf->SetX(180);
                 $pdf->MultiCell(20,6,$list['city'],0,'C');
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(180);
                 $pdf->MultiCell(20,6,'-',0,'C');

@@ -1,6 +1,6 @@
 <?php
-include("../include_user_check.php");
-include("../include/number2words.php");
+    include("../include_user_check.php");
+    include("../include/number2words.php");
 
 
     $filter_party_id = "";
@@ -85,7 +85,6 @@ include("../include/number2words.php");
     $pdf->SetFont('Arial','',7);
     $content_start_y = $pdf->GetY();
 
-
     $index = 0;
     if(!empty($total_records_list)) {
         $edit_action = $obj->encode_decode('encrypt', 'edit_action');
@@ -141,15 +140,13 @@ include("../include/number2words.php");
             if(!empty($data['unit_name'])) {
                 $unit_names = explode(',',$data['unit_name']);
                $unit_names =array_reverse($unit_names);
-           }
-           if(!empty($data['product_name'])) {
-                                                                            
-            $product_names = explode(',',$data['product_name']);
-            $product_names =array_reverse($product_names);
-           }
+            }
+            if(!empty($data['product_name'])) {                                                          
+                $product_names = explode(',',$data['product_name']);
+                $product_names =array_reverse($product_names);
+            }
 
             if(!empty($prefix)) { $index = $index + $prefix; }
-
             $start_y = $pdf->GetY();                
 
             $pdf->SetX(10);
@@ -178,11 +175,10 @@ include("../include/number2words.php");
                 $pdf->MultiCell(80,10,($party_name),0,'C',0);
             }
             
-            $qty_end =$pdf->GetY();
+            $qty_end = $pdf->GetY();
             $pdf->SetY($start_y); 
 
-            if(!empty($data['total_amount'])) 
-            { 
+            if(!empty($data['total_amount'])) { 
                 $pdf->SetX(150);
                 $pdf->MultiCell(50,10,number_format($data['total_amount'], 2),0,'R',0);
                 if($data['cancelled'] == '0'){
@@ -198,8 +194,6 @@ include("../include/number2words.php");
             $pdf->Cell(60,($max_y-$start_y),'',1,0,'C',0);
             $pdf->Cell(80,($max_y-$start_y),'',1,0,'C',0);
             $pdf->Cell(30,($max_y-$start_y),'',1,1,'C',0);
-
-
         }
 
         $pdf->Line(10, $content_start_y, 10, 270);
@@ -211,12 +205,9 @@ include("../include/number2words.php");
         $pdf->SetFont('Arial','B',8);
         $pdf->SetX(10);
         $pdf->Cell(160,10,'Total',1,0,'R',0);
-        $pdf->Cell(30
-        ,10,number_format($grand_amount,2),1,1,'R',0);
+        $pdf->Cell(30,10,number_format($grand_amount,2),1,1,'R',0);
     }
 
     // $pdf->Output('',$pdf_download_name . '.pdf');
     $pdf->Output($from, $pdf_download_name);
-
-
 ?>

@@ -592,8 +592,8 @@ class Stock_functions extends Basic_Functions
     }
 
     public function getProductContentsFromGodown($product_id, $godown_id) {
-        $list = array(); $select_query = ""; 
-
+        $list = array(); $select_query = "";  $where = "";
+    
         if (!empty($godown_id)) {
             if (!empty($where)) {
                 $where = $where . " godown_id = '" . $godown_id . "' AND ";
@@ -601,10 +601,12 @@ class Stock_functions extends Basic_Functions
                 $where = " godown_id = '" . $godown_id . "' AND ";
             }
         }
-
-        
-        $select_query = "SELECT * FROM " . $GLOBALS['stock_by_godown_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND deleted = '0' AND case_contains != '".$GLOBALS['null_value']."' GROUP BY case_contains";
-
+        if (!empty($where)) {
+             $select_query = "SELECT * FROM " . $GLOBALS['stock_by_godown_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND deleted = '0' AND case_contains != '".$GLOBALS['null_value']."' GROUP BY case_contains";
+        }else{
+            $select_query = "SELECT * FROM " . $GLOBALS['stock_by_godown_table'] . " WHERE product_id = '" . $product_id . "' AND deleted = '0' AND case_contains != '".$GLOBALS['null_value']."' GROUP BY case_contains";
+        }
+    
         // echo $select_query;
         if(!empty($select_query)) {
             $list = $this->getQueryRecords($GLOBALS['stock_by_godown_table'], $select_query);
@@ -1394,10 +1396,17 @@ class Stock_functions extends Basic_Functions
                     }
 
                     if(!empty($current_stock)) {
-                        $point_before_value = floor($current_stock);
-                        $point_after_value = $current_stock - $point_before_value;
-                        $current_stock_unit = $point_before_value;
-                        $current_stock_sub_unit = round($point_after_value * 100);
+                        if(!empty($sub_unit_need) && isset($contents[$i])) {
+                            $point_before_value = floor($current_stock);
+                            $point_after_value = $current_stock - $point_before_value;
+                            $current_stock_unit = $point_before_value;
+                            $current_stock_sub_unit = $point_after_value * $contents[$i];
+                        } else {
+                            $point_before_value = floor($current_stock);
+                            $point_after_value = $current_stock - $point_before_value;
+                            $current_stock_unit = $point_before_value;
+                            $current_stock_sub_unit = round($point_after_value * 100);
+                        }
                     }
 
                     $stock_unit_arrays[] = $unit_id;
@@ -1499,11 +1508,21 @@ class Stock_functions extends Basic_Functions
                 foreach($records as $record) {
                     $current_stock_unit = 0;
                     $current_stock_unit = $record['inward'] - $record['outward'];
+                    $current_stock_sub_unit = 0;
 
-                    $point_before_value = floor($current_stock_unit);
-                    $point_after_value = $current_stock_unit - $point_before_value;
-                    $current_stock_unit = $point_before_value;
-                    $current_stock_sub_unit = round($point_after_value * 100);
+                    if(!empty($case_contains)) {
+                        if(isset($case_contains) && !empty($case_contains)) {
+                            $point_before_value = floor($current_stock_unit);
+                            $point_after_value = $current_stock_unit - $point_before_value;
+                            $current_stock_unit = $point_before_value;
+                            $current_stock_sub_unit = $point_after_value * $case_contains;
+                        } else {
+                            $point_before_value = floor($current_stock_unit);
+                            $point_after_value = $current_stock_unit - $point_before_value;
+                            $current_stock_unit = $point_before_value;
+                            $current_stock_sub_unit = round($point_after_value * 100);
+                        }
+                    }
 
                     $list[] = [
                         "magazine_id" => $record['magazine_id'],
@@ -1515,6 +1534,111 @@ class Stock_functions extends Basic_Functions
         }
 
         return $list;
+    }
+
+    public function DeleteSemiFinishedInward($bill_unique_id) {
+        $semifinished_inward_list = array(); $godown_id = ""; $product_id = array(); $party_type = ""; $case_contains = array();
+        $semifinished_inward_list = $this->getTableRecords($GLOBALS['semifinished_inward_table'], 'semifinished_inward_id', $bill_unique_id, '');
+        if(!empty($semifinished_inward_list)) {
+            foreach($semifinished_inward_list as $data) {
+                if(!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
+                    $godown_id = $data['godown_id'];
+                }
+                if(!empty($data['product_id'])) {
+                    $product_id = $data['product_id'];
+                    $product_id = explode(",", $product_id);
+                }
+                if(!empty($data['subunit_contains'])) {
+                    $case_contains = $data['subunit_contains'];
+                    $case_contains = explode(",", $case_contains);
+                }
+            }
+        }
+        $can_delete = 1;
+        if(!empty($product_id)) {
+            for($i=0; $i < count($product_id); $i++) {
+                if(!empty($product_id[$i]) && !empty($godown_id)) {
+                    $negative_stock_allowed = "";
+                    $negative_stock_allowed = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id[$i], 'negative_stock');
+    
+                    $inward_quantity = 0; $outward_quantity = 0;
+                    $inward_quantity = $this->getInwardQty($bill_unique_id, $godown_id,'', $product_id[$i], $case_contains[$i]);
+                    $outward_quantity = $this->getOutwardQty('', $godown_id, '',$product_id[$i], $case_contains[$i]);
+                    if($negative_stock_allowed == 0){
+                        if($inward_quantity < $outward_quantity) {
+                            $can_delete = 0;
+                        }
+                    }
+                }
+            }
+        }
+        $prev_list = array();
+        if($can_delete == '1'){
+            $prev_list = $this->PrevStockList($bill_unique_id);
+            if(!empty($prev_list)) {
+                foreach($prev_list as $data) {
+                    $stock_id = ""; $stock_godown_id = ""; $stock_category_id = ""; $stock_group_id = ""; $stock_product_id = "";
+                    $inward_unit = 0; $inward_subunit = 0; $stock_case_contains = 0;
+                    if(!empty($data['id']) && $data['id'] != $GLOBALS['null_value']) {
+                        $stock_id = $data['id'];
+                    }
+                    if(!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
+                        $stock_godown_id = $data['godown_id'];
+                    }
+                
+                    if(!empty($data['group_id']) && $data['group_id'] != $GLOBALS['null_value']) {
+                        $stock_group_id = $data['group_id'];
+                    }
+                    if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                        $stock_product_id = $data['product_id'];
+                    }
+                    if(!empty($data['case_contains']) && $data['case_contains'] != $GLOBALS['null_value']) {
+                        $stock_case_contains = $data['case_contains'];
+                    }
+                    if(!empty($data['inward_unit']) && $data['inward_unit'] != $GLOBALS['null_value']) {
+                        $inward_unit = $data['inward_unit'];
+                    }
+                    if(!empty($data['inward_subunit']) && $data['inward_subunit'] != $GLOBALS['null_value']) {
+                        $inward_subunit = $data['inward_subunit'];
+                    }
+                    $current_stock_unit = 0; $current_stock_subunit = 0;
+                    $current_stock_unit = $this->getCurrentStockUnit($GLOBALS['stock_by_godown_table'], $stock_godown_id,'', $stock_product_id, $stock_case_contains);
+                    $current_stock_subunit = $this->getCurrentStockSubunit($GLOBALS['stock_by_godown_table'],$stock_godown_id,'', $stock_product_id, $stock_case_contains);
+                    if(!empty($current_stock_unit) && $current_stock_unit != $GLOBALS['null_value']) {
+                        $current_stock_unit = $current_stock_unit - $inward_unit;
+                    }
+                    else {
+                        $current_stock_unit = 0;
+                    }
+                    if(!empty($current_stock_subunit) && $current_stock_subunit != $GLOBALS['null_value']) {
+                        $current_stock_subunit = $current_stock_subunit - $inward_subunit;
+                    }
+                    else {
+                        $current_stock_subunit = $GLOBALS['null_value'];
+                    }
+                    $stock_table_unique_id = "";
+                    $stock_table_unique_id = $this->getStockTablesUniqueID($GLOBALS['stock_by_godown_table'],  $stock_godown_id, '', $stock_product_id, $stock_case_contains);
+    
+                    if(preg_match("/^\d+$/", $stock_id)) {
+                        $columns = array(); $values = array();
+                        $columns = array('deleted');
+                        $values = array("'1'");
+                        $stock_update_id = $this->UpdateSQL($GLOBALS['stock_table'], $stock_id, $columns, $values, '');
+    
+                        if(preg_match("/^\d+$/", $stock_update_id)) {
+                            if(preg_match("/^\d+$/", $stock_table_unique_id)) {
+                                $columns = array(); $values = array();
+                                $columns = array('current_stock_unit', 'current_stock_subunit');
+                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
+                                $stock_table_update_id = $this->UpdateSQL($GLOBALS['stock_by_godown_table'], $stock_table_unique_id, $columns, $values, '');
+                            }
+                        }
+                 
+                    }
+                }
+            }
+        }
+        return $can_delete;
     }
 }
 

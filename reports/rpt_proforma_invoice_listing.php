@@ -69,6 +69,7 @@
         if(!empty($current_date)) {
             $current_date = date('d-m-Y', strtotime($current_date));
         }
+
         $starty = $pdf->GetY();
         $pdf->SetY($bill_to_y);
         $pdf->SetX(10);
@@ -81,14 +82,11 @@
         $pdf->SetFont('Arial','',7);
         
         $y_axis=$pdf->GetY();
-
-        $s_no = "1"; $content_height = 0;
+        $content_height = 0; $sno = 1; $total_amount = 0;
         if(!empty($total_amount)){
             $height -= 15;
             $footer_height += 15;
         }
-
-        $sno = 1; $total_amount = 0;
 
         foreach($total_records_list as $key => $data) {
             $index = $key + 1;
@@ -171,11 +169,9 @@
             $pdf->Cell(50, $row_height, '', 1, 1);
 
             $s_no++;
-
         }
 
         $end_y = $pdf->GetY();
-
         $last_page_count = $s_no - $last_count;
         
         if(($footer_height+$end_y) >= 270){

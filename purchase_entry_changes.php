@@ -213,15 +213,15 @@
         $group_list = array();
         $group_list = $obj->getTableRecords($GLOBALS['group_table'], '', '', '');
 
-
         $godown_list = array(); $magazine_list = array();
         if(!empty($show_purchase_entry_id)){
-            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d" && $location_type == "1"){
+            if($location_type == "1" && ($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d")){
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $location_id[0], '');
             }
             else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "1"){
+
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $location_id[0], '');
-            } else if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d" && $location_type == "2"){
+            } else if($location_type == "2" && ($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d")){
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '','', '');
 
             } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "2"){

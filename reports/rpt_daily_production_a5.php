@@ -278,21 +278,17 @@ if (!empty($view_daily_production_id)) {
     $starting_y = $pdf->GetY();
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetX(10);
-
     $pdf->Cell(10, 7, 'S.No', 1, 0, 'C', 0);
     $pdf->Cell(48, 7, 'Products', 1, 0, 'C', 0);
     $pdf->Cell(30, 7, 'Unit', 1, 0, 'C', 0);
     $pdf->Cell(20, 7, 'Content', 1, 0, 'C', 0);
     $pdf->Cell(20, 7, 'Qty', 1, 1, 'C', 0);
-    
-
     $pdf->SetFont('Arial', '', 8);
 
     $y_axis = $pdf->GetY();
     $s_no = 1;
     $net_amount = 0;
     $footer_height = 0;
-
 
     $footer_height += 25;
     $total_pages = array(1);
@@ -385,7 +381,6 @@ if (!empty($view_daily_production_id)) {
                 $pdf->SetX(75);
                 $pdf->Cell(50, 4, 'Magazine Details', 0, 1, 'L', 0);
                 $pdf->SetFont('Arial', 'B', 9);
-                
                 
                 if(!empty($magazine_details)) {
                     for($i=0; $i<count($magazine_details); $i++) {
@@ -495,8 +490,8 @@ if (!empty($view_daily_production_id)) {
         }
         
     }
-    $end_y = $pdf->GetY();
 
+    $end_y = $pdf->GetY();
     $last_page_count = $s_no - $last_count;
 
     if (($footer_height + $end_y) > 190) {
@@ -580,15 +575,13 @@ if (!empty($view_daily_production_id)) {
         $pdf->Cell(50, 4, 'Magazine Details', 0, 1, 'L', 0);
         $pdf->SetFont('Arial', 'B', 9);
 
-
         if(!empty($magazine_details)) {
             for($i=0; $i<count($magazine_details); $i++) {
                 if($i==0) {
                     $pdf->SetX(80);
                     $pdf->SetFont("Arial", "B", 10);
                     $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
-                } 
-                else {
+                } else {
                     $pdf->SetX(80);
                     $pdf->SetFont("Arial", "", 8);
                     if($magazine_details[$i] != "NULL"){
@@ -638,7 +631,6 @@ if (!empty($view_daily_production_id)) {
         $pdf->Cell(30, $content_height - $y_axis, '', 1, 0);
         $pdf->Cell(20, $content_height - $y_axis, '', 1, 0);
         $pdf->Cell(20, $content_height - $y_axis, '', 1, 1);
-    
         $pdf->SetY($content_height);
     }
 

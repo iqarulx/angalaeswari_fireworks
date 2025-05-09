@@ -281,10 +281,10 @@
                                         <div class="w-100 py-2">
                                         
                                         <?php
-                                            if(!empty($list['creator_name'])) {
-                                                $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
-                                                echo "Creator : ". $list['creator_name'];
-                                            }
+                                            // if(!empty($list['creator_name'])) {
+                                            //     $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
+                                            //     echo "Creator : ". $list['creator_name'];
+                                            // }
                                         ?>                                        
                                     </div>
                                     </td>

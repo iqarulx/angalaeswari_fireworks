@@ -366,7 +366,7 @@
                                                                             }
                                                                         }
                                                                         if(!empty($total_subunit_stock)) {
-                                                                            echo $total_subunit_stock;
+                                                                            echo " + ". $total_subunit_stock;
 
                                                                             if(!empty($sub_unit_name_array)) {
                                                                                 $unique_sub_unit_names = array_unique($sub_unit_name_array);
@@ -626,7 +626,7 @@
                                                                             }
                                                                         }
                                                                         if(!empty($total_inward_subunit)) {
-                                                                            echo $total_inward_subunit;
+                                                                            echo " + " . $total_inward_subunit;
                                                                             if(!empty($subunit_name)) {
                                                                                 echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                             }
@@ -642,7 +642,7 @@
                                                                             }
                                                                         }
                                                                         if(!empty($total_outward_subunit)) {
-                                                                            echo $total_outward_subunit;
+                                                                            echo " + " . $total_outward_subunit;
                                                                             if(!empty($subunit_name)) {
                                                                                 echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                             }

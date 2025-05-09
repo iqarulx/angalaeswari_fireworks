@@ -5,8 +5,6 @@
 	$pdf->AliasNbPages(); 
 	$pdf->AddPage();
 	$pdf->SetAutoPageBreak(false);
-    // $pdf->SetDrawColor(223,36,67);
-    // $pdf->SetTextColor(223,36,67);
 	$pdf->SetTitle('Receipt');
 
     if(file_exists('../images/topgodimage.png')){
@@ -138,7 +136,6 @@
     $pdf->SetX(180);
     $pdf->Cell(20,6,'',1,1,'R',0);
     $pdf->SetY($last_y);
-
     
     $pdf->SetY($y_axis);
     $pdf->SetX(10);
@@ -154,12 +151,9 @@
     $pdf->SetX(180);
     $pdf->Cell(20,50,'',1,1,'C',0);
 
-   
     $pdf->SetFont('Arial','B',10);
     $pdf->SetX(10);
     $pdf->Cell(0,6,'For SRI SENDHUR MURUGAN SERVICE',0,1,'R',0);
-    
 
     $pdf->OutPut();
-
 ?>

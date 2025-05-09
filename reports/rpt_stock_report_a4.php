@@ -66,7 +66,6 @@
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-
         $total_records_list = $obj->getStockReportList($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '');
     }
 
@@ -89,11 +88,9 @@
     $pdf->SetFont('Arial','B',8);
     if(empty($product_id)) {
         if(!empty($total_records_list)) {
-
             $total_pages = array(1);
             $page_number = 1;
             $last_count = 0;
-            
             if(!empty($current_date)) {
                 $current_date = date('d-m-Y', strtotime($current_date));
             }
@@ -415,7 +412,6 @@
                 $footer_height += 15;
             }
             $pdf->SetFont('Arial','',7);
-            
             $total_inward_unit = 0; $total_inward_subunit = 0; $total_outward_unit = 0;  $total_outward_subunit = 0;
 
             foreach($total_records_list as $data) {
@@ -499,7 +495,7 @@
                     $pdf->SetX(20);
                     $pdf->MultiCell(15, 5, $stock_date, 0, 'C', 0);
                     $date_y = $pdf->GetY();
-                } else{
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(20);
                     $pdf->MultiCell(15, 5,'-', 0, 'C', 0);
@@ -513,7 +509,7 @@
                     $pdf->SetX(35);
                     $pdf->MultiCell(20, 5, $stock_type, 0, 'C', 0);
                     $type_y = $pdf->GetY();
-                } else{
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(35);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -612,7 +608,7 @@
                                 }
                                 if(!empty($remainder)) {
                                     $total_inward_subunit += $remainder;
-                                    $inward_display .= $remainder." ".($obj->encode_decode('decrypt', $unit_name));
+                                    $inward_display .= $remainder." ".($obj->encode_decode('decrypt', $subunit_name));
                                 }
                             }
                         }
@@ -674,7 +670,6 @@
                         $pdf->MultiCell(20, 5, '', 0, 'R', 0);
                         $outward_y = $pdf->GetY();
                     }
-                    
                 } else {
                     $inward_display = "";
                     if(!empty($unit_type)) {
@@ -896,9 +891,13 @@
                     }
                 }
 
+                $inward_y = $pdf->GetY();
                 if(!empty($inward_display)){
                     $pdf->SetX(160);
-                    $pdf->Cell(20,8,$inward_display,1,0,'R',0);
+                    $pdf->MultiCell(20,4,$inward_display,0,'R',0);
+                    $pdf->SetY($inward_y);
+                    $pdf->SetX(160);
+                    $pdf->Cell(20,8,'',1, 0,'R',0);
                 } else {
                     $pdf->SetX(160);
                     $pdf->Cell(20,8,' - ',1,0,'R',0);
@@ -918,25 +917,17 @@
                     }
                 }
 
+                $pdf->SetY($inward_y);
                 if(!empty($outward_display)){
                     $pdf->SetX(180);
-                    $pdf->Cell(20,8,$outward_display,1,1,'R',0);
+                    $pdf->MultiCell(20,4,$outward_display,0,'R',0);
+                    $pdf->SetY($inward_y);
+                    $pdf->SetX(180);
+                    $pdf->Cell(20,8,'',1, 1,'R',0);
                 } else{
                     $pdf->SetX(180);
                     $pdf->Cell(20,8,' - ',1,1,'R',0);
                 }
-                // $pdf->SetFont('Arial','B',7);
-                // $pdf->SetX(10);
-                // $pdf->Cell(150,8,'Current Stock',1,0,'R',0);
-                // $current_stock = 0;
-                // $current_stock = $total_inward_unit - $total_outward_unit;
-                // if(!empty($current_stock)){
-                //     $pdf->SetX(160);
-                //     $pdf->Cell(40,8,$current_stock,1,1,'C',0);
-                // } else{
-                //     $pdf->SetX(160);
-                //     $pdf->Cell(40,8,' - ',1,1,'C',0);
-                // }
             } else {
                 $pdf->SetFont('Arial','B',7);
                 $pdf->SetX(10);

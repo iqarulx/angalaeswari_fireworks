@@ -611,11 +611,13 @@
                                                                                 echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                             }
                                                                         }
+                                                                       
                                                                     ?>
                                                                 </th>
                                                             </tr>
                                                             <?php
-                                                        } else {
+                                                        } 
+                                                        else {
                                                     ?>
                                                             <tr>
                                                                 <td colspan="<?php if($subunit_hide == '1') { ?>9<?php } else { ?>8<?php } ?>" class="text-center">Sorry! No records found</td>

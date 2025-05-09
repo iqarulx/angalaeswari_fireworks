@@ -7,8 +7,7 @@
     if(isset($_REQUEST['view_purchase_entry_id'])) {
         $view_purchase_entry_id = $_REQUEST['view_purchase_entry_id'];
        
-    }
-    else {
+    } else {
         header("Location: ../purchase_entry.php");
         exit;
     }
@@ -264,8 +263,7 @@
                         $pdf->SetFont('Arial','B',8);
                         $pdf->Cell(95,4,html_entity_decode($supplier_details[$i]),0,1,'L',0);
                         $pdf->Cell(0,1,'',0,1,'L',0);
-                    }
-                    else {
+                    } else {
                         $pdf->MultiCell(95,4,html_entity_decode($supplier_details[$i]),0,'L',0);
                         $pdf->Cell(0,1,'',0,1,'L',0);
                     }
@@ -329,8 +327,7 @@
             $pdf->Cell(23,10,'Amount (Rs.)',1,1,'C',1);
             $pdf->SetFont('Arial','',8);
             $pdf->SetTextColor(0,0,0);
-        }
-        else {
+        } else {
             $pdf->SetFont('Arial','B',8);   
             $y=$pdf->GetY();
             $pdf->SetX(10);
@@ -363,8 +360,7 @@
             if($company_state == $supplier_state){
                 $height -= 15;
                 $footer_height += 15;
-            }
-            else{
+            } else{
                 $height -= 10;
                 $footer_height += 10;
             }
@@ -381,9 +377,7 @@
         
         $total_product_amount = 0; $total_quantity = 0; $total_unit = 0; $total_subunit = 0;
         if(!empty($view_purchase_entry_id) && !empty($product_ids)) { 
-
-            for($l = 0; $l < count($product_ids); $l++) { 
-
+            for($l = 0; $l < count($product_ids); $l++) {
                 if($pdf->GetY() >= 260){
                     $y = $pdf->GetY();
                     $pdf->SetY($y_axis);
@@ -399,8 +393,7 @@
                         $pdf->Cell(17,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(18,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(23,277-$y_axis,'',1,1,'C',0);
-                    }
-                    else {
+                    } else {
                         $pdf->Cell(8,277-$y_axis,'',1,0,'L',0);
                         $pdf->Cell(35,277-$y_axis,'',1,0,'C',0);
                         $pdf->Cell(15,277-$y_axis,'',1,0,'C',0);
@@ -445,8 +438,7 @@
                                 $pdf->SetFont('Arial','B',8);
                                 $pdf->Cell(95,4,$supplier_details[$i],0,1,'L',0);
                                 $pdf->Cell(0,1,'',0,1,'L',0);
-                            }
-                            else {
+                            } else {
                                 $pdf->MultiCell(95,4,$supplier_details[$i],0,'L',0);
                                 $pdf->Cell(0,1,'',0,1,'L',0);
                             }
@@ -461,9 +453,7 @@
                         }
                     }
 
-                    
                     $y2 = $pdf->GetY();
-
                     $pdf->SetFont('Arial','B',8);
                     $pdf->SetY($bill_to_y);
                     $pdf->Cell(0,1,'',0,1,'R',0);
@@ -509,8 +499,7 @@
                         $pdf->Cell(23,10,'Amount (Rs.)',1,1,'C',1);
                         $pdf->SetFont('Arial','',8);
                         $pdf->SetTextColor(0,0,0);
-                    }
-                    else {
+                    } else {
                         $pdf->SetFont('Arial','B',8);   
                         $y=$pdf->GetY();
                         $pdf->SetX(10);
@@ -531,7 +520,6 @@
                         $pdf->SetFont('Arial','',8);
                         $pdf->SetTextColor(0,0,0);
                     }
-
                     $y_axis=$pdf->GetY();
                 }
 
@@ -549,24 +537,20 @@
                 if($per_type[$l] == '2') {
                     if(!empty($product_subunit_name)) {
                         $per_name = $product_subunit_name;
-                    }
-                    else {
+                    } else {
                         $per_name = $product_unit_name;
                     }
-                }
-                elseif($per_type[$l] == '1') {
+                } else if($per_type[$l] == '1') {
                     $per_name = $product_unit_name;
                 }
 
                 if($unit_type[$l] == 1) {
                     $total_unit += $quantity[$l];
-                }
-                else if($unit_type[$l] == 2) {
+                } else if($unit_type[$l] == 2) {
                     $total_subunit += $quantity[$l];
                 }
                     
                 $total_product_amount += $product_amount[$l];
-                
                 $per_y = $pdf->GetY(); 
 
                 $max_y1=""; $max_y2=""; $max_y3=""; $max_y4=""; $max_y5=""; $max_y6=""; $max_y7=""; $max_y8=""; $max_y9=""; $max_y10="";
@@ -592,8 +576,7 @@
                         $pdf->SetX(89);
                         $pdf->MultiCell(17,6,$total_qty[$l] . " ".html_entity_decode(($product_subunit_name),ENT_QUOTES)."",0,'C',0);
                         
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($per_y);
                         $pdf->SetX(67);
                         $pdf->MultiCell(22,6, " - ",0,'C',0);
@@ -603,11 +586,8 @@
                         $pdf->MultiCell(17,6,$total_qty[$l],0,'C',0);
                         
                     }
-                    
-                    
+
                     $max_y6 = $pdf->GetY();
-
-
 
                     $pdf->SetY($per_y);
                     $pdf->SetX(106);
@@ -629,8 +609,7 @@
                     $pdf->SetX(177);
                     $pdf->MultiCell(23,6,$obj->numberFormat($product_amount[$l],2),0,'R',0);
                     $max_y10 = $pdf->GetY();
-                }
-                else {
+                } else {
                     $pdf->SetY($per_y);
                     $pdf->SetX(10);
                     $pdf->MultiCell(8,6,$s_no,0,'L',0);
@@ -652,8 +631,7 @@
                         $pdf->SetX(90);
                         $pdf->MultiCell(17,6,$total_qty[$l] . " ".html_entity_decode(($product_subunit_name),ENT_QUOTES)."",0,'C',0);
                         
-                    }
-                    else {
+                    } else {
                         $pdf->SetY($per_y);
                         $pdf->SetX(68);
                         $pdf->MultiCell(22,6, " - ",0,'C',0);
@@ -695,11 +673,9 @@
             }
             
             $end_y = $pdf->GetY();
-
             $last_page_count = $s_no - $last_count;
             
             if(($footer_height+$end_y) >= 270){
-        
                 $y = $pdf->GetY();
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -714,8 +690,7 @@
                     $pdf->Cell(17,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(18,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(23,270-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(8,270-$y_axis,'',1,0,'L',0);
                     $pdf->Cell(35,270-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(15,270-$y_axis,'',1,0,'C',0);
@@ -728,7 +703,6 @@
                 }
 
                 $pdf->SetFont('Arial','B',8);
-        
                 $next_page = $pdf->PageNo()+1;
         
                 $pdf->Cell(0,5,'Continued to Page Number '.$next_page,1,1,'R',0);
@@ -742,7 +716,6 @@
                 }
                 
                 $pdf->SetY($header_end);
-
                 $bill_to_y = $pdf->GetY();
 
                 $pdf->Cell(0,1,'',0,1,'L',0);
@@ -758,8 +731,7 @@
                             $pdf->SetFont('Arial','B',8);
                             $pdf->Cell(95,4,$supplier_details[$i],0,1,'L',0);
                             $pdf->Cell(0,1,'',0,1,'L',0);
-                        }
-                        else {
+                        } else {
                             $pdf->MultiCell(95,4,$supplier_details[$i],0,'L',0);
                             $pdf->Cell(0,1,'',0,1,'L',0);
                         }
@@ -820,8 +792,7 @@
                     $pdf->Cell(23,10,'Amount (Rs.)',1,1,'C',1);
                     $pdf->SetFont('Arial','',8);
                     $pdf->SetTextColor(0,0,0);
-                }
-                else {
+                } else {
                     $pdf->SetFont('Arial','B',8);   
                     $y=$pdf->GetY();
                     $pdf->SetX(10);
@@ -843,9 +814,7 @@
                     $pdf->SetTextColor(0,0,0);
                 }
 
-
                 $y_axis=$pdf->GetY();
-
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -861,8 +830,7 @@
                     $pdf->Cell(17,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(18,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(23,$content_height-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(8,$content_height-$y_axis,'',1,0,'L',0);
                     $pdf->Cell(35,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(15,$content_height-$y_axis,'',1,0,'C',0);
@@ -874,9 +842,7 @@
                     $pdf->Cell(25,$content_height-$y_axis,'',1,1,'C',0);
                 }
                 $pdf->SetY($content_height);
-            } 
-            else {
-                
+            } else {
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
@@ -891,8 +857,7 @@
                     $pdf->Cell(17,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(18,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(23,$content_height-$y_axis,'',1,1,'C',0);
-                }
-                else {
+                } else {
                     $pdf->Cell(8,$content_height-$y_axis,'',1,0,'L',0);
                     $pdf->Cell(35,$content_height-$y_axis,'',1,0,'C',0);
                     $pdf->Cell(15,$content_height-$y_axis,'',1,0,'C',0);
@@ -915,24 +880,20 @@
                     $pdf->SetFont('Arial','',8);
                     if(!empty($total_unit) && !empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-                    }
-                    else if(empty($total_unit) && !empty($total_subunit)) {
+                    } else if(empty($total_unit) && !empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-                    }
-                    else if(!empty($total_unit) && empty($total_subunit)) {
+                    } else if(!empty($total_unit) && empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
-                    }
-                    else {
+                    } else {
                         $pdf->MultiCell(35,5,"-",0,'C',0);
                     }
                     
                     $get_total_y = $pdf->GetY();
-
                     $pdf->SetX(10);
                     $pdf->Cell(42,$get_final_Y - $get_total_y,'',1,0,'C',0);
                     $pdf->Cell(37,$get_final_Y - $get_total_y,'',1,0,'C',0);
+                }
 
-                }            
                 if(!empty($sub_total)) {
                     $sub_total_val = $obj->numberFormat($sub_total,2);
                     $pdf->SetY($get_final_Y);
@@ -955,8 +916,7 @@
                             if(strpos($other_charges_values[$i], '%') !== false) {
                                 $other_charges_value = str_replace('%', '', $other_charges_values[$i]);
                                 $other_charges_value = trim($other_charges_value);
-                            }
-                            else {
+                            } else {
                                 $other_charges_value = $other_charges_values[$i];
                                 $other_percentage = "Rs. ". $other_charges_values[$i];
                             }
@@ -971,8 +931,7 @@
 
                         if($charges_types[$i] == "minus") {
                             $other_charges_total[$i] -= $other_charges_value;
-                        }
-                        else if($charges_types[$i] == "plus") {
+                        } else if($charges_types[$i] == "plus") {
                             $other_charges_total[$i] += $other_charges_value;
                         }
                     
@@ -980,23 +939,22 @@
                         $pdf->SetFont('Arial','B',8);
                         if(!empty($other_percentage)) {
                             $pdf->Cell(110,5,$other_charges_name. " (" . $other_percentage.") ",1,0,'R',0);
-                        }
-                        else {
+                        } else {
                             $pdf->Cell(110,5,$other_charges_name,1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
                         $pdf->Cell(23,5,$other_charges_value,1,1,'R',0);
                     }
                 }
+
                 if($gst_option == 1 && $company_state == $supplier_state) {
-                    if(!empty($cgst_value)){  
+                    if(!empty($cgst_value)){
                         $cgst_value = $obj->numberFormat($cgst_value,2);
                         $pdf->SetX(67);
                         $pdf->SetFont('Arial','B',8);
                         if($tax_type == 2) {
-                            $pdf->Cell(110,5,'CGST (9%)',1,0,'R',0);
-                        } 
-                        else {
+                            $pdf->Cell(110,5,'CGST ('. !empty($overall_tax) ? ((str_replace("%", "", $overall_tax)) / 2) : '' .')',1,0,'R',0);
+                        } else {
                             $pdf->Cell(110,5,'CGST',1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
@@ -1004,30 +962,30 @@
                     }
                     if(!empty($sgst_value)){  
                         $sgst_value = $obj->numberFormat($sgst_value,2);
-    
                         $pdf->SetX(67);
                         $pdf->SetFont('Arial','B',8);
                         if($tax_type == 2) {
-                            $pdf->Cell(110,5,'SGST (9%)',1,0,'R',0);
-                        } 
-                        else {
+                            $pdf->Cell(110,5,'SGST ('. !empty($overall_tax) ? ((str_replace("%", "", $overall_tax)) / 2) : '' .'%)',1,0,'R',0);
+                        } else {
                             $pdf->Cell(110,5,'SGST',1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
                         $pdf->Cell(23,5,$sgst_value,1,1,'R',0);
                     }
                 }
+
                 if($gst_option == 1 && $company_state != $supplier_state) {
                     if(!empty($igst_value)){  
                         $igst_value = $obj->numberFormat($igst_value,2);
     
                         $pdf->SetX(67);
                         $pdf->SetFont('Arial','B',8);
-                        $pdf->Cell(110,5,'IGST (18%)',1,0,'R',0);
+                        $pdf->Cell(110,5,'IGST ('. !empty($overall_tax) ?  : '' .')',1,0,'R',0);
                         $pdf->SetFont('Arial','',8);
                         $pdf->Cell(23,5,$igst_value,1,1,'R',0);
                     }
                 }
+
                 if(!empty($total_tax_value)){  
                     $total_tax_value = $obj->numberFormat($total_tax_value,2);
     
@@ -1036,7 +994,8 @@
                     $pdf->Cell(110,5,'Total Tax',1,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(23,5,$total_tax_value,1,1,'R',0);
-                }          
+                }       
+
                 if(!empty($round_off)){  
                     $pdf->SetX(67);
                     $pdf->SetFont('Arial','B',8);
@@ -1044,6 +1003,7 @@
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(23,5,$round_off,1,1,'R',0);
                 }
+
                 if(!empty($total_amount)){
                     $total_amount = $obj->numberFormat($total_amount,2);
     
@@ -1053,10 +1013,8 @@
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(23,5,$total_amount,1,1,'R',0);
                 } 
-            } 
-            else {
+            } else {
                 if(!empty($total_quantity)) {
-
                     $pdf->SetFont('Arial','B',8);
                     $pdf->SetY($get_final_Y);
                     $pdf->SetX(10);
@@ -1064,14 +1022,11 @@
                     $pdf->SetFont('Arial','',8);
                     if(!empty($total_unit) && !empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-                    }
-                    else if(empty($total_unit) && !empty($total_subunit)) {
+                    } else if(empty($total_unit) && !empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-                    }
-                    else if(!empty($total_unit) && empty($total_subunit)) {
+                    } else if(!empty($total_unit) && empty($total_subunit)) {
                         $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
-                    }
-                    else {
+                    } else {
                         $pdf->MultiCell(35,5,"-",0,'C',0);
                     }
                     $get_total_y = $pdf->GetY();
@@ -1079,9 +1034,8 @@
                     $pdf->SetX(10);
                     $pdf->Cell(43,$get_final_Y - $get_total_y,'',1,0,'C',0);
                     $pdf->Cell(37,$get_final_Y - $get_total_y,'',1,0,'C',0);
-                    
+                }
 
-                }            
                 if(!empty($sub_total)) {
                     $sub_total_val = $obj->numberFormat($sub_total,2);
                     $pdf->SetY($get_final_Y);
@@ -1104,8 +1058,7 @@
                             if(strpos($other_charges_values[$i], '%') !== false) {
                                 $other_charges_value = str_replace('%', '', $other_charges_values[$i]);
                                 $other_charges_value = trim($other_charges_value);
-                            }
-                            else {
+                            } else {
                                 $other_percentage = "Rs. ". $other_charges_values[$i];
 
                                 $other_charges_value = $other_charges_values[$i];
@@ -1118,12 +1071,10 @@
                                 $other_charges_value = str_replace(",", "", $other_charges_value);
                             }
                         }
-                
 
                         if($charges_types[$i] == "minus") {
                             $other_charges_total[$i] -= $other_charges_value;
-                        }
-                        else if($charges_types[$i] == "plus") {
+                        } else if($charges_types[$i] == "plus") {
                             $other_charges_total[$i] += $other_charges_value;
                         }
                     
@@ -1131,23 +1082,27 @@
                         $pdf->SetFont('Arial','B',8);
                         if(!empty($other_percentage)) {
                             $pdf->Cell(107,5,$other_charges_name. " (" . $other_percentage.") ",1,0,'R',0);
-                        }
-                        else {
+                        } else {
                             $pdf->Cell(107,5,$other_charges_name,1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
                         $pdf->Cell(25,5,$other_charges_value,1,1,'R',0);
                     }
                 }
+
                 if($gst_option == 1 && $company_state == $supplier_state) {
                     if(!empty($cgst_value)){  
                         $cgst_value = $obj->numberFormat($cgst_value,2);
                         $pdf->SetX(68);
                         $pdf->SetFont('Arial','B',8);
                         if($tax_type == 2) {
-                            $pdf->Cell(107,5,'CGST (9%)',1,0,'R',0);
-                        } 
-                        else {
+                            if(!empty($overall_tax)) {
+                                $tax_per = str_replace("%", "", $overall_tax);
+                                $pdf->Cell(107,5,'CGST (' . $tax_per / 2 . '%)',1,0,'R',0);
+                            } else {
+                                $pdf->Cell(107,5,'CGST',1,0,'R',0);
+                            }
+                        } else {
                             $pdf->Cell(107,5,'CGST',1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
@@ -1155,13 +1110,16 @@
                     }
                     if(!empty($sgst_value)){  
                         $sgst_value = $obj->numberFormat($sgst_value,2);
-    
                         $pdf->SetX(68);
                         $pdf->SetFont('Arial','B',8);
                         if($tax_type == 2) {
-                            $pdf->Cell(107,5,'SGST (9%)',1,0,'R',0);
-                        } 
-                        else {
+                            if(!empty($overall_tax)) {
+                                $tax_per = str_replace("%", "", $overall_tax);
+                                $pdf->Cell(107,5,'SGST (' . $tax_per / 2 . '%)',1,0,'R',0);
+                            } else {
+                                $pdf->Cell(107,5,'SGST',1,0,'R',0);
+                            }
+                        } else {
                             $pdf->Cell(107,5,'SGST',1,0,'R',0);
                         }
                         $pdf->SetFont('Arial','',8);
@@ -1171,14 +1129,24 @@
                 if($gst_option == 1 && $company_state != $supplier_state) {
                     if(!empty($igst_value)){  
                         $igst_value = $obj->numberFormat($igst_value,2);
-    
                         $pdf->SetX(68);
                         $pdf->SetFont('Arial','B',8);
-                        $pdf->Cell(107,5,'IGST (18%)',1,0,'R',0);
+                        if($tax_type == 2) {
+                            if(!empty($overall_tax)) {
+                                $tax_per = str_replace("%", "", $overall_tax);
+                                $pdf->Cell(107,5,'IGST (' . $tax_per . '%)',1,0,'R',0);
+                            } else {
+                                $pdf->Cell(107,5,'IGST',1,0,'R',0);
+                            }
+                        } else {
+                            $pdf->Cell(107,5,'IGST',1,0,'R',0);
+                        }
+                        
                         $pdf->SetFont('Arial','',8);
                         $pdf->Cell(25,5,$igst_value,1,1,'R',0);
                     }
                 }
+
                 if(!empty($total_tax_value)){  
                     $total_tax_value = $obj->numberFormat($total_tax_value,2);
     
@@ -1187,7 +1155,8 @@
                     $pdf->Cell(107,5,'Total Tax',1,0,'R',0);
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(25,5,$total_tax_value,1,1,'R',0);
-                }          
+                }
+
                 if(!empty($round_off)){  
                     $pdf->SetX(68);
                     $pdf->SetFont('Arial','B',8);
@@ -1195,6 +1164,7 @@
                     $pdf->SetFont('Arial','',8);
                     $pdf->Cell(25,5,$round_off,1,1,'R',0);
                 }
+
                 if(!empty($total_amount)){
                     $total_amount = $obj->numberFormat($total_amount,2);
     
@@ -1205,7 +1175,6 @@
                     $pdf->Cell(25,5,$total_amount,1,1,'R',0);
                 } 
             }
-                  
         }                                                   
             
         $line_y = $pdf->GetY();

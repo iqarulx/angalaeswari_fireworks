@@ -41,8 +41,7 @@ $total_records_list = $obj->GetPendingOrderReportAgentWise($from_date, $to_date,
 $date_display ="";
 if($from_date == $to_date) {
     $date_display = '( ' . date('d-m-Y', strtotime($from_date)) . ' )';
-}
-else {
+} else {
     $date_display = '('.date('d-m-Y', strtotime($from_date)) . ' to '. date('d-m-Y', strtotime($to_date)) . ')';
 }
 
@@ -52,7 +51,6 @@ if(!empty($agent_id)) {
     if(!empty($agent_name)) {
         $agent_name = $obj->encode_decode('decrypt', $agent_name) ;
     }
-
     if(!empty($from_date) && !empty($to_date) && !empty($agent_name)) {
         $agent_display =  $agent_name . " (Pending Stock : " . date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)) . ")";
     }
@@ -162,8 +160,7 @@ if (!empty($total_records_list)) {
                 $pdf->MultiCell(40, 5, $record['pending_order_unit'], 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
                 $total_pending_order_unit += $record['pending_order_unit'];
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(80);
                 $pdf->MultiCell(40, 5, '-', 0, 'C', 0);
@@ -176,8 +173,7 @@ if (!empty($total_records_list)) {
                 $pdf->MultiCell(40, 5, $record['current_stock_unit'], 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
                 $total_current_stock_unit += $record['current_stock_unit'];
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(120);
                 $pdf->MultiCell(40, 5, '-', 0, 'C', 0);
@@ -190,8 +186,7 @@ if (!empty($total_records_list)) {
                 $pdf->MultiCell(40, 5, $record['need_order_unit'], 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
                 $total_need_order_unit += $record['need_order_unit'];
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(160);
                 $pdf->MultiCell(40, 5, '-', 0, 'C', 0);
@@ -321,8 +316,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(20);
                 $pdf->SetFont('Arial','',7);
                 $pdf->MultiCell(30, 5, $record['bill_number'], 0, 'C', 0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(30, 5,'-', 0, 'C', 0);
@@ -336,8 +330,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetY($bill_number_end_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(30, 5, $bill_type, 0, 'C', 0);
-            }
-            else {
+            } else {
                 $pdf->SetY($bill_number_end_y);
                 $pdf->SetX(20);
                 $pdf->MultiCell(30, 5,'-', 0, 'C', 0);
@@ -353,8 +346,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(50);
                 $pdf->MultiCell(30, 5, $name_mobile_city, 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(50);
                 $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
@@ -370,8 +362,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(80);
                 $pdf->MultiCell(30, 5, $name_mobile_city, 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(80);
                 $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
@@ -387,8 +378,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(110);
                 $pdf->MultiCell(30, 5, $product_name, 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(110);
                 $pdf->MultiCell(30, 5, '-', 0, 'C', 0);
@@ -400,8 +390,7 @@ if (!empty($total_records_list)) {
                 $pdf->SetX(140);
                 $pdf->MultiCell(20, 5, $record['case_contains'], 0, 'C', 0);
                 $pdf->SetTextColor(0,0,0);
-            }
-            else {
+            } else {
                 $pdf->SetY($start_y);
                 $pdf->SetX(140);
                 $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -414,8 +403,7 @@ if (!empty($total_records_list)) {
                     $pdf->MultiCell(20, 5, $record['inward_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_inward += $record['inward_unit'];
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(160);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -428,8 +416,7 @@ if (!empty($total_records_list)) {
                     $pdf->MultiCell(20, 5, $record['outward_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_outward += $record['outward_unit'];
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(180);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -442,8 +429,7 @@ if (!empty($total_records_list)) {
                     $pdf->MultiCell(20, 5, $record['inward_sub_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_inward += $record['inward_sub_unit'];
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(160);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);
@@ -456,8 +442,7 @@ if (!empty($total_records_list)) {
                     $pdf->MultiCell(20, 5, $record['outward_sub_unit'], 0, 'R', 0);
                     $pdf->SetTextColor(0,0,0);
                     $total_outward += $record['outward_sub_unit'];
-                }
-                else {
+                } else {
                     $pdf->SetY($start_y);
                     $pdf->SetX(180);
                     $pdf->MultiCell(20, 5, '-', 0, 'C', 0);

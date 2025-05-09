@@ -964,5 +964,12 @@
 			$list = $stock_obj->getStockReportByMagazine($product_id, $case_contains);
 			return $list;
 		}
+		public function DeleteSemiFinishedInward($bill_unique_id) {
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$list = array();
+			$list = $stock_obj->DeleteSemiFinishedInward($bill_unique_id);
+			return $list;
+		}
 	}
 ?>

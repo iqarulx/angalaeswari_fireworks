@@ -5,8 +5,7 @@
     $party_id = ""; 
     if(isset($_REQUEST['filter_party_id'])) {
         $party_id = $_REQUEST['filter_party_id'];
-    }
-    else {
+    } else {
         header("Location: ../pending_balance_report.php");
         exit;
     }
@@ -34,12 +33,11 @@
     }
 
     $is_download ="";
-    if(isset($_REQUEST['is_download']))
-    {
+    if(isset($_REQUEST['is_download'])) {
         $is_download =$_REQUEST['is_download'];
     }
 
-    $sales_list =array(); $total_records_list =array();
+    $sales_list = array(); $total_records_list =array();
     $type ="";
     if($view_type == '1') {
         $type ="Agent";
@@ -53,20 +51,16 @@
     if(!empty($view_type)) {
         $party_list = $obj->getPartyList($view_type);
     }
-    // print_r($party_list);
-    // echo $filter_party_id;
+    
     if(!empty($party_id)) {
-        // $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
-        // echo $party_name."hello";
         if(!empty($party_name)){
-            // $total_records_list = $obj->balance_report($bill_company_id,$party_id,$from_date,$to_date);
             $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             $view_type = 2;
         } else {
             if(!empty($filter_agent_party)){
              
                 $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],$filter_agent_party,$from_date,$to_date);
-            } else{
+            } else {
                 $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
             }
         }
@@ -173,28 +167,27 @@
                     $debit_total = $debit_total + $data['debit'];
                     $debit = $debit + $debit_total;
                 }
-                if($credit_total > $debit_total)
-                {
+                if($credit_total > $debit_total) {
                     $total_amount = $debit_total - $credit_total;
-                }   
-                else{
+                } else {
                     $total_amount = $credit_total - $debit_total;
                 }
-                 if($credit_total > $debit_total) { 
+                if($credit_total > $debit_total) { 
                     $total_amount = $credit_total  -$debit_total; 
                     $pdf->SetX(110);
                     $pdf->Cell(45,10,$obj->numberFormat(($total_amount),2),0,0,'R',0);
-                     $credit_total_amount = $credit_total_amount + $total_amount; 
-                }else{
+                    $credit_total_amount = $credit_total_amount + $total_amount; 
+                } else {
                     $pdf->SetX(110);
                     $pdf->Cell(45,10,"-",0,0,'C',0);
                 }
+
                 if($debit_total > $credit_total){ 
                     $total_amount = $debit_total - $credit_total;
                     $pdf->SetX(155);
                     $pdf->Cell(45,10,$obj->numberFormat(($total_amount),2),0,0,'R',0);
                      $debit_total_amount = $debit_total_amount + $total_amount;
-                }else{
+                } else {
                     $pdf->SetX(155);
                     $pdf->Cell(45,10,"-",0,0,'C',0);
                 }
@@ -207,7 +200,6 @@
                 $pdf->Cell(45,10,'',1,0,'C',0);
                 $pdf->SetX(155);
                 $pdf->Cell(45,10,'',1,1,'C',0);
-
             }
 
             $pdf->SetFont('Arial','B',8);
@@ -220,22 +212,18 @@
             $pdf->SetX(10);
             $pdf->Cell(100,10,'Current Balance',1,0,'R',0);
 
-            if($credit_total_amount < $debit_total_amount)
-            {
+            if($credit_total_amount < $debit_total_amount) {
                 $grand_debit_total = $debit_total_amount - $credit_total_amount;
     
-            }   
-            else{
+            } else {
                 $grand_credit_total = $credit_total_amount - $debit_total_amount;
-    
             }
 
-                $pdf->SetX(110);
-                $pdf->Cell(45,10,$obj->numberFormat($grand_credit_total,2),1,0,'R',0);
-           
-                $pdf->SetX(155);
-                $pdf->Cell(45,10,$obj->numberFormat($grand_debit_total,2),1,0,'R',0);
-            
+            $pdf->SetX(110);
+            $pdf->Cell(45,10,$obj->numberFormat($grand_credit_total,2),1,0,'R',0);
+        
+            $pdf->SetX(155);
+            $pdf->Cell(45,10,$obj->numberFormat($grand_debit_total,2),1,0,'R',0);
         }
     } else {
         require_once('../fpdf/fpdf.php');
@@ -256,7 +244,7 @@
         $sy = $pdf->GetY();
         if(!empty($from_date)){
             $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($from_date))." - ".date('d-m-Y',strtotime($to_date)),0,1,'C',0);
-        }else{
+        } else {
             $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($to_date)),0,1,'C',0);
         }
 
@@ -326,7 +314,6 @@
 
         $index = 0;
         if(!empty($total_records_list)) {
-
             $credit_amount = 0; $debit_amount = 0;
             foreach($total_records_list as $key => $val) {
                 if($pdf->GetY()>250){
@@ -336,9 +323,8 @@
                     include("rpt_header.php");
                     
                     $pdf->SetY($header_end);
-
                     $current_y = $pdf->GetY();
-            
+
                     $pdf->SetY($yaxis);
                     $pdf->SetX(10);
                     $party_name = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'party_name');
@@ -375,8 +361,8 @@
                         $pdf->SetX(165);
                         $pdf->Cell(35,10,'Debit',1,1,'C',0);
                     }
-                    
                 }
+
                 $opening_balance_list = array();
                 $opening_balance_list = $obj->getOpeningBalance($party_id,$from_date,$to_date,$GLOBALS['bill_company_id'],$filter_agent_party,$view_type);
                 $opening_debit = 0; $opening_credit = 0;
@@ -464,10 +450,9 @@
                                 $pdf->SetX(165);
                                 $pdf->Cell(35,10,'Debit',1,1,'C',0);
                             }
-                            
                         }
+
                         $index = $key + 1;
-                      
                         $pdf->SetX(10);
                         $pdf->Cell(15,10,$index,0,0,'C',0);
                         $pdf->SetX(25);
@@ -475,8 +460,6 @@
                             $pdf->SetX(25);
                             $pdf->Cell(25,10,date('d-m-Y',strtotime($data['bill_date'])),0,0,'C',0);
                         }
-                        
-                     
 
                         if($view_type == "1") {
                             if(!empty($data['bill_number'])) {
@@ -527,7 +510,6 @@
                                 $pdf->SetX(165);
                                 $pdf->Cell(35,10,"-",0,0,'C',0);
                             }
-    
                         } else {
                             if(!empty($data['bill_number'])) {
                                 $bill_number = $data['bill_number'];
@@ -668,14 +650,6 @@
 
     $excel_name = "Pending Balance Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
 
-    // if($is_download == '1')
-    // {
-        $pdf->Output($is_download, $excel_name.'.pdf');
-    // }
-    // else
-    // {
-    //     $pdf->OutPut();
-    // }
-
+    $pdf->Output($is_download, $excel_name.'.pdf');
 ?>
 

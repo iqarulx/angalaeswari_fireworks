@@ -71,14 +71,14 @@
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
                                                         <select class="select2 select2-danger" name="magazine" data-dropdown-css-class="select2-danger" onchange="Javascript:table_listing_records_filter();" style="width: 100%;">
-                                                            <option value="">Select Magazine</option>
+                                                            <option value="">Select</option>
                                                             <?php if(!empty($magazine_list)) {
                                                                 foreach($magazine_list as $list) { ?>
                                                                     <option value="<?php if(!empty($list['magazine_id'])) { echo $list['magazine_id']; } ?>"> <?php if(!empty($list['magazine_name'])) { echo $obj->encode_decode('decrypt', $list['magazine_name']); } ?></option>
                                                                     <?php } 
                                                                 } ?>
                                                         </select>
-                                                        <label>Select Magazine</label>
+                                                        <label>From Magazine</label>
                                                     </div>
                                                 </div>        
                                             </div>
@@ -86,14 +86,14 @@
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
                                                         <select class="select2 select2-danger" name="godown" data-dropdown-css-class="select2-danger" onchange="Javascript:table_listing_records_filter();" style="width: 100%;">
-                                                            <option value="">Select Godown</option>
+                                                            <option value="">Select</option>
                                                             <?php if(!empty($godown_list)) {
                                                                 foreach($godown_list as $list) { ?>
                                                                     <option value="<?php if(!empty($list['godown_id'])) { echo $list['godown_id']; } ?>"> <?php if(!empty($list['godown_name'])) { echo $obj->encode_decode('decrypt', $list['godown_name']); } ?></option>
                                                                 <?php } 
                                                             } ?>
                                                         </select>
-                                                        <label>Select Godown</label>
+                                                        <label>From Godown</label>
                                                     </div>
                                                 </div>        
                                             </div>
