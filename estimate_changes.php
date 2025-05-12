@@ -17,7 +17,7 @@
             $conversion_update = $_REQUEST['conversion_update'];
         }
 
-        $delivery_slip_id = ""; $delivery_slip_number = ""; $delivery_slip_date = date('Y-m-d'); $estimate_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $billing_address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $old_quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = ""; $charges_count = 0;
+        $delivery_slip_id = ""; $delivery_slip_number = ""; $delivery_slip_date = date('Y-m-d'); $estimate_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $old_quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = ""; $charges_count = 0; $proforma_invoice_id = "";
 
         if(!empty($show_estimate_id)) {
             $estimate_list = $obj->getEstimateIndex($show_estimate_id, $conversion_update);
@@ -26,6 +26,9 @@
                 $est = $estimate_list;
                 if(!empty($est['delivery_slip_number'])) {
                     $delivery_slip_number = $est['delivery_slip_number'];
+                }
+                if(!empty($est['proforma_invoice_id'])) {
+                    $proforma_invoice_id = $est['proforma_invoice_id'];
                 }
                 if(!empty($est['customer_id'])) {
                     $customer_id = $est['customer_id'];
@@ -56,9 +59,6 @@
                 }
                 if(!empty($est['address'])) {
                     $address = $est['address'];
-                }
-                if(!empty($est['billing_address'])) {
-                    $billing_address = $est['billing_address'];
                 }
                 if(!empty($est['tax_option'])) {
                     $tax_option = $est['tax_option'];
@@ -234,7 +234,8 @@
             </div>
             <div class="row p-2">
                 <input type="hidden" name="edit_id" value="<?php if(!empty($show_estimate_id) &&  $conversion_update == 0) { echo $show_estimate_id; } ?>">   
-                <input type="hidden" name="delivery_slip_id" value="<?php if(!empty($delivery_slip_id)) { echo $delivery_slip_id; } ?>"> 
+                <input type="hidden" name="delivery_slip_id" value="<?php if(!empty($delivery_slip_id)) { echo $delivery_slip_id; } ?>">
+                <input type="hidden" name="proforma_invoice_id" value="<?php if(!empty($proforma_invoice_id)) { echo $proforma_invoice_id; } ?>">
                 <input type="hidden" name="company_state" value="<?php if(!empty($company_state)) { echo $company_state; } ?>">
                 <input type="hidden" name="party_state" value="<?php if(!empty($party_state)) { echo $party_state; } else { echo "Tamil Nadu"; } ?>">  
                 <div class="col-lg-2 col-md-3 col-6 py-2">
@@ -391,14 +392,6 @@
                         <div class="form-label-group in-border">
                             <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address" readonly><?php if(!empty($address)) { echo $address; } ?></textarea>
                             <label>Delivery Address</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-3 col-12 py-2">
-                    <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <textarea class="form-control" id="billing_address" name="billing_address" placeholder="Enter Your Address" readonly><?php if(!empty($billing_address)) { echo $billing_address; } ?></textarea>
-                            <label>Billing Address</label>
                         </div>
                     </div>
                 </div>
@@ -798,7 +791,7 @@
 
     if(isset($_POST['edit_id'])) {
         // Strings
-        $delivery_slip_id = ""; $delivery_slip_date = ""; $delivery_slip_date_error = ""; $delivery_slip_number = ""; $delivery_slip_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_estimate = "";  $edit_id = ""; $estimate_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; $gst_option = ""; $address = ""; $billing_address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = ""; $estimate_id = ""; $estimate_number = "";
+        $delivery_slip_id = ""; $delivery_slip_date = ""; $delivery_slip_date_error = ""; $delivery_slip_number = ""; $delivery_slip_number_error = "";  $customer_id = ""; $customer_id_error = "";  $agent_id = ""; $agent_id_error = ""; $transport_id = ""; $bank_id = ""; $bank_id_error = "";  $valid_estimate = "";  $edit_id = ""; $estimate_error = ""; $draft = "0"; $price_type_error = ""; $price_type = ""; $gst_option = ""; $address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $product_count = ""; $charges_count = ""; $agent_commission = ""; $company_state = ""; $party_state = ""; $product_error = ""; $estimate_id = ""; $estimate_number = ""; $proforma_invoice_id = "";
         
         // Arrays
         $product_ids = array(); $unit_types = array(); $unit_ids = array(); $unit_names = array(); $subunit_need = array(); $quantity = array(); $old_quantity = array(); $contents = array(); $rates = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array(); $charges_type = array(); $other_charges_values = array(); $other_charges_total = array(); $product_names = array(); $indv_magazine_id = array();
@@ -817,6 +810,11 @@
         if(isset($_POST['delivery_slip_id'])) {
             $delivery_slip_id = $_POST['delivery_slip_id'];
             $delivery_slip_id = trim($delivery_slip_id);
+        }
+
+        if(isset($_POST['proforma_invoice_id'])) {
+            $proforma_invoice_id = $_POST['proforma_invoice_id'];
+            $proforma_invoice_id = trim($proforma_invoice_id);
         }
 
         if(isset($_POST['estimate_date'])) {
@@ -956,11 +954,6 @@
         if(isset($_POST['address'])) {
             $address = $_POST['address'];
             $address = trim($address);
-        }
-
-        if(isset($_POST['billing_address'])) {
-            $billing_address = $_POST['billing_address'];
-            $billing_address = trim($billing_address);
         }
 
         if(isset($_POST['company_state'])) {
@@ -1235,20 +1228,17 @@
                                 $proforma_invoice_error = $obj->encode_decode('decrypt', $other_charges_names[$i]) . " cannot be above 100%";
                             }
                             $other_charges_value = trim($other_charges_value);
-                        }
-                        else {
+                        } else {
                             $other_charges_value = $other_charges_values[$i];
                         }
                         $other_charges_error = $valid->valid_price($other_charges_value, ($obj->encode_decode('decrypt', $other_charges_name)), 1, '');
                         if(!empty($other_charges_error)) {
                             if(!empty($estimate_error)) {
                                 $estimate_error = $estimate_error."<br>".$other_charges_error;
-                            }
-                            else {
+                            } else {
                                 $estimate_error = $other_charges_error;
                             }
-                        }
-                        else {
+                        } else {
                             if(strpos($other_charges_values[$i], '%') !== false) {
                                 $other_charges_value = ($other_charges_value * $total_amount) / 100;
                                 $other_charges_value = number_format($other_charges_value, 2);
@@ -1260,8 +1250,7 @@
                         $other_charges_total[$i] = $other_charges_value;
                         if($charges_type[$i] == "minus") {
                             $total_amount -= $other_charges_value;
-                        }
-                        else if($charges_type[$i] == "plus") {
+                        } else if($charges_type[$i] == "plus") {
                             $total_amount += $other_charges_value;
                         }
                     }
@@ -1309,8 +1298,7 @@
                 $tax = trim($tax);
                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $tax)) {
                     $total_tax_value = ($tax * $grand_total) / $percentage;
-                }
-                else {
+                } else {
                     $product_error = "Invalid Overall tax";
                 }
             }
@@ -1346,14 +1334,11 @@
                         $round_off = 100 - $decimal;
                         if($round_off < 10) {
                             $round_off = "0.0".$round_off;
-                        }
-                        else {
+                        } else {
                             $round_off = "0.".$round_off;
                         }
-                        
                         $total_amount = $total_amount + $round_off;
-                    }
-                    else {
+                    } else {
                         $decimal = "0.".$decimal;
                         $round_off = "-".$decimal;
                         $total_amount = $total_amount - $decimal;
@@ -1526,8 +1511,7 @@
                 }
                 if(!empty(array_filter($other_charges_total, fn($value) => $value !== ""))) {
                     $other_charges_total = implode(",", $other_charges_total);
-                }
-                else {
+                } else {
                     $other_charges_total = $GLOBALS['null_value'];
                 }
 
@@ -1540,8 +1524,8 @@
                     }
                     
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'estimate_id', 'estimate_number', 'estimate_date', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'billing_address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $estimate_date . "'", "'" . $delivery_slip_id . "'", "'" . $delivery_slip_number . "'", "'" . $delivery_slip_date . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'", "'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $billing_address . "'", "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'", "'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'estimate_id', 'estimate_number', 'estimate_date', 'delivery_slip_id', 'delivery_slip_number', 'delivery_slip_date', 'proforma_invoice_id', 'customer_id', 'customer_name_mobile_city', 'customer_details', 'agent_id', 'agent_name_mobile_city', 'agent_details', 'transport_id', 'bank_id', 'gst_option', 'address', 'tax_option', 'tax_type', 'overall_tax',  'company_state', 'party_state', 'product_id', 'product_name', 'unit_type', 'subunit_need', 'content', 'unit_id', 'unit_name', 'quantity', 'rate', 'per', 'per_type', 'product_tax', 'final_rate', 'amount', 'other_charges_id', 'charges_type', 'other_charges_value', 'agent_commission', 'sub_total', 'grand_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'other_charges_total', 'bill_total', 'cancelled', 'deleted');
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $null_value . "'", "'" . $estimate_date . "'", "'" . $delivery_slip_id . "'", "'" . $delivery_slip_number . "'", "'" . $delivery_slip_date . "'", "'" . $proforma_invoice_id . "'", "'" . $customer_id . "'", "'" . $customer_name_mobile_city . "'", "'" . $customer_details . "'", "'" . $agent_id . "'", "'" . $agent_name_mobile_city . "'", "'" . $agent_details .  "'", "'" . $transport_id . "'" , "'" . $bank_id . "'" , "'" . $gst_option . "'" , "'" . $address . "'" , "'" . $tax_option . "'" ,"'" . $tax_type . "'", "'" . $overall_tax . "'" ,"'" . $company_state . "'" ,"'" . $party_state . "'" ,"'" . $product_ids . "'" , "'" . $product_names . "'", "'" . $unit_types . "'","'" . $subunit_need . "'","'" . $contents . "'","'" . $unit_ids . "'","'" . $unit_names . "'","'" . $quantity . "'","'" . $rates . "'","'" . $per . "'","'" . $per_type . "'","'" . $product_tax . "'","'" . $final_rate . "'","'" . $amount . "'","'" . $other_charges_id . "'","'" .  $charges_type . "'","'" . $other_charges_values . "'","'" . $agent_commission . "'", "'" . $sub_total . "'", "'" . $grand_total . "'", "'" . $cgst_value . "'", "'" . $sgst_value ."'", "'" . $igst_value . "'", "'" . $total_tax_value . "'", "'" . $round_off ."'", "'" . $other_charges_total . "'", "'" . $total_amount . "'", "'0'", "'0'");
 
                     $estimate_insert_id = $obj->InsertSQL($GLOBALS['estimate_table'], $columns, $values, 'estimate_id', 'estimate_number', $action);
 
@@ -1696,8 +1680,7 @@
 					$page_start = ($page_number - 1) * $page_limit;
 					$page_end = $page_start + $page_limit;
 				}
-			}
-			else {
+			} else {
 				$page_start = 0;
 				$page_end = $page_limit;
 			}
@@ -1769,8 +1752,7 @@
                                 <?php
                                     if(!empty($list['customer_name_mobile_city']) && $list['customer_name_mobile_city'] != $GLOBALS['null_value']) {
                                         echo html_entity_decode($obj->encode_decode('decrypt', $list['customer_name_mobile_city']));
-                                    }
-                                    else {
+                                    } else {
                                         echo '-';
                                     }
                                 
@@ -1785,8 +1767,7 @@
                                 <?php
                                     if(!empty($list['bill_total'])) {
                                         echo number_format($list['bill_total'],2);
-                                    }
-                                    else {
+                                    } else {
                                         echo '-';
                                     }
                                 ?>

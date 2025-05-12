@@ -255,7 +255,7 @@ function table_listing_records_filter() {
 		if (jQuery('input[name="page_title"]').length > 0) {
 			page_title = jQuery('input[name="page_title"]').val();
 			if (typeof page_title != "undefined" && page_title != "") {
-				page_title = page_title.replace(" ", "_");
+				page_title = page_title.replaceAll(" ", "_");
 				page_title = page_title.toLowerCase();
 				page_title = jQuery.trim(page_title);
 				post_send_file = page_title + "_changes.php";
@@ -706,9 +706,13 @@ function getAgentCustomerList(agent_id) {
 }
 
 function getPartyName(type) {
-	var post_url = "action_changes.php?view_type=" + type;
+	// Get selected values (it will be an array if multiple options are selected)
+	var selectedTypes = jQuery(type).val();
+	var post_url = "action_changes.php?view_type=" + selectedTypes.join(',');
+
 	jQuery.ajax({
-		url: post_url, success: function (result) {
+		url: post_url,
+		success: function (result) {
 			result = result.trim();
 			if (jQuery('select[name="filter_party_id"]').length > 0) {
 				jQuery('select[name="filter_party_id"]').html(result);

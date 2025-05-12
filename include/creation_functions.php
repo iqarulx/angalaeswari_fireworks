@@ -2266,12 +2266,85 @@
 				}
 			}
 			return $finished_group_id;
-		}		
+		}
+
+		public function CheckRawMaterialGroupAlreadyExists($raw_material_group_name) {
+			$list = array(); $select_query = ""; $raw_material_group_id = ""; $where = "";
+		
+			if(!empty($raw_material_group_name)) {
+				$select_query = "SELECT raw_material_group_id FROM ".$GLOBALS['raw_material_group_table']." WHERE ".$where." lower_case_name = '".$raw_material_group_name."' AND deleted = '0'";	
+			}
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['raw_material_group_table'], $select_query);
+				if(!empty($list)) {
+					foreach($list as $data) {
+						if(!empty($data['raw_material_group_id'])) {
+							$raw_material_group_id = $data['raw_material_group_id'];
+						}
+					}
+				}
+			}
+			return $raw_material_group_id;
+		}
+
+		public function CheckSemiFinishedGroupAlreadyExists($semi_finished_group_name) {
+			$list = array(); $select_query = ""; $semi_finished_group_id = ""; $where = "";
+		
+			if(!empty($semi_finished_group_name)) {
+				$select_query = "SELECT semi_finished_group_id FROM ".$GLOBALS['semi_finished_group_table']." WHERE ".$where." lower_case_name = '".$semi_finished_group_name."' AND deleted = '0'";	
+			}
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['semi_finished_group_table'], $select_query);
+				if(!empty($list)) {
+					foreach($list as $data) {
+						if(!empty($data['semi_finished_group_id'])) {
+							$semi_finished_group_id = $data['semi_finished_group_id'];
+						}
+					}
+				}
+			}
+			return $semi_finished_group_id;
+		}
 		
 		public function GetFinishedGroupLinkedCount($finished_group_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($finished_group_id)) {
 				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$finished_group_id."', finished_group_id) AND deleted = '0')) as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		public function GetRawMaterialGroupLinkedCount($raw_material_group_id) {
+			$count = 0;
+
+			if (!empty($raw_material_group_id)) {
+				$product_table = $GLOBALS['product_table'];
+				$supplier_table = $GLOBALS['supplier_table'];
+
+				$select_query = "SELECT SUM(id_count) as total_count FROM (SELECT COUNT(id) as id_count FROM $product_table WHERE FIND_IN_SET('$raw_material_group_id', raw_material_group_id) AND deleted = '0' UNION ALL SELECT COUNT(id) as id_count FROM $supplier_table WHERE FIND_IN_SET('$raw_material_group_id', raw_material_group_id) AND deleted = '0') as combined";
+
+				$list = $this->getQueryRecords('', $select_query);
+
+				if (!empty($list[0]['total_count'])) {
+					$count = $list[0]['total_count'];
+				}
+			}
+
+			return $count;
+		}
+
+		public function GetSemiFinishedGroupLinkedCount($semi_finished_group_id) {
+			$list = array(); $select_query = ""; $count = 0;
+			if(!empty($semi_finished_group_id)) {
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$semi_finished_group_id."', semi_finished_group_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {

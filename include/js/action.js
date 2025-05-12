@@ -1361,6 +1361,49 @@ function GetStockLimit() {
     });
 }
 
+function GetGroupProducts() {
+    if (jQuery('select[name="product"]').length > 0) {
+        jQuery('select[name="product"]').html('');
+    }
+    var godown_type = "";
+    if (jQuery('select[name="godown_type"]').length > 0) {
+        godown_type = jQuery('select[name="godown_type"]').val();
+    }
+    var godown = "";
+    if (godown_type == '1') {
+        if (jQuery('select[name="overall_godown"]').length > 0) {
+            godown = jQuery('select[name="overall_godown"]').val();
+        }
+    } else if (godown_type == '2') {
+        if (jQuery('select[name="indv_godown"]').length > 0) {
+            godown = jQuery('select[name="indv_godown"]').val();
+        }
+    }
+
+    var raw_semi_group_id = "";
+    if (jQuery('select[name="raw_semi_group_id"]').length > 0) {
+        raw_semi_group_id = jQuery('select[name="raw_semi_group_id"]').val();
+    }
+
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                var post_url = "action_changes.php?get_product_by_group&godown_id=" + godown + "&raw_semi_group_id=" + raw_semi_group_id;
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (jQuery('select[name="product"]').length > 0) {
+                            jQuery('select[name="product"]').html(result);
+                            GetProdetails();
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
 function GetStockProduct() {
     if (jQuery('select[name="product"]').length > 0) {
         jQuery('select[name="product"]').html('');
@@ -1658,12 +1701,70 @@ function calQtyTotal() {
                 quantity_total = parseFloat(quantity_total) + parseFloat(quantity);
             }
         });
-        if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
-            quantity_total = quantity_total.toFixed(2);
-            if (jQuery('.overall_qty').length > 0) {
-                jQuery('.overall_qty').html(quantity_total);
-            }
+        // if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
+        //     quantity_total = quantity_total.toFixed(2);
+        //     if (jQuery('.overall_qty').length > 0) {
+        //         jQuery('.overall_qty').html(quantity_total);
+        //     }
+        // }
+
+
+        /* Total Display */
+        var unit_ids = [];
+        if (jQuery('.product_row').length > 0) {
+            jQuery('.product_row').each(function (index, row) {
+                var unit_type = jQuery(row).find('input[name="unit_type[]"]').val();
+                var unit_id = '';
+                if (jQuery(row).find('input[name="unit_id[]"]').length > 0) {
+                    unit_id = jQuery(row).find('input[name="unit_id[]"]').val();
+                }
+                var subunit_id = '';
+                if (jQuery(row).find('input[name="subunit_id[]"]').length > 0) {
+                    subunit_id = jQuery(row).find('input[name="subunit_id[]"]').val();
+                }
+                if (unit_type == 1) {
+                    if (unit_id != '') {
+                        unit_ids.push(unit_id);
+                    }
+                } else if (unit_type == 2) {
+                    if (subunit_id != '') {
+                        unit_ids.push(subunit_id);
+                    } else if (unit_id != '' && subunit_id == '') {
+                        unit_ids.push(unit_id);
+                    }
+                }
+            });
         }
+
+        var product_ids = [];
+        if (jQuery('input[name="product_id[]"]').length > 0) {
+            jQuery('input[name="product_id[]"]').each(function () {
+                product_ids.push(jQuery(this).val());
+            });
+        }
+        var contains = [];
+        if (jQuery('input[name="contains[]"]').length > 0) {
+            jQuery('input[name="contains[]"]').each(function () {
+                contains.push(jQuery(this).val());
+            });
+        }
+        var quantity = [];
+        if (jQuery('input[name="quantity[]"]').length > 0) {
+            jQuery('input[name="quantity[]"]').each(function () {
+                quantity.push(jQuery(this).val());
+            });
+        }
+
+        var post_url = "daily_production_changes.php?get_total&product_ids=" + product_ids.join(',') + "&unit_ids=" + unit_ids.join(',') + "&contains=" + contains.join(',') + "&quantity=" + quantity.join(',');
+        jQuery.ajax({
+            url: post_url, success: function (result) {
+                if (typeof result != "undefined" && result != "") {
+                    if (jQuery('.overall_qty').length > 0) {
+                        jQuery('.overall_qty').html(result);
+                    }
+                }
+            }
+        });
     }
 }
 

@@ -3,7 +3,6 @@
 	include("include_user_check.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
 
-
     $login_staff_id = "";
     if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
         if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
@@ -16,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
 	<?php 
 	include "link_style_script.php"; ?>
     <script type="text/javascript" src="include/js/creation_modules.js"></script>

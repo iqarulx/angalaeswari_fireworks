@@ -49,6 +49,14 @@
 
         echo $type_option . "$$" . $unit . "%%" . $subunit . "$$" . $content_option . "$$" . $negative_stock. '$$'.$subunit;
 
+        if(!empty($subunit)) {
+            $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit, 'unit_name');
+            if(!empty($subunit_name)) {
+                $subunit_name = $obj->encode_decode('decrypt', $subunit_name);
+                echo '$$'.$subunit_name;
+            }
+        }
+
     }
 
     if (isset($_REQUEST['product_row_index'])) {
@@ -480,6 +488,65 @@
             }
         }
     }
+
+        if(isset($_REQUEST['get_limit_product'])) {
+        $product_id = $_REQUEST['get_limit_product'];
+        $product_id = trim($product_id);
+        $limit = "";
+        $godown_id = $_REQUEST['godown'];
+        $case_contains = $_REQUEST['content'];
+        $unit_type = $_REQUEST['unit_type'];
+        
+        if($unit_type == '2') {
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
+            $outward = $obj->getOutwardSubunitQty('', $godown_id, '', $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
+        } 
+        else if($unit_type == '1') {
+            $inward = 0; $outward = 0;
+            $inward = $obj->getInwardQty('', $godown_id, '', $product_id, $case_contains);
+            $outward = $obj->getOutwardQty('', $godown_id, '', $product_id, $case_contains);
+            $current_unit = 0;
+            $current_unit = $inward - $outward;
+            $limit = $current_unit;
+        }
+        
+        echo $limit;
+    }
+
+    if(isset($_REQUEST['get_product_by_group'])) {
+        $godown_id = $_REQUEST['godown_id'];
+        $raw_semi_group_id = $_REQUEST['raw_semi_group_id'];
+        $product_list = array();
+        $product_list = $obj->getGroupProduct($godown_id, $raw_semi_group_id);
+        $product_count = 0;
+        $product_count = count($product_list);
+
+        ?>
+        <option value="">Select Product</option>
+        <?php
+        if(!empty($product_list)) {
+            foreach($product_list as $data) {
+                // $current_stock_product = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'current_stock_unit');
+                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                    $product_name = "";
+                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                    ?>
+                        <option value="<?php echo $data['product_id']; ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected <?php } ?>>
+                         <?php
+                            if(!empty($product_name) && $product_name != $GLOBALS['null_value']) {
+                                echo $obj->encode_decode('decrypt', $product_name);
+                            }
+                        ?>
+                    </option>
+                    <?php
+                }
+            }
+        }
+    }
         
     if(isset($_REQUEST['show_purchase_product'])){
         $product_group = "";
@@ -520,7 +587,55 @@
         }
     }
 
-    
+    if(isset($_REQUEST['get_product_by_group_purchase'])){
+        $filter_group_id = "";
+        if(isset($_REQUEST['filter_group_id'])){
+            $filter_group_id = $_REQUEST['filter_group_id'];
+        }
+        $filter_group_type = "";
+        if(isset($_REQUEST['filter_group_type'])){
+            $filter_group_type = $_REQUEST['filter_group_type'];
+        }
+        $product_list = array();
+       
+        if(!empty($filter_group_type) && !empty($filter_group_id)) {
+            $select_query = "";
+            if($filter_group_type == "raw_material_group") {
+                $select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE raw_material_group_id = '" . $filter_group_id . "' AND deleted = '0'";
+            } else if($filter_group_type == "semi_finished_group") {
+                $select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE semi_finished_group_id = '" . $filter_group_id . "' AND deleted = '0'";
+            } else if($filter_group_type == "finished_group") {
+                $select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE finished_group_id = '" . $filter_group_id . "' AND deleted = '0'";
+            }
+
+            if(!empty($select_query)) {
+                $product_list = $obj->getQueryRecords($GLOBALS['product_table'], $select_query);
+            }
+        } else {
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
+        }
+
+        $product_count = 0;
+        $product_count = count($product_list);
+        ?>
+        <option value="">Select</option>
+        <?php
+        if(!empty($product_list)){
+            foreach($product_list as $plist){
+                if(!empty($plist['product_id'])){
+                    $product_id = $plist['product_id'];
+                }
+                if(!empty($plist['product_name'])){
+                    $product_name = $plist['product_name'];
+                    $product_name = $obj->encode_decode('decrypt', $product_name);
+                }
+                ?>
+                    <option value="<?php if(!empty($product_id)){ echo $product_id; } ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected <?php } ?>><?php if(!empty($product_name)){ echo $product_name; } ?></option>
+                <?php
+            }
+        }
+    }
+
     if(isset($_REQUEST['get_agent_id'])){
         $agent_id = $_REQUEST['get_agent_id'];
 
@@ -561,112 +676,77 @@
         }
     }
 
-    if(isset($_REQUEST['view_type'])) {
-		$view_type = ""; $view_type = $_REQUEST['view_type'];
-		if($view_type == "1"){ ?>
-				<option value="">Select</option>
-				<?php
-					$agent_list = array();
-					$agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
-					if(!empty($agent_list)) {
-						foreach($agent_list as $data) { ?>
-							<option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>">
-								<?php
-									if(!empty($data['agent_name'])) {
-										$data['agent_name'] = $obj->encode_decode('decrypt', $data['agent_name']);
-										echo $data['agent_name'];
-										if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-											$data['city'] = $obj->encode_decode('decrypt', $data['city']);
-											echo " - ".$data['city'];
-										}
-									}
-								?>
-							</option>
-				<?php
-						}
-					}
-				?>
-			
-		<?php }else if($view_type == "2"){ ?>
-				<option value="">Select</option>
-				<?php
-					$supplier_list = array();
-					$supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
-					if(!empty($supplier_list)) {
-						foreach($supplier_list as $data) { ?>
-							<option value="<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>">
-								<?php
-									if(!empty($data['supplier_name'])) {
-										$data['supplier_name'] = $obj->encode_decode('decrypt', $data['supplier_name']);
-										echo $data['supplier_name'];
-										if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-											$data['city'] = $obj->encode_decode('decrypt', $data['city']);
-											echo " - ".$data['city'];
-										}
-									}
-								?>
-							</option>
-				<?php
-						}
-					}
-				?>
-			
-		<?php }else if($view_type == "3"){ ?>
-				<option value="">Select</option>
-				<?php
-					$contractor_list = array();
-					$contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
-					if(!empty($contractor_list)) {
-						foreach($contractor_list as $data) { ?>
-							<option value="<?php if(!empty($data['contractor_id'])) { echo $data['contractor_id']; } ?>">
-								<?php
-									if(!empty($data['contractor_name'])) {
-										$data['contractor_name'] = $obj->encode_decode('decrypt', $data['contractor_name']);
-										echo $data['contractor_name'];
-										if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-											$data['city'] = $obj->encode_decode('decrypt', $data['city']);
-											echo " - ".$data['city'];
-										}
-									}
-								?>
-							</option>
-				<?php
-						}
-					}
-				?>
-			
-		<?php } else if($view_type == "4"){ ?>
-				<option value="">Select</option>
-				<?php
-					$customer_list = array();
-					$customer_list = $obj->getCustomerList();
-					if(!empty($customer_list)) {
-						foreach($customer_list as $data) { ?>
-							<option value="<?php if(!empty($data['customer_id'])) { echo $data['customer_id']; } ?>">
-								<?php
-									if(!empty($data['customer_name'])) {
-										$data['customer_name'] = $obj->encode_decode('decrypt', $data['customer_name']);
-										echo $data['customer_name'];
-										if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-											$data['city'] = $obj->encode_decode('decrypt', $data['city']);
-											echo " - ".$data['city'];
-										}
-									}
-								?>
-							</option>
-				<?php
-						}
-					}
-				?>
-			
-		<?php }  ?>
-		
-		<script type="text/javascript">                
-			jQuery(document).ready(function(){
-				jQuery('select[name="filter_party_id"]').select2();
-			});
-		</script>
-	<?php }
+    if (isset($_REQUEST['view_type'])) {
+        $view_type = $_REQUEST['view_type']; // This will be an array if multiple options are selected
+    
+        // Iterate over the selected view types
+        foreach ($view_type as $type) {
+            switch ($type) {
+                case "1":
+                    // Logic for Agent
+                    $agent_list = $obj->getTableRecords($GLOBALS['agent_table'], '', '', '');
+                    if (!empty($agent_list)) {
+                        echo '<option value="">Select</option>';
+                        foreach ($agent_list as $data) {
+                            echo '<option value="' . (isset($data['agent_id']) ? $data['agent_id'] : '') . '">';
+                            echo isset($data['agent_name']) ? $obj->encode_decode('decrypt', $data['agent_name']) : '';
+                            echo (isset($data['city']) && $data['city'] != $GLOBALS['null_value']) ? ' - ' . $obj->encode_decode('decrypt', $data['city']) : '';
+                            echo '</option>';
+                        }
+                    }
+                    break;
+    
+                case "2":
+                    // Logic for Supplier
+                    $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
+                    if (!empty($supplier_list)) {
+                        echo '<option value="">Select</option>';
+                        foreach ($supplier_list as $data) {
+                            echo '<option value="' . (isset($data['supplier_id']) ? $data['supplier_id'] : '') . '">';
+                            echo isset($data['supplier_name']) ? $obj->encode_decode('decrypt', $data['supplier_name']) : '';
+                            echo (isset($data['city']) && $data['city'] != $GLOBALS['null_value']) ? ' - ' . $obj->encode_decode('decrypt', $data['city']) : '';
+                            echo '</option>';
+                        }
+                    }
+                    break;
+    
+                case "3":
+                    // Logic for Contractor
+                    $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+                    if (!empty($contractor_list)) {
+                        echo '<option value="">Select</option>';
+                        foreach ($contractor_list as $data) {
+                            echo '<option value="' . (isset($data['contractor_id']) ? $data['contractor_id'] : '') . '">';
+                            echo isset($data['contractor_name']) ? $obj->encode_decode('decrypt', $data['contractor_name']) : '';
+                            echo (isset($data['city']) && $data['city'] != $GLOBALS['null_value']) ? ' - ' . $obj->encode_decode('decrypt', $data['city']) : '';
+                            echo '</option>';
+                        }
+                    }
+                    break;
+    
+                case "4":
+                    // Logic for Customer
+                    $customer_list = $obj->getCustomerList();
+                    if (!empty($customer_list)) {
+                        echo '<option value="">Select</option>';
+                        foreach ($customer_list as $data) {
+                            echo '<option value="' . (isset($data['customer_id']) ? $data['customer_id'] : '') . '">';
+                            echo isset($data['customer_name']) ? $obj->encode_decode('decrypt', $data['customer_name']) : '';
+                            echo (isset($data['city']) && $data['city'] != $GLOBALS['null_value']) ? ' - ' . $obj->encode_decode('decrypt', $data['city']) : '';
+                            echo '</option>';
+                        }
+                    }
+                    break;
+            }
+        }
+        ?>
+        <script type="text/javascript">                
+            jQuery(document).ready(function(){
+                jQuery('select[name="filter_party_id"]').select2();
+            });
+        </script>
+    <?php 
+    }
 
     if(isset($_REQUEST['estimate_id'])){
         $estimate_id = $_REQUEST['estimate_id'];
@@ -681,5 +761,36 @@
             echo $proforma_invoice_id;
         }
 
+    }
+
+    if(isset($_REQUEST['get_supplier_products'])) {
+        $supplier_id = "";
+        $supplier_id = $_REQUEST['supplier_id'];
+
+        $raw_material_group_id = "";
+        $raw_material_group_id = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $supplier_id, 'raw_material_group_id');
+
+        if(!empty($raw_material_group_id) && $raw_material_group_id != $GLOBALS['null_value']) {
+            $product_list = array();
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'raw_material_group_id', $raw_material_group_id, '');
+            ?>
+            <option value="">Select</option>
+            <?php
+            if(!empty($product_list)) {
+                foreach($product_list as $data) {
+                    ?>
+                    <option value="<?php if(!empty($data['product_id'])) { echo $data['product_id']; } ?>">
+                        <?php
+                            if(!empty($data['product_name'])) {
+                                $data['product_name'] = $obj->encode_decode('decrypt', $data['product_name']);
+                                echo $data['product_name'];
+                            }
+                        ?>
+                    </option>
+                    <?php
+                }
+            }
+        }
+        echo "$$$" . $raw_material_group_id;
     }
 ?>

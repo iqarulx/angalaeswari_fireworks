@@ -176,189 +176,6 @@ function GetStockLimit() {
     });
 }
 
-
-// function AddStockAdjustmentProducts() {
-//     var check_login_session = 1; var all_errors_check = 1;
-// 	var post_url = "dashboard_changes.php?check_login_session=1";
-// 	jQuery.ajax({
-// 		url: post_url, success: function (check_login_session) {
-// 			if (check_login_session == 1) {
-//                 if(jQuery('#qty_limit').length > 0) {
-//                     jQuery('#qty_limit').html('');
-//                 }
-
-// 				if (jQuery('.infos').length > 0) {
-// 					jQuery('.infos').each(function() { jQuery(this).remove(); });
-// 				}
-
-//                 var category_id = "";
-//                 if(jQuery('select[name="category_id"]').length > 0) {
-//                     category_id = jQuery('select[name="category_id"]').val();
-//                     category_id = jQuery.trim(category_id);
-//                     if(typeof category_id == "undefined" || category_id == "" || category_id == 0) {
-//                         all_errors_check = 0;
-//                     }
-//                 }
-
-//                 var godown_id = "";
-//                 if(jQuery('select[name="godown_id"]').is(":visible")) {
-//                     if(jQuery('select[name="godown_id"]').length > 0) {
-//                         godown_id = jQuery('select[name="godown_id"]').val();
-//                         godown_id = jQuery.trim(godown_id);
-//                         if(typeof godown_id == "undefined" || godown_id == "" || godown_id == 0) {
-//                             all_errors_check = 0;
-//                         }
-//                     }
-//                 }
-
-//                 var magazine_id = "";
-//                 if(jQuery('select[name="magazine_id"]').is(":visible")) {
-//                     if(jQuery('select[name="magazine_id"]').length > 0) {
-//                         magazine_id = jQuery('select[name="magazine_id"]').val();
-//                         magazine_id = jQuery.trim(magazine_id);
-//                         if(typeof magazine_id == "undefined" || magazine_id == "" || magazine_id == 0) {
-//                             all_errors_check = 0;
-//                         }
-//                     }
-//                 }
-
-//                 var selected_product_id = "";
-//                 if(jQuery('select[name="selected_product_id"]').is(":visible")) {
-//                     if(jQuery('select[name="selected_product_id"]').length > 0) {
-//                         selected_product_id = jQuery('select[name="selected_product_id"]').val();
-//                         selected_product_id = jQuery.trim(selected_product_id);
-//                         if(typeof selected_product_id == "undefined" || selected_product_id == "" || selected_product_id == 0) {
-//                             all_errors_check = 0;
-//                         }
-//                     }
-//                 }
-
-//                 var selected_unit_id = "";
-//                 if(jQuery('select[name="selected_unit_id"]').length > 0) {
-//                     selected_unit_id = jQuery('select[name="selected_unit_id"]').val();
-//                     selected_unit_id = jQuery.trim(selected_unit_id);
-//                     if(typeof selected_unit_id == "undefined" || selected_unit_id == "" || selected_unit_id == 0) {
-//                         all_errors_check = 0;
-//                     }
-//                 }
-
-//                 var selected_quantity = "";
-//                 if(jQuery('input[name="selected_quantity"]').length > 0) {
-//                     selected_quantity = jQuery('input[name="selected_quantity"]').val();
-//                     selected_quantity = jQuery.trim(selected_quantity);
-//                     if(typeof selected_quantity == "undefined" || selected_quantity == "" || selected_quantity == 0) {
-//                         all_errors_check = 0;
-//                     }
-//                     else if(price_regex.test(selected_quantity) == false) {
-//                         all_errors_check = 0;
-//                     }
-//                     else if(parseFloat(selected_quantity) > 99999) {
-//                         all_errors_check = 0;
-//                     }
-//                 }
-
-//                 var selected_stock_action = "";
-//                 if(jQuery('select[name="selected_stock_action"]').length > 0) {
-//                     selected_stock_action = jQuery('select[name="selected_stock_action"]').val();
-//                     selected_stock_action = jQuery.trim(selected_stock_action);
-//                     if(typeof selected_stock_action == "undefined" || selected_stock_action == "" || selected_stock_action == 0) {
-//                         all_errors_check = 0;
-//                     }
-//                 }
-
-//                 if(parseFloat(all_errors_check) == 1) {
-//                     var add = 1;
-//                     if(selected_product_id != "") {
-//                         if(jQuery('input[name="product_id[]"]').length > 0) {
-//                             jQuery('.stockadjustment_product_table tbody').find('tr').each(function () {
-//                                 var prev_product_id = ""; var prev_unit_id = "";
-//                                 prev_product_id = jQuery(this).find('input[name="product_id[]"]').val();
-//                                 if(jQuery(this).find('input[name="unit_id[]"]').length > 0) {
-//                                     prev_unit_id = jQuery(this).find('input[name="unit_id[]"]').val();
-//                                 }
-//                                 if (prev_product_id == selected_product_id && prev_unit_id == selected_unit_id) {
-//                                     add = 0;
-//                                 }
-//                             });
-//                         }
-//                     }
-//                     if(parseFloat(add) == 1) {
-//                         var product_count = 0;
-//                         product_count = jQuery('input[name="product_count"]').val();
-//                         product_count = parseInt(product_count) + 1;
-//                         jQuery('input[name="product_count"]').val(product_count);
-
-//                         var post_url = "stock_adjustment_table.php?product_row_index="+product_count+"&selected_product_id="+selected_product_id+"&selected_unit_id="+selected_unit_id+"&selected_quantity="+selected_quantity+"&selected_stock_action="+selected_stock_action;
-
-//                         jQuery.ajax({
-//                             url: post_url, success: function (result) {
-//                                 if (jQuery('.stockadjustment_product_table tbody').find('tr').length > 0) {
-//                                     jQuery('.stockadjustment_product_table tbody').find('tr:first').before(result);
-//                                 }
-//                                 else {
-//                                     jQuery('.stockadjustment_product_table tbody').append(result);
-//                                 }
-//                                 if(jQuery('select[name="category_id"]').length > 0) {
-//                                     jQuery('select[name="category_id"]').attr('disabled', true);
-//                                 }
-//                                 if(jQuery('input[name="category_id"]').length > 0) {
-//                                     jQuery('input[name="category_id"]').attr('disabled', false);
-//                                     jQuery('input[name="category_id"]').val(category_id);
-//                                 }
-//                                 if(jQuery('select[name="godown_id"]').length > 0) {
-//                                     jQuery('select[name="godown_id"]').attr('disabled', true);
-//                                     if(jQuery('input[name="godown_id"]').length > 0) {
-//                                         if(godown_id != "") {
-//                                             jQuery('input[name="godown_id"]').attr('disabled', false);
-//                                             jQuery('input[name="godown_id"]').val(godown_id);
-//                                         }
-//                                     }
-//                                 }
-
-//                                 if(jQuery('select[name="magazine_id"]').length > 0) {
-//                                     jQuery('select[name="magazine_id"]').attr('disabled', true);
-//                                     if(jQuery('input[name="magazine_id"]').length > 0) {
-//                                         if(magazine_id != "") {
-//                                             jQuery('input[name="magazine_id"]').attr('disabled', false);
-//                                             jQuery('input[name="magazine_id"]').val(magazine_id);
-//                                         }
-//                                     }
-//                                 }
-//                                 if(jQuery('#qty_limit').length > 0) {
-//                                     jQuery('#qty_limit').html('');
-//                                 }
-
-//                                 if(jQuery('select[name="selected_product_id"]').length > 0) {
-//                                     jQuery('select[name="selected_product_id"]').val('').trigger('change').select2('open');
-//                                 }
-//                                 if(jQuery('select[name="selected_unit_id"]').length > 0) {
-//                                     jQuery('select[name="selected_unit_id"]').val('').trigger('change');
-//                                 }
-//                                 if(jQuery('input[name="selected_quantity"]').length > 0) {
-//                                     jQuery('input[name="selected_quantity"]').val('');
-//                                 }
-//                                 if(jQuery('select[name="selected_stock_action"]').length > 0) {
-//                                     jQuery('select[name="selected_stock_action"]').val('').trigger('change');
-//                                 }
-//                                 calTotal();
-//                             }
-//                         });
-//                     }
-//                     else {
-//                         jQuery('.stockadjustment_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">This Product Already Exists</span>');
-//                     }
-//                 }
-//                 else {
-//                     jQuery('.stockadjustment_product_table').before('<span class="infos w-50 text-center mb-3" style="font-size: 15px;">Check Product Details</span>');
-//                 }
-// 			}
-// 			else {
-// 				window.location.reload();
-// 			}
-// 		}
-// 	});
-// }
-
 function AddStockAdjustmentProducts() {
     var check_login_session = 1; var all_errors_check = 1; var unit_sub_error = 1;
     var post_url = "dashboard_changes.php?check_login_session=1";
@@ -518,12 +335,18 @@ function AddStockAdjustmentProducts() {
                                             prev_unit_type = jQuery(this).find('input[name="unit_type[]"]').val();
                                             prev_location_id = jQuery(this).find('input[name="location_id[]"]').val();
                                             prev_content = jQuery(this).find('input[name="content[]"]').val();
+                                            prev_stock_action = jQuery(this).find('input[name="stock_action[]"]').val();
+
+                                            // alert(prev_stock_action+"/"+selected_stock_action)
                                             if (jQuery('select[name="contains"]').is(":visible")) {
                                                 if (prev_product_id == product && prev_unit_type == selected_unit_type && prev_location_id == location_id && prev_content == content) {
                                                     add = 0;
                                                 }
+                                                // if (prev_product_id == product && prev_unit_type != selected_unit_type && prev_location_id == location_id && prev_content == content && prev_stock_action != selected_stock_action ) {
+                                                //     add = 0;
+                                                // }
                                             } else {
-                                                if (prev_product_id == product && prev_unit_type == selected_unit_type && prev_location_id == location_id) {
+                                                if (prev_product_id == product && prev_unit_type == selected_unit_type) {
                                                     add = 0;
                                                 }
                                             }
@@ -681,12 +504,50 @@ function calcTotalQuantity() {
                 quantity_total = parseFloat(quantity_total) + parseFloat(quantity);
             }
         });
-        if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
-            quantity_total = quantity_total.toFixed(2);
-            if (jQuery('.overall_qty').length > 0) {
-                jQuery('.overall_qty').html(quantity_total);
-            }
+        // if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
+        //     quantity_total = quantity_total.toFixed(2);
+        //     if (jQuery('.overall_qty').length > 0) {
+        //         jQuery('.overall_qty').html(quantity_total);
+        //     }
+        // }
+
+
+        /* Total Display */
+        var unit_ids = [];
+        if (jQuery('input[name="unit_id[]"]').length > 0) {
+            jQuery('input[name="unit_id[]"]').each(function () {
+                unit_ids.push(jQuery(this).val());
+            });
         }
+        var product_ids = [];
+        if (jQuery('input[name="product_id[]"]').length > 0) {
+            jQuery('input[name="product_id[]"]').each(function () {
+                product_ids.push(jQuery(this).val());
+            });
+        }
+        var content = [];
+        if (jQuery('input[name="content[]"]').length > 0) {
+            jQuery('input[name="content[]"]').each(function () {
+                content.push(jQuery(this).val());
+            });
+        }
+        var quantity = [];
+        if (jQuery('input[name="quantity[]"]').length > 0) {
+            jQuery('input[name="quantity[]"]').each(function () {
+                quantity.push(jQuery(this).val());
+            });
+        }
+
+        var post_url = "daily_production_changes.php?get_total&product_ids=" + product_ids.join(',') + "&unit_ids=" + unit_ids.join(',') + "&contains=" + content.join(',') + "&quantity=" + quantity.join(',');
+        jQuery.ajax({
+            url: post_url, success: function (result) {
+                if (typeof result != "undefined" && result != "") {
+                    if (jQuery('.overall_qty').length > 0) {
+                        jQuery('.overall_qty').html(result);
+                    }
+                }
+            }
+        });
     }
 }
 

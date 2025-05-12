@@ -86,8 +86,9 @@
         $semi_finished_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d44557a4d444a664d444d3d', '');
 
         $product_list = array();
-        $product_list = array_merge($raw_product_list, $semi_finished_list);
-        
+        // $product_list = array_merge($raw_product_list, $semi_finished_list);
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
+
         $count_of_product = 0; $selected_product_id = "";
         $count_of_product = count($product_list);
         // $contractor_list = array();
@@ -1247,7 +1248,7 @@ if(isset($_REQUEST['products_contractor_id'])) {
     // }
 
     $products_list = array();
-    $products_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d44557a4d444a664d444d3d', '');
+    $products_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
     // print_r($products_list);
     
     $product_count = 0;

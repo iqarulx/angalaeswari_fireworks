@@ -27,9 +27,9 @@
         $filter_agent_party = $_REQUEST['filter_agent_party'];
     }
 
-    $view_type = "";
-    if(isset($_REQUEST['view_type'])){
-        $view_type = $_REQUEST['view_type'];
+    $view_type = [];
+    if (!empty($_REQUEST['view_type'])) {
+        $view_type = explode(',', $_REQUEST['view_type']);
     }
 
     $is_download ="";
@@ -38,20 +38,21 @@
     }
 
     $sales_list = array(); $total_records_list =array();
-    $type ="";
-    if($view_type == '1') {
-        $type ="Agent";
-    } else if($view_type == '2') {
-        $type = "Supplier";
-    } else if($view_type == '3') {
-        $type ="Contractor";
-    } else if($view_type == '4') {
-        $type ="Customer";
+    $type = [];
+
+    if (!empty($view_type)) {
+        if (in_array('1', $view_type)) {
+            $type[] = "Agent";
+        }
+        if (in_array('2', $view_type)) {
+            $type[] = "Supplier";
+        }
+        if (in_array('4', $view_type)) {
+            $type[] = "Customer";
+        }
     }
-    if(!empty($view_type)) {
-        $party_list = $obj->getPartyList($view_type);
-    }
-    
+
+  
     if(!empty($party_id)) {
         if(!empty($party_name)){
             $total_records_list= $obj->balance_report($type,$party_id,$GLOBALS['bill_company_id'],'',$from_date,$to_date);
@@ -386,18 +387,31 @@
                 }
 
                 if(!empty($opening_debit) || !empty($opening_credit)) {
-
-                    $pdf->Cell(120,10,'Opening Balance',1,0,'R',0);
-                    if($opening_credit > $opening_debit) {
-                        $credit_amount = $opening_credit - $opening_debit;
-                        $pdf->Cell(35,10,$obj->numberFormat($credit_amount,2),1,0,'R',0); 
-                        $pdf->Cell(35,10,'-',1,1,'C',0);
+                    if($view_type =='1') {
+                        $pdf->Cell(130,10,'Opening Balance',1,0,'R',0);
+                        if($opening_credit > $opening_debit) {
+                            $credit_amount = $opening_credit - $opening_debit;
+                            $pdf->Cell(30,10,$obj->numberFormat($credit_amount,2),1,0,'R',0); 
+                            $pdf->Cell(30,10,'-',1,1,'C',0);
+                        }
+                        if($opening_debit > $opening_credit){
+                            $debit_amount = $opening_debit - $opening_credit;
+                            $pdf->Cell(30,10,'-',1,0,'C',0);
+                            $pdf->Cell(30,10,$obj->numberFormat($debit_amount,2),1,1,'R',0);  
+                        }
+                    } else {
+                        $pdf->Cell(120,10,'Opening Balance',1,0,'R',0);
+                        if($opening_credit > $opening_debit) {
+                            $credit_amount = $opening_credit - $opening_debit;
+                            $pdf->Cell(35,10,$obj->numberFormat($credit_amount,2),1,0,'R',0); 
+                            $pdf->Cell(35,10,'-',1,1,'C',0);
+                        }
+                        if($opening_debit > $opening_credit){
+                            $debit_amount = $opening_debit - $opening_credit;
+                            $pdf->Cell(35,10,'-',1,0,'C',0);
+                            $pdf->Cell(35,10,$obj->numberFormat($debit_amount,2),1,1,'R',0);  
+                        }
                     }
-                    if($opening_debit > $opening_credit){
-                        $debit_amount = $opening_debit - $opening_credit;
-                        $pdf->Cell(35,10,'-',1,0,'C',0);
-                        $pdf->Cell(35,10,$obj->numberFormat($debit_amount,2),1,1,'R',0);  
-                    }  
                 }
                 if(!empty($val['bill_list'])) {
                     foreach($val['bill_list'] as $key => $data) {
@@ -652,4 +666,3 @@
 
     $pdf->Output($is_download, $excel_name.'.pdf');
 ?>
-

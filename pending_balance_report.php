@@ -30,11 +30,19 @@
         $filter_party_id = $_POST['filter_party_id'];
     }
 
-    $view_type = "";
-    if(isset($_POST['view_type'])){
-        $view_type = $_POST['view_type'];
+    $view_type = [];
+    if (!isset($view_type) || empty($view_type)) {
+        $view_type = ['1']; // Default to "Agent"
+    } 
+    else {
+        $view_type = (array)$view_type; // Ensure it's treated as an array
+    }
+    if (isset($_POST['view_type'])) {
+        $view_type = $_POST['view_type']; // This will be an array
     }
 
+    // print_r($view_type);
+    
     $filter_agent_customer ="";
     if(isset($_POST['filter_agent_customer']))
     {
@@ -51,17 +59,15 @@
     $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '','');
  
     $total_party_list = array();
-    if(!empty($view_type)) {
-      
-        if($view_type == '1') {
-          
-            $total_party_list = $agent_list;
+    if (!empty($view_type)) {
+        if (in_array('1', $view_type)) {
+            $total_party_list = array_merge($total_party_list, $agent_list);
         }
-        else if($view_type == '2') {
-            $total_party_list = $supplier_list;
+        if (in_array('2', $view_type)) {
+            $total_party_list = array_merge($total_party_list, $supplier_list);
         }
-        else if($view_type == '4') {
-            $total_party_list = $party_list;
+        if (in_array('4', $view_type)) {
+            $total_party_list = array_merge($total_party_list, $party_list);
         }
     }
     else {
@@ -89,58 +95,29 @@
        
     }
 
-    $sales_list =array(); $total_records_list =array();
-    $type ="";
-    if($view_type == '1')
-    {
-        $type ="Agent";
+    $sales_list = array(); $total_records_list =array();
+    $type = [];
+
+    if (!empty($view_type)) {
+        if (in_array('1', $view_type)) {
+            $type[] = "Agent";
+        }
+        if (in_array('2', $view_type)) {
+            $type[] = "Supplier";
+        }
+        if (in_array('4', $view_type)) {
+            $type[] = "Customer";
+        }
     }
-    elseif($view_type == '2')
-    {
-        $type = "Supplier";
-    }
-    // elseif($view_type == '3')
-    // {
-    //     $type ="Contractor";
-    // }
-    elseif($view_type == '4')
-    {
-        $type ="Customer";
-    }
-    // if(!empty($view_type))
-    // {
-    //     $party_list = $obj->getPartyList($view_type);
-    // }
     
-    // $agent_customer_list =array();
-    // if($view_type == '1')
-    // {
-    //     if(!empty($filter_party_id))
-    //     {
-    //         $agent_customer_list = $obj->getSelectedAgentCustomerList($filter_party_id);
-    //     }
-    // }
-    // print_r($agent_customer_list);
-
-    if(!empty($filter_party_id))
-    {
-       
-             
-        $total_records_list= $obj->balance_report($type,$filter_party_id,$GLOBALS['bill_company_id'],$filter_agent_customer,$from_date,$to_date);
-       
-    }
-    else {
-        // if(!empty($view_type))
-        // {
-            $sales_list = ""; 
-            $sales_list= $obj->balance_report($type,'',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-        // }
-        // else
-        // {   
-        //     $sales_list = ""; 
-        //     $sales_list= $obj->balance_report('','',$GLOBALS['bill_company_id'],'',$from_date,$to_date);
-
-        // }
+    // Optional: Convert array to comma-separated string if needed
+    $type_str = implode(', ', $type); // e.g., "Agent, Supplier"
+    
+    if(!empty($filter_party_id)) {
+        $total_records_list= $obj->balance_report($type_str,$filter_party_id,$GLOBALS['bill_company_id'],$filter_agent_customer,$from_date,$to_date);
+    } else {
+        $sales_list = ""; 
+        $sales_list= $obj->balance_report($type_str,'',$GLOBALS['bill_company_id'],'', $from_date,$to_date);
     }
 
     $excel_name = "";
@@ -150,9 +127,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
-	<?php 
-	include "link_style_script.php"; ?>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<?php include "link_style_script.php"; ?>
 </head>	
 <body>
 <?php include "header.php"; ?>
@@ -170,20 +146,30 @@
                                         <div class="col-lg-2 col-md-3 col-12">
                                             <div class="form-group pb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="view_type" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getPartyName(this.value);getReport();">
-                                                            <option value="">Select</option>
-                                                            <option value="1" <?php if($view_type == "1") { ?> selected <?php }  ?>>Agent</option>
-                                                            <option value="2" <?php if($view_type == "2") { ?> selected <?php }  ?>>Supplier</option>
-                                                            <option value="4" <?php if($view_type == "4") { ?> selected <?php }  ?>>Customer</option>
-                                                        </select>
-                                                    <label>Party</label>
+                                                <?php
+                                                // Set default if not provided
+                                                if (!isset($view_type) || empty($view_type)) {
+                                                    $view_type = ['1']; // Default to "Agent"
+                                                } else {
+                                                    $view_type = (array)$view_type; // Ensure it's always an array
+                                                }
+                                                ?>
+
+                                                <select class="select2 select2-danger" name="view_type[]" data-dropdown-css-class="select2-danger"
+                                                        style="width: 100%;" multiple onchange="Javascript:getPartyName(this);getReport();">
+                                                    <option value="1" <?php echo (in_array("1", $view_type) ? 'selected' : ''); ?>>Agent</option>
+                                                    <option value="2" <?php echo (in_array("2", $view_type) ? 'selected' : ''); ?>>Supplier</option>
+                                                    <option value="4" <?php echo (in_array("4", $view_type) ? 'selected' : ''); ?>>Customer</option>
+                                                </select>
+
+                                                    <label>Party Type</label>
                                                 </div>
                                             </div>        
                                         </div>
                                         <div class="col-lg-2 col-md-3 col-6 px-lg-1">
                                             <div class="form-group mb-2">
                                                 <div class="form-label-group in-border mb-0">
-                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getReport();" <?php if(empty($view_type)){ ?>disabled <?php } ?>>>
+                                                    <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getReport();" <?php if(empty($view_type)){ ?>disabled <?php } ?>>
                                                     <option value="">Select</option>
                                                     <?php
                                                             if(!empty($total_party_list)) {
@@ -248,7 +234,6 @@
                                                 </div>
                                             </div> 
                                         </div>
-                                        
                                         <?php if(!empty($filter_party_id)){ ?>
                                         <div class="col-lg-2 col-md-4 col-6">
                                             <div class="form-group mb-1">
@@ -267,11 +252,25 @@
                                                 </div>
                                             </div>
                                         </div>
-        
+                                       
                                         <div class="col-lg-3 col-md-4 col-12 px-lg-1 text-end">
-                                            <button class="btn btn-primary m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&is_download=','_blank')"> <i class="fa fa-print"></i> Print </button>
-                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type; ?>&is_download=D','_blank')"> <i class="fa fa-file-pdf-o"></i> Pdf </button>
+                                        <?php
+                                           
+                                           if (is_array($view_type)) {
+                                               $view_type_value = implode(',', $view_type); // Convert array to comma-separated string
+                                           } else {
+                                               $view_type_value = '1'; // Default value if not array
+                                           }  ?>
+                                      
+                                           <button class="btn btn-primary m-1" style="font-size:11px;" type="button"
+                                               onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type_value; ?>&is_download=','_blank')">
+                                               <i class="fa fa-print"></i> Print
+                                           </button>
+                                           
+
+                                            <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type_value; ?>&is_download=D','_blank')"> <i class="fa fa-file-pdf-o"></i> Pdf </button>
                                             <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onClick="ExportToExcel()"> <i class="fa fa-download"></i> Export </button> 
+
                                             <!-- <button class="btn btn-secondary float-right " style="font-size:11px;" type="button" onClick="ExportToExcel()"><i class="fa fa-download"></i>&ensp; Export </button>  -->
                                         </div> 
                                         <form name="table_listing_form" method="post">
@@ -284,7 +283,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                <div class="col-lg-11">
+                                    <div class="col-lg-11">
                                         <div class="table-responsive table-bordered">
                                             <table cellpadding="0" cellspacing="0" class="table display report_table no_$obj->numberFormat" style="width: 100%; border:solid 1px black;" id="tbl_pending_balance_list">
                                                 <?php if(!empty($filter_party_id)) { ?>
@@ -323,7 +322,6 @@
                                                     <tbody>
                                                         <?php 
                                                             $credit_amount = 0; $debit_amount = 0; $total =0; 
-                                                           
                                                             $opening_balance_list = array();
                                                             $opening_balance_list = $obj->getOpeningBalance($filter_party_id,$from_date,$to_date,$GLOBALS['bill_company_id'],$filter_agent_customer,$view_type);
                                                             $opening_debit = 0; $opening_credit = 0;
@@ -332,34 +330,26 @@
                                                                     if(!empty($data['debit'])) {
                                                                         $opening_debit += $data['debit'];
                                                                     }
-
                                                                     if(!empty($data['credit'])) {
                                                                         $opening_credit += $data['credit'];
                                                                     }
-                                                                    if(!empty($data['opening_balance']))
-                                                                    {
-                                                                        
-                                                                        if($data['opening_balance_type'] == 'Credit')
-                                                                        {
+                                                                    if(!empty($data['opening_balance'])) {
+                                                                        if($data['opening_balance_type'] == 'Credit') {
                                                                             $opening_credit += $data['opening_balance'];
                                                                         }
-                                                                        if($data['opening_balance_type'] == 'Debit')
-                                                                        {
+                                                                        if($data['opening_balance_type'] == 'Debit') {
                                                                             $opening_debit += $data['opening_balance'];
                                                                         }
                                                                     }
-                                                                    
                                                                 }
                                                             }
-                                                            
                                                             ?>
                                                                 <tr>
-                                                                    <th colspan="4" style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
+                                                                    <th colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
                                                                         Opening Balance
                                                                     </th>
                                                                     <th style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
                                                                         <?php
-                                                                    
                                                                             if($opening_credit > $opening_debit) {
                                                                                 $credit_amount = $opening_credit - $opening_debit;
                                                                                 echo $obj->numberFormat($credit_amount, 2);
@@ -376,7 +366,6 @@
                                                                     </th>
                                                                 </tr>
                                                             <?php
-                                                        // print_r($total_records_list);
                                                         if(!empty($total_records_list)) { ?>
                                                             <tbody>
                                                                 <?php
@@ -437,12 +426,19 @@
                                                                                     if ($list['bill_type'] == "Estimate") {
                                                                                         ?>
                                                                                         <div style="display: flex;justify-content: space-between;">
-                                                                                            <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>');" style="width: 50%; cursor: pointer;border-right:1px solid;">
+                                                                                            <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>', '');" style="width: 50%; cursor: pointer;border-right:1px solid;">
                                                                                                 Estimate
                                                                                             </div>
-                                                                                            <div onclick="viewpreview('2','<?php echo $list['bill_id']; ?>');" style="width: 50%; cursor: pointer;">
-                                                                                                Proforma<br>Invoice
-                                                                                            </div>
+                                                                                            <?php 
+                                                                                                if(!empty($list['bill_id'])) { 
+                                                                                                    $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'estimate_id', $list['bill_id'], 'proforma_invoice_id');
+                                                                                                    ?>
+                                                                                                    <div onclick="viewpreview('2','', '<?php echo $proforma_invoice_id; ?>');" style="width: 50%; cursor: pointer;">
+                                                                                                        Proforma<br>Invoice
+                                                                                                    </div>
+                                                                                                    <?php
+                                                                                                } 
+                                                                                            ?>
                                                                                         </div>
                                                                                         <?php
                                                                                     } else {
@@ -492,12 +488,12 @@
                                                             ?>
                                                             <tfoot>
                                                                 <tr>
-                                                                    <th colspan="4" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;">Total</th>
+                                                                    <th colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;">Total</th>
                                                                     <th class="sales_total" style="border: 1px solid #000; width: 100px; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;"><?php if(!empty($credit_amount)){ echo $obj->numberFormat($credit_amount,2); } ?></th>
                                                                     <th class="receipt_total" style="border: 1px solid #000; width: 100px; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;"><?php if(!empty($debit_amount)){ echo $obj->numberFormat($debit_amount,2); } ?></th>
                                                                 </tr>
                                                                 <tr style="color:red;">
-                                                                    <th class="text-center px-2 py-2" colspan="4" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Total</th>
+                                                                    <th class="text-center px-2 py-2" colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Total</th>
                                                                     <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;font-weight:bold;" class="text-right px-2 py-credit_amount2"><?php if($credit_amount > $debit_amount) { echo $obj->numberFormat(($credit_amount- $debit_amount),2)." Cr"; } ?>
                                                                     <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;font-weight:bold;" class="text-right px-2 py-2"> <?php if($debit_amount > $credit_amount){ 
                                                                         $total_pending_amount = $debit_amount - $credit_amount; echo $obj->numberFormat($total_pending_amount,2)." Dr"; } ?></td>
@@ -507,7 +503,7 @@
                                                             </tfoot>
                                                         <?php } else { ?>
                                                             <tr>
-                                                                <td colspan="6" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
+                                                                <td colspan="<?php if($view_type == "1") { echo 7; } else { echo 6; }?>" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
                                                                     No Records Found
                                                                 </td>
                                                             </tr>
@@ -650,7 +646,8 @@
                     </div>
                 </div>  
             </div>
-        </div>          
+        </div>
+    </div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
@@ -660,7 +657,7 @@
         // table_listing_records_filter();
     });
 
-    function getReport(){
+    function getReport() {
         if(jQuery('form[name="pending_balance_report_form"]').length > 0){
             jQuery('form[name="pending_balance_report_form"]').submit();
         } 
@@ -681,14 +678,15 @@
         } else if(view_type =='customer') {
             type = '4';
         }
-       
+
         if(jQuery('select[name="view_type"]').length > 0) {
             jQuery('select[name="view_type"]').val(type);
         }
         getReport();
     }
 
-    function viewpreview(type,bill_id){
+    function viewpreview(type,bill_id, sub_bill_id){
+        console.log(sub_bill_id);
         var url = "";
         bill_id = bill_id.trim();
         type = type.trim();
@@ -696,15 +694,8 @@
             type ="Estimate";
             url = "reports/rpt_estimate_a4.php?estimate_id=" + bill_id;
         } else if(type == '2'){
-            proforma_post_url = "action_changes.php?estimate_id=" + bill_id;
-            jQuery.ajax({
-                url: proforma_post_url, success: function (result) {
-                    if (result != "") {
-                        type ="Proforma Invoice";
-                        url = "reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=" + result;
-                    }
-                }
-            });
+            type ="Proforma Invoice";
+            url = "reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=" + sub_bill_id;
         }
         var post_url = "dashboard_changes.php?check_login_session=1";
         jQuery.ajax({

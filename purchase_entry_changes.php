@@ -217,30 +217,25 @@
         if(!empty($show_purchase_entry_id)){
             if($location_type == "1" && ($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d")){
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $location_id[0], '');
-            }
-            else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "1"){
-
+            } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "1"){
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $location_id[0], '');
             } else if($location_type == "2" && ($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d")){
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '','', '');
-
             } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d" && $location_type == "2"){
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
             }
-        }
-        else{
+        } else {
             if(!empty($login_godown_id)) {
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
-            }else{
+            } else {
                 $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
             }
             if(!empty($login_magazine_id)) {
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
-            }else{
+            } else {
                 $magazine_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
             }
         }
-
                 
         $godown_count = 0;
         $godown_count = count($godown_list);
@@ -252,7 +247,7 @@
         if(!empty($edit_id)){
             $product_list = $obj->getTableRecords($GLOBALS['product_table'], '', '', '');
         }
-         
+
         $count_of_product = 0;
         $count_of_product = count($product_list);
         
@@ -264,6 +259,13 @@
 			$company_state = $obj->encode_decode('decrypt', $company_state);
 		}
         
+        $raw_material_group_list = array();
+        $raw_material_group_list = $obj->getTableRecords($GLOBALS['raw_material_group_table'], '', '', '');
+        $semi_finished_group_list = array();
+        $semi_finished_group_list = $obj->getTableRecords($GLOBALS['semi_finished_group_table'], '', '', '');
+        $finished_group_list = array();
+        $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
+       
         ?>
         <form class="poppins pd-20" name="purchase_entry_form" method="POST">
 			<div class="card-header">
@@ -303,9 +305,8 @@
                 </div>
                 <div class="col-lg-3 col-md-3 col-12 py-2">
                     <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="supplier_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="SupplierState(this.value);">
-                                
+                        <div class="form-label-group in-border" id="div_selected_supplier" style="<?php if(!empty($show_purchase_entry_id)) { ?>pointer-events: none<?php } ?>">
+                            <select class="select2 select2-danger" name="supplier_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="SupplierState(this.value);GetSupplierProducts()">
                                 <option value="">Select Supplier</option>    
                                 <?php 
                                 if(!empty($supplier_list)) {
@@ -416,7 +417,7 @@
                 </div> 
             </div>
             </div>
-            <div class="row justify-content-center pt-3">
+            <div class="row justify-content-end pt-3">
                 <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_godown">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -448,6 +449,51 @@
                     </div>        
                 </div>
 
+                <div class="col-lg-2 col-md-3 col-6 py-2 raw_material_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="raw_material_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="getProductByGroup();">
+                                <option value="">Select</option>
+                                <?php if(!empty($raw_material_group_list)) {
+                                    foreach($raw_material_group_list as $raw_material_group) { ?>
+                                        <option value="<?php echo $raw_material_group['raw_material_group_id']; ?>"><?php echo $obj->encode_decode('decrypt', $raw_material_group['raw_material_group_name']); ?></option>
+                                <?php }
+                                } ?>
+                            </select>
+                            <label>Raw Material Group</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6 py-2 semi_finished_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="semi_finished_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="getProductByGroup();">
+                                <option value="">Select</option>
+                                <?php if(!empty($semi_finished_group_list)) {
+                                    foreach($semi_finished_group_list as $semi_finished_group) { ?>
+                                        <option value="<?php echo $semi_finished_group['semi_finished_group_id']; ?>"><?php echo $obj->encode_decode('decrypt', $semi_finished_group['semi_finished_group_name']); ?></option>
+                                <?php }
+                                } ?>
+                            </select>
+                            <label>Semi Finished Group</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6 py-2 finished_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="finished_group" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="getProductByGroup();">
+                                <option value="">Select</option>
+                                <?php if(!empty($finished_group_list)) {
+                                    foreach($finished_group_list as $finished_group) { ?>
+                                        <option value="<?php echo $finished_group['finished_group_id']; ?>"><?php echo $obj->encode_decode('decrypt', $finished_group['finished_group_name']); ?></option>
+                                <?php }
+                                } ?>
+                            </select>
+                            <label>Finished Group</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -461,7 +507,7 @@
                             </select>
                             <label>Select Product</label>
                         </div>
-                    </div>        
+                    </div>
                 </div>
                 <div class="col-lg-1 col-md-3 col-6 px-lg-1 py-2">
                     <div class="form-group">
@@ -487,6 +533,7 @@
                         <div class="form-label-group in-border">
                             <input type="text" name="content" onkeyup="CalcPurchaseProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
                             <label>Content</label>
+                            <span class="text-success fw-bold content_name_span"></span>
                         </div>
                     </div>  
                 </div>
@@ -549,7 +596,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <?php
+                            <?php
                                 if(!empty($product_id)) {
                                     for($i=0; $i < count($product_id); $i++) {    
                                         $unit_display = "";
@@ -869,6 +916,7 @@
         </form>
 		<?php
     } 
+
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number'];
 		$page_limit = $_POST['page_limit'];
@@ -1094,11 +1142,9 @@
             </tbody>
         </table>              
     <?php }
-}
+    }
 
-    if(isset($_REQUEST['edit_id'])) 
-    {
-
+    if(isset($_REQUEST['edit_id']))  {
         function combineAndSumUp ($myArray) {
             $finalArray = Array ();
             foreach ($myArray as $nkey => $nvalue) {
@@ -1561,8 +1607,10 @@
                         if(strpos($other_charges_values[$i], '%') !== false) {
                             $other_charges_value = str_replace('%', '', $other_charges_values[$i]);
                             $other_charges_value = trim($other_charges_value);
-                        }
-                        else {
+                             if($other_charges_value >= 100) {
+                                $purchase_entry_error = $obj->encode_decode('decrypt', $other_charges_names[$i]) . " cannot be above 100%";
+                            }
+                        } else {
                             $other_charges_value = $other_charges_values[$i];
                         }
                         $other_charges_error = $valid->valid_price($other_charges_value, ($obj->encode_decode('decrypt', $other_charges_name)), 1, '');

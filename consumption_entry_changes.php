@@ -58,6 +58,14 @@
         $count_of_godown = count($godown_list);
 
         $product_list = $obj->getProductWithGroup('semi finished', 'finished', '');
+
+        $raw_semi_group_list = array();
+        $raw_material_group_list = array();
+        $raw_material_group_list = $obj->getTableRecords($GLOBALS['raw_material_group_table'], '', '', '');
+        $semi_finished_group_list = array();
+        $semi_finished_group_list = $obj->getTableRecords($GLOBALS['semi_finished_group_table'], '', '', '');
+        $raw_semi_group_list = array_merge($raw_material_group_list, $semi_finished_group_list);
+
         ?>
         <form class="poppins pd-20" name="consumption_form" method="POST">
 			<div class="card-header">
@@ -152,7 +160,22 @@
                                     </select>
                                     <label>Select Godown</label>
                                 </div>
-                            </div>       
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-6 py-2">
+                            <div class="form-group">
+                                <div class="form-label-group in-border">
+                                    <select class="select2 select2-danger" name="raw_semi_group_id"  data-dropdown-css-class="select2-danger" onchange="GetGroupProducts();" style="width: 100%;">
+                                        <option value="">Select</option>
+                                        <?php if(!empty($raw_semi_group_list)) {
+                                            foreach($raw_semi_group_list as $group) { ?>
+                                                <option value="<?php if(!empty($group['raw_material_group_id'])) { echo $group['raw_material_group_id']; } else if (!empty($group['semi_finished_group_id'])) { echo $group['semi_finished_group_id']; } ?>"><?php if(!empty($group['raw_material_group_name'])) { echo $obj->encode_decode('decrypt', $group['raw_material_group_name']); } else if (!empty($group['semi_finished_group_name'])) { echo $obj->encode_decode('decrypt', $group['semi_finished_group_name']); }?></option>
+                                            <?php }
+                                        } ?>
+                                    </select>
+                                    <label>Select Group</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-6 px-lg-1 py-2">
                             <div class="form-group">

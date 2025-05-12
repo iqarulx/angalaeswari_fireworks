@@ -94,6 +94,10 @@
     
         // $contractor_list = array();
         // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+
+        $finished_group_list = array();
+        $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
+
         ?>
         <form class="poppins pd-20" name="daily_production_form" method="POST">
 			<div class="card-header">
@@ -182,6 +186,21 @@
                     </div>
                     <input type="hidden" name="selected_magazine_id"  value="<?php if(!empty($magazine_id)) { echo $magazine_id; } ?>" <?php if(empty($show_daily_production_id)) { ?>disabled<?php } ?>>
                     <div class="row justify-content-center pt-3">
+                        <div class="col-lg-2 col-md-3 col-6 py-2">
+                            <div class="form-group">
+                                <div class="form-label-group in-border">
+                                    <select class="select2 select2-danger" name="finished_group_id"  data-dropdown-css-class="select2-danger" onchange="GetGroupProducts();" style="width: 100%;">
+                                        <option value="">Select</option>
+                                        <?php if(!empty($finished_group_list)) {
+                                            foreach($finished_group_list as $group) { ?>
+                                                <option value="<?php if(!empty($group['finished_group_id'])) { echo $group['finished_group_id']; } ?>"><?php if(!empty($group['finished_group_name'])) { echo $obj->encode_decode('decrypt', $group['finished_group_name']); }?></option>
+                                            <?php }
+                                        } ?>
+                                    </select>
+                                    <label>Finished Group</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-lg-3 col-md-3 col-6 px-lg-1 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -1373,6 +1392,82 @@ if(isset($_REQUEST['get_unit'])) {
     <?php
     */
 
+if(isset($_REQUEST['get_total'])) {
+    $selected_product_ids = $_REQUEST['product_ids'];
+    $selected_unit_ids = $_REQUEST['unit_ids'];
+    $selected_contains = $_REQUEST['contains'];
+    $selected_quantity = $_REQUEST['quantity'];
+
+    $product_ids = array(); $unit_ids = array(); $contains = array(); $quantity = array();
+    $product_ids = explode(',' , $selected_product_ids);
+    $unit_ids = explode(',' , $selected_unit_ids);
+    $contains = explode(',' , $selected_contains);
+    $quantity = explode(',' , $selected_quantity);
+
+    $unit_arrays = [];
+    $unit_quantity = [];
+    $sub_unit_arrays = [];
+    $sub_unit_quantity = [];
+    for($i = 0; $i < count($product_ids); $i++) {
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
+
+        foreach($product_list as $product) {
+            if(!empty($product['unit_id'])) {
+                if($product['unit_id'] == $unit_ids[$i] && $product['unit_id'] != "NULL") {
+                    $unit_arrays[] = $unit_ids[$i];
+                    $unit_quantity[] = $quantity[$i];
+                } else if($product['subunit_id'] == $unit_ids[$i] && $product['subunit_id'] != "NULL") {
+                    $sub_unit_arrays[] = $unit_ids[$i];
+                    $sub_unit_quantity[] = $quantity[$i];
+                }
+            }
+        }
+    }
+
+    $total_display = "";
+    $unique_unit_arrays = [];
+    $unique_unit_arrays = array_unique($unit_arrays);
+
+    if(!empty($unique_unit_arrays) && count($unique_unit_arrays) == 1) {
+        if(array_sum($unit_quantity) != 0) {
+            $unit_name = "";
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_unit_arrays[0], 'unit_name');
+            if(!empty($unit_name)) {
+                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+            }
+
+            $total_display .= array_sum($unit_quantity) . ' ' . $unit_name;
+        }
+    } else {
+        if(array_sum($unit_quantity) != 0) {
+            $total_display .= array_sum($unit_quantity);
+        }
+    }
+
+    $unique_sub_unit_arrays = [];
+    $unique_sub_unit_arrays = array_unique($sub_unit_arrays);
+
+    if(!empty($unique_sub_unit_arrays) && count($unique_sub_unit_arrays) == 1) {
+        if(array_sum($sub_unit_quantity) != 0) {
+            $unit_name = "";
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_sub_unit_arrays[0], 'unit_name');
+            if(!empty($unit_name)) {
+                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+            }
+            if(!empty($total_display)) {
+                $total_display .= ' + ' . array_sum($sub_unit_quantity) . ' ' . $unit_name;
+            } else {
+                $total_display .= array_sum($sub_unit_quantity) . ' ' . $unit_name;
+            }
+        }
+    } else {
+        if(array_sum($sub_unit_quantity) != 0) {
+            $total_display .= array_sum($sub_unit_quantity);
+        }
+    }
+
+    echo $total_display;
+}
 
 if(isset($_REQUEST['product_daily_production_row_index'])) {
     $product_daily_production_row_index = $_REQUEST['product_daily_production_row_index'];
@@ -1499,5 +1594,38 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
     <?php
 }
 
+if(isset($_REQUEST['get_product_by_group'])) {
+    $finished_group_id = $_REQUEST['finished_group_id'];
+    $product_list = array();
 
+    $product_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE finished_group_id = '" . $finished_group_id . "' AND deleted = '0'";
+
+    $product_list = array();
+    $product_list = $obj->getQueryRecords($GLOBALS['product_table'], $product_query);
+
+    $product_count = 0;
+    $product_count = count($product_list);
+
+    ?>
+    <option value="">Select Product</option>
+    <?php
+    if(!empty($product_list)) {
+        foreach($product_list as $data) {
+            // $current_stock_product = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'current_stock_unit');
+            if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                $product_name = "";
+                $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                ?>
+                    <option value="<?php echo $data['product_id']; ?>" <?php if(!empty($product_count) && $product_count == 1){ ?> Selected <?php } ?>>
+                        <?php
+                        if(!empty($product_name) && $product_name != $GLOBALS['null_value']) {
+                            echo $obj->encode_decode('decrypt', $product_name);
+                        }
+                    ?>
+                </option>
+                <?php
+            }
+        }
+    }
+}
 ?>

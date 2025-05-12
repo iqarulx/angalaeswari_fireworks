@@ -81,18 +81,18 @@
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
         $total_records_list = $product_list;
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
         $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '');
     }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
 	<?php 
 	include "link_style_script.php"; ?>
     <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
@@ -365,8 +365,11 @@
                                                                                 }
                                                                             }
                                                                         }
+                                                                        if(!empty($total_unit_stock) && !empty($total_subunit_stock)) {
+                                                                            echo " + ";
+                                                                        }
                                                                         if(!empty($total_subunit_stock)) {
-                                                                            echo " + ". $total_subunit_stock;
+                                                                            echo $total_subunit_stock;
 
                                                                             if(!empty($sub_unit_name_array)) {
                                                                                 $unique_sub_unit_names = array_unique($sub_unit_name_array);
@@ -469,6 +472,7 @@
                                                         $total_outward_subunit = 0;
                                                         if(!empty($total_records_list)) { 
                                                             foreach($total_records_list as $key => $data) {
+                                                                if(!empty($data['inward_unit']) || !empty($data['inward_subunit']) || !empty($data['outward_unit']) || !empty($data['outward_subunit'])) {
                                                     ?>
                                                                 <tr>
                                                                     <th><?php echo $key+1; ?></th>
@@ -613,7 +617,7 @@
                                                                     </th>
                                                                 </tr>
                                                     <?php 
-                                                            } 
+                                                            } }
                                                             ?>
                                                             <tr>
                                                                 <th colspan="<?php if($subunit_hide == '1') { ?>7<?php } else { ?>6<?php } ?>" class="text-end">Total &ensp;</th>
@@ -625,8 +629,11 @@
                                                                                 echo " " . $obj->encode_decode('decrypt', $unit_name);
                                                                             }
                                                                         }
+                                                                        if(!empty($total_inward_unit) && !empty($total_inward_subunit)) {
+                                                                            echo " + ";
+                                                                        }
                                                                         if(!empty($total_inward_subunit)) {
-                                                                            echo " + " . $total_inward_subunit;
+                                                                            echo $total_inward_subunit;
                                                                             if(!empty($subunit_name)) {
                                                                                 echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                             }
@@ -641,8 +648,11 @@
                                                                                 echo " " . $obj->encode_decode('decrypt', $unit_name);
                                                                             }
                                                                         }
+                                                                        if(!empty($total_outward_unit) && !empty($total_outward_subunit)) {
+                                                                            echo " + ";
+                                                                        }
                                                                         if(!empty($total_outward_subunit)) {
-                                                                            echo " + " . $total_outward_subunit;
+                                                                            echo $total_outward_subunit;
                                                                             if(!empty($subunit_name)) {
                                                                                 echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                             }

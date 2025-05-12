@@ -189,7 +189,7 @@
                 <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_godown">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="selected_godown_id" onchange="GetStockLimit();" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
+                            <select class="select2 select2-danger" name="selected_godown_id" onchange="GetProdetails();" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
                                 <option value="">Select Godown</option>
                                 <?php if(!empty($godown_list)) {
                                     foreach($godown_list as $godown) { ?>
@@ -206,7 +206,7 @@
                 <div class="col-lg-2 col-md-4 col-12 py-2 d-none div_selected_magazine">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="selected_magazine_id" onchange="GetStockLimit();" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
+                            <select class="select2 select2-danger" name="selected_magazine_id" onchange="GetProdetails();" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_stock_adjustment_id) && $location_type == 1){ ?> disabled <?php } ?>>
                                 <option value="">Select Magazine</option>
                                 <?php if(!empty($magazine_list)) {
                                     foreach($magazine_list as $magazine) { ?>
@@ -248,7 +248,7 @@
                 <div class="col-lg-1 col-md-3 col-6 px-lg-1 py-2" id="contents_div">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="contains" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                            <select class="select2 select2-danger" name="contains" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetStockLimit();">
                             <option value="">Select</option>
                             </select>
                             <label>Content <span class="text-danger">*</span></label>
@@ -470,33 +470,45 @@
             <script type="text/javascript" src="include/js/creation_modules.js"></script>
         </form>
 		<?php
-    } 
-    if(isset($_POST['edit_id'])) {
+    }
 
+    if(isset($_POST['edit_id'])) {
         function combineAndSumUp ($myArray) {
             $finalArray = Array ();
             foreach ($myArray as $nkey => $nvalue) {
                 $has = false;
                 $fk = false;
                 foreach ($finalArray as $fkey => $fvalue) {
-                    if(($fvalue['godown_id'] == $nvalue['godown_id']) && ($fvalue['product_id'] == $nvalue['product_id'])  && ($fvalue['subunit_content'] == $nvalue['subunit_content'])) {    
+                    if(($fvalue['godown_id'] == $nvalue['godown_id']) && ($fvalue['product_id'] == $nvalue['product_id']) && ($fvalue['subunit_content'] == $nvalue['subunit_content']) && ($fvalue['stock_action_type'] == $nvalue['stock_action_type'])) {    
                         $has = true;
-                        $fk = $fkey;
+                        $fk = $fkey;    
+                        $same = 1;                    
+                        break;
+                    } else if (($fvalue['godown_id'] == $nvalue['godown_id']) && ($fvalue['product_id'] == $nvalue['product_id']) && ($fvalue['subunit_content'] == $nvalue['subunit_content']) && ($fvalue['stock_action_type'] != $nvalue['stock_action_type'])) {    
+                        $has = true;
+                        $fk = $fkey;    
+                        $same = 2;                    
                         break;
                     }
                 }
-    
+
                 if($has === false) {
                     $finalArray[] = $nvalue;
                 } else {
-                    $finalArray[$fk]['product_id'] = $nvalue['product_id'];
-                    $finalArray[$fk]['subunit_content'] = $nvalue['subunit_content'];
-                    $finalArray[$fk]['quantity'] += $nvalue['quantity'];
+                    if($same == 1) {
+                        $finalArray[$fk]['product_id'] = $nvalue['product_id'];
+                        $finalArray[$fk]['subunit_content'] = $nvalue['subunit_content'];
+                        $finalArray[$fk]['quantity'] += $nvalue['quantity'];
+                    } else {
+                        $finalArray[$fk]['product_id'] = $nvalue['product_id'];
+                        $finalArray[$fk]['subunit_content'] = $nvalue['subunit_content'];
+                        $finalArray[$fk]['quantity'] -= $nvalue['quantity'];
+                    }
+                    
                 }
             }
             return $finalArray;
         }
-
 
         $entry_date = ""; $entry_date_error = ""; $bill_date = ""; $bill_date_error = "";
         $godown_id = ""; $godown_id_error = ""; $magazine_id = ""; $magazine_id_error = ""; $product_ids = array();
@@ -566,13 +578,10 @@
         if(!empty($godown_id_error)) {
             if(!empty($valid_stockadjustment)) {
                 $valid_stockadjustment = $valid_stockadjustment." ".$valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_stockadjustment = $valid->error_display($form_name, 'godown_id', $godown_id_error, 'select');
             }
         }
-
-     
 
         if(isset($_POST['remarks'])) {
             $remarks = $_POST['remarks'];
@@ -586,8 +595,7 @@
         if(!empty($remarks_error)) {
             if(!empty($valid_stockadjustment)) {
                 $valid_stockadjustment = $valid_stockadjustment." ".$valid->error_display($form_name, 'remarks', $remarks_error, 'textarea');
-            }
-            else {
+            } else {
                 $valid_stockadjustment = $valid->error_display($form_name, 'remarks', $remarks_error, 'textarea');
             }
         }
@@ -645,18 +653,15 @@
                             }
                             if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                 $location_names[] = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_ids[$i], 'godown_name');
-                            }
-                            else if($product_group  == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
+                            } else if($product_group  == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){
                                 $location_names[] = $obj->getTableColumnValue($GLOBALS['magazine_table'], 'magazine_id', $location_ids[$i], 'magazine_name');
                             }
                             if(!empty($edit_id)) {
                                 if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
                                     $stock_unique_ids[] = $obj->getStockUniqueID($edit_id, $location_ids[$i], '', $product_ids[$i], $unit_ids[$i], $case_contains[$i]);
-                                }
-                                else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+                                } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
                                     $stock_unique_ids[] = $obj->getStockUniqueID($edit_id,'', $location_ids[$i], $product_ids[$i], $unit_ids[$i],$case_contains[$i]);
                                 }
-
                             }
                             // if($unit_ids[$i] == $product_unit_id) {
                             //     $unit_types = 1; 
@@ -718,24 +723,19 @@
                 else {
                     $product_error = "Invalid Product";
                 }
-                array_multisort(array_column($individual_product_detail, "godown_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, $individual_product_detail);
-                if(empty($valid_stockadjustment))
-                {
+                array_multisort(array_column($individual_product_detail, "godown_id"), SORT_ASC, array_column($individual_product_detail, "subunit_content"), SORT_ASC, array_column($individual_product_detail, "product_id"), SORT_ASC, array_column($individual_product_detail, "quantity"), SORT_DESC, $individual_product_detail);
+                if(empty($valid_stockadjustment)) {
                     $final_array = combineAndSumUp($individual_product_detail);
                 }
 
-            }
-            
-        }
-        else {
+            } 
+        } else {
             $product_error = "Add Products";
         }
 
         $stock_error = 0; $valid_stock = "";
-        if(!empty($final_array) && empty($valid_stockadjustment))
-        {
-            foreach($final_array as $data)
-            {
+        if(!empty($final_array) && empty($valid_stockadjustment)) {
+            foreach($final_array as $data) {
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
                 $subunit_need = 0; $product ="";
                 $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
@@ -764,18 +764,16 @@
                 } else if($data['stock_action_type'] == 2){
                     $outward_unit += $data['quantity'];
                     if(!empty($data['subunit_content']) && $data['subunit_content'] != $GLOBALS['null_value']){
-                        $outward_subunit -= ($data['quantity'] * $data['subunit_content']);
+                        $outward_subunit += ($data['quantity'] * $data['subunit_content']);
                     }
                 }
-
-                // echo $inward_subunit."/".$outward_subunit;
+                       
                 $current_stock_unit = $inward_unit - $outward_unit;
                 $current_stock_subunit = $inward_subunit - $outward_subunit;
 
                 if(($current_stock_unit < 0) && ($data['stock_action_type'] != 1)) {
                     $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
                     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need');
-
 
                     if(!empty($product)) {
                         $product = $obj->encode_decode("decrypt",$product);
@@ -807,8 +805,7 @@
                     }
 
                     $negative_stock = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'negative_stock');
-                    if($negative_stock !='1')
-                    {
+                    if($negative_stock !='1') {
                         if($subunit_need == 1) {
                             $valid_stock = "Max stock for <b>" . $product_name . "</b> with " .  $unit_name . " & " . (!empty($data['subunit_content'] && $data['subunit_content'] != "NULL") ? ($data['subunit_content'] . " " . $sub_unit_name ) : "") . "<br>Current Stock : " . $available_stock_unit . " " . $unit_name . " & " . $available_stock_subunit . " " . $sub_unit_name;
                             $stock_error = 1;
@@ -822,7 +819,7 @@
                 }
             }
         }
-
+        
         if(empty($product_error) && empty($total_quantity)) {
             $product_error = "Bill Quantity cannot be 0";
         }
@@ -1028,7 +1025,7 @@
                         $stock_update = 1;
                         $stock_adjustment_id = $obj->getTableColumnValue($GLOBALS['stock_adjustment_table'], 'id', $stockadjustment_insert_id, 'stock_adjustment_id');
                         $stock_adjustment_number = $obj->getTableColumnValue($GLOBALS['stock_adjustment_table'], 'id', $stockadjustment_insert_id, 'stock_adjustment_number');
-                        $result = array('number' => '1', 'msg' => 'Stock Adjusted Successfully');
+                        $result = array('number' => '1', 'msg' => 'Stock Adjusted created successfully');
                     }
                     else {
                         $result = array('number' => '2', 'msg' => $stockadjustment_insert_id);

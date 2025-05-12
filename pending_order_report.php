@@ -60,9 +60,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
-	<?php 
-	include "link_style_script.php"; ?>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<?php include "link_style_script.php"; ?>
     <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
     <script src="include/js/common.js"></script>
 </head>	
@@ -238,20 +237,22 @@
                                                                     $total_need_order_unit = 0;
 
                                                                     for($i = 0; $i < count($total_records_list); $i++) {
+                                                                        $record = $total_records_list[$i];
                                                             ?>
                                                                         <tr>
                                                                             <th><?php echo $i + 1; ?></th>      
                                                                             <th 
-                                                                            <?php if(!empty($total_records_list[$i]['agent_id']) && $total_records_list[$i]['agent_id'] != $GLOBALS['null_value']) { ?> onclick="Javascript:ShowConversionAgent('<?php if(!empty($total_records_list[$i]['agent_id']) && $total_records_list[$i]['agent_id'] != $GLOBALS['null_value']) { echo $total_records_list[$i]['agent_id']; } else { if(!empty($total_records_list[$i]['party_id']) && $total_records_list[$i]['party_id'] != $GLOBALS['null_value']) { echo $total_records_list[$i]['party_id']; } } ?>');" style="cursor:pointer!important;"<?php } ?>>
+                                                                            <?php 
+                                                                            if(!empty($record['agent_id']) && $record['agent_id'] != $GLOBALS['null_value']) { ?> onclick="Javascript:ShowConversionAgent('<?php if(!empty($record['agent_id']) && $record['agent_id'] != $GLOBALS['null_value']) { echo $record['agent_id']; } ?>');" <?php } else if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) { ?> onclick="Javascript:ShowProformaRecords('<?php if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) { echo $record['party_id']; } ?>');" <?php } ?> style="cursor:pointer!important;">
                                                                                 <?php
-                                                                                    if(!empty($total_records_list[$i]['agent_id']) && $total_records_list[$i]['agent_id'] != $GLOBALS['null_value']) {
-                                                                                        $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $total_records_list[$i]['agent_id'], 'agent_name');
+                                                                                    if(!empty($record['agent_id']) && $record['agent_id'] != $GLOBALS['null_value']) {
+                                                                                        $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $record['agent_id'], 'agent_name');
                                                                                         if(!empty($agent_name)) {
                                                                                             echo $obj->encode_decode('decrypt', $agent_name);
                                                                                         }
                                                                                     } else {
-                                                                                        if(!empty($total_records_list[$i]['party_id']) && $total_records_list[$i]['party_id'] != $GLOBALS['null_value']) {
-                                                                                            $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $total_records_list[$i]['party_id'], 'customer_name');
+                                                                                        if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) {
+                                                                                            $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $record['party_id'], 'customer_name');
                                                                                             if(!empty($customer_name)) {
                                                                                                 echo $obj->encode_decode('decrypt', $customer_name);
                                                                                             }
@@ -261,20 +262,20 @@
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['pending_order_unit'];
-                                                                                    $total_pending_order_unit += $total_records_list[$i]['pending_order_unit'];
+                                                                                    echo $record['pending_order_unit'];
+                                                                                    $total_pending_order_unit += $record['pending_order_unit'];
                                                                                 ?>
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['current_stock_unit'];
-                                                                                    $total_current_stock_unit += $total_records_list[$i]['current_stock_unit'];
+                                                                                    echo $record['current_stock_unit'];
+                                                                                    $total_current_stock_unit += $record['current_stock_unit'];
                                                                                 ?>
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['need_order_unit'];
-                                                                                    $total_need_order_unit += $total_records_list[$i]['need_order_unit'];
+                                                                                    echo $record['need_order_unit'];
+                                                                                    $total_need_order_unit += $record['need_order_unit'];
                                                                                 ?>
                                                                             </th>
                                                                         </tr>
@@ -495,13 +496,14 @@
                                                                     $total_need_order_unit = 0;
 
                                                                     for($i = 0; $i < count($total_records_list); $i++) {
+                                                                        $record = $total_records_list[$i];
                                                             ?>
                                                                         <tr>
                                                                             <th><?php echo $i + 1; ?></th>      
-                                                                            <th>
+                                                                            <th <?php if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) { ?> onclick="Javascript:ShowProformaRecords('<?php if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) { echo $record['party_id']; } ?>');" <?php } ?> style="cursor:pointer!important;" ?>
                                                                                 <?php
-                                                                                    if(!empty($total_records_list[$i]['party_id']) && $total_records_list[$i]['party_id'] != $GLOBALS['null_value']) {
-                                                                                        $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $total_records_list[$i]['party_id'], 'customer_name');
+                                                                                    if(!empty($record['party_id']) && $record['party_id'] != $GLOBALS['null_value']) {
+                                                                                        $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $record['party_id'], 'customer_name');
                                                                                         if(!empty($customer_name)) {
                                                                                             echo $obj->encode_decode('decrypt', $customer_name);
                                                                                         }
@@ -510,20 +512,20 @@
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['pending_order_unit'];
-                                                                                    $total_pending_order_unit += $total_records_list[$i]['pending_order_unit'];
+                                                                                    echo $record['pending_order_unit'];
+                                                                                    $total_pending_order_unit += $record['pending_order_unit'];
                                                                                 ?>
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['current_stock_unit'];
-                                                                                    $total_current_stock_unit += $total_records_list[$i]['current_stock_unit'];
+                                                                                    echo $record['current_stock_unit'];
+                                                                                    $total_current_stock_unit += $record['current_stock_unit'];
                                                                                 ?>
                                                                             </th>
                                                                             <th>
                                                                                 <?php
-                                                                                    echo $total_records_list[$i]['need_order_unit'];
-                                                                                    $total_need_order_unit += $total_records_list[$i]['need_order_unit'];
+                                                                                    echo $record['need_order_unit'];
+                                                                                    $total_need_order_unit += $record['need_order_unit'];
                                                                                 ?>
                                                                             </th>
                                                                         </tr>
@@ -605,6 +607,16 @@
         }
 
         window.open('reports/rpt_pending_order_report.php?from_date=' + from_date + '&to_date=' + to_date + '&filter_unit_type=' + unit_type + '&filter_agent_id=' + agent_id + '&filter_customer_id=' + customer_id, '_blank');
+    }
+
+    function ShowProformaRecords(party_id) {
+        var url = 'reports/rpt_pending_order_report_customer_wise.php?customer_id=' + party_id;
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery('#PaymentModal .modal-header h1').html("Customer - Proforma List Preview");
+
+        jQuery('.payment_modal_button').trigger("click");
+        var iframe = '<iframe src="' + url + '" width="100%" height="500px" style="border:none;"></iframe>';
+        jQuery('#PaymentModal .modal-body').html(iframe);         
     }
 
     function ExportToExcel(type, fn, dl) {

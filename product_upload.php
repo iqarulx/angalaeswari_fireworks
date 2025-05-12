@@ -242,7 +242,7 @@
             if (!empty($group)) {
                 $valid_types = ['1', '2', '3'];  // List of valid types
                 if (!in_array($group, $valid_types)) {
-                    $group_error = "Per Type must be (1 or 2 or 3)";
+                    $group_error = "Group Type must be (1 or 2 or 3)";
                 }
             }
             
@@ -508,9 +508,9 @@
                     }
 
                     $product_insert_id = ""; $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'deleted');
+                    $columns = array('created_date_time', 'creator', 'creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock', 'deleted');
 
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'");
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'","'0'");
                     $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values,'product_id','', $action);
 
                     if(preg_match("/^\d+$/", $product_insert_id)) {
@@ -534,8 +534,8 @@
                             }
 
                             $columns = array(); $values = array();						
-                            $columns = array('creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date',  );
-                            $values = array("'".$creator_name."'","'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'");
+                            $columns = array('creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock');
+                            $values = array("'".$creator_name."'","'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'");
 
                             $product_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
                             $result = $product_update_id;

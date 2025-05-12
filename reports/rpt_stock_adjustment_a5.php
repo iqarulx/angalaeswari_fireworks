@@ -581,18 +581,76 @@
         $pdf->Cell(150, 5, 'Total', 1, 0, 'R', 0);
         // $pdf->Cell(20, 5, $total_quantity." ", 1, 0, 'R', 0);
         $pdf->SetFont('Arial','',8);
-        $pdf->SetX(170);
+        $pdf->SetX(160);
 
-        if(!empty($total_unit) && !empty($total_subunit)) {
-            $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit  & ". $obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-        } else if(empty($total_unit) && !empty($total_subunit)) {
-            $pdf->MultiCell(35,5,$obj->numberFormat($total_subunit,2) . " Subunit",0,'C',0);
-        } else if(!empty($total_unit) && empty($total_subunit)) {
-            $pdf->MultiCell(35,5,$obj->numberFormat($total_unit,2)." Unit ",0,'C',0);
-        } else {
-            $pdf->MultiCell(35,5,"-",0,'C',0);
+        $unit_arrays = [];
+        $unit_quantity = [];
+        $sub_unit_arrays = [];
+        $sub_unit_quantity = [];
+        for($i = 0; $i < count($product_ids); $i++) {
+            $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
+
+            foreach($product_list as $product) {
+                if(!empty($product['unit_id'])) {
+                    if($product['unit_id'] == $unit_ids[$i] && $product['unit_id'] != "NULL") {
+                        $unit_arrays[] = $unit_ids[$i];
+                        $unit_quantity[] = $quantity_values[$i];
+                    } else if($product['subunit_id'] == $unit_ids[$i] && $product['subunit_id'] != "NULL") {
+                        $sub_unit_arrays[] = $unit_ids[$i];
+                        $sub_unit_quantity[] = $quantity_values[$i];
+                    }
+                }
+            }
         }
-            
+
+        $total_display = "";
+        $unique_unit_arrays = [];
+        $unique_unit_arrays = array_unique($unit_arrays);
+
+        if(!empty($unique_unit_arrays) && count($unique_unit_arrays) == 1) {
+            if(array_sum($unit_quantity) != 0) {
+                $unit_name = "";
+                $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_unit_arrays[0], 'unit_name');
+                if(!empty($unit_name)) {
+                    $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                }
+
+                $total_display .= array_sum($unit_quantity) . ' ' . $unit_name;
+            }
+        } else {
+            if(array_sum($unit_quantity) != 0) {
+                $total_display .= array_sum($unit_quantity);
+            }
+        }
+
+        $unique_sub_unit_arrays = [];
+        $unique_sub_unit_arrays = array_unique($sub_unit_arrays);
+
+        if(!empty($unique_sub_unit_arrays) && count($unique_sub_unit_arrays) == 1) {
+            if(array_sum($sub_unit_quantity) != 0) {
+                $unit_name = "";
+                $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_sub_unit_arrays[0], 'unit_name');
+                if(!empty($unit_name)) {
+                    $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                }
+                if(!empty($total_display)) {
+                    $total_display .= ' + ' . array_sum($sub_unit_quantity) . ' ' . $unit_name;
+                } else {
+                    $total_display .= array_sum($sub_unit_quantity) . ' ' . $unit_name;
+                }
+            }
+        } else {
+            if(array_sum($sub_unit_quantity) != 0) {
+                $total_display .= array_sum($sub_unit_quantity);
+            }
+        }
+
+        if(!empty($total_display)) {
+            $pdf->MultiCell(40,5, $total_display,0,'R',0);
+        } else {
+            $pdf->MultiCell(40,5,"-",0,'R',0);
+        }
+        
         $get_total_y = $pdf->GetY();
         $pdf->SetX(90);
         $pdf->Cell(50,$get_final_Y - $get_total_y,'',1,0,'C',0);

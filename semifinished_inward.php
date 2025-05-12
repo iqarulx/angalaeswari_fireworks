@@ -39,13 +39,13 @@
     // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
 
     $cancelled_bill = ""; $cancelled_count = 0;
-    // $cancelled_bill = $obj->getAllRecords($GLOBALS['semifinished_inward_table'], 'cancelled', 1);
-    // $cancelled_count = count($cancelled_bill);
+    $cancelled_bill = $obj->getAllRecords($GLOBALS['semifinished_inward_table'], 'cancelled', 1);
+    $cancelled_count = count($cancelled_bill);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
 	<?php 
 	include "link_style_script.php"; ?>
 </head>	

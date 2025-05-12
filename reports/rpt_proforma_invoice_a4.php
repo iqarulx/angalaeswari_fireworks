@@ -7,7 +7,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $pdf_download_name ="";
     $pdf_download_name = "Proforma Invice Report PDF";
     $proforma_invoice_number = ""; $proforma_invoice_date = date('d-m-Y'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $indv_magazine_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array();
-    $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $deleted = 0;
+    $unit_names = array(); $quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = "";$charges_count = 0; $deleted = 0;$other_charges_total =array();
 
     if(!empty($proforma_invoice_id)) {
         $proforma_invoice_list = $obj->getAllRecords($GLOBALS['proforma_invoice_table'], 'proforma_invoice_id', $proforma_invoice_id);
@@ -152,7 +152,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                 if(!empty($pi['other_charges_value'])) {
                     $other_charges_value = $pi['other_charges_value'];
                     $other_charges_value = explode(",", $other_charges_value);
-                }    
+                }
+                if(!empty($pi['other_charges_total'])) {
+                    $other_charges_total = $pi['other_charges_total'];
+                    $other_charges_total = explode(",", $other_charges_total);
+                }   
                 if(!empty($pi['agent_commission'])) {
                     $agent_commission = $pi['agent_commission'];
                 }
@@ -225,7 +229,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $pdf->Cell(20,8,'S.No.',1,0,'C',0);
     $pdf->Cell(40,8,'Products',1,0,'C',0);
     $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-    $pdf->Cell(18,8,'contents',1,0,'C',0);
+    $pdf->Cell(18,4,'Case',0,1,'C',0);
+    $pdf->SetX(100);
+    $pdf->Cell(18,4,'Contents',0,0,'C',0);
+    $pdf->SetY($box_y);
+    $pdf->SetX(118);
     $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
     $pdf->Cell(19,8,'Rate(Rs.)',1,0,'C',0);
     $pdf->Cell(18,8,'Per',1,0,'C',0);
@@ -298,7 +306,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->Cell(20,8,'S.No.',1,0,'C',0);
             $pdf->Cell(40,8,'Products',1,0,'C',0);
             $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-            $pdf->Cell(18,8,'contents',1,0,'C',0);
+            $pdf->Cell(18,4,'Case',0,1,'C',0);
+            $pdf->SetX(100);
+            $pdf->Cell(18,4,'Contents',0,0,'C',0);
+            $pdf->SetY($y);
+            $pdf->SetX(118);
             $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
             $pdf->Cell(19,8,'Rate(Rs.)',1,0,'C',0);
             $pdf->Cell(18,8,'Per',1,0,'C',0);
@@ -342,7 +354,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->Cell(18,8,'-',1,0,'C',0);
         }
         $pdf->Cell(25,8,$subunit_qty.' ' . (!empty($subunit_name) ? $subunit_name : $unit_name),1,0,'C',0);
-        $pdf->Cell(19,8,number_format($final_rate[$i],2),1,0,'C',0);
+        $pdf->Cell(19,8,number_format($rate[$i],2),1,0,'C',0);
         $pdf->Cell(18,8,$per[$i]. ' '. ($per_type[$i] == '1' ? $unit_name : $subunit_name),1,0,'C',0);
         $pdf->Cell(20,8,$amount[$i],1,1,'C',0);
         $purchase_subtotal += $amount[$i];
@@ -419,7 +431,11 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         $pdf->Cell(20,8,'S.No.',1,0,'C',0);
         $pdf->Cell(40,8,'Products',1,0,'C',0);
         $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-        $pdf->Cell(18,8,'contents',1,0,'C',0);
+        $pdf->Cell(18,4,'Case',0,1,'C',0);
+        $pdf->SetX(100);
+        $pdf->Cell(18,4,'Contents',0,0,'C',0);
+        $pdf->SetY($y);
+        $pdf->SetX(118);
         $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
         $pdf->Cell(19,8,'Rate(Rs.)',1,0,'C',0);
         $pdf->Cell(18,8,'Per',1,0,'C',0);
@@ -439,13 +455,75 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $pdf->Line(180,$y_axis,180,210);
     $pdf->Line(200,$y_axis,200,210);
 
-    if(!empty($total_unit)) {
+    $unit_arrays = [];
+    $unit_quantity = [];
+    $sub_unit_arrays = [];
+    $sub_unit_quantity = [];
+    for($i = 0; $i < count($product_ids); $i++) {
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
+
+        foreach($product_list as $product) {
+            if(!empty($product['unit_id'])) {
+                if($product['unit_id'] == $unit_ids[$i] && $product['unit_id'] != "NULL") {
+                    $unit_arrays[] = $unit_ids[$i];
+                    $unit_quantity[] = $quantity[$i];
+                } else if($product['subunit_id'] == $unit_ids[$i] && $product['subunit_id'] != "NULL") {
+                    $sub_unit_arrays[] = $unit_ids[$i];
+                    $sub_unit_quantity[] = $quantity[$i];
+                }
+            }
+        }
+    }
+
+    $total_display = "";
+    $unique_unit_arrays = [];
+    $unique_unit_arrays = array_unique($unit_arrays);
+
+    if(!empty($unique_unit_arrays) && count($unique_unit_arrays) == 1) {
+        if(array_sum($unit_quantity) != 0) {
+            $unit_name = "";
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_unit_arrays[0], 'unit_name');
+            if(!empty($unit_name)) {
+                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+            }
+
+            $total_display .= array_sum($unit_quantity) . ' ' . $unit_name;
+        }
+    } else {
+        if(array_sum($unit_quantity) != 0) {
+            $total_display .= array_sum($unit_quantity);
+        }
+    }
+
+    $unique_sub_unit_arrays = [];
+    $unique_sub_unit_arrays = array_unique($sub_unit_arrays);
+
+    if(!empty($unique_sub_unit_arrays) && count($unique_sub_unit_arrays) == 1) {
+        if(array_sum($sub_unit_quantity) != 0) {
+            $unit_name = "";
+            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_sub_unit_arrays[0], 'unit_name');
+            if(!empty($unit_name)) {
+                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+            }
+            if(!empty($total_display)) {
+                $total_display .= ' + ' . array_sum($sub_unit_quantity) . ' ' . $unit_name;
+            } else {
+                $total_display .= array_sum($sub_unit_quantity) . ' ' . $unit_name;
+            }
+        }
+    } else {
+        if(array_sum($sub_unit_quantity) != 0) {
+            $total_display .= array_sum($sub_unit_quantity);
+        }
+    }
+
+    if(!empty($total_display)) {
         $pdf->SetFont('Arial','B',8);
         $pdf->SetX(10);
         $pdf->Cell(60,5,'Total Qty',1,0,'R',0);
         $pdf->SetFont('Arial','',8);
-        $pdf->Cell(30,5,$total_unit. ' Unit '. ($total_subunit != "" ? $total_subunit .' Subunit' : ''),1,0,'C',0);
-    }            
+        $pdf->Cell(30,5,$total_display,1,0,'C',0);
+    }
     if(!empty($purchase_subtotal)) {
         $subtotal = $obj->numberFormat($purchase_subtotal,2);
         $pdf->SetX(100);
@@ -511,31 +589,40 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         for($i=0; $i < count($other_charges_id); $i++) {
             $other_charges_id[$i] = trim($other_charges_id[$i]);
             if(!empty($other_charges_id[$i])) {
+                
                 $other_charges_name = "";
                 $other_charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$i], 'charges_name');
                 $other_charges_names[$i] = $other_charges_name;
                 $charges_type[$i] = trim($charges_type[$i]);
                 $other_charges_value[$i] = trim($other_charges_value[$i]);
+                $other_charges_total[$i] = trim($other_charges_total[$i]);
                 if(isset($other_charges_value[$i])) {
-                    $other_charges_error = "";
-                    if(strpos($other_charges_value[$i], '%') !== false) {
-                        // $charge_in[$i] = "%";
+                    if(strpos($other_charges_value[$i], '%') !== false) {  
                         $charge_in[$i] = "";
-
-                        $other_charges_values[$i] = str_replace('%', '', $other_charges_value[$i]);
-                        $other_charges_values[$i] = trim($other_charges_values[$i]);
-                        $other_charges_values[$i] = (float) $purchase_subtotal * $other_charges_values[$i] /100;
-                        
-                    } else {
+                    }else{
                         $charge_in[$i] = "Rs.";
-                        $other_charges_values[$i] = $other_charges_value[$i];
                     }
                 }
-                $other_charges_total[$i] = $other_charges_values[$i];
+                // if(isset($other_charges_value[$i])) {
+                //     $other_charges_error = "";
+                //     if(strpos($other_charges_value[$i], '%') !== false) {
+                //         // $charge_in[$i] = "%";
+                //         $charge_in[$i] = "";
+
+                //         $other_charges_values[$i] = str_replace('%', '', $other_charges_value[$i]);
+                //         $other_charges_values[$i] = trim($other_charges_values[$i]);
+                //         $other_charges_values[$i] = (float) $purchase_subtotal * $other_charges_values[$i] /100;
+                        
+                //     } else {
+                //         
+                //         $other_charges_values[$i] = $other_charges_value[$i];
+                //     }
+                // }
+                // $other_charges_total[$i] = $other_charges_values[$i];
                 if($charges_type[$i] == "minus") {
-                    $total_amount_car -= $other_charges_values[$i];
+                    $total_amount_car -= $other_charges_total[$i];
                 } else if($charges_type[$i] == "plus") {
-                    $total_amount_car += $other_charges_values[$i];
+                    $total_amount_car += $other_charges_total[$i];
                 }
                 $charges_total_amounts[] = $total_amount_car;
             }
@@ -549,16 +636,16 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         for($o = 0; $o < count($other_charges_id); $o++) {
             if($other_charges_id[$o] != $GLOBALS['null_value'] ){
                 if($charges_type[$o] == "minus") {
-                    $total_amount_ -= $other_charges_values[$o];
+                    $total_amount_ -= $other_charges_total[$o];
                 } else if($charges_type[$o] == "plus") {
-                    $total_amount_ += $other_charges_values[$o];
+                    $total_amount_ += $other_charges_total[$o];
                 }
                 $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
                 $pdf->SetX(100);
                 $pdf->SetFont('Arial','B',8);
                 $pdf->Cell(80,5,$obj->encode_decode('decrypt', $charges_name)."( ".$charge_in[$o]."".$other_charges_value[$o].")",1,0,'R',0);
                 $pdf->SetFont('Arial','',8);
-                $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_values[$o],1,1,'R',0);
+                $pdf->Cell(20,5, ($charges_type[$o] == "minus" ? '-' : '+').$other_charges_total[$o],1,1,'R',0);
                 $pdf->SetX(100);
                 $pdf->SetFont('Arial','B',8);
                 $pdf->Cell(80,5,'Total',1,0,'R',0);

@@ -147,11 +147,39 @@
 			$result = $create_obj->CheckFinishedGroupAlreadyExists($unit_name);
 			return $result;
 		}
+		public function CheckRawMaterialGroupAlreadyExists($raw_material_group_name) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->CheckRawMaterialGroupAlreadyExists($raw_material_group_name);
+			return $result;
+		}
+		public function CheckSemiFinishedGroupAlreadyExists($semi_finished_group_name) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->CheckSemiFinishedGroupAlreadyExists($semi_finished_group_name);
+			return $result;
+		}
 		public function GetFinishedGroupLinkedCount($finished_group_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
 			$result = "";
 			$result = $create_obj->GetFinishedGroupLinkedCount($finished_group_id);
+			return $result;
+		}
+		public function GetRawMaterialGroupLinkedCount($raw_material_group_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->GetRawMaterialGroupLinkedCount($raw_material_group_id);
+			return $result;
+		}
+		public function GetSemiFinishedGroupLinkedCount($semi_finished_group_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->GetSemiFinishedGroupLinkedCount($semi_finished_group_id);
 			return $result;
 		}
 		public function GetProductsListing($group_id, $finished_group_id) {
@@ -546,6 +574,13 @@
 			$result = $stock_obj->getGodownContractorStockProduct($godown_id, $contractor_id);
 			return $result;
 		}
+		public function getGroupProduct($godown_id, $raw_semi_group_id){
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$result = "";
+			$result = $stock_obj->getGroupProduct($godown_id, $raw_semi_group_id);
+			return $result;
+		}
 		public function StockUpdate($page_table,$in_out_type,$bill_unique_id,$bill_unique_number,$product_id,$remarks, $stock_date, $godown_id, $magazine_id,$unit_id, $quantity,$case_contains, $group, $godown_magazine) {
 			$stock_obj = "";
 			$stock_obj = $this->stock_function_object();
@@ -735,11 +770,11 @@
 			$list = $report_obj->getGroupList($group_type);
 			return $list;
 		}
-		public function getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
+		public function getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $raw_semi_group_id) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
+			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $raw_semi_group_id);
 			return $list;
 		}
 		public function getStockContainsList($product_id) {

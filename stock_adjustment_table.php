@@ -12,6 +12,16 @@ if (isset($_REQUEST['change_product_id'])) {
     $unit = $subunit = "";  $content_option = ""; $negative_stock = ""; $subunit_need = 0; $type_option = "";
     $content_list = $obj->getProductContainsListFromGodown($product_id,$godown_id,$magazine_id);
 
+    $content_count = 0;
+    $content_count = count($content_list);
+
+    if(!empty($product_id)){
+        $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
+    }
+    if(!empty($subunit_need) && $content_count > 1){
+         $content_option = "<option value = ''>Select Content</option>";
+    }
+
     // print_r($content_list);
     if (!empty($content_list)) {
         foreach($content_list as $C_list) {

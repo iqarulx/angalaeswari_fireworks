@@ -8,7 +8,7 @@
             <th style="text-align: center; width: 125px;">HSN Code</th>
             <th style="text-align: center; width: 125px;">Unit</th>
             <th style="text-align: center; width: 125px;">SubUnit</th>
-            <th style="text-align: center; width: 125px;">Case Rate</th>                 
+            <th style="text-align: center; width: 125px;">Rate</th>                 
             <th style="text-align: center; width: 125px;">Per</th>                 
             <th style="text-align: center; width: 125px;">Per Type</th>                 
         </tr>

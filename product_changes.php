@@ -12,7 +12,7 @@
 	if(isset($_REQUEST['show_product_id'])) { 
         $show_product_id = $_REQUEST['show_product_id'];
         $show_product_id = trim($show_product_id);
-        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";$hsn_code = "";$group_lowercase =""; $description = ""; $finished_group_id = "";
+        $product_name = ""; $unit_id = ""; $subunit_id = ""; $subunit_contains = ""; $sales_rate = ""; $per = ""; $opening_stock = array(); $group_list = array(); $unit_list = array(); $subunit_need = 0; $per_type = 1; $negative_stock = 0; $product_row_index = 0; $stock_date = array(); $group_id = ""; $location_ids = array(); $location_names = array(); $unit_name = ""; $subunit_name = "";$hsn_code = "";$group_lowercase =""; $description = ""; $finished_group_id = ""; $raw_material_group_id = ""; $semi_finished_group_id = "";
 
         if (!empty($show_product_id)) {
             $product_list = array();
@@ -80,6 +80,12 @@
                     if(!empty($data['finished_group_id']) && $data['finished_group_id'] != $GLOBALS['null_value']) {
                         $finished_group_id = $data['finished_group_id'];
                     }
+                    if(!empty($data['raw_material_group_id']) && $data['raw_material_group_id'] != $GLOBALS['null_value']) {
+                        $raw_material_group_id = $data['raw_material_group_id'];
+                    }
+                    if(!empty($data['semi_finished_group_id']) && $data['semi_finished_group_id'] != $GLOBALS['null_value']) {
+                        $semi_finished_group_id = $data['semi_finished_group_id'];
+                    }
                 }
             }
         }
@@ -88,13 +94,18 @@
         $finished_group_list = array();
         $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
 
+        $raw_material_group_list = array();
+        $raw_material_group_list = $obj->getTableRecords($GLOBALS['raw_material_group_table'], '', '', '');
+
+        $semi_finished_group_list = array();
+        $semi_finished_group_list = $obj->getTableRecords($GLOBALS['semi_finished_group_table'], '', '', '');
+
         $count_group = 0;
         $count_group = count($finished_group_list);
 
         $unit_list = $obj->getTableRecords($GLOBALS['unit_table'], '', '', '');
         $unit_count = 0;
         $unit_count = count($unit_list);
-
 
         $linked_count = 0;
         if(!empty($show_product_id)) {
@@ -150,6 +161,93 @@
                     </div>
                 </div>
                 <input type="hidden" name="group" value="<?php if(!empty($group_id)) { echo $group_id; } ?>" <?php if(empty($linked_count) && empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                <div class="col-lg-3 col-md-4 col-6 py-2 finished_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="finished_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select</option>
+                                <?php
+                                    if (!empty($finished_group_list)) {
+                                        foreach ($finished_group_list as $data) {
+                                            if (!empty($data['finished_group_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['finished_group_name'])) {
+                                                        $data['finished_group_name'] = $obj->encode_decode('decrypt', $data['finished_group_name']);
+                                                        echo $data['finished_group_name'];
+                                                    }
+                                                    ?>
+
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Finished Group<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 py-2 raw_material_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="raw_material_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select</option>
+                                <?php
+                                    if (!empty($raw_material_group_list)) {
+                                        foreach ($raw_material_group_list as $data) {
+                                            if (!empty($data['raw_material_group_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['raw_material_group_id']; ?>" <?php if (!empty($raw_material_group_id) && $data['raw_material_group_id'] == $raw_material_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['raw_material_group_name'])) {
+                                                        $data['raw_material_group_name'] = $obj->encode_decode('decrypt', $data['raw_material_group_name']);
+                                                        echo $data['raw_material_group_name'];
+                                                    }
+                                                    ?>
+
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Raw Material Group<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 py-2 semi_finished_group_div d-none">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="semi_finished_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select</option>
+                                <?php
+                                    if (!empty($semi_finished_group_list)) {
+                                        foreach ($semi_finished_group_list as $data) {
+                                            if (!empty($data['semi_finished_group_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['semi_finished_group_id']; ?>" <?php if (!empty($semi_finished_group_id) && $data['semi_finished_group_id'] == $semi_finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['semi_finished_group_name'])) {
+                                                        $data['semi_finished_group_name'] = $obj->encode_decode('decrypt', $data['semi_finished_group_name']);
+                                                        echo $data['semi_finished_group_name'];
+                                                    }
+                                                    ?>
+
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Semi Finished Group<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -293,35 +391,6 @@
                             <label>Description</label>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2 finished_group_div d-none">
-                    <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="finished_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                <option value="">Select Filter Group</option>
-                                <?php
-                                    if (!empty($finished_group_list)) {
-                                        foreach ($finished_group_list as $data) {
-                                            if (!empty($data['finished_group_id'])) {
-                                                ?>
-                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
-                                                    <?php
-                                                    if (!empty($data['finished_group_name'])) {
-                                                        $data['finished_group_name'] = $obj->encode_decode('decrypt', $data['finished_group_name']);
-                                                        echo $data['finished_group_name'];
-                                                    }
-                                                    ?>
-
-                                                </option>
-                                                <?php
-                                            }
-                                        }
-                                    }
-                                ?>
-                            </select>
-                            <label>Finished Group</label>
-                        </div>
-                    </div> 
                 </div>
             </div>
             <div class="row justify-content-center p-3">
@@ -703,7 +772,6 @@
 
     if (isset($_REQUEST['unit_select_change'])) {
         $list = json_decode($_REQUEST['unit_select_change'], true);
-        
 
         $option = "";
         foreach ($list as $option_list) {
@@ -813,6 +881,8 @@
         $content = $_REQUEST['selected_content'];
         $godown_magazine = $_REQUEST['godown_magazine'];
         $subunit_need = $_REQUEST['subunit_need'];
+        $unit_id = $_REQUEST['unit_id'];
+        $subunit_id = $_REQUEST['subunit_id'];
         ?>
         <tr class="product_row" id="product_row<?php echo $product_row_index; ?>">
             <th class="sno text-center px-2 py-2"><?php if (!empty($product_row_index)) {
@@ -840,9 +910,21 @@
                 <?php
                 if (!empty($unit_type)) {
                     if ($unit_type == '1') {
-                        echo "Unit";
+                        if(!empty($unit_id)) {
+                            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+                            if(!empty($unit_name)) {
+                                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                                echo $unit_name;
+                            }
+                        }
                     } else if ($unit_type == '2') {
-                        echo "Subunit";
+                        if(!empty($subunit_id)) {
+                            $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
+                            if(!empty($unit_name)) {
+                                $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                                echo $unit_name;
+                            }
+                        }
                     }
                 }
                 ?>
@@ -882,7 +964,7 @@
 
     if (isset($_POST['edit_id'])) {
         $product_name = ""; $product_name_error = ""; $unit_id = ""; $unit_id_error = ""; $subunit_id = ""; $subunit_id_error = ""; $subunit_contains = ""; $subunit_contains_error = ""; $sales_rate = ""; $sales_rate_error = ""; $per = ""; $per_error = ""; $per_type = ""; $per_type = ""; $opening_stock = array(); $stock_unique_ids = array();
-        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();$hsn_code = ""; $hsn_code_error = ""; $group_lowercase = ""; $description = ""; $finished_group_id = "";
+        $subunit_need = 0; $location_name = array(); $stock_date = array(); $per_type = ""; $unit_type = array(); $unit_type_name = array(); $negative_stock = 0; $rate_per_piece = 0; $rate_per_case = 0; $contents = ""; $valid_product = ""; $form_name = "product_form"; $edit_id = ""; $group = ""; $group_error = ""; $godown_magazine = ''; $location_ids = array();$hsn_code = ""; $hsn_code_error = ""; $group_lowercase = ""; $description = ""; $finished_group_id = ""; $finished_group_id_error = ""; $raw_material_group_id = ""; $raw_material_group_id_error = ""; $semi_finished_group_id = ""; $semi_finished_group_id_error = "";
 
         if (isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
@@ -938,9 +1020,66 @@
             $description = trim($description);
         }
 
-        if(isset($_POST['finished_group_id'])) {
-            $finished_group_id = $_POST['finished_group_id'];
-            $finished_group_id = trim($finished_group_id);
+        if(!empty($group) && $group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+            if (isset($_POST['finished_group_id'])) {
+                $finished_group_id = $_POST['finished_group_id'];
+                $finished_group_id = trim($finished_group_id);
+                $finished_group_id_error = $valid->common_validation($finished_group_id, 'Group', 'select');
+                if (empty($finished_group_id_error)) {
+                    $finished_group_unique_id = "";
+                    $finished_group_unique_id = $obj->getTableColumnValue($GLOBALS['finished_group_table'], 'finished_group_id', $finished_group_id, 'id');
+                    if (!preg_match("/^\d+$/", $finished_group_unique_id)) {
+                        $finished_group_id_error = "Select Group";
+                    }
+                }
+                if (!empty($finished_group_id_error)) {
+                    if (!empty($valid_product)) {
+                        $valid_product = $valid_product . " " . $valid->error_display($form_name, 'finished_group_id', $finished_group_id_error, 'select');
+                    } else {
+                        $valid_product = $valid->error_display($form_name, 'finished_group_id', $finished_group_id_error, 'select');
+                    }
+                }
+            }
+        } else if(!empty($group) && $group == "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+             if (isset($_POST['semi_finished_group_id'])) {
+                $semi_finished_group_id = $_POST['semi_finished_group_id'];
+                $semi_finished_group_id = trim($semi_finished_group_id);
+                $semi_finished_group_id_error = $valid->common_validation($semi_finished_group_id, 'Group', 'select');
+                if (empty($semi_finished_group_id_error)) {
+                    $semi_finished_group_unique_id = "";
+                    $semi_finished_group_unique_id = $obj->getTableColumnValue($GLOBALS['semi_finished_group_table'], 'semi_finished_group_id', $semi_finished_group_id, 'id');
+                    if (!preg_match("/^\d+$/", $semi_finished_group_unique_id)) {
+                        $semi_finished_group_id_error = "Select Group";
+                    }
+                }
+                if (!empty($semi_finished_group_id_error)) {
+                    if (!empty($valid_product)) {
+                        $valid_product = $valid_product . " " . $valid->error_display($form_name, 'semi_finished_group_id', $semi_finished_group_id_error, 'select');
+                    } else {
+                        $valid_product = $valid->error_display($form_name, 'semi_finished_group_id', $semi_finished_group_id_error, 'select');
+                    }
+                }
+            }
+        } else if(!empty($group) && $group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+             if (isset($_POST['raw_material_group_id'])) {
+                $raw_material_group_id = $_POST['raw_material_group_id'];
+                $raw_material_group_id = trim($raw_material_group_id);
+                $raw_material_group_id_error = $valid->common_validation($raw_material_group_id, 'Group', 'select');
+                if (empty($raw_material_group_id_error)) {
+                    $raw_material_group_unique_id = "";
+                    $raw_material_group_unique_id = $obj->getTableColumnValue($GLOBALS['raw_material_group_table'], 'raw_material_group_id', $raw_material_group_id, 'id');
+                    if (!preg_match("/^\d+$/", $raw_material_group_unique_id)) {
+                        $raw_material_group_id_error = "Select Group";
+                    }
+                }
+                if (!empty($raw_material_group_id_error)) {
+                    if (!empty($valid_product)) {
+                        $valid_product = $valid_product . " " . $valid->error_display($form_name, 'raw_material_group_id', $raw_material_group_id_error, 'select');
+                    } else {
+                        $valid_product = $valid->error_display($form_name, 'raw_material_group_id', $raw_material_group_id_error, 'select');
+                    }
+                }
+            }
         }
 
         if (isset($_POST['unit_id'])) {
@@ -999,8 +1138,7 @@
             }
         }
 
-        if($group_lowercase =='finished'){ 
-
+        if($group_lowercase =='finished') {
             if (isset($_POST['sales_rate'])) {
                 $sales_rate = $_POST['sales_rate'];
                 $sales_rate = trim($sales_rate);
@@ -1042,12 +1180,10 @@
                 }
             }
 
-        }else{
-            
+        } else {
             $sales_rate = $GLOBALS['null_value'];
             $per = $GLOBALS['null_value'];
             $per_type = $GLOBALS['null_value'];
-            
         }
         if (isset($_POST['content'])) {
             $contents = $_POST['content'];
@@ -1217,215 +1353,215 @@
         }
 
         $result = "";
-    if (empty($valid_product) && empty($location_error)) {
-        $check_user_id_ip_address = "";
-        $check_user_id_ip_address = $obj->check_user_id_ip_address();
-        if (preg_match("/^\d+$/", $check_user_id_ip_address)) {
-            $lower_case_name = "";
-            $unit_name = "";
-            $group_name = "";
-            $subunit_name = "";
-            if (!empty($product_name)) {
-                $lower_case_name = strtolower($product_name);
-                $product_name = $obj->encode_decode('encrypt', $product_name);
-                $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
-            } else {
-                $product_name = $GLOBALS['null_value'];
-                $lower_case_name = $GLOBALS['null_value'];
-            }
-            if(!empty($group)) {
-                $group_name = $obj->getTableColumnValue($GLOBALS['group_table'], 'group_id', $group, 'group_name');
-                if (empty($group_name)) {
+
+        if (empty($valid_product) && empty($location_error)) {
+            $check_user_id_ip_address = "";
+            $check_user_id_ip_address = $obj->check_user_id_ip_address();
+            if (preg_match("/^\d+$/", $check_user_id_ip_address)) {
+                $lower_case_name = "";
+                $unit_name = "";
+                $group_name = "";
+                $subunit_name = "";
+                if (!empty($product_name)) {
+                    $lower_case_name = strtolower($product_name);
+                    $product_name = $obj->encode_decode('encrypt', $product_name);
+                    $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
+                } else {
+                    $product_name = $GLOBALS['null_value'];
+                    $lower_case_name = $GLOBALS['null_value'];
+                }
+                if(!empty($group)) {
+                    $group_name = $obj->getTableColumnValue($GLOBALS['group_table'], 'group_id', $group, 'group_name');
+                    if (empty($group_name)) {
+                        $group_name = $GLOBALS['null_value'];
+                    }
+                } else {
                     $group_name = $GLOBALS['null_value'];
                 }
-            } else {
-                $group_name = $GLOBALS['null_value'];
-            }
-            if (!empty($unit_id)) {
-                $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
-            } else {
-                $unit_id = $GLOBALS['null_value'];
-                $unit_name = $GLOBALS['null_value'];
-            }
-            if (!empty($subunit_id)) {
-                $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
-            } else {
-                $subunit_id = $GLOBALS['null_value'];
-                $subunit_name = $GLOBALS['null_value'];
-                $subunit_contains = $GLOBALS['null_value'];
-            }
-            if (!empty($location_ids)) {
-                $location_ids = implode(",", $location_ids);
-            } else {
-                $location_ids = $GLOBALS['null_value'];
-            }
-            if (!empty($location_name)) {
-                $location_name = implode(",", $location_name);
-            } else {
-                $location_name = $GLOBALS['null_value'];
-            }
-            if (!empty($unit_type)) {
-                $unit_type = implode(",", $unit_type);
-            } else {
-                $unit_type = $GLOBALS['null_value'];
-            }
-            if (!empty($unit_type_name)) {
-                $unit_type_name = implode(",", $unit_type_name);
-            } else {
-                $unit_type_name = $GLOBALS['null_value'];
-            }
-            if (!empty($opening_stock)) {
-                $opening_stock = implode(",", $opening_stock);
-            } else {
-                $opening_stock = $GLOBALS['null_value'];
-            }
-            if (!empty($stock_date)) {
-                $stock_date = implode(",", $stock_date);
-            } else {
-                $stock_date = $GLOBALS['null_value'];
-            }
-            if (!empty($contents)) {
-                $contents = implode(",", $contents);
-            } else {
-                $contents = $GLOBALS['null_value'];
-            }
-            if (empty($sales_rate)) {
-                $sales_rate = $GLOBALS['null_value'];
-            }
-            if (empty($per)) {
-                $per = $GLOBALS['null_value'];
-            }
-            if (empty($rate_per_piece)) {
-                $rate_per_piece = $GLOBALS['null_value'];
-            }
-            if (empty($rate_per_case)) {
-                $rate_per_case = $GLOBALS['null_value'];
-            }
-            if (empty($hsn_code)) {
-                $hsn_code = $GLOBALS['null_value'];
-            }
-            if (!empty($description)) {
-                $description = $obj->encode_decode('encrypt', $description);
-            } else {
-                $description = $GLOBALS['null_value'];
-            }
-            if (empty($finished_group_id)) {
-                $finished_group_id = $GLOBALS['null_value'];
-            }
-
-            $prev_product_id = "";
-            $product_error = "";
-            if (!empty($lower_case_name)) {
-                $prev_product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'lower_case_name', $lower_case_name, 'product_id');
-                if (!empty($prev_product_id)) {
-                    $product_error = "This Product name already exists";
-                }
-            }
-            $bill_company_id = $GLOBALS['bill_company_id'];
-            $created_date_time = $GLOBALS['create_date_time_label'];
-            $creator = $GLOBALS['creator'];
-            $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
-            $update_stock = 0;
-            if (empty($edit_id)) {
-                if (empty($prev_product_id)) {
-                    $action = "";
-                    if (!empty($product_name)) {
-                        $action = "New Product Created - " . $obj->encode_decode("decrypt", $product_name);
-                    }
-                    $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name','hsn_code', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'description', 'deleted');
-                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $description . "'", "'0'");
-                    $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values, 'product_id', '', $action);
-                    if (preg_match("/^\d+$/", $product_insert_id)) {
-                        $product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'id', $product_insert_id, 'product_id');
-
-                        $update_stock = 1;
-                        $result = array('number' => '1', 'msg' => 'Product Successfully Created', 'product_id' => $product_id);
-                    } else {
-                        $result = array('number' => '2', 'msg' => $product_insert_id);
-                    }
+                if (!empty($unit_id)) {
+                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
                 } else {
-                    if (!empty($product_error)) {
-                        $result = array('number' => '2', 'msg' => $product_error);
+                    $unit_id = $GLOBALS['null_value'];
+                    $unit_name = $GLOBALS['null_value'];
+                }
+                if (!empty($subunit_id)) {
+                    $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $subunit_id, 'unit_name');
+                } else {
+                    $subunit_id = $GLOBALS['null_value'];
+                    $subunit_name = $GLOBALS['null_value'];
+                    $subunit_contains = $GLOBALS['null_value'];
+                }
+                if (!empty($location_ids)) {
+                    $location_ids = implode(",", $location_ids);
+                } else {
+                    $location_ids = $GLOBALS['null_value'];
+                }
+                if (!empty($location_name)) {
+                    $location_name = implode(",", $location_name);
+                } else {
+                    $location_name = $GLOBALS['null_value'];
+                }
+                if (!empty($unit_type)) {
+                    $unit_type = implode(",", $unit_type);
+                } else {
+                    $unit_type = $GLOBALS['null_value'];
+                }
+                if (!empty($unit_type_name)) {
+                    $unit_type_name = implode(",", $unit_type_name);
+                } else {
+                    $unit_type_name = $GLOBALS['null_value'];
+                }
+                if (!empty($opening_stock)) {
+                    $opening_stock = implode(",", $opening_stock);
+                } else {
+                    $opening_stock = $GLOBALS['null_value'];
+                }
+                if (!empty($stock_date)) {
+                    $stock_date = implode(",", $stock_date);
+                } else {
+                    $stock_date = $GLOBALS['null_value'];
+                }
+                if (!empty($contents)) {
+                    $contents = implode(",", $contents);
+                } else {
+                    $contents = $GLOBALS['null_value'];
+                }
+                if (empty($sales_rate)) {
+                    $sales_rate = $GLOBALS['null_value'];
+                }
+                if (empty($per)) {
+                    $per = $GLOBALS['null_value'];
+                }
+                if (empty($rate_per_piece)) {
+                    $rate_per_piece = $GLOBALS['null_value'];
+                }
+                if (empty($rate_per_case)) {
+                    $rate_per_case = $GLOBALS['null_value'];
+                }
+                if (empty($hsn_code)) {
+                    $hsn_code = $GLOBALS['null_value'];
+                }
+                if (!empty($description)) {
+                    $description = $obj->encode_decode('encrypt', $description);
+                } else {
+                    $description = $GLOBALS['null_value'];
+                }
+                if (empty($finished_group_id)) {
+                    $finished_group_id = $GLOBALS['null_value'];
+                }
+
+                $prev_product_id = "";
+                $product_error = "";
+                if (!empty($lower_case_name)) {
+                    $prev_product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'lower_case_name', $lower_case_name, 'product_id');
+                    if (!empty($prev_product_id)) {
+                        $product_error = "This Product name already exists";
                     }
                 }
-            } else {
-                if (empty($prev_product_id) || $prev_product_id == $edit_id) {
-                    $getUniqueID = "";
-                    $getUniqueID = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $edit_id, 'id');
-                    if (preg_match("/^\d+$/", $getUniqueID)) {
+                $bill_company_id = $GLOBALS['bill_company_id'];
+                $created_date_time = $GLOBALS['create_date_time_label'];
+                $creator = $GLOBALS['creator'];
+                $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
+                $update_stock = 0;
+                if (empty($edit_id)) {
+                    if (empty($prev_product_id)) {
                         $action = "";
                         if (!empty($product_name)) {
-                            $action = "Product Updated - " . $obj->encode_decode("decrypt", $product_name);
+                            $action = "New Product Created - " . $obj->encode_decode("decrypt", $product_name);
                         }
+                        $null_value = $GLOBALS['null_value'];
+                        $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id',  'product_id', 'product_name', 'lower_case_name','hsn_code', 'group_id', 'group_name', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'opening_stock', 'unit_type', 'stock_date', 'location_id', 'location_name',  'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'semi_finished_group_id', 'raw_material_group_id', 'description', 'deleted');
+                        $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $bill_company_id . "'", "'" . $null_value . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'", "'" . $stock_date . "'", "'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $semi_finished_group_id . "'", "'" . $raw_material_group_id . "'", "'" . $description . "'", "'0'");
+                        $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values, 'product_id', '', $action);
+                        if (preg_match("/^\d+$/", $product_insert_id)) {
+                            $product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'id', $product_insert_id, 'product_id');
 
-                        $columns = array();
-                        $values = array();
-                        $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name','hsn_code', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'description');
-                        $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $description . "'",);
-                        $entry_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
-                        if (preg_match("/^\d+$/", $entry_update_id)) {
                             $update_stock = 1;
-                            $product_id = $edit_id;
-                            $result = array('number' => '1', 'msg' => 'Updated Successfully');
-
+                            $result = array('number' => '1', 'msg' => 'Product Successfully Created', 'product_id' => $product_id);
                         } else {
-                            $result = array('number' => '2', 'msg' => $entry_update_id);
+                            $result = array('number' => '2', 'msg' => $product_insert_id);
+                        }
+                    } else {
+                        if (!empty($product_error)) {
+                            $result = array('number' => '2', 'msg' => $product_error);
                         }
                     }
                 } else {
-                    if (!empty($product_error)) {
-                        $result = array('number' => '2', 'msg' => $product_error);
+                    if (empty($prev_product_id) || $prev_product_id == $edit_id) {
+                        $getUniqueID = "";
+                        $getUniqueID = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $edit_id, 'id');
+                        if (preg_match("/^\d+$/", $getUniqueID)) {
+                            $action = "";
+                            if (!empty($product_name)) {
+                                $action = "Product Updated - " . $obj->encode_decode("decrypt", $product_name);
+                            }
+
+                            $columns = array();
+                            $values = array();
+                            $columns = array('creator_name','group_id', 'group_name', 'product_name', 'lower_case_name','hsn_code', 'unit_id', 'unit_name', 'subunit_need', 'subunit_id', 'subunit_name', 'subunit_contains', 'sales_rate', 'per', 'per_type', 'stock_date', 'opening_stock', 'unit_type', 'location_id', 'location_name', 'negative_stock', 'rate_per_case', 'rate_per_piece', 'finished_group_id', 'semi_finished_group_id', 'raw_material_group_id', 'description');
+                            $values = array("'" . $creator_name . "'", "'" . $group . "'", "'" . $group_name . "'", "'" . $product_name . "'", "'" . $lower_case_name . "'", "'" . $hsn_code . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $subunit_need . "'", "'" . $subunit_id . "'", "'" . $subunit_name . "'", "'" . $contents . "'", "'" . $sales_rate . "'", "'" . $per . "'", "'" . $per_type . "'", "'" . $stock_date . "'", "'" . $opening_stock . "'", "'" . $unit_type . "'","'" . $location_ids . "'", "'" . $location_name . "'", "'" . $negative_stock . "'", "'" . $rate_per_case . "'", "'" . $rate_per_piece . "'", "'" . $finished_group_id . "'", "'" . $semi_finished_group_id . "'", "'" . $raw_material_group_id . "'", "'" . $description . "'",);
+                            $entry_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
+                            if (preg_match("/^\d+$/", $entry_update_id)) {
+                                $update_stock = 1;
+                                $product_id = $edit_id;
+                                $result = array('number' => '1', 'msg' => 'Updated Successfully');
+
+                            } else {
+                                $result = array('number' => '2', 'msg' => $entry_update_id);
+                            }
+                        }
+                    } else {
+                        if (!empty($product_error)) {
+                            $result = array('number' => '2', 'msg' => $product_error);
+                        }
                     }
                 }
-            }
-            if (!empty($update_stock) && $update_stock == 1) {
-                if (!empty($product_id) && !empty($unit_id)) {
-                    $stock_date = explode(",", $stock_date);
-                    $opening_stock = explode(",", $opening_stock);
-                    $unit_type = explode(",", $unit_type);
-                    $remarks = $obj->encode_decode("encrypt", 'Opening Stock');
-                    if (!empty($location_ids) && $location_ids != $GLOBALS['null_value']) {
-                        $location_ids = explode(",", $location_ids);
-                        $contents = explode(",", $contents);
-                        for ($i = 0; $i < count($location_ids); $i++) {
-                            if($godown_magazine == 1) {
-                                $godown_ids = $location_ids[$i];
-                                $magazine_ids = $GLOBALS['null_value'];
-                            } else {
-                                $godown_ids = $GLOBALS['null_value'];
-                                $magazine_ids = $location_ids[$i];
-                            }
-                            if(empty($contents[$i])) {
-                                $contents[$i] = $GLOBALS['null_value'];
-                            }
-                            if ($unit_type[$i] == '1') {
-                                $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $unit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
+                if (!empty($update_stock) && $update_stock == 1) {
+                    if (!empty($product_id) && !empty($unit_id)) {
+                        $stock_date = explode(",", $stock_date);
+                        $opening_stock = explode(",", $opening_stock);
+                        $unit_type = explode(",", $unit_type);
+                        $remarks = $obj->encode_decode("encrypt", 'Opening Stock');
+                        if (!empty($location_ids) && $location_ids != $GLOBALS['null_value']) {
+                            $location_ids = explode(",", $location_ids);
+                            $contents = explode(",", $contents);
+                            for ($i = 0; $i < count($location_ids); $i++) {
+                                if($godown_magazine == 1) {
+                                    $godown_ids = $location_ids[$i];
+                                    $magazine_ids = $GLOBALS['null_value'];
+                                } else {
+                                    $godown_ids = $GLOBALS['null_value'];
+                                    $magazine_ids = $location_ids[$i];
+                                }
+                                if(empty($contents[$i])) {
+                                    $contents[$i] = $GLOBALS['null_value'];
+                                }
+                                if ($unit_type[$i] == '1') {
+                                    $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $unit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
 
-                            } else if ($unit_type[$i] == '2') {
-                                $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $subunit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
+                                } else if ($unit_type[$i] == '2') {
+                                    $stock_update_id = $obj->StockUpdate($GLOBALS['product_table'], "In", $product_id, '', $product_id, $remarks, $stock_date[$i], $godown_ids, $magazine_ids, $subunit_id, $opening_stock[$i], $contents[$i], $group, $godown_magazine);
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
         } else {
-            $result = array('number' => '2', 'msg' => 'Invalid IP');
+            if (!empty($valid_product)) {
+                $result = array('number' => '3', 'msg' => $valid_product);
+            } else if (!empty($location_error)) {
+                $result = array('number' => '2', 'msg' => $location_error);
+            }
         }
-    } else {
-        if (!empty($valid_product)) {
-            $result = array('number' => '3', 'msg' => $valid_product);
-        } else if (!empty($location_error)) {
-            $result = array('number' => '2', 'msg' => $location_error);
-        }
-    }
 
-    if (!empty($result)) {
-        $result = json_encode($result);
-    }
-    echo $result;
-    exit;
-    
+        if (!empty($result)) {
+            $result = json_encode($result);
+        }
+        echo $result;
+        exit;
     }
 
     if (isset($_REQUEST['delete_product_id'])) {

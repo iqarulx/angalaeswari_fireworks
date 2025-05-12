@@ -188,8 +188,7 @@
                 $current_unit = 0;
                 $current_unit = $inward - $outward;
                 $limit = $current_unit;
-            } 
-            else if($unit_type == '1') {
+            } else if($unit_type == '1') {
                 $inward = 0; $outward = 0;
                 $inward = $obj->getInwardQty('', $godown_id, '', $product_id, $case_contains);
                 $outward = $obj->getOutwardQty('', $godown_id, '', $product_id, $case_contains);
@@ -197,7 +196,7 @@
                 $current_unit = $inward - $outward;
                 $limit = $current_unit;
             }
-        }else if($location == '2'){
+        } else if($location == '2'){
             if($unit_type == '2') {
                 $inward = 0; $outward = 0;
                 $inward = $obj->getInwardSubunitQty('', '', $magazine_id, $product_id, $case_contains);
@@ -205,8 +204,7 @@
                 $current_unit = 0;
                 $current_unit = $inward - $outward;
                 $limit = $current_unit;
-            } 
-            else if($unit_type == '1') {
+            } else if($unit_type == '1') {
                 $inward = 0; $outward = 0;
                 $inward = $obj->getInwardQty('', '', $magazine_id, $product_id, $case_contains);
                 $outward = $obj->getOutwardQty('', '', $magazine_id, $product_id, $case_contains);

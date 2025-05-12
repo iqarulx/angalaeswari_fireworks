@@ -798,7 +798,41 @@ class Stock_functions extends Basic_Functions
             $stock_product_list =$this->getQueryRecords($GLOBALS['stock_table'],$select_query);
         }
         return $stock_product_list;
+    }
 
+    public function getGroupProduct($godown_id, $raw_semi_group_id) {
+        $select_query ="";$where ="";  $stock_product_list = array(); 
+    
+        $finished_group_name = "finished";
+        $finished_group_name = $this->encode_decode('encrypt', $finished_group_name);
+        $finished_group_id = "";
+        if(!empty($finished_group_name)){
+            $finished_group_id = $this->getTableColumnValue($GLOBALS['group_table'],'lower_case_name',$finished_group_name,'group_id');
+        }
+
+        if(!empty($godown_id) && !empty($finished_group_id)){ 
+             $select_query ="SELECT DISTINCT(product_id) as product_id FROM ".$GLOBALS['stock_table']." WHERE godown_id = '".$godown_id."' AND group_id != '".$finished_group_id."' AND deleted = '0'";
+        }
+        if(!empty($select_query)){
+            $stock_product_list =$this->getQueryRecords($GLOBALS['stock_table'],$select_query);
+        }
+
+        $result = array();
+        foreach($stock_product_list as $data) {
+            if(!empty($data['product_id'])) {
+                $product_group_query = "SELECT count(*) as count FROM " . $GLOBALS['product_table'] . " WHERE (raw_material_group_id = '" . $raw_semi_group_id . "' OR semi_finished_group_id = '" . $raw_semi_group_id . "') AND product_id = '" . $data['product_id'] . "' AND deleted = 0";
+                $products_list = $this->getQueryRecords('', $product_group_query);
+                if(!empty($products_list)) {
+                    foreach($products_list as $product_data) {
+                        if(!empty($product_data['count'])) {
+                            $result[] = $data;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function getInwardSubunitQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains)
@@ -1418,11 +1452,19 @@ class Stock_functions extends Basic_Functions
                         $total_subunit += $quantitys[$i];
                     }
 
-                    if(!isset($stock_product_array[$product_ids[$i]])) {
-                        $total_stock_unit += $current_stock_unit;
-                        $total_stock_sub_unit += $current_stock_sub_unit;
+                    if(isset($contents[$i])) {
+                        if(!isset($stock_product_array[$product_ids[$i].$contents[$i]])) {
+                            $total_stock_unit += $current_stock_unit;
+                            $total_stock_sub_unit += $current_stock_sub_unit;
+                        }
+                        $stock_product_array[$product_ids[$i].$contents[$i]] = $product_ids[$i];
+                    } else {
+                        if(!isset($stock_product_array[$product_ids[$i]])) {
+                            $total_stock_unit += $current_stock_unit;
+                            $total_stock_sub_unit += $current_stock_sub_unit;
+                        }
+                        $stock_product_array[$product_ids[$i]] = $product_ids[$i];
                     }
-                    $stock_product_array[$product_ids[$i]] = $product_ids[$i];
                 }
 
                 /** Find out only one unit exists */
@@ -1524,11 +1566,13 @@ class Stock_functions extends Basic_Functions
                         }
                     }
 
-                    $list[] = [
-                        "magazine_id" => $record['magazine_id'],
-                        "current_stock_unit" => $current_stock_unit,
-                        "current_stock_sub_unit" => $current_stock_sub_unit,
-                    ];
+                    if(!empty($current_stock_unit) || !empty($current_stock_sub_unit)) {
+                        $list[] = [
+                            "magazine_id" => $record['magazine_id'],
+                            "current_stock_unit" => $current_stock_unit,
+                            "current_stock_sub_unit" => $current_stock_sub_unit,
+                        ];
+                    }
                 }
             }
         }

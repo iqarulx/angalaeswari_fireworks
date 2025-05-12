@@ -276,7 +276,7 @@
             $customer_details[$i] = trim($customer_details[$i]);
             if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                 $pdf->SetX(20);
-                $pdf->Cell(40,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
+                $pdf->MultiCell(55,5,html_entity_decode($customer_details[$i]),0,'L',0);
             }
         }
     }
@@ -313,17 +313,17 @@
     $pdf->SetY($box_y);
     $pdf->SetX(10);
     $pdf->Cell(20,8,'S.No.',1,0,'C',0);
-    $pdf->Cell(65,8,'Products',1,0,'C',0);
-    $pdf->Cell(25,8,'Quantity',1,0,'C',0);
-    $pdf->Cell(20,8,'contents',1,1,'C',0);
+    $pdf->Cell(75,8,'Products',1,0,'C',0);
+    $pdf->Cell(35,8,'Quantity',1,1,'C',0);
+    // $pdf->Cell(20,8,'contents',1,1,'C',0);
     
     $pdf->SetFont('Arial','',7);
-    $y_axis=$pdf->GetY();
+    $y_axis = $pdf->GetY();
 
     $index = 0;
     $total_unit = $total_subunit = $purchase_subtotal = 0; $total_cal_y = 0; $unit_name_array = []; $sub_unit_name_array = [];
 
-    for($i = 0; $i < count( $product_ids); $i++) {
+    for($i = 0; $i < count($product_ids); $i++) {
         if($pdf->GetY() >= 190){
             $y = $pdf->GetY();
             $pdf->SetY(195);
@@ -395,7 +395,7 @@
                     $customer_details[$i] = trim($customer_details[$i]);
                     if (!empty($customer_details[$i]) && $customer_details[$i] != $GLOBALS['null_value']) {
                         $pdf->SetX(20);
-                        $pdf->Cell(40,5,html_entity_decode($customer_details[$i]),0,1,'L',0);
+                        $pdf->MultiCell(55,5,html_entity_decode($customer_details[$i]),0,'L',0);
                     }
                 }
             }
@@ -432,13 +432,14 @@
             $pdf->SetY($box_y);
             $pdf->SetX(10);
             $pdf->Cell(20,8,'S.No.',1,0,'C',0);
-            $pdf->Cell(65,8,'Products',1,0,'C',0);
-            $pdf->Cell(25,8,'Quantity',1,0,'C',0);
-            $pdf->Cell(20,8,'contents',1,1,'C',0);
+            $pdf->Cell(75,8,'Products',1,0,'C',0);
+            $pdf->Cell(35,8,'Quantity',1,1,'C',0);
+            // $pdf->Cell(20,8,'contents',1,1,'C',0);
             
             $pdf->SetFont('Arial','',7);
             $y_axis=$pdf->GetY();
         }
+
         $index = $i + 1;
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
         $unit_name = $subunit_name = "";
@@ -450,30 +451,43 @@
                 }
                 if(!empty($p_list['subunit_name']) && $p_list['subunit_name'] != $GLOBALS['null_value']) {
                     $subunit_name = $obj->encode_decode('decrypt',$p_list['subunit_name']);
-                    $sub_unit_name_array[] = $unit_name;
+                    $sub_unit_name_array[] = $subunit_name;
                 }
             }
         }
+
+        $content_display = "";
+        if(!empty($contents[$i]) && $contents[$i] != $GLOBALS['null_value']) {                 
+            $content_display .= ' (' . $contents[$i];
+
+            if(!empty($product_subunit_id)) {
+                $content_display .= " " . $subunit_name;
+            }
+
+            $content_display .= ')';
+        }
+
         $pdf->Cell(20,8,$index,1,0,'C',0);
-        $pdf->Cell(65,8,html_entity_decode($obj->encode_decode('decrypt', $product_names[$i])),1,0,'C',0);
-        $pdf->Cell(25,8,$quantity[$i].' '. ($unit_types[$i] == '1' ? $unit_name : $subunit_name),1,0,'C',0);
-        $pdf->Cell(20,8,($contents[$i] != '' && $contents[$i] != 'NULL' ? $contents[$i] . ' '. $subunit_name : '-'),1,1,'C',0);
+        $pdf->Cell(75,8,html_entity_decode($obj->encode_decode('decrypt', $product_names[$i])).$content_display,1,0,'C',0);
+        $pdf->Cell(35,8,$quantity[$i].' '. ($unit_types[$i] == '1' ? $unit_name : $subunit_name),1,1,'C',0);
+        $y_axis = $pdf->GetY();
         if($unit_types[$i] == '1') {
             $total_unit = $total_unit + $quantity[$i];
         } else if($unit_types[$i] == '2') {
             $total_subunit = $total_subunit + $quantity[$i];
         }
-    }        
-
+        $index++;
+    }
+    
     $pdf->Line(10, $y_axis, 10, 190);
     $pdf->Line(30, $y_axis, 30, 190);
-    $pdf->Line(95, $y_axis, 95, 190);
-    $pdf->Line(120, $y_axis, 120, 190);
+    $pdf->Line(105, $y_axis, 105, 190);
+    $pdf->Line(140, $y_axis, 140, 190);
     $pdf->Line(140, $y_axis, 140, 190);
     $pdf->SetY(190);
     $pdf->SetFont('Arial','B',8);
     $pdf->SetX(10);
-    $pdf->Cell(85,10,'Total',1,0,'R',0);
+    $pdf->Cell(95,10,'Total',1,0,'R',0);
 
     $total_display = "";
     if(!empty($total_unit)) {
@@ -484,6 +498,10 @@
                 $total_display .= " " . $unique_unit_names[0];
             }
         }
+    }
+
+    if(!empty($total_unit) && !empty($total_subunit)) {
+        $total_display .= " + ";
     }
 
     if(!empty($total_subunit)) {
@@ -497,7 +515,7 @@
     }
 
 
-    $pdf->Cell(45 ,10, $total_display ,1,1,'C',0);
+    $pdf->Cell(35 ,10, $total_display ,1,1,'C',0);
     
     $pdf->Output('', $pdf_download_name . '.pdf');
 ?>

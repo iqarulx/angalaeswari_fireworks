@@ -261,6 +261,7 @@ function DeleteRow(row_index, id_name) {
                                 'background-color': ''
                             });
                         }
+
                     }
 
                 }
@@ -285,6 +286,12 @@ function DeleteRow(row_index, id_name) {
                             $("select[name='selected_magazine_id']").attr("disabled", false)
                         }
                     }
+                }
+                if (jQuery('#div_selected_supplier').length > 0) {
+                    jQuery('#div_selected_supplier').css({
+                        'pointer-events': 'auto',
+                        'background-color': ''
+                    });
                 }
                 SnoCalculation();
                 CalculateTotalRate();
@@ -334,11 +341,11 @@ function addCreationDetails(name, characters) {
                         creation_name = creation_name.trim();
                         if (typeof creation_name == "undefined" || creation_name == "" || creation_name == 0 || creation_name == null) {
                             all_errors_check = 0;
-                        }
-                        else if (format.test(creation_name) == false) {
+                        } else if ((format.test(creation_name) == false) && name != "finished_group") {
                             letters_check = 0;
-                        }
-                        else if (creation_name.length > parseInt(characters)) {
+                        } else if (/"/.test(creation_name)) {
+                            letters_check = 0;
+                        } else if (creation_name.length > parseInt(characters)) {
                             error = 0;
                         }
                     }
@@ -610,11 +617,44 @@ function ChangeLocation() {
         if (jQuery('.finished_group_div').length > 0) {
             jQuery('.finished_group_div').removeClass('d-none');
         }
+        if (jQuery('.raw_material_group_div').length > 0) {
+            jQuery('.raw_material_group_div').addClass('d-none');
+        }
+        if (jQuery('.semi_finished_group_div').length > 0) {
+            jQuery('.semi_finished_group_div').addClass('d-none');
+        }
+    } else if (group === "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+        if (jQuery('.raw_material_group_div').length > 0) {
+            jQuery('.raw_material_group_div').removeClass('d-none');
+        }
+        if (jQuery('.semi_finished_group_div').length > 0) {
+            jQuery('.semi_finished_group_div').addClass('d-none');
+        }
+        if (jQuery('.finished_group_div').length > 0) {
+            jQuery('.finished_group_div').addClass('d-none');
+        }
+    } else if (group === "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+        if (jQuery('.semi_finished_group_div').length > 0) {
+            jQuery('.semi_finished_group_div').removeClass('d-none');
+        }
+        if (jQuery('.raw_material_group_div').length > 0) {
+            jQuery('.raw_material_group_div').addClass('d-none');
+        }
+        if (jQuery('.finished_group_div').length > 0) {
+            jQuery('.finished_group_div').addClass('d-none');
+        }
     } else {
+        if (jQuery('.raw_material_group_div').length > 0) {
+            jQuery('.raw_material_group_div').addClass('d-none');
+        }
+        if (jQuery('.semi_finished_group_div').length > 0) {
+            jQuery('.semi_finished_group_div').addClass('d-none');
+        }
         if (jQuery('.finished_group_div').length > 0) {
             jQuery('.finished_group_div').addClass('d-none');
         }
     }
+
 }
 
 function FindTotalQty() {
@@ -842,11 +882,9 @@ function AddProductStock() {
                         }
                     }
                     if (parseFloat(add) == 1) {
-                        var location_count = 0;
-                        location_count = jQuery('input[name="location_count"]').val();
-                        location_count = parseInt(location_count) + 1;
+                        location_count = jQuery('.product_row').length + 1;
                         jQuery('input[name="location_count"]').val(location_count);
-                        var post_url = "product_changes.php?product_row_index=" + location_count + "&location=" + location + "&selected_unit_type=" + selected_unit_type + "&selected_stock_date=" + selected_stock_date + "&selected_quantity=" + selected_quantity + "&selected_content=" + selected_content + "&godown_magazine=" + godown_magazine + "&subunit_need=" + subunit_need;
+                        var post_url = "product_changes.php?product_row_index=" + location_count + "&location=" + location + "&selected_unit_type=" + selected_unit_type + "&selected_stock_date=" + selected_stock_date + "&selected_quantity=" + selected_quantity + "&selected_content=" + selected_content + "&godown_magazine=" + godown_magazine + "&subunit_need=" + subunit_need + "&unit_id=" + unit_id + "&subunit_id=" + subunit_id;
                         jQuery.ajax({
                             url: post_url, success: function (result) {
                                 if (jQuery('.product_stock_table tbody').find('tr').length > 0) {
@@ -1700,6 +1738,19 @@ function AddPurchaseProducts() {
                                 if (jQuery('select[name="product"]').length > 0) {
                                     jQuery('select[name="product"]').val('').trigger('change');
                                 }
+                                if (jQuery('select[name="raw_material_group"]').length > 0) {
+                                    jQuery('select[name="raw_material_group"]').val('').trigger('change');
+                                }
+                                if (jQuery('select[name="semi_finished_group"]').length > 0) {
+                                    jQuery('select[name="semi_finished_group"]').val('').trigger('change');
+                                }
+                                if (jQuery('select[name="finished_group"]').length > 0) {
+                                    jQuery('select[name="finished_group"]').val('').trigger('change');
+                                }
+                                jQuery('#div_selected_supplier').css({
+                                    'pointer-events': 'none',
+                                    'background-color': '#e9ecef'
+                                });
                                 calcPurchaseEntrySubTotal();
                                 CheckCharges();
                             }
@@ -1805,4 +1856,21 @@ function AddUnitForStock() {
             }
         }
     });
+}
+
+function agentChange() {
+    var agent_id = '';
+    if (jQuery("select[name='agent_id']").length > 0) {
+        agent_id = jQuery("select[name='agent_id']").val();
+    }
+
+    if (agent_id != '') {
+        if (jQuery(".opening_balance_div").length > 0) {
+            jQuery(".opening_balance_div").addClass('d-none');
+        }
+    } else {
+        if (jQuery(".opening_balance_div").length > 0) {
+            jQuery(".opening_balance_div").removeClass('d-none');
+        }
+    }
 }

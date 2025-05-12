@@ -25,6 +25,7 @@
                 }
             }
         } 
+        
         ?>
         <form class="poppins pd-20 redirection_form" name="finished_group_form" method="POST">
             <div class="card-header">
@@ -50,16 +51,16 @@
                         <div class="col-lg-5 col-md-8 col-12">
                             <div class="form-label-group in-border">
                                 <div class="input-group mb-1">
-                                    <input type="text" id="finished_group_name" name="finished_group_name" value="<?php if(!empty($finished_group_name)) { echo $finished_group_name; } ?>" class="form-control shadow-none" onkeydown="Javascript:KeyboardControls(this,'text',15,'');" onkeyup="Javascript:InputBoxColor(this,'text');">
+                                    <input type="text" id="finished_group_name" name="finished_group_name" value="<?php if(!empty($finished_group_name)) { echo $finished_group_name; } ?>" class="form-control shadow-none" onkeyup="Javascript:InputBoxColor(this,'text');">
                                     <label>Finished Group Name <span class="text-danger">*</span></label>
                                     <?php if(empty($show_finished_group_id)) { ?>
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary" type="button" onclick="Javascript:addCreationDetails('finished_group', 15);"><i class="fa fa-plus"></i></button>
+                                            <button class="btn btn-secondary" type="button" onclick="Javascript:addCreationDetails('finished_group', 40);"><i class="fa fa-plus"></i></button>
                                         </div>
                                     <?php } ?>
                                 </div>
                             </div>
-                            <div class="new_smallfnt">Text Only (Character up to 15)</div>
+                            <div class="new_smallfnt">Text Only (Character up to 40)</div>
                         </div>
                     </div>
                 </div>
@@ -91,7 +92,7 @@
                 $(document).ready(function() {
                     jQuery('#finished_group_name').on("keypress", function(e) {
                         if(e.keyCode == 13) {
-                            addCreationDetails('finished_group', 15);
+                            addCreationDetails('finished_group', 40);
                             return false;
                         }
                     });
@@ -115,12 +116,11 @@
             if(isset($_POST['finished_group_name'])) {
                 $single_finished_group_name = $_POST['finished_group_name'];
                 $single_finished_group_name = trim($single_finished_group_name);
-                $finished_group_name_error = $valid->valid_text($single_finished_group_name, "Finished Group Name", "1", "15");
+                $finished_group_name_error = $valid->valid_product_name($single_finished_group_name, 'Finished Group', '1', '50');
             }
             if(!empty($finished_group_name_error)) {
                 $valid_finished_group = $valid->error_display($form_name, "finished_group_name", $finished_group_name_error, 'text');
-            }
-            else {
+            } else {
                 $single_lower_case_name = strtolower($single_finished_group_name);
                 $single_finished_group_name = $obj->encode_decode("encrypt", $single_finished_group_name);
                 $single_lower_case_name = $obj->encode_decode("encrypt", $single_lower_case_name);
@@ -139,6 +139,7 @@
             if(isset($_POST['finished_group_names'])) {
                 $finished_group_name = $_POST['finished_group_names'];
             }
+
             $inputbox_finished_group_name = "";
             $inputbox_finished_group_name = $_POST['finished_group_name'];
 
@@ -160,10 +161,11 @@
             }
             if(!empty($finished_group_name)) {
                 for ($p = 0; $p < count($finished_group_name); $p++) {
-                    if(!preg_match("/^[a-zA-Z\s ]+$/", $finished_group_name[$p]) || strlen($finished_group_name[$p]) > 15) {
+                    // if(!preg_match("/^[a-zA-Z\s ]+$/", $finished_group_name[$p]) || strlen($finished_group_name[$p]) > 40) {
+                    $finished_group_name[$p] = $obj->encode_decode('decrypt', $finished_group_name[$p]);
+                    if(strlen($finished_group_name[$p]) > 40) {
                         $finished_group_name_error = "Invalid Finished Group name - " . $finished_group_name[$p];
-                    }
-                    else {
+                    } else {
                         $lower_case_name[$p] = strtolower($finished_group_name[$p]);
                         $finished_group_name[$p] = $obj->encode_decode('encrypt', $finished_group_name[$p]);
                         $lower_case_name[$p] = $obj->encode_decode('encrypt', $lower_case_name[$p]);
@@ -172,15 +174,14 @@
                     if(!empty($finished_group_name_error)) {
                         if(!empty($valid_finished_group)) {
                             $valid_finished_group = $valid_finished_group." ".$valid->error_display($form_name, "finished_group_name", $finished_group_name_error, 'text');
-                        }
-                        else {
+                        } else {
                             $valid_finished_group = $valid->error_display($form_name, "finished_group_name", $finished_group_name_error, 'text');
                         }
                     }
                 }
             }
         }
-
+        
         $result = "";
         if(empty($valid_finished_group) && empty($finished_group_name_error)) {
             $check_user_id_ip_address = 0;
@@ -224,8 +225,7 @@
                                 $result = array('number' => '2', 'msg' => $finished_group_error);
                             }
                         }
-                    } 
-                    else if(!empty($edit_id)) {
+                    } else if(!empty($edit_id)) {
                         $getUniqueID = "";
                         $getUniqueID = $obj->getTableColumnValue($GLOBALS['finished_group_table'], 'finished_group_id', $edit_id, 'id');
                         if(preg_match("/^\d+$/", $getUniqueID)) {
@@ -450,7 +450,7 @@
                         echo $selected_finished_group_name;
                     }    
                 ?>
-                <input type="hidden" name="finished_group_names[]" value="<?php if(!empty($selected_finished_group_name)) { echo $selected_finished_group_name; } ?>">
+                <input type="hidden" name="finished_group_names[]" value="<?php if(!empty($selected_finished_group_name)) { echo $obj->encode_decode('encrypt', $selected_finished_group_name); } ?>">
             </td>
             <td class="text-center product_pad">
                 <button class="btn btn-danger align-self-center px-2 py-1" type="button" onclick="Javascript:DeleteCreationRow('finished_group', '<?php if(!empty($finished_group_row_index)) { echo $finished_group_row_index; } ?>');"> <i class="fa fa-trash" aria-hidden="true"></i></button>

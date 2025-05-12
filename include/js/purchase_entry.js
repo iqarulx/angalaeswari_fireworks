@@ -20,7 +20,11 @@ function GetProdetails() {
                             }
                             window.globalVar = result[1].split("%%");
                             if (result[4] != "" && result[4] != "NULL") {
+                                console.log(result[result.length - 1]);
                                 $("#contents_div").removeClass("d-none");
+                                if (jQuery('.content_name_span').length > 0) {
+                                    jQuery('.content_name_span').html(result[result.length - 1]);
+                                }
                                 GetStockLimit();
                             } else {
                                 $("input[name='content']").val("");
@@ -1369,7 +1373,137 @@ function show_product(product_group) {
                         }
                     }
                 });
+
+                if (product_group === "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+                    if (jQuery('.finished_group_div').length > 0) {
+                        jQuery('.finished_group_div').removeClass('d-none');
+                    }
+                    if (jQuery('.raw_material_group_div').length > 0) {
+                        jQuery('.raw_material_group_div').addClass('d-none');
+                    }
+                    if (jQuery('.semi_finished_group_div').length > 0) {
+                        jQuery('.semi_finished_group_div').addClass('d-none');
+                    }
+                } else if (product_group === "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+                    if (jQuery('.raw_material_group_div').length > 0) {
+                        jQuery('.raw_material_group_div').removeClass('d-none');
+                    }
+                    if (jQuery('.semi_finished_group_div').length > 0) {
+                        jQuery('.semi_finished_group_div').addClass('d-none');
+                    }
+                    if (jQuery('.finished_group_div').length > 0) {
+                        jQuery('.finished_group_div').addClass('d-none');
+                    }
+                } else if (product_group === "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+                    if (jQuery('.semi_finished_group_div').length > 0) {
+                        jQuery('.semi_finished_group_div').removeClass('d-none');
+                    }
+                    if (jQuery('.raw_material_group_div').length > 0) {
+                        jQuery('.raw_material_group_div').addClass('d-none');
+                    }
+                    if (jQuery('.finished_group_div').length > 0) {
+                        jQuery('.finished_group_div').addClass('d-none');
+                    }
+                } else {
+                    if (jQuery('.raw_material_group_div').length > 0) {
+                        jQuery('.raw_material_group_div').addClass('d-none');
+                    }
+                    if (jQuery('.semi_finished_group_div').length > 0) {
+                        jQuery('.semi_finished_group_div').addClass('d-none');
+                    }
+                    if (jQuery('.finished_group_div').length > 0) {
+                        jQuery('.finished_group_div').addClass('d-none');
+                    }
+                }
             }
         }
     });
-} 
+}
+
+function getProductByGroup() {
+    var product_group = "";
+    if (jQuery("select[name='product_group']").length > 0) {
+        product_group = jQuery("select[name='product_group']").val();
+    }
+
+    var filter_group_id = "";
+    var filter_group_type = "";
+
+    if (product_group === "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+        if (jQuery("select[name='raw_material_group']").length > 0) {
+            filter_group_id = jQuery("select[name='raw_material_group']").val();
+            filter_group_type = "raw_material_group";
+        }
+    } else if (product_group === "4d5449774e4449774d6a55784d4455794e4464664d44493d") {
+        if (jQuery("select[name='semi_finished_group']").length > 0) {
+            filter_group_id = jQuery("select[name='semi_finished_group']").val();
+            filter_group_type = "semi_finished_group";
+        }
+    } else if (product_group === "4d5449774e4449774d6a55784d4455794d7a4e664d44453d") {
+        if (jQuery("select[name='finished_group']").length > 0) {
+            filter_group_id = jQuery("select[name='finished_group']").val();
+            filter_group_type = "finished_group";
+        }
+    }
+
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                post_url = "action_changes.php?get_product_by_group_purchase&filter_group_id=" + filter_group_id + "&filter_group_type=" + filter_group_type;
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (result != "") {
+                            if ($("select[name='product']").length > 0) {
+                                $("select[name='product']").html(result); GetProdetails();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    })
+}
+
+function GetSupplierProducts() {
+    var supplier_id = "";
+    if (jQuery("select[name='supplier_id']").length > 0) {
+        supplier_id = jQuery("select[name='supplier_id']").val();
+    }
+
+    if (jQuery("select[name='raw_material_group']").length > 0) {
+        jQuery("select[name='raw_material_group']").val('').trigger('change');
+    }
+    if (jQuery("select[name='product_group']").length > 0) {
+        jQuery("select[name='product_group']").val('').trigger('change');
+    }
+
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                post_url = "action_changes.php?get_supplier_products&supplier_id=" + supplier_id;
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (result != "") {
+                            result = result.split("$$$");
+                            if (result[0] != '') {
+                                if (jQuery("select[name='product']").length > 0) {
+                                    jQuery("select[name='product']").html(result); GetProdetails();
+                                }
+                            }
+                            if (result[1] != '') {
+                                if (jQuery("select[name='raw_material_group']").length > 0) {
+                                    jQuery("select[name='raw_material_group']").val(result[1]).trigger('change');
+                                }
+                                if (jQuery("select[name='product_group']").length > 0) {
+                                    jQuery("select[name='product_group']").val("4d5449774e4449774d6a55784d44557a4d444a664d444d3d").trigger('change');
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    })
+}

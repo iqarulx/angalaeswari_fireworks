@@ -70,17 +70,25 @@ function AssingAddress() {
                     option = 0;
                 }
 
+                customer_id = "";
+                if (jQuery('select[name="customer_id"]').length > 0) {
+                    customer_id = jQuery('select[name="customer_id"]').val();
+                }
+
                 if (option === 1) {
-                    var address = "";
-                    if (jQuery('textarea[name="address"]').length > 0 && jQuery('textarea[name="address"]').val().trim() !== "") {
-                        address = jQuery('textarea[name="address"]').val().trim();
-                    }
-                    if (jQuery('textarea[name="billing_address"]').length > 0) {
-                        jQuery('textarea[name="billing_address"]').val(address);
-                    }
+                    jQuery.ajax({
+                        url: "proforma_invoice_changes.php?get_party_address&customer_id=" + customer_id, success: function (result) {
+                            if (result != '') {
+                                if (jQuery('textarea[name="address"]').length > 0) {
+                                    jQuery('textarea[name="address"]').val(result);
+                                }
+                            }
+                        }
+                    });
+
                 } else {
-                    if (jQuery('textarea[name="billing_address"]').length > 0) {
-                        jQuery('textarea[name="billing_address"]').val('');
+                    if (jQuery('textarea[name="address"]').length > 0) {
+                        jQuery('textarea[name="address"]').val('');
                     }
                 }
             }
@@ -1959,6 +1967,8 @@ function CalProductAmount() {
     if (selected_amount.length > 0) {
         selected_amount.val(total_amount.toFixed(2));
     }
+
+    console.log(selected_amount);
 }
 
 // function CalProductAmount() {
@@ -2287,10 +2297,8 @@ function getRateByTaxOption() {
                 }
             });
         }
-
     }
     calTotal();
-
 }
 
 function DeleteChargesRow(obj, row_index) {
@@ -2353,6 +2361,26 @@ function GetProdetails() {
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
+
+                if ($("select[name='selected_unit_type']").length > 0) {
+                    $("select[name='selected_unit_type']").val('').trigger('change');
+                }
+                if ($("input[name='selected_sales_rate']").length > 0) {
+                    $("input[name='selected_sales_rate']").val('');
+                }
+                if ($("input[name='selected_per']").length > 0) {
+                    $("input[name='selected_per']").val('');
+                }
+                if ($("select[name='selected_per_type']").length > 0) {
+                    $("select[name='selected_per_type']").val('').trigger('change');
+                }
+                if ($("input[name='selected_subunit_need']").length > 0) {
+                    $("input[name='selected_subunit_need']").val('');
+                }
+                if (jQuery('select[name="selected_content"]').length > 0) {
+                    jQuery('select[name="selected_content"]').val('').trigger('change');
+                }
+
                 post_url = "proforma_invoice_changes.php?change_product_id=" + product;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
@@ -2558,6 +2586,66 @@ function GetFinishedGroupProducts() {
                             });
                         }
                     });
+                }
+            }
+        });
+    }
+}
+
+function getMagazineStock() {
+    var magazine_type = ""; var magazine_id = "";
+    if (jQuery('select[name="magazine_type"]').length > 0) {
+        magazine_type = jQuery('select[name="magazine_type"]').val();
+    }
+    if (jQuery('select[name="magazine_id"]').length > 0) {
+        magazine_id = jQuery('select[name="magazine_id"]').val();
+    }
+
+    if (typeof magazine_type != undefined && magazine_type != '') {
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url, success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    if (magazine_type == 1 && magazine_id != '') {
+                        if (jQuery('.product_row').length > 0) {
+                            jQuery('.product_row').each(function (index, row) {
+                                var product_id = jQuery(row).find('input[name="product_id[]"]').val();
+                                var content = jQuery(row).find('input[name="content[]"]').val();
+
+                                var post_url = "delivery_slip_changes.php?get_stock_product&product_id=" + product_id + "&content=" + content + "&magazine_id=" + magazine_id;
+                                jQuery.ajax({
+                                    url: post_url, success: function (result) {
+                                        result = result.trim();
+                                        if (jQuery(row).find('input[name="quantity[]"]').length > 0) {
+                                            jQuery(row).find('.current_stock_span').html("Current Stock : " + result);
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                    } else {
+                        if (magazine_type == 2) {
+                            if (jQuery('.product_row').length > 0) {
+                                jQuery('.product_row').each(function (index, row) {
+                                    var product_id = jQuery(row).find('input[name="product_id[]"]').val();
+                                    var content = jQuery(row).find('input[name="content[]"]').val();
+                                    var indv_magazine_id = jQuery(row).find('select[name="indv_magazine_id[]"]').val();
+
+                                    if (indv_magazine_id != '') {
+                                        var post_url = "delivery_slip_changes.php?get_stock_product&product_id=" + product_id + "&content=" + content + "&magazine_id=" + indv_magazine_id;
+                                        jQuery.ajax({
+                                            url: post_url, success: function (result) {
+                                                result = result.trim();
+                                                if (jQuery(row).find('input[name="quantity[]"]').length > 0) {
+                                                    jQuery(row).find('.current_stock_span').html("Current Stock : " + result);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
                 }
             }
         });

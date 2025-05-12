@@ -170,6 +170,25 @@
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
+                            <select name="agent_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:agentChange();">
+                                <option value = "">Select Agent</option> <?php
+                                if(!empty($agent_list)) {
+                                    foreach($agent_list as $data) { ?>
+                                        <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>" <?php if($agent_id == $data['agent_id']) { ?> selected <?php } ?>> <?php
+                                            if(!empty($data['agent_name'])) {
+                                                echo $obj->encode_decode('decrypt', $data['agent_name']);
+                                            } ?>
+                                        </option> <?php
+                                    }
+                                } ?>
+                            </select>
+                            <label>Agent</label>
+                        </div>
+                    </div>        
+                </div>
+                <div class="col-lg-3 col-md-4 col-12 py-2 opening_balance_div <?php if(!empty($agent_id) && $agent_id != "NULL") { ?> d-none <?php } ?>">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
                             <div class="input-group">
                                 <input type="text" id="opening_balance" name="opening_balance" class="form-control shadow-none" required  value="<?php if(!empty($opening_balance)){echo $opening_balance;} ?>" onfocus="Javascript:KeyboardControls(this,'number',6,1);" maxlength="6" <?php if(!empty($linked_customer)){ ?> readonly <?php } ?>>
                                 <label>Opening Balance</label>
@@ -183,25 +202,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-12 py-2">
-                    <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <select name = "agent_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                <option value = ""> Select Agent</option> <?php
-                                if(!empty($agent_list)) {
-                                    foreach($agent_list as $data) { ?>
-                                        <option value="<?php if(!empty($data['agent_id'])) { echo $data['agent_id']; } ?>" <?php if($agent_id == $data['agent_id']) { ?> selected <?php } ?>> <?php
-                                            if(!empty($data['agent_name'])) {
-                                                echo $obj->encode_decode('decrypt', $data['agent_name']);
-                                            } ?>
-                                        </option> <?php
-                                    }
-                                } ?>
-                            </select>
-                            <label>Select Agent</label>
-                        </div>
-                    </div>        
                 </div>
                 <?php if(!empty($linked_customer) && !empty($show_customer_id)){ ?>
                     <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $opening_balance_type; } ?>">

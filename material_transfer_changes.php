@@ -328,7 +328,7 @@
                             </div>
                         </div>
                         <div class="row mx-0 my-3">
-                            <div class="col-lg-6 col-md-6 col-12 text-end">
+                            <div class="col-lg-10 col-md-6 col-12 text-end">
                                 <h4>Total Quantity : <span class="overall_qty"></span></h3>
                             </div>
                         </div>

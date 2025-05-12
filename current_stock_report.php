@@ -37,6 +37,10 @@
     if(isset($_POST['filter_product_id'])) {
         $product_id = $_POST['filter_product_id'];
     }
+    $finished_group_id = "";
+    if(isset($_POST['filter_finished_group_id'])) {
+        $finished_group_id = $_POST['filter_finished_group_id'];
+    }
     if(isset($_POST['unit_type'])) {
         $unit_type = $_POST['unit_type'];
     }
@@ -50,14 +54,13 @@
         $unit_type = "Unit";
     }
 
-    $group_list = array();
-    $group_list = $obj->getGroupList('2');
+    $finished_group_list = array();
+    $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
 
     $product_list = array();
-    if(!empty($group_id)) {
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', $group_id, '');
-    }
-    else {
+    if(!empty($finished_group_id)) {
+        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'finished_group_id', $finished_group_id, '');
+    } else {
         $product_list = $obj->getProducts('2');
     }
 
@@ -82,8 +85,7 @@
     $total_records_list = array(); $contains_list = array();
     if(empty($product_id)) {
         $total_records_list = $product_list;
-    }
-    else if(!empty($product_id)) {
+    } else if(!empty($product_id)) {
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
@@ -93,7 +95,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+	<title><?php if(!empty($page_title)) { echo $page_title; } ?></title>
 	<?php 
 	include "link_style_script.php"; ?>
     <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
@@ -144,6 +146,33 @@
                                                 ?>
                                             </select>
                                             <label>Magazine</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-6">
+                                    <div class="form-group mb-1">
+                                        <div class="form-label-group in-border pb-2">
+                                            <select name="filter_finished_group_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width:100%!important;" onchange="Javascript:getReport();">
+                                                <option value="">Select</option>
+                                                <?php
+                                                    if(!empty($finished_group_list)) {
+                                                        foreach($finished_group_list as $data) {
+                                                            if(!empty($data['finished_group_id']) && $data['finished_group_id'] != $GLOBALS['null_value']) {
+                                                                ?>
+                                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if(!empty($finished_group_id) && $finished_group_id == $data['finished_group_id']) { ?>selected<?php } ?>>
+                                                                    <?php
+                                                                        if(!empty($data['finished_group_name']) && $data['finished_group_name'] != $GLOBALS['null_value']) {
+                                                                            echo $obj->encode_decode('decrypt', $data['finished_group_name']);
+                                                                        }
+                                                                    ?>
+                                                                </option>
+                                                                <?php
+                                                            }
+                                                        }
+                                                    }
+                                                ?>
+                                            </select>
+                                            <label>Finished Group</label>
                                         </div>
                                     </div>
                                 </div>
@@ -305,8 +334,6 @@
                                                     ?>
                                                                 <tr>
                                                                     <th><?php echo $sno++; ?></th>
-                                                                    
-                                                                
                                                                     <th onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
                                                                         <?php
                                                                             if(!empty($data['product_name']) && $data['product_name'] != $GLOBALS['null_value']) {
@@ -315,9 +342,7 @@
                                                                         ?>
                                                                     </th>
                                                                     <th>
-                                                                        <?php
-                                                                            echo $current_stock;
-                                                                        ?>
+                                                                        <?php echo !empty($current_stock) ? $current_stock : '-'; ?>
                                                                     </th>
                                                                 </tr>
                                                     <?php 
@@ -338,8 +363,11 @@
                                                                                 }
                                                                             }
                                                                         }
+                                                                        if(!empty($total_unit_stock) && !empty($total_subunit_stock)) {
+                                                                            echo " + ";
+                                                                        }
                                                                         if(!empty($total_subunit_stock)) {
-                                                                            echo " + " .$total_subunit_stock;
+                                                                            echo $total_subunit_stock;
                                                                             if(!empty($sub_unit_name_array)) {
                                                                                 $unique_sub_unit_names = array_unique($sub_unit_name_array);
                                                                                 if(count($unique_sub_unit_names) == 1) {
@@ -436,6 +464,7 @@
                                                         $total_inward_unit = 0; $total_inward_subunit = 0; $total_outward_unit = 0; $total_outward_subunit = 0;
                                                         if(!empty($total_records_list)) { 
                                                             foreach($total_records_list as $key => $data) {
+                                                                if(!empty($data['inward_unit']) || !empty($data['inward_subunit']) || !empty($data['outward_unit']) || !empty($data['outward_subunit'])) {
                                                     ?>
                                                                 <tr>
                                                                     <th><?php echo $key+1; ?></th>
@@ -578,44 +607,51 @@
                                                                 </tr>
                                                     <?php 
                                                             } 
-                                                            ?>
-                                                            <tr>
-                                                                <th colspan="<?php if($subunit_hide == '1') { ?>7<?php } else { ?>6<?php } ?>" class="text-end">Total &ensp;</th>
-                                                                <th>
-                                                                    <?php
-                                                                        if(!empty($total_inward_unit)) {
-                                                                            echo $total_inward_unit;
-                                                                            if(!empty($unit_name)) {
-                                                                                echo " " . $obj->encode_decode('decrypt', $unit_name);
-                                                                            }
+                                                        }
+                                                    ?>
+                                                        <tr>
+                                                            <th colspan="<?php if($subunit_hide == '1') { ?>7<?php } else { ?>6<?php } ?>" class="text-end">Total &ensp;</th>
+                                                            <th>
+                                                                <?php
+                                                                    if(!empty($total_inward_unit)) {
+                                                                        echo $total_inward_unit;
+                                                                        if(!empty($unit_name)) {
+                                                                            echo " " . $obj->encode_decode('decrypt', $unit_name);
                                                                         }
-                                                                        if(!empty($total_inward_subunit)) {
-                                                                            echo " + " . $total_inward_subunit;
-                                                                            if(!empty($subunit_name)) {
-                                                                                echo " " . $obj->encode_decode('decrypt', $subunit_name);
-                                                                            }
+                                                                    }
+                                                                    if(!empty($total_inward_unit) && !empty($total_inward_subunit)) {
+                                                                        echo " + ";
+                                                                    }
+                                                                    if(!empty($total_inward_subunit)) {
+                                                                        echo $total_inward_subunit;
+                                                                        if(!empty($subunit_name)) {
+                                                                            echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                         }
-                                                                    ?>
-                                                                </th>
-                                                                <th>
-                                                                    <?php
-                                                                        if(!empty($total_outward_unit)) {
-                                                                            echo $total_outward_unit;
-                                                                            if(!empty($unit_name)) {
-                                                                                echo " " . $obj->encode_decode('decrypt', $unit_name);
-                                                                            }
+                                                                    }
+                                                                ?>
+                                                            </th>
+                                                            <th>
+                                                                <?php
+                                                                    if(!empty($total_outward_unit)) {
+                                                                        echo $total_outward_unit;
+                                                                        if(!empty($unit_name)) {
+                                                                            echo " " . $obj->encode_decode('decrypt', $unit_name);
                                                                         }
-                                                                        if(!empty($total_outward_subunit)) {
-                                                                            echo " + " . $total_outward_subunit;
-                                                                            if(!empty($subunit_name)) {
-                                                                                echo " " . $obj->encode_decode('decrypt', $subunit_name);
-                                                                            }
+                                                                    }
+                                                                    if(!empty($total_outward_unit) && !empty($total_outward_subunit)) {
+                                                                        echo " + ";
+                                                                    }
+                                                                    if(!empty($total_outward_subunit)) {
+                                                                        $total_outward_subunit;
+                                                                        if(!empty($subunit_name)) {
+                                                                            echo " " . $obj->encode_decode('decrypt', $subunit_name);
                                                                         }
-                                                                       
-                                                                    ?>
-                                                                </th>
-                                                            </tr>
-                                                            <?php
+                                                                    }
+                                                                    
+                                                                ?>
+                                                            </th>
+                                                        </tr>
+                                                    <?php
                                                         } 
                                                         else {
                                                     ?>
@@ -637,7 +673,8 @@
                 </div>
             </div>  
         </div>
-    </div>          
+    </div>
+</div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript">

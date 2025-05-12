@@ -525,11 +525,48 @@ function calQtyTotal() {
                 quantity_total = parseFloat(quantity_total) + parseFloat(quantity);
             }
         });
-        if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
-            quantity_total = quantity_total.toFixed(2);
-            if (jQuery('.overall_qty').length > 0) {
-                jQuery('.overall_qty').html(quantity_total);
-            }
+        // if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
+        //     quantity_total = quantity_total.toFixed(2);
+        //     if (jQuery('.overall_qty').length > 0) {
+        //         jQuery('.overall_qty').html(quantity_total);
+        //     }
+        // }
+
+        /* Total Display */
+        var unit_ids = [];
+        if (jQuery('input[name="unit_id[]"]').length > 0) {
+            jQuery('input[name="unit_id[]"]').each(function () {
+                unit_ids.push(jQuery(this).val());
+            });
         }
+        var product_ids = [];
+        if (jQuery('input[name="product_id[]"]').length > 0) {
+            jQuery('input[name="product_id[]"]').each(function () {
+                product_ids.push(jQuery(this).val());
+            });
+        }
+        var contains = [];
+        if (jQuery('input[name="contains[]"]').length > 0) {
+            jQuery('input[name="contains[]"]').each(function () {
+                contains.push(jQuery(this).val());
+            });
+        }
+        var quantity = [];
+        if (jQuery('input[name="quantity[]"]').length > 0) {
+            jQuery('input[name="quantity[]"]').each(function () {
+                quantity.push(jQuery(this).val());
+            });
+        }
+
+        var post_url = "daily_production_changes.php?get_total&product_ids=" + product_ids.join(',') + "&unit_ids=" + unit_ids.join(',') + "&contains=" + contains.join(',') + "&quantity=" + quantity.join(',');
+        jQuery.ajax({
+            url: post_url, success: function (result) {
+                if (typeof result != "undefined" && result != "") {
+                    if (jQuery('.overall_qty').length > 0) {
+                        jQuery('.overall_qty').html(result);
+                    }
+                }
+            }
+        });
     }
 }

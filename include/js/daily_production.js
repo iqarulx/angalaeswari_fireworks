@@ -366,12 +366,45 @@ function calQuantityTotal(obj) {
 
 
         });
-        if (typeof quantity_total != "undefined" && quantity_total != "" && quantity_total != 0 && price_regex.test(quantity_total) == true) {
-            quantity_total = quantity_total.toFixed(2);
-            if (jQuery('.overall_qty').length > 0) {
-                jQuery('.overall_qty').html(quantity_total);
-            }
+
+        /* Total Display */
+        var unit_ids = [];
+        if (jQuery('input[name="unit_id[]"]').length > 0) {
+            jQuery('input[name="unit_id[]"]').each(function () {
+                unit_ids.push(jQuery(this).val());
+            });
         }
+        var product_ids = [];
+        if (jQuery('input[name="product_id[]"]').length > 0) {
+            jQuery('input[name="product_id[]"]').each(function () {
+                product_ids.push(jQuery(this).val());
+            });
+        }
+        var contains = [];
+        if (jQuery('input[name="contains[]"]').length > 0) {
+            jQuery('input[name="contains[]"]').each(function () {
+                contains.push(jQuery(this).val());
+            });
+        }
+        var quantity = [];
+        if (jQuery('input[name="quantity[]"]').length > 0) {
+            jQuery('input[name="quantity[]"]').each(function () {
+                quantity.push(jQuery(this).val());
+            });
+        }
+
+        var post_url = "daily_production_changes.php?get_total&product_ids=" + product_ids.join(',') + "&unit_ids=" + unit_ids.join(',') + "&contains=" + contains.join(',') + "&quantity=" + quantity.join(',');
+        jQuery.ajax({
+            url: post_url, success: function (result) {
+                if (typeof result != "undefined" && result != "") {
+                    if (jQuery('.overall_qty').length > 0) {
+                        jQuery('.overall_qty').html(result);
+                    }
+                }
+            }
+        });
+
+
         if (typeof overall_total != "undefined" && overall_total != "" && overall_total != 0 && price_regex.test(overall_total) == true) {
             overall_total = overall_total.toFixed(2);
             if (jQuery('.overall_total').length > 0) {
@@ -701,6 +734,36 @@ function DeleteSemiFinishedInwardRow(row_index, id_name) {
             }
             else {
                 window.location.reload();
+            }
+        }
+    });
+}
+
+
+function GetGroupProducts() {
+    if (jQuery('select[name="product"]').length > 0) {
+        jQuery('select[name="product"]').html('');
+    }
+
+    var finished_group_id = "";
+    if (jQuery('select[name="finished_group_id"]').length > 0) {
+        finished_group_id = jQuery('select[name="finished_group_id"]').val();
+    }
+
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                var post_url = "daily_production_changes.php?get_product_by_group&finished_group_id=" + finished_group_id;
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (jQuery('select[name="selected_product_id"]').length > 0) {
+                            jQuery('select[name="selected_product_id"]').html(result);
+                            GetProdetails();
+                        }
+                    }
+                });
             }
         }
     });

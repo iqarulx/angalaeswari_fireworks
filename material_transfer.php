@@ -19,7 +19,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
+        <title><?php if(!empty($page_title)) { echo $page_title; } ?> </title>
         <?php 
         include "link_style_script.php"; 
         $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');

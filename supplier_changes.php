@@ -13,7 +13,7 @@
         $show_supplier_id = $_REQUEST['show_supplier_id'];
         $show_supplier_id = trim($show_supplier_id);
         
-        $country = "India";$state = "";$district = "";$city = "";$supplier_name = "";$mobile_number = "";$address = "";$email = "";$pincode = "";$product_id="";$product_name="";$pincode = ""; $state = "Tamil Nadu";$identification = "";
+        $country = "India";$state = "";$district = "";$city = "";$supplier_name = "";$mobile_number = "";$address = "";$email = "";$pincode = "";$product_id="";$product_name="";$pincode = ""; $state = "Tamil Nadu";$identification = ""; $raw_material_group_id = "";
 
 
         if(!empty($show_supplier_id)){
@@ -53,6 +53,9 @@
                     if(!empty($data['opening_balance_type']) && $data['opening_balance_type'] != $GLOBALS['null_value']){
                         $opening_balance_type = $data['opening_balance_type'];
                     }
+                    if(!empty($data['raw_material_group_id']) && $data['raw_material_group_id'] != $GLOBALS['null_value']){
+                        $raw_material_group_id = $data['raw_material_group_id'];
+                    }
                 }
             }
         }
@@ -61,6 +64,8 @@
              $linked_supplier = $obj->PaymentlinkedSupplier($show_supplier_id);
         }
 
+        $raw_material_group_list = array();
+        $raw_material_group_list = $obj->getTableRecords($GLOBALS['raw_material_group_table'], '', '', '');
         ?>
 		<script type="text/javascript" src="include/js/creation_modules.js"></script>
 
@@ -126,7 +131,6 @@
                         </div>
                     </div>        
                 </div>
-
                 <div class="col-lg-3 col-md-4 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -185,7 +189,35 @@
                 <?php if(!empty($linked_supplier) && !empty($show_supplier_id)){ ?>
                     <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $opening_balance_type; } ?>">
                 <?php 
-               } ?>
+                } ?>
+                <div class="col-lg-3 col-md-4 col-6 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="raw_material_group_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select</option>
+                                <?php
+                                    if (!empty($raw_material_group_list)) {
+                                        foreach ($raw_material_group_list as $data) {
+                                            if (!empty($data['raw_material_group_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['raw_material_group_id']; ?>" <?php if (!empty($raw_material_group_id) && $data['raw_material_group_id'] == $raw_material_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['raw_material_group_name'])) {
+                                                        $data['raw_material_group_name'] = $obj->encode_decode('decrypt', $data['raw_material_group_name']);
+                                                        echo $data['raw_material_group_name'];
+                                                    }
+                                                    ?>
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Raw Material Group<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
                 <div class="col-md-12 py-3 text-center submit_button">
                     <button class="btn btn-danger" type="button" onClick="Javascript:SaveModalContent(event,'supplier_form', 'supplier_changes.php', 'supplier.php');">
                         Submit
@@ -206,7 +238,7 @@
 
 
     if(isset($_POST['edit_id'])) {	
-        $supplier_name = ""; $supplier_name_error = "";  $mobile_number = ""; $mobile_number_error = ""; 	$address = ""; $address_error = ""; $state = ""; $state_error = ""; $district = ""; $district_error = ""; $city = ""; $city_error = ""; $others_city = ""; $others_city_error = ""; $gst_number = ""; $gst_number_error = ""; $opening_balance = 0; $opening_balance_error = ""; $opening_balance_type = ""; $opening_balance_type_error = ""; 
+        $supplier_name = ""; $supplier_name_error = "";  $mobile_number = ""; $mobile_number_error = ""; 	$address = ""; $address_error = ""; $state = ""; $state_error = ""; $district = ""; $district_error = ""; $city = ""; $city_error = ""; $others_city = ""; $others_city_error = ""; $gst_number = ""; $gst_number_error = ""; $opening_balance = 0; $opening_balance_error = ""; $opening_balance_type = ""; $opening_balance_type_error = ""; $raw_material_group_id = ""; $raw_material_group_id_error = ""; 
         $valid_supplier = ""; $form_name = "supplier_form"; $edit_id = "";
         if(isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
@@ -380,6 +412,19 @@
             }
         }
       
+        if(isset($_POST['raw_material_group_id'])) {
+            $raw_material_group_id = $_POST['raw_material_group_id'];
+            $raw_material_group_id = trim($raw_material_group_id);
+            $raw_material_group_id_error = $valid->common_validation($raw_material_group_id,'Raw Material Group','select');
+            if(!empty($raw_material_group_id_error)) {
+                if(!empty($valid_supplier)) {
+                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "raw_material_group_id", $raw_material_group_id_error, 'select');
+                } else {
+                    $valid_supplier = $valid->error_display($form_name, "raw_material_group_id", $raw_material_group_id_error, 'select');
+                }
+            }
+        }
+
         $result = "";
         if(empty($valid_supplier)) {
             $check_user_id_ip_address = 0;
@@ -405,8 +450,7 @@
                         $supplier_details = $supplier_details."$$$".str_replace("\r\n", "$$$", $address);
                     }
                     $address = $obj->encode_decode('encrypt', $address);
-                }
-                else {
+                } else {
                     $address = $GLOBALS['null_value'];
                 }
 
@@ -468,7 +512,7 @@
                 if(!empty($supplier_details)) {
                     $supplier_details = $obj->encode_decode('encrypt', $supplier_details);
                 }
-                
+               
                 $balance = 0;
 
                 $prev_supplier_id = ""; $supplier_error = "";	$prev_supplier_name ="";
@@ -504,8 +548,8 @@
                             $action = "New supplier Created. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
                         }
                         $null_value = $GLOBALS['null_value'];
-                        $columns = array('created_date_time', 'creator', 'creator_name', 'supplier_id', 'supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city', 'deleted');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'", "'0'");
+                        $columns = array('created_date_time', 'creator', 'creator_name', 'supplier_id', 'supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city', 'raw_material_group_id', 'deleted');
+                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'", "'" . $raw_material_group_id . "'", "'0'");
                         $supplier_insert_id = $obj->InsertSQL($GLOBALS['supplier_table'], $columns, $values, 'supplier_id', '', $action);
                         if(preg_match("/^\d+$/", $supplier_insert_id)) {	
                             $supplier_id = "";
@@ -514,14 +558,10 @@
                             $balance = 1;
                             $result = array('number' => '1', 'msg' => 'Supplier Successfully Created','supplier_id' => $supplier_id);
                             				
-                        }
-                        else {
+                        } else {
                             $result = array('number' => '2', 'msg' => $supplier_insert_id);
                         }
-                    
-                    }
-                    else {
-                        
+                    } else {
                         if(!empty($supplier_error)) {
                             $result = array('number' => '2', 'msg' => $supplier_error);
                         }
@@ -529,10 +569,8 @@
                             $result = array('number' => '2', 'msg' => $gst_supplier_error);
                         }
                     }
-                }
-                else {
+                } else {
                     if(empty($prev_supplier_id) || $prev_supplier_id == $edit_id && empty($prev_gst_supplier_id) || $prev_gst_supplier_id == $edit_id) {
-
                         $getUniqueID = ""; $supplier_id =$edit_id;
                         $getUniqueID = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $edit_id, 'id');
                         if(preg_match("/^\d+$/", $getUniqueID)) {
@@ -542,8 +580,8 @@
                             }
                         
                             $columns = array(); $values = array();						
-                            $columns = array('creator_name','supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city');
-                            $values = array("'".$creator_name."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'");
+                            $columns = array('creator_name','supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city', 'raw_material_group_id');
+                            $values = array("'".$creator_name."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'", "'" . $raw_material_group_id . "'");
                             $user_update_id = $obj->UpdateSQL($GLOBALS['supplier_table'], $getUniqueID, $columns, $values, $action);
                             if(preg_match("/^\d+$/", $user_update_id)) {
                                 
