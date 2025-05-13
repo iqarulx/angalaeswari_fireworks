@@ -12,7 +12,7 @@
         }
     }
 
-    $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date("Y-m-d");
+    $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date("Y-m-d"); $current_date = date("Y-m-d");
 
     $customer_list = array();
 	$customer_list = $obj->getSupplierAgentContractorList();
@@ -56,7 +56,7 @@
                                             <div class="col-lg-2 col-md-3 col-12">
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
-                                                    <input type="date" name="to_date" class="form-control shadow-none" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" onchange="Javascript:table_listing_records_filter();checkDateCheck();" placeholder="">
+                                                    <input type="date" name="to_date" class="form-control shadow-none" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" onchange="Javascript:table_listing_records_filter();checkDateCheck();" placeholder="" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
                                                     <label>To Date</label>
                                                     </div>
                                                 </div> 

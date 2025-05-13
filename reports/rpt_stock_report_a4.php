@@ -69,7 +69,7 @@
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-        $total_records_list = $obj->getStockReportList($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '','');
+        $total_records_list = $obj->getStockReportList($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '');
     }
 
     $company_logo = $obj->getTableColumnValue($GLOBALS['company_table'], 'company_id', $GLOBALS['bill_company_id'], 'logo');

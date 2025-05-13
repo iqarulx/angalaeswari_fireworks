@@ -40,11 +40,6 @@
 			$msg = $basic_obj->UpdateSQL($table, $update_id, $columns, $values, $action);
 			return $msg;
 		}
-		public function UpdateClient($main_client_id, $merge_client_id) {
-			$msg = "";		
-			$msg = parent::UpdateClient($main_client_id, $merge_client_id);
-			return $msg;
-		}
 		public function getTableColumnValue($table, $column, $value, $return_value) {
 			$result = "";
 			$result = parent::getTableColumnValue($table, $column, $value, $return_value);
@@ -770,11 +765,11 @@
 			$list = $report_obj->getGroupList($group_type);
 			return $list;
 		}
-		public function getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $raw_semi_group_id) {
+		public function getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $raw_semi_group_id);
+			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
 			return $list;
 		}
 		public function getStockContainsList($product_id) {

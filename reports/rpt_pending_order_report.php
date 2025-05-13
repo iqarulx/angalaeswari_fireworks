@@ -240,7 +240,7 @@ if (!empty($total_records_list)) {
             $pdf->Cell(40,8,$total_current_stock_unit,1,0,'R',0);
         } else {
             $pdf->SetX(120);
-            $pdf->Cell(40,8,'-',1,1,'R',0);
+            $pdf->Cell(40,8,'-',1,0,'R',0);
         }
         if(!empty($total_need_order_unit)) {
             $pdf->SetX(160);

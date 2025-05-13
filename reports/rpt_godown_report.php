@@ -209,17 +209,21 @@
                             }
                             
                             if(preg_match('/^[0]+$/', $current_stock) || preg_match('/^[0]+$/', $current_stock_subunit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
-                               
-                                $pdf->SetX(10);
-                                $pdf->Cell(20,6,$s_no,1,0,'C',0);
-                                
-                                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
-                                    $product_name = "";
-                                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
-                                    $product_name = html_entity_decode($obj->encode_decode('decrypt', $product_name));
-                                    $pdf->Cell(60,6,$product_name,1,0,'C',0);
-                                } else {
-                                    $pdf->Cell(60,6,' - ',1,0,'C',0);
+                                if($str_product_id != $data['product_id']) {
+                                    $pdf->SetX(10);
+                                    $pdf->Cell(20,6,$s_no,0,0,'C',0);
+                                    
+                                    if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                                        $product_name = "";
+                                        $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                                        $product_name = html_entity_decode($obj->encode_decode('decrypt', $product_name));
+                                        $pdf->Cell(60,6,$product_name,0,0,'C',0);
+                                    } else {
+                                        $pdf->Cell(60,6,' - ',1,0,'C',0);
+                                    }
+                                }else{
+                                    $pdf->Cell(20,6,'',0,0,'C',0);
+                                    $pdf->Cell(60,6,'  ',0,0,'C',0);  
                                 }
                                
                                 if(!empty($row['case_contains']) && $row['case_contains'] != $GLOBALS['null_value']) {
@@ -248,7 +252,9 @@
                                     }
                                 }
                             
-                                $s_no++;
+                                if($str_product_id != $data['product_id']) {
+                                   $s_no++;
+                                }
                             
                             }
                         }

@@ -211,6 +211,7 @@
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_table'], $select_query);
 			}
+
 			return $list;
 		}
 

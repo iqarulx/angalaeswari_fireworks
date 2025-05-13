@@ -85,7 +85,7 @@
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '', '');
+        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '');
     }
 
 ?>
