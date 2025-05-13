@@ -87,8 +87,10 @@
         $pdf->Cell(190,7,'Godown Report ',1,1,'C',0);
         $pdf->SetX(10);
         $pdf->Cell(20,8,'#',1,0,'C',0);
-        $pdf->Cell(90,8,'Product',1,0,'C',0);
-        $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+        $pdf->Cell(60,8,'Product',1,0,'C',0);
+        $pdf->Cell(30,8,'Contains',1,0,'C',0);
+        $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+        $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
         $pdf->SetFont('Arial','',7);
         
         $y_axis=$pdf->GetY();
@@ -101,6 +103,7 @@
 
         if(!empty($total_records_list)) {
             $total_unit_stock = 0; $unit_name_array = []; $sub_unit_name_array = []; $total_unit_stock = 0; $total_subunit_stock = 0; $unit_name_array = []; $sub_unit_name_array = [];
+            $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0;
             foreach($total_records_list as $key => $data) {
                 $inward_unit = 0; $outward_unit = 0; $unit_name = ""; $subunit_name = ""; $outward_unit = 0; $outward_subunit = 0;
                 $index = $key + 1; 
@@ -108,9 +111,11 @@
                     $y = $pdf->GetY();
                     $pdf->SetY($y_axis);
                     $pdf->SetX(10);
-                    $pdf->Cell(20,276-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(90,276-$y_axis,'',1,0,'C',0);
-                    $pdf->Cell(80,276-$y_axis,'',1,1,'C',0);
+                    $pdf->Cell(20,275-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(60,275-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(30,275-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(40,275-$y_axis,'',1,0,'C',0);
+                    $pdf->Cell(40,275-$y_axis,'',1,1,'C',0);
 
                     $pdf->SetFont('Arial','B',10);
                     // $next_page = $pdf->PageNo() +1;
@@ -136,83 +141,176 @@
                     $pdf->Cell(190,7,'Godown Report ',1,1,'C',0);
                     $pdf->SetX(10);
                     $pdf->Cell(20,8,'#',1,0,'C',0);
-                    $pdf->Cell(90,8,'Product',1,0,'C',0);
-                    $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                    $pdf->Cell(60,8,'Product',1,0,'C',0);
+                    $pdf->Cell(30,8,'Contains',1,0,'C',0);
+                    $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+                    $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
                     $pdf->SetFont('Arial','',7);
 
                     $y_axis=$pdf->GetY();
                 }
-                $inward_unit = 0; $outward_unit = 0; $current_stock = "";
-                $inward_array = array(); $outward_array = array();
-                $inward_unit_stock = 0; $inward_subunit_stock = 0;
-                $outward_unit_stock = 0; $outward_subunit_stock = 0;
-                $current_unit_stock = 0; $current_subunit_stock = 0;
-                $subunit_need = 0; $unit_name = ""; $subunit_name = "";
-                $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_need');
-                $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
-                if($subunit_need == '1') {
-                    $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
-                }
 
-                if($unit_type == "Unit") {
-                    if($subunit_need == '1') {
-                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $data['product_id'], '', 1);
-                        $current_unit_stock = $current_stock_array[0];
-                        $current_subunit_stock = $current_stock_array[1];
-                        if(!empty($current_unit_stock)) {
-                            $current_stock = $current_unit_stock." ".($obj->encode_decode('decrypt', $unit_name));
-                            $unit_name_array[] = $unit_name;
-                            $total_unit_stock += $current_unit_stock;
-                        }
-                        if(!empty($current_subunit_stock)) {
-                            if(!empty($current_stock)) {
-                                $current_stock = $current_stock." ".$current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                $sub_unit_name_array[] = $subunit_name;
-                            } else {
-                                $current_stock = $current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                $sub_unit_name_array[] = $subunit_name;
-                            }
-                            $total_subunit_stock += $current_subunit_stock;
-                        }
-                    } else {
-                        $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
-                        $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
-                        $current_stock = $inward_unit - $outward_unit;
-                        $total_unit_stock += $current_stock;
-                        $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
-                        $unit_name_array[] = $unit_name;
-                    }
-                } else if($unit_type == "Subunit") {
-                    $inward_unit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                    $outward_unit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                    $current_stock = $inward_unit - $outward_unit;
-                    $total_subunit_stock += $current_stock;
-                    $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                    $sub_unit_name_array[] = $subunit_name;
-                }
+                $unit_name = ""; $subunit_name = ""; $subunit_need = 0;
+                $rate_per_unit = 0;
+                $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
+                $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
+                $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_need');
+                $product_group = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'group_id');
                 
-                if(preg_match('/^[0]+$/', $current_stock) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
-                    $pdf->SetX(10);
-                    $pdf->Cell(20,6,$s_no,0,0,'C',0);
-                    
-                    if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
-                        $product_name = "";
-                        $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
-                        $product_name = html_entity_decode($obj->encode_decode('decrypt', $product_name));
-                        $pdf->Cell(90,6,$product_name,0,0,'C',0);
-                    } else {
-                        $pdf->Cell(90,6,' - ',0,0,'C',0);
+                // $rate = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'sales_rate');
+                // $per = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'per');
+                $case_contains_list = array();
+                if(!empty($subunit_need) && $subunit_need == 1) {
+                    $case_contains_list = $obj->getCaseContainsList($data['product_id']);
+                }
+                $str_product_id = "";
+                if(!empty($case_contains_list)) {
+                    foreach($case_contains_list as $row) {
+                        if(!empty($row['case_contains']) && $row['case_contains'] != $GLOBALS['null_value']) {
+                            $inward_subunit = 0; $outward_subunit = 0; $total_rate = 0;
+                            $unit_rate = 0;
+                            $current_stock_subunit = 0;
+                            $inward_subunit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], $row['case_contains']);
+                            $outward_subunit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], $row['case_contains']);
+                            $current_stock_subunit = $inward_subunit - $outward_subunit;
+
+                            if(!empty($product_group)) {
+                                if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+                                    $rate_per_unit = $obj->getRawMaterialProductRate($data['product_id'], $row['case_contains']);
+                                }
+                            }
+
+                            $total_rate = $current_stock_subunit * $rate_per_unit;
+                            if($unit_type == "Subunit") {
+                                $total_current_subunit += $current_stock_subunit;
+                            }
+                            $current_stock_quotient = 0; $current_stock_remainder = 0;
+                            $current_stock = 0;
+                            $current_stock_quotient = floor($current_stock_subunit / $row['case_contains']);
+                            $current_stock_remainder = round(fmod($current_stock_subunit, $row['case_contains']));
+                            if(!empty($current_stock_quotient)) {
+                                if($unit_type == "Unit") {
+                                    $total_current_unit += $current_stock_quotient;
+                                }
+                                $current_stock = $current_stock_quotient." ".($obj->encode_decode('decrypt', $unit_name));
+                                $unit_name_array[] = $obj->encode_decode('decrypt', $unit_name);
+                            }
+                            if(!empty($current_stock_remainder)) {
+                                if($unit_type == "Unit") {
+                                    $total_current_subunit += $current_stock_remainder;
+                                }
+                                if(!empty($current_stock)) {
+                                    $current_stock = $current_stock." ".$current_stock_remainder." ".($obj->encode_decode('decrypt', $subunit_name));
+                                    $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
+                                } else {
+                                    $current_stock = $current_stock_remainder." ".($obj->encode_decode('decrypt', $subunit_name));
+                                    $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
+                                }
+                            }
+                            
+                            if(preg_match('/^[0]+$/', $current_stock) || preg_match('/^[0]+$/', $current_stock_subunit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                               
+                                $pdf->SetX(10);
+                                $pdf->Cell(20,6,$s_no,1,0,'C',0);
+                                
+                                if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                                    $product_name = "";
+                                    $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                                    $product_name = html_entity_decode($obj->encode_decode('decrypt', $product_name));
+                                    $pdf->Cell(60,6,$product_name,1,0,'C',0);
+                                } else {
+                                    $pdf->Cell(60,6,' - ',1,0,'C',0);
+                                }
+                               
+                                if(!empty($row['case_contains']) && $row['case_contains'] != $GLOBALS['null_value']) {
+                                    $pdf->Cell(30,6,$row['case_contains'],1,0,'C',0);
+                                } else {
+                                    $pdf->Cell(30,6,' - ',1,0,'C',0);
+                                }
+
+                                if($unit_type == "Subunit") {
+                                    $pdf->Cell(40,6,  $current_stock_subunit." ".($obj->encode_decode('decrypt', $subunit_name)),1,0,'C',0);
+                                    $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
+                                } else {
+                                    $pdf->Cell(40,6,$current_stock,1,0,'C',0);
+                                }
+
+                                if(!empty($product_group)) {
+                                    if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+                                        if($total_rate > 0) {
+                                            $pdf->Cell(40,6, "Rs." . number_format($total_rate),1,1,'R',0);
+                                            $total_amount += $total_rate;
+                                        } else {
+                                            $pdf->Cell(40,6, " - ",1,1,'R',0);
+                                        }
+                                    } else {
+                                        $pdf->Cell(40,6, " - ",1,1,'R',0);
+                                    }
+                                }
+                            
+                                $s_no++;
+                            
+                            }
+                        }
+                        $str_product_id = $data['product_id'];
                     }
-                    
-                    if(!empty($current_stock)) {
-                        $pdf->Cell(80,6, $current_stock,0,1,'R',0);
-                    } else {
-                        $pdf->Cell(80,6,' - ',0,1,'R',0);
+                } else {
+                    $inward_unit = 0; $outward_unit = 0; $total_rate = 0;
+                    $current_stock_unit = 0;
+                    $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
+                    $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
+                    $current_stock_unit = $inward_unit - $outward_unit;
+                    if(!empty($current_stock_unit)) {
+                        $total_current_unit += $current_stock_unit;
                     }
-                    $s_no++;
+
+                    if(!empty($current_stock_unit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                        $pdf->SetX(10);
+                        $pdf->Cell(20,6,$s_no,1,0,'C',0);
+                        
+                        if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
+                            $product_name = "";
+                            $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                            $product_name = html_entity_decode($obj->encode_decode('decrypt', $product_name));
+                            $pdf->Cell(60,6,$product_name,1,0,'C',0);
+                        } else {
+                            $pdf->Cell(60,6,' - ',1,0,'C',0);
+                        }
+
+                        $pdf->Cell(30,6,' - ',1,0,'C',0);
+                        
+
+                        if($current_stock_unit > 0) {
+                            if(!empty($product_group)) {
+                               if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+                                   $rate_per_unit = $obj->getRawMaterialProductRate($data['product_id'], '');
+                               }
+                           }
+                           $total_rate = $current_stock_unit * $rate_per_unit;
+                           $pdf->Cell(40,6,$current_stock_unit." ".($obj->encode_decode('decrypt', $unit_name)),1,0,'C',0);
+                           $unit_name_array[] = $obj->encode_decode('decrypt', $unit_name);
+                        } else {
+                            $pdf->Cell(40,6,"-",1,0,'C',0);  
+                        }
+
+                        if(!empty($product_group)) {
+                            if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d") {
+                                if($total_rate > 0) {
+                                    $pdf->Cell(40,6, "Rs." . number_format($total_rate),1,1,'R',0);
+                                    $total_amount += $total_rate;
+                                } else {
+                                    $pdf->Cell(40,6, " - ",1,1,'R',0);
+                                }
+                            } else {
+                                $pdf->Cell(40,6, " - ",1,1,'R',0);
+                            }
+                        }
+                        $s_no++;
+
+                    }
                 }
             }
-
+    
             $end_y = $pdf->GetY();
 
             $last_page_count = $s_no - $last_count;
@@ -223,8 +321,10 @@
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
                 $pdf->Cell(20,270-$y_axis,'',1,0,'C',0);
-                $pdf->Cell(90,270-$y_axis,'',1,0,'C',0);
-                $pdf->Cell(80,270-$y_axis,'',1,1,'C',0);
+                $pdf->Cell(60,270-$y_axis,'',1,0,'C',0);
+                $pdf->Cell(30,270-$y_axis,'',1,0,'C',0);
+                $pdf->Cell(40,270-$y_axis,'',1,0,'C',0);
+                $pdf->Cell(40,270-$y_axis,'',1,1,'C',0);
         
                 $pdf->SetFont('Arial','B',9);
         
@@ -250,8 +350,10 @@
                 $pdf->Cell(190,7,'Godown Report )',1,1,'C',0);
                 $pdf->SetX(10);
                 $pdf->Cell(20,8,'#',1,0,'C',0);
-                $pdf->Cell(90,8,'Product',1,0,'C',0);
-                $pdf->Cell(80,8,'Current Stock',1,1,'C',0);
+                $pdf->Cell(60,8,'Product',1,0,'C',0);
+                $pdf->Cell(30,8,'Contains',1,0,'C',0);
+                $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+                $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
                 $pdf->SetFont('Arial','',7);
                 
                 $y_axis=$pdf->GetY();
@@ -260,41 +362,43 @@
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
                 $pdf->Cell(20,($content_height-$y_axis),'',1,0);
-                $pdf->Cell(90,($content_height-$y_axis),'',1,0);
-                $pdf->Cell(80,($content_height-$y_axis),'',1,1);
+                $pdf->Cell(60,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(30,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(40,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(40,($content_height-$y_axis),'',1,1);
                 $pdf->SetY($content_height);
             } else {
                 $content_height = 270 - $footer_height;
                 $pdf->SetY($y_axis);
                 $pdf->SetX(10);
                 $pdf->Cell(20,($content_height-$y_axis),'',1,0);
-                $pdf->Cell(90,($content_height-$y_axis),'',1,0);
-                $pdf->Cell(80,($content_height-$y_axis),'',1,1);
+                $pdf->Cell(60,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(30,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(40,($content_height-$y_axis),'',1,0);
+                $pdf->Cell(40,($content_height-$y_axis),'',1,1);
             }
             
             $pdf->SetFont('Arial','B',8);
         
             $total_stock_display = "";
-            if(!empty($total_unit_stock)) {
-                $total_stock_display .= $total_unit_stock;
-
+            if(!empty($total_current_unit)) {
+                $total_stock_display .= $total_current_unit;
                 if(!empty($unit_name_array)) {
                     $unique_unit_names = array_unique($unit_name_array);
                     if(count($unique_unit_names) == 1) {
-                        $total_stock_display .= " " . $obj->encode_decode('decrypt', $unique_unit_names[0]);
+                        $total_stock_display .= $unique_unit_names[0];
                     }
                 }
             }
-            if(!empty($total_unit_stock) && !empty($total_subunit_stock)) {
+            if(!empty($total_current_unit) && !empty($total_current_subunit)) {
                 $total_stock_display .= " + ";
             }
-            if(!empty($total_subunit_stock)) {
-                $total_stock_display .= $total_subunit_stock;
-
+            if(!empty($total_current_subunit)) {
+                $total_stock_display .= $total_current_subunit;
                 if(!empty($sub_unit_name_array)) {
                     $unique_sub_unit_names = array_unique($sub_unit_name_array);
                     if(count($unique_sub_unit_names) == 1) {
-                        $total_stock_display .= " " . $obj->encode_decode('decrypt', $unique_sub_unit_names[0]);
+                        $total_stock_display .= $unique_sub_unit_names[0];
                     }
                 }
             }
@@ -303,11 +407,21 @@
             $pdf->Cell(110,8,'Total Stock',1,0,'R',0);
             if(!empty($total_stock_display)){
                 $pdf->SetX(120);
-                $pdf->Cell(80,8,$total_stock_display,1,1,'R',0);
+                $pdf->Cell(40,8,$total_stock_display,1,0,'R',0);
             } else{
                 $pdf->SetX(120);
-                $pdf->Cell(80,8,' 0 ',1,1,'R',0);
+                $pdf->Cell(40,8,' 0 ',1,0,'R',0);
             }
+
+            if(!empty($total_amount)) {
+                $pdf->SetX(160);
+                $pdf->Cell(40,8, "Rs." . number_format($total_amount, 0),1,1,'R',0);
+            } else {
+                $pdf->SetX(160);
+                $pdf->Cell(40,8,' - ',1,1,'R',0);
+            }
+
+
         } else {
             $pdf->Cell(190,8,'Sorry! No records found',1,1,'C',0);
         }

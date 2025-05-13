@@ -1,17 +1,4 @@
-<?php 
-	$page_title = "Current Stock Report";
-	include("include_user_check.php");
-    include("include_incharger_access.php");
-
-	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
-    $login_staff_id = "";
-    if(isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && !empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
-        if(!empty($GLOBALS['user_type']) && $GLOBALS['user_type'] != $GLOBALS['admin_user_type']) {
-            $login_staff_id = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
-            $permission_module = $GLOBALS['reports_module'];
-            include("permission_check.php");
-        }
-    }
+<?php
     $product_id = ""; $group_id = ""; $magazine_id = ""; $unit_type = ""; $stock_type = ""; $case_contains = "";
     
     if(!empty($login_user_factory_id)) {
@@ -92,28 +79,20 @@
         $total_records_list = $obj->getStockReportList($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '', '');
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title><?php if(!empty($page_title)) { echo $page_title; } ?></title>
-	<?php 
-	include "link_style_script.php"; ?>
-    <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
-</head>	
-<body>
-<?php include "header.php"; ?>
-<!--Right Content-->
-<div class="main-content">
+
+<div class="border p-3 main-content" style="max-height: 400px; overflow-y: auto;">
     <div class="page-content">
         <div class="container-fluid">
             <div class="row mx-0">
                 <div class="col-12">
+                    <div class="bg-googleplus card-header">
+                        <h5 class="text-dark">Current Stock Report</h5>
+                    </div>
                     <form name="current_stock_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
-                               
                                 <div class="col-lg-3 col-md-3 col-4">
-                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_stock_report_a4.php?filter_finished_group_id=<?php echo $finished_group_id; ?>&filter_magazine_id=<?php echo $magazine_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_stock_report_a4.php?filter_finished_group_id=<?php echo $filter_finished_group_id; ?>&filter_magazine_id=<?php echo $magazine_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
                                     <button class="btn btn-success" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
                                     <?php if(!empty($product_id)) { ?>
                                         <button class="btn btn-danger" style="font-size:11px;" type="button" onclick="window.open('current_stock_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>
@@ -755,8 +734,7 @@
         </div>
     </div>
 </div>
-<!--Right Content End-->
-<?php include "footer.php"; ?>
+
 <script type="text/javascript">
     $(document).ready(function(){
         $("#current_stock_report").addClass("active");

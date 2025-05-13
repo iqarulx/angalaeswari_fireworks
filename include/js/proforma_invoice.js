@@ -958,7 +958,6 @@ function roundToNearest(input) {
 //                     var amount = 0; var discount = ""; var discounted_amount = 0; var tax_percentage = ""; var tax = "";
 //                     var tax_value = 0;
 //                     amount = jQuery(this).find('input[name="amount[]"]').val();
-//                     console.log("amnt 3 :" + amount);
 //                     amount = amount.replace(/ /g, '');
 //                     amount = amount.trim();
 //                     if (jQuery(this).find('select[name="product_tax[]"]').length > 0) {
@@ -1967,8 +1966,6 @@ function CalProductAmount() {
     if (selected_amount.length > 0) {
         selected_amount.val(total_amount.toFixed(2));
     }
-
-    console.log(selected_amount);
 }
 
 // function CalProductAmount() {
@@ -2386,8 +2383,6 @@ function GetProdetails() {
                     url: post_url, success: function (result) {
                         if (result != "") {
                             result = result.split("$$$");
-
-                            console.log(result);
 
                             if ($("select[name='selected_unit_type']").length > 0) {
                                 $("select[name='selected_unit_type']").html(result[0]);

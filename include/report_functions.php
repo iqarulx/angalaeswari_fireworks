@@ -27,23 +27,23 @@
 			}
 			if(!empty($bill_type)){
 				if(!empty($where)) {
-					$where .= " bill_type = '".$bill_type."' AND";
+					$where .= " bill_type = '" . $bill_type . "' AND";
 				} else {
-					$where = " bill_type = '".$bill_type."' AND";
+					$where = " bill_type = '" . $bill_type . "' AND";
 				}
 			}
 			if(!empty($party_type)){
 				if(!empty($where)) {
-					$where .= " party_type = '".$party_type."' AND";
+					$where .= " party_type = '" . $party_type . "' AND";
 				} else {
-					$where = " party_type = '".$party_type."' AND";
+					$where = " party_type = '" . $party_type . "' AND";
 				}
 			}
 	
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']."  WHERE ".$where." deleted = '0' GROUP BY party_id ORDER BY created_date_time ASC ";
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . "  WHERE " . $where . " deleted = '0' GROUP BY party_id ORDER BY created_date_time ASC ";
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']."  WHERE deleted = '0' GROUP BY party_id ORDER BY created_date_time ASC";
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . "  WHERE deleted = '0' GROUP BY party_id ORDER BY created_date_time ASC";
 			}
 
 			if(!empty($select_query)) {
@@ -58,17 +58,17 @@
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND bill_date >= '".$from_date."'";
+					$where = $where . " AND bill_date >= '" . $from_date . "'";
 				} else {
-					$where = "bill_date >= '".$from_date."'";
+					$where = "bill_date >= '" . $from_date . "'";
 				}
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND bill_date <= '".$to_date."'";
+					$where = $where . " AND bill_date <= '" . $to_date . "'";
 				} else {
-					$where = "bill_date <= '".$to_date."' AND";
+					$where = "bill_date <= '" . $to_date . "' AND";
 				}
 			}
 			if(!empty($filter_party_type)){ 
@@ -85,51 +85,51 @@
 					$filter_party_type = "Customer";
 				}
 				if(!empty($where)) {
-					$where = $where." AND party_type = '".$filter_party_type."' ";
+					$where = $where . " AND party_type = '" . $filter_party_type . "' ";
 				} else {
-					$where = "party_type = '".$filter_party_type."'";
+					$where = "party_type = '" . $filter_party_type . "'";
 				}
 			}
 			if(!empty($filter_party_id)){ 
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$filter_party_id."' ";
+					$where = $where . " AND party_id = '" . $filter_party_id . "' ";
 				} else {
-					$where = "party_id = '".$filter_party_id."'";
+					$where = "party_id = '" . $filter_party_id . "'";
 				}
 			}
 
 			if(!empty($filter_category_id)){ 
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$filter_category_id."' ";
+					$where = $where . " AND party_id = '" . $filter_category_id . "' ";
 				} else {
-					$where = "party_id = '".$filter_category_id."'";
+					$where = "party_id = '" . $filter_category_id . "'";
 				}
 			}
 
 			if(!empty($bank_id)){ 
 				if(!empty($where)) {
-					$where = $where." AND bank_id = '".$bank_id."' ";
+					$where = $where . " AND bank_id = '" . $bank_id . "' ";
 				} else {
-					$where = "bank_id = '".$bank_id."'";
+					$where = "bank_id = '" . $bank_id . "'";
 				}
 			}
 
 			if(!empty($payment_mode_id)){ 
 				if(!empty($where)) {
-					$where = $where." AND payment_mode_id = '".$payment_mode_id."' ";
+					$where = $where . " AND payment_mode_id = '" . $payment_mode_id . "' ";
 				} else {
-					$where = "payment_mode_id = '".$payment_mode_id."'";
+					$where = "payment_mode_id = '" . $payment_mode_id . "'";
 				}
 			}
 
 			if($filter_bill_type == 1){
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_type = 'Voucher' AND deleted = '0' ORDER BY bill_date ASC"; 	
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " AND bill_type = 'Voucher' AND deleted = '0' ORDER BY bill_date ASC"; 	
 			} else if($filter_bill_type == 2){
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_type = 'Receipt' AND deleted = '0' ORDER BY bill_date ASC"; 	
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " AND bill_type = 'Receipt' AND deleted = '0' ORDER BY bill_date ASC"; 	
 			} else if($filter_bill_type == 3){
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_type = 'Expense' AND deleted = '0' ORDER BY bill_date ASC"; 	
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " AND bill_type = 'Expense' AND deleted = '0' ORDER BY bill_date ASC"; 	
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['payment_table']." WHERE ".$where." AND bill_number != '".$GLOBALS['null_value']."' AND bill_type IN ('voucher', 'expense', 'receipt')  AND deleted = '0' ORDER BY bill_date ASC";
+				$select_query = "SELECT * FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " AND bill_number != '" . $GLOBALS['null_value'] . "' AND bill_type IN ('voucher', 'expense', 'receipt')  AND deleted = '0' ORDER BY bill_date ASC";
 			}
 
 			$reports = $this->getQueryRecords('', $select_query);
@@ -142,9 +142,9 @@
 			$encrypted_product_type = $this->encode_decode('encrypt',$finish_product_type);
 	
 			if($group_type == '1') {
-				$select_query = "SELECT * FROM ".$GLOBALS['group_table']." WHERE lower_case_name != '".$encrypted_product_type."' AND deleted = '0'";
+				$select_query = "SELECT * FROM " . $GLOBALS['group_table'] . " WHERE lower_case_name != '" . $encrypted_product_type . "' AND deleted = '0'";
 			} else if($group_type == '2') {
-				$select_query = "SELECT * FROM ".$GLOBALS['group_table']." WHERE lower_case_name = '".$encrypted_product_type."' AND deleted = '0'";
+				$select_query = "SELECT * FROM " . $GLOBALS['group_table'] . " WHERE lower_case_name = '" . $encrypted_product_type . "' AND deleted = '0'";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords('', $select_query);
@@ -156,57 +156,57 @@
 			$select_query = ""; $list = array(); $where = "";
 			if(!empty($group_id)) {
 				if(!empty($where)) {
-					$where = $where." AND group_id = '".$group_id."'";
+					$where = $where . " AND group_id = '" . $group_id . "'";
 				} else {
-					$where = "group_id = '".$group_id."'";
+					$where = "group_id = '" . $group_id . "'";
 				}
 			}
 			if(!empty($godown_id)) {
 				if(!empty($where)) {
-					$where = $where." AND godown_id = '".$godown_id."'";
+					$where = $where . " AND godown_id = '" . $godown_id . "'";
 				} else {
-					$where = "godown_id = '".$godown_id."'";
+					$where = "godown_id = '" . $godown_id . "'";
 				}
 			}
 			if(!empty($magazine_id)) {
 				if(!empty($where)) {
-					$where = $where." AND magazine_id = '".$magazine_id."'";
+					$where = $where . " AND magazine_id = '" . $magazine_id . "'";
 				} else {
-					$where = "magazine_id = '".$magazine_id."'";
+					$where = "magazine_id = '" . $magazine_id . "'";
 				}
 			}
 			if(!empty($product_id)) {
 				if(!empty($where)) {
-					$where = $where." AND product_id = '".$product_id."'";
+					$where = $where . " AND product_id = '" . $product_id . "'";
 				} else {
-					$where = "product_id = '".$product_id."'";
+					$where = "product_id = '" . $product_id . "'";
 				}
 			}
 			if(!empty($stock_type)) {
 				if(!empty($where)) {
-					$where = $where." AND stock_type = '".$stock_type."'";
+					$where = $where . " AND stock_type = '" . $stock_type . "'";
 				} else {
-					$where = "stock_type = '".$stock_type."'";
+					$where = "stock_type = '" . $stock_type . "'";
 				}
 			}
 			if(!empty($case_contains)) {
 				if(!empty($where)) {
-					$where = $where." AND case_contains = '".$case_contains."'";
+					$where = $where . " AND case_contains = '" . $case_contains . "'";
 				} else {
-					$where = "case_contains = '".$case_contains."'";
+					$where = "case_contains = '" . $case_contains . "'";
 				}
 			}
 			if(!empty($contractor_id)) {
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$contractor_id."'";
+					$where = $where . " AND party_id = '" . $contractor_id . "'";
 				} else {
-					$where = "party_id = '".$contractor_id."'";
+					$where = "party_id = '" . $contractor_id . "'";
 				}
 			}
 			if(!empty($where)) {
-				 $select_query = "SELECT * FROM ".$GLOBALS['stock_table']." WHERE ".$where." AND deleted = '0' ORDER BY id ASC";	
+				 $select_query = "SELECT * FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " AND deleted = '0' ORDER BY id ASC";	
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['stock_table']." WHERE deleted = '0' ORDER BY id ASC";
+				$select_query = "SELECT * FROM " . $GLOBALS['stock_table'] . " WHERE deleted = '0' ORDER BY id ASC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_table'], $select_query);
@@ -216,7 +216,7 @@
 
 		public function getProductStockTransactionExist($product_id) {
 			$select_query = "";
-			$select_query = "SELECT COUNT(*) as count FROM ".$GLOBALS['stock_table']." WHERE product_id = '" . $product_id . "' AND deleted = '0'";
+			$select_query = "SELECT COUNT(*) as count FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND deleted = '0'";
 			
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_table'], $select_query);
@@ -231,7 +231,7 @@
 		public function getStockContainsList($product_id) {
 			$select_query = ""; $list = array();
 			if(!empty($product_id)) {
-				$select_query = "SELECT DISTINCT(case_contains) as case_contains FROM ".$GLOBALS['stock_table']." WHERE product_id = '".$product_id."' AND deleted = '0'";
+				$select_query = "SELECT DISTINCT(case_contains) as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			return $list;
@@ -242,13 +242,13 @@
 
             if(!empty($group_id)) {
                 if(!empty($where)) {
-                    $where = $where." group_id = '".$group_id."' AND ";
+                    $where = $where . " group_id = '" . $group_id . "' AND ";
                 } else {
-                    $where = "group_id = '".$group_id."' AND ";
+                    $where = "group_id = '" . $group_id . "' AND ";
                 }
             }
     
-             $select_query = "SELECT DISTINCT(product_id) as product_id,party_id FROM ".$GLOBALS['stock_table']." WHERE ".$where." stock_type = 'Consumption Entry' AND deleted = '0'";
+             $select_query = "SELECT DISTINCT(product_id) as product_id,party_id FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " stock_type = 'Consumption Entry' AND deleted = '0'";
             $list = $this->getQueryRecords('', $select_query);
             return $list;
         }
@@ -257,9 +257,9 @@
 			$select_query = ""; $list = array(); $quantity = 0;
 			if(!empty($product_id)) {
 				if($unit_type == "Unit") {
-					$select_query = "SELECT SUM(outward_unit) as quantity FROM ".$GLOBALS['stock_table']." WHERE product_id = '".$product_id."' AND stock_type = 'Consumption Entry' AND deleted = '0'";
+					$select_query = "SELECT SUM(outward_unit) as quantity FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND stock_type = 'Consumption Entry' AND deleted = '0'";
 				} else if($unit_type == "Subunit") {
-					$select_query = "SELECT SUM(outward_subunit) as quantity FROM ".$GLOBALS['stock_table']." WHERE product_id = '".$product_id."' AND stock_type = 'Consumption Entry' AND deleted = '0'";
+					$select_query = "SELECT SUM(outward_subunit) as quantity FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND stock_type = 'Consumption Entry' AND deleted = '0'";
 				}
 			}
 			if(!empty($select_query)) {
@@ -301,33 +301,33 @@
 			$list = array(); $select_query = ""; $where = "";
 			if(!empty($filter_supplier_id)) {
 				if(!empty($where)) {
-					$where = $where." supplier_id = '".$filter_supplier_id."' AND ";
+					$where = $where . " supplier_id = '" . $filter_supplier_id . "' AND ";
 				} else {
-					$where = "supplier_id = '".$filter_supplier_id."' AND ";
+					$where = "supplier_id = '" . $filter_supplier_id . "' AND ";
 				}
 			}
 
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." purchase_entry_date >= '".$from_date."' AND"; 
+					$where = $where . " purchase_entry_date >= '" . $from_date . "' AND"; 
 				} else {
-					$where = "purchase_entry_date >= '".$from_date."' AND ";
+					$where = "purchase_entry_date >= '" . $from_date . "' AND ";
 				}
 			}
 
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." purchase_entry_date <= '".$to_date."' AND "; 	
+					$where = $where . " purchase_entry_date <= '" . $to_date . "' AND "; 	
 				} else {
-					$where = "purchase_entry_date <= '".$to_date."' AND ";
+					$where = "purchase_entry_date <= '" . $to_date . "' AND ";
 				}
 			}
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where."  deleted = '0'  AND gst_option = '1' ORDER BY id DESC";	
+				$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . "  deleted = '0'  AND gst_option = '1' ORDER BY id DESC";	
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE deleted = '0' AND gst_option ='1' ORDER BY id DESC";	
+				$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE deleted = '0' AND gst_option ='1' ORDER BY id DESC";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['purchase_entry_table'], $select_query);
@@ -344,55 +344,55 @@
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND bill_date >= '".$from_date."'";
+					$where = $where . " AND bill_date >= '" . $from_date . "'";
 				} else {
-					$where = "bill_date >= '".$from_date."'";
+					$where = "bill_date >= '" . $from_date . "'";
 				}
 			}
 		
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND bill_date <= '".$to_date."'";
+					$where = $where . " AND bill_date <= '" . $to_date . "'";
 				} else {
-					$where = "bill_date <= '".$to_date."'";
+					$where = "bill_date <= '" . $to_date . "'";
 				}
 			}
 		
 			if(!empty($party_id)) {
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$party_id."'";
+					$where = $where . " AND party_id = '" . $party_id . "'";
 				} else {
-					$where = "party_id = '".$party_id."'";
+					$where = "party_id = '" . $party_id . "'";
 				}
 			}
 		
 			if(!empty($payment_mode_id)){
 				if(!empty($where)){
-					$where .= "AND FIND_IN_SET('".$payment_mode_id."' ,payment_mode_id) ";
+					$where .= "AND FIND_IN_SET('" . $payment_mode_id . "' ,payment_mode_id) ";
 				} else{
-					$where = "FIND_IN_SET('".$payment_mode_id."' ,payment_mode_id) ";
+					$where = "FIND_IN_SET('" . $payment_mode_id . "' ,payment_mode_id) ";
 				}
 			}
 			
 			$select_query = "";
 				$select_query = "SELECT bill_id,bill_number, bill_date,agent_id, party_id, party_name, amount, payment_type, type,payment_mode_id,bank_id FROM ( 
 			
-				(SELECT vo.voucher_id as bill_id,vo.voucher_number as bill_number, vo.voucher_date as bill_date, '' as agent_id,vo.party_id as party_id, party_name as party_name, vo.total_amount as amount, payment_mode_name as payment_type, 'Voucher' as type,vo.payment_mode_id as payment_mode_id,vo.bank_id as bank_id FROM ".$GLOBALS['voucher_table']." as vo WHERE vo.deleted = '0' ORDER BY vo.created_date_time ASC) 
+				(SELECT vo.voucher_id as bill_id,vo.voucher_number as bill_number, vo.voucher_date as bill_date, '' as agent_id,vo.party_id as party_id, party_name as party_name, vo.total_amount as amount, payment_mode_name as payment_type, 'Voucher' as type,vo.payment_mode_id as payment_mode_id,vo.bank_id as bank_id FROM " . $GLOBALS['voucher_table'] . " as vo WHERE vo.deleted = '0' ORDER BY vo.created_date_time ASC) 
 				UNION ALL
-				(SELECT re.receipt_id as bill_id,re.receipt_number as bill_number, re.receipt_date as bill_date,'' as agent_id, re.party_id as party_id, party_name as party_name, re.total_amount as amount, payment_mode_name as payment_type,  'Receipt' as type,re.payment_mode_id as payment_mode_id,re.bank_id as bank_id FROM ".$GLOBALS['receipt_table']." as re WHERE re.deleted = '0' ORDER BY re.created_date_time ASC) 
+				(SELECT re.receipt_id as bill_id,re.receipt_number as bill_number, re.receipt_date as bill_date,'' as agent_id, re.party_id as party_id, party_name as party_name, re.total_amount as amount, payment_mode_name as payment_type,  'Receipt' as type,re.payment_mode_id as payment_mode_id,re.bank_id as bank_id FROM " . $GLOBALS['receipt_table'] . " as re WHERE re.deleted = '0' ORDER BY re.created_date_time ASC) 
 				UNION ALL 
-				(SELECT py.expense_id as bill_id,py.expense_number as bill_number, (py.expense_date) as bill_date,'' as agent_id,py.narration as party_id, narration as party_name, py.total_amount as amount,payment_mode_name as payment_type,  'Expense' as type,py.payment_mode_id as payment_mode_id,'' as bank_id FROM ".$GLOBALS['expense_table']." as py WHERE py.deleted = '0'  ORDER BY py.id ASC)
+				(SELECT py.expense_id as bill_id,py.expense_number as bill_number, (py.expense_date) as bill_date,'' as agent_id,py.narration as party_id, narration as party_name, py.total_amount as amount,payment_mode_name as payment_type,  'Expense' as type,py.payment_mode_id as payment_mode_id,'' as bank_id FROM " . $GLOBALS['expense_table'] . " as py WHERE py.deleted = '0'  ORDER BY py.id ASC)
 				   UNION ALL 
-				(SELECT e.estimate_id as bill_id,e.estimate_number as bill_number, (e.estimate_date) as bill_date,e.agent_id as agent_id,e.customer_id as party_id, e.customer_name_mobile_city as party_name, e.bill_total as amount,'' as payment_type,  'Estimate' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['estimate_table']." as e WHERE e.deleted = '0'  ORDER BY e.id ASC)
+				(SELECT e.estimate_id as bill_id,e.estimate_number as bill_number, (e.estimate_date) as bill_date,e.agent_id as agent_id,e.customer_id as party_id, e.customer_name_mobile_city as party_name, e.bill_total as amount,'' as payment_type,  'Estimate' as type,'' as payment_mode_id,'' as bank_id FROM " . $GLOBALS['estimate_table'] . " as e WHERE e.deleted = '0'  ORDER BY e.id ASC)
 				UNION ALL 
-				(SELECT pb.purchase_entry_id as bill_id,pb.purchase_entry_number as bill_number, (pb.purchase_entry_date) as bill_date,'' as agent_id,pb.supplier_id as party_id, pb.supplier_name_mobile_city as party_name, pb.total_amount as amount,'' as payment_type,  'Purchase Entry' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['purchase_entry_table']." as pb WHERE pb.deleted = '0'  ORDER BY pb.id ASC)
-				) as g where ".$where." ORDER BY bill_date DESC";
+				(SELECT pb.purchase_entry_id as bill_id,pb.purchase_entry_number as bill_number, (pb.purchase_entry_date) as bill_date,'' as agent_id,pb.supplier_id as party_id, pb.supplier_name_mobile_city as party_name, pb.total_amount as amount,'' as payment_type,  'Purchase Entry' as type,'' as payment_mode_id,'' as bank_id FROM " . $GLOBALS['purchase_entry_table'] . " as pb WHERE pb.deleted = '0'  ORDER BY pb.id ASC)
+				) as g where " . $where . " ORDER BY bill_date DESC";
 			    
 				// UNION ALL
-				// (SELECT pb.purchase_bill_id as bill_id,pb.purchase_bill_number as bill_number, (pb.purchase_bill_date) as bill_date, pb.party_id as party_id, pb.total_amount as amount, '' as payment_type, 'purchase' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['purchase_bill_table']." as pb WHERE pb.deleted = '0' AND pb.cancelled='0' AND pb.bill_company_id = '".$GLOBALS['bill_company_id']."' ORDER BY pb.id ASC)
+				// (SELECT pb.purchase_bill_id as bill_id,pb.purchase_bill_number as bill_number, (pb.purchase_bill_date) as bill_date, pb.party_id as party_id, pb.total_amount as amount, '' as payment_type, 'purchase' as type,'' as payment_mode_id,'' as bank_id FROM " . $GLOBALS['purchase_bill_table'] . " as pb WHERE pb.deleted = '0' AND pb.cancelled='0' AND pb.bill_company_id = '" . $GLOBALS['bill_company_id'] . "' ORDER BY pb.id ASC)
 				// UNION ALL 
-				// (SELECT est.estimate_id as bill_id,est.estimate_number as bill_number, (est.estimate_date) as bill_date, est.party_id as party_id, est.total_amount as amount,'' as payment_type, 'estimate' as type,'' as payment_mode_id,'' as bank_id FROM ".$GLOBALS['estimate_table']." as est WHERE est.deleted = '0' AND est.cancelled='0' AND est.bill_company_id = '".$GLOBALS['bill_company_id']."' ORDER BY est.id ASC)  
+				// (SELECT est.estimate_id as bill_id,est.estimate_number as bill_number, (est.estimate_date) as bill_date, est.party_id as party_id, est.total_amount as amount,'' as payment_type, 'estimate' as type,'' as payment_mode_id,'' as bank_id FROM " . $GLOBALS['estimate_table'] . " as est WHERE est.deleted = '0' AND est.cancelled='0' AND est.bill_company_id = '" . $GLOBALS['bill_company_id'] . "' ORDER BY est.id ASC)  
 		
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords('', $select_query);
@@ -405,14 +405,14 @@
 			$total_records_list =array();
 			$select_query ="";
 			if($type == '1') {
-				$select_query ="SELECT agent_id as party_id,agent_name as party_name,city FROM ".$GLOBALS['agent_table']." WHERE deleted ='0'";
+				$select_query ="SELECT agent_id as party_id,agent_name as party_name,city FROM " . $GLOBALS['agent_table'] . " WHERE deleted ='0'";
 			} else if($type == '2') {
-				$select_query ="SELECT supplier_id as party_id,supplier_name as party_name,city FROM ".$GLOBALS['supplier_table']." WHERE deleted ='0'";
+				$select_query ="SELECT supplier_id as party_id,supplier_name as party_name,city FROM " . $GLOBALS['supplier_table'] . " WHERE deleted ='0'";
 			} else if($type == '3') {
-				$select_query ="SELECT contractor_id as party_id,contractor_name as party_name,name_mobile_city as city FROM ".$GLOBALS['contractor_table']." WHERE deleted ='0'";
+				$select_query ="SELECT contractor_id as party_id,contractor_name as party_name,name_mobile_city as city FROM " . $GLOBALS['contractor_table'] . " WHERE deleted ='0'";
 			}
 			else if($type == '4') {
-				$select_query ="SELECT customer_id as party_id,customer_name as party_name,city FROM ".$GLOBALS['customer_table']." WHERE deleted ='0'";
+				$select_query ="SELECT customer_id as party_id,customer_name as party_name,city FROM " . $GLOBALS['customer_table'] . " WHERE deleted ='0'";
 			}
 			// echo $select_query;
 			$total_records_list = $this->getQueryRecords('',$select_query);
@@ -426,15 +426,15 @@
 			if(!empty($type_str) && !empty($party_id)){
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
-					$bill_where = "bill_date >='".$from_date."' AND ";
+					$bill_where = "bill_date >='" . $from_date . "' AND ";
 
 				}
 				if(!empty($to_date)) {
 					$to_date = date("Y-m-d",strtotime($to_date));
 					if(empty($bill_where)) {
-						$bill_where = "bill_date <='".$to_date."' AND ";
+						$bill_where = "bill_date <='" . $to_date . "' AND ";
 					} else {
-						$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
+						$bill_where = $bill_where . "bill_date <='" . $to_date . "' AND ";
 					}
 				}
 
@@ -448,7 +448,7 @@
 				foreach ($type_arr as $type) {
 					$type_lower = $type;
 					if($type_lower ==  "Agent") {
-						$select_query = "SELECT agent_id,agent_name, mobile_number FROM ".$GLOBALS['agent_table']." WHERE agent_id = '".$party_id."' AND deleted = '0' ";
+						$select_query = "SELECT agent_id,agent_name, mobile_number FROM " . $GLOBALS['agent_table'] . " WHERE agent_id = '" . $party_id . "' AND deleted = '0' ";
 						$list = $this->getQueryRecords($GLOBALS['agent_table'], $select_query);
 						if(!empty($filter_agent_party)){
 							if(!empty($list)) {
@@ -456,7 +456,7 @@
 									if(!empty($data['agent_id'])) {
 										$bill_list = array();
 										$payment_query = "SELECT bill_id,bill_date, bill_number,bill_type, 
-										SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where."  party_id = '".$filter_agent_party."' AND  deleted = '0'  AND  bill_date >= '".$from_date."' AND bill_date <= '".$to_date."' AND bill_type !='Customer Opening Balance' GROUP BY bill_number";
+										SUM(credit) as credit,SUM(debit) as debit FROM " . $GLOBALS['payment_table'] . " WHERE " . $bill_where . "  party_id = '" . $filter_agent_party . "' AND  deleted = '0'  AND  bill_date >= '" . $from_date . "' AND bill_date <= '" . $to_date . "' AND bill_type !='Customer Opening Balance' GROUP BY bill_number";
 
 										$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
@@ -471,7 +471,7 @@
 										$bill_list = array();
 
 										$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
-										SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." agent_id = '".$data['agent_id']."' AND bill_type !='Customer Opening Balance' AND bill_type !='Agent Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
+										SUM(credit) as credit,SUM(debit) as debit FROM " . $GLOBALS['payment_table'] . " WHERE " . $bill_where . " agent_id = '" . $data['agent_id'] . "' AND bill_type !='Customer Opening Balance' AND bill_type !='Agent Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 										$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
@@ -483,7 +483,7 @@
 					}
 					
 					if($type_lower ==  "Supplier") {
-						$select_query = "SELECT supplier_id,supplier_name, mobile_number FROM ".$GLOBALS['supplier_table']." WHERE supplier_id = '".$party_id."' AND deleted = '0'  ";
+						$select_query = "SELECT supplier_id,supplier_name, mobile_number FROM " . $GLOBALS['supplier_table'] . " WHERE supplier_id = '" . $party_id . "' AND deleted = '0'  ";
 						$list = $this->getQueryRecords($GLOBALS['supplier_table'], $select_query);
 						
 						if(!empty($list)) {
@@ -492,7 +492,7 @@
 									$bill_list = array();
 
 									$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
-									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['supplier_id']."'  AND bill_type !='Supplier Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
+									SUM(credit) as credit,SUM(debit) as debit FROM " . $GLOBALS['payment_table'] . " WHERE " . $bill_where . " party_id = '" . $data['supplier_id'] . "'  AND bill_type !='Supplier Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
@@ -503,7 +503,7 @@
 					}
 					
 					if($type_lower == "Contractor") {
-						$select_query = "SELECT contractor_id,contractor_name, mobile as mobile_number FROM ".$GLOBALS['contractor_table']." WHERE contractor_id = '".$party_id."' AND deleted = '0'  ";
+						$select_query = "SELECT contractor_id,contractor_name, mobile as mobile_number FROM " . $GLOBALS['contractor_table'] . " WHERE contractor_id = '" . $party_id . "' AND deleted = '0'  ";
 						$list = $this->getQueryRecords($GLOBALS['contractor_table'], $select_query);
 						
 						if(!empty($list)) {
@@ -512,7 +512,7 @@
 									$bill_list = array();
 
 									$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type, 
-									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['contractor_id']."' AND  bill_type !='Contractor Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
+									SUM(credit) as credit,SUM(debit) as debit FROM " . $GLOBALS['payment_table'] . " WHERE " . $bill_where . " party_id = '" . $data['contractor_id'] . "' AND  bill_type !='Contractor Opening Balance' AND deleted = '0'  AND bill_type !='Agent Opening Balance' GROUP BY bill_number";
 
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
@@ -523,7 +523,7 @@
 					} 
 					
 					if($type_lower ==  "Customer") {
-						$select_query = "SELECT customer_id,customer_name, mobile_number FROM ".$GLOBALS['customer_table']." WHERE customer_id = '".$party_id."' AND deleted = '0'  ";
+						$select_query = "SELECT customer_id,customer_name, mobile_number FROM " . $GLOBALS['customer_table'] . " WHERE customer_id = '" . $party_id . "' AND deleted = '0'  ";
 						$list = $this->getQueryRecords($GLOBALS['customer_table'], $select_query);
 						
 						if(!empty($list)) {
@@ -531,7 +531,7 @@
 								if(!empty($data['customer_id'])) {
 									$bill_list = array();
 									$payment_query = "SELECT bill_id,bill_date, bill_number, bill_type,
-									SUM(credit) as credit,SUM(debit) as debit FROM ".$GLOBALS['payment_table']." WHERE ".$bill_where." party_id = '".$data['customer_id']."' AND  bill_type !='Customer Opening Balance' AND deleted = '0' GROUP BY bill_number";
+									SUM(credit) as credit,SUM(debit) as debit FROM " . $GLOBALS['payment_table'] . " WHERE " . $bill_where . " party_id = '" . $data['customer_id'] . "' AND  bill_type !='Customer Opening Balance' AND deleted = '0' GROUP BY bill_number";
 									$bill_list = $this->getQueryRecords($GLOBALS['agent_table'], $payment_query);
 
 									$reports[] = array('party_id' => $data['customer_id'], 'party_name' => $data['customer_name'], 'party_mobile_number' => $data['mobile_number'], 'bill_list' => $bill_list);
@@ -545,14 +545,14 @@
 				// echo "hii";
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
-					$bill_where = "bill_date >='".$from_date."' AND ";
+					$bill_where = "bill_date >='" . $from_date . "' AND ";
 				}
 				if(!empty($to_date)) {
 					$to_date = date("Y-m-d",strtotime($to_date));
 					if(empty($bill_where)) {
-						$bill_where = "bill_date <='".$to_date."' AND ";
+						$bill_where = "bill_date <='" . $to_date . "' AND ";
 					} else {
-						$bill_where = $bill_where."bill_date <='".$to_date."' AND ";
+						$bill_where = $bill_where . "bill_date <='" . $to_date . "' AND ";
 					}
 				}
 
@@ -655,38 +655,38 @@
 			}else{
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
-					$bill_where = "e.bill_date >='".$from_date."' AND ";
+					$bill_where = "e.bill_date >='" . $from_date . "' AND ";
 				}
 				if(!empty($to_date)) {
 					$to_date = date("Y-m-d",strtotime($to_date));
 				
 					if(empty($bill_where)) {
-						$bill_where = "e.bill_date <='".$to_date."' AND ";
+						$bill_where = "e.bill_date <='" . $to_date . "' AND ";
 					} else {
-						$bill_where = $bill_where."e.bill_date <='".$to_date."' AND ";
+						$bill_where = $bill_where . "e.bill_date <='" . $to_date . "' AND ";
 					}
 				}
 
 				$agent_query = "SELECT 'agent' as party_type, sp.agent_id as party_id, sp.agent_name as party_name,sp.mobile_number as party_mobile_number,
-					(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-					WHERE ".$bill_where." e.agent_id = sp.agent_id AND  e.deleted = '0'  GROUP BY e.agent_id) as credit,
-					(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-					WHERE ".$bill_where." e.agent_id = sp.agent_id  AND e.deleted = '0'  GROUP BY e.agent_id) as debit FROM ".$GLOBALS['agent_table']." as sp WHERE sp.deleted = '0'  ";
+					(SELECT SUM(e.credit) FROM " . $GLOBALS['payment_table'] . " as e
+					WHERE " . $bill_where . " e.agent_id = sp.agent_id AND  e.deleted = '0'  GROUP BY e.agent_id) as credit,
+					(SELECT SUM(e.debit) FROM " . $GLOBALS['payment_table'] . " as e 
+					WHERE " . $bill_where . " e.agent_id = sp.agent_id  AND e.deleted = '0'  GROUP BY e.agent_id) as debit FROM " . $GLOBALS['agent_table'] . " as sp WHERE sp.deleted = '0'  ";
 				
 				// $supplier_query = "SELECT 'supplier' as party_type, s.supplier_id as party_id, s.supplier_name as party_name,s.mobile_number as party_mobile_number,
-				// 	(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-				// 	WHERE ".$bill_where." e.party_id = s.supplier_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
-				// 	(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-				// 	WHERE ".$bill_where." e.party_id = s.supplier_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['supplier_table']." as s WHERE s.deleted = '0'  ";
+				// 	(SELECT SUM(e.credit) FROM " . $GLOBALS['payment_table'] . " as e
+				// 	WHERE " . $bill_where . " e.party_id = s.supplier_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
+				// 	(SELECT SUM(e.debit) FROM " . $GLOBALS['payment_table'] . " as e 
+				// 	WHERE " . $bill_where . " e.party_id = s.supplier_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM " . $GLOBALS['supplier_table'] . " as s WHERE s.deleted = '0'  ";
 				// $customer_query = "SELECT 'customer' as party_type, cu.customer_id as party_id, cu.customer_name as party_name,cu.mobile_number as party_mobile_number,
-				// 	(SELECT SUM(e.credit) FROM ".$GLOBALS['payment_table']." as e
-				// 	WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
-				// 	(SELECT SUM(e.debit) FROM ".$GLOBALS['payment_table']." as e 
-				// 	WHERE ".$bill_where." e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM ".$GLOBALS['customer_table']." as cu WHERE (cu.agent_id = '' OR cu.agent_id = 'NULL') AND cu.deleted = '0'  ";
+				// 	(SELECT SUM(e.credit) FROM " . $GLOBALS['payment_table'] . " as e
+				// 	WHERE " . $bill_where . " e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as credit,
+				// 	(SELECT SUM(e.debit) FROM " . $GLOBALS['payment_table'] . " as e 
+				// 	WHERE " . $bill_where . " e.party_id = cu.customer_id  AND e.deleted = '0'  GROUP BY e.party_id) as debit FROM " . $GLOBALS['customer_table'] . " as cu WHERE (cu.agent_id = '' OR cu.agent_id = 'NULL') AND cu.deleted = '0'  ";
 
-				// $select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (".$agent_query.") UNION ALL (".$supplier_query.") UNION ALL (".$customer_query.") ) as g";
+				// $select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (" . $agent_query . ") UNION ALL (" . $supplier_query . ") UNION ALL (" . $customer_query . ") ) as g";
 
-				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (".$agent_query.") ) as g";
+				$select_query = "SELECT party_type, party_id, party_name, party_mobile_number,credit,debit FROM ( (" . $agent_query . ") ) as g";
 
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords('',$select_query);
@@ -721,7 +721,7 @@
 		public function getSelectedAgentCustomerList($filter_party_id)
 		{
 			$select_query ="";
-			$select_query ="SELECT customer_id as party_id,customer_name as party_name,city FROM ".$GLOBALS['customer_table']." WHERE agent_id='".$filter_party_id."' AND deleted ='0' ";
+			$select_query ="SELECT customer_id as party_id,customer_name as party_name,city FROM " . $GLOBALS['customer_table'] . " WHERE agent_id='" . $filter_party_id . "' AND deleted ='0' ";
 			$agent_customer_list = $this->getQueryRecords($GLOBALS['customer_table'],$select_query);
 			return $agent_customer_list;
 		}
@@ -891,30 +891,30 @@
 			}
 			if(!empty($product_id)) {
 				if(!empty($where)) {
-					$where = $where." AND product_id = '".$product_id."'";
+					$where = $where . " AND product_id = '" . $product_id . "'";
 				} else {
-					$where = "product_id = '".$product_id."'";
+					$where = "product_id = '" . $product_id . "'";
 				}
 			}
 			if(!empty($customer_id)) {
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$customer_id."'";
+					$where = $where . " AND party_id = '" . $customer_id . "'";
 				} else {
-					$where = "party_id = '".$customer_id."'";
+					$where = "party_id = '" . $customer_id . "'";
 				}
 			}
 			if(!empty($agent_id)) {
 				if(!empty($where)) {
-					$where = $where." AND agent_id = '".$agent_id."'";
+					$where = $where . " AND agent_id = '" . $agent_id . "'";
 				} else {
-					$where = "agent_id = '".$agent_id."'";
+					$where = "agent_id = '" . $agent_id . "'";
 				}
 			}
 			if(!empty($case_contains)) {
 				if(!empty($where)) {
-					$where = $where." AND case_contains = '".$case_contains."'";
+					$where = $where . " AND case_contains = '" . $case_contains . "'";
 				} else {
-					$where = "case_contains = '".$case_contains."'";
+					$where = "case_contains = '" . $case_contains . "'";
 				}
 			}
 		
@@ -988,17 +988,17 @@
 
 			if(!empty($customer_id)) {
 				if(!empty($where)) {
-					$where = $where." AND party_id = '".$customer_id."'";
+					$where = $where . " AND party_id = '" . $customer_id . "'";
 				} else {
-					$where = "party_id = '".$customer_id."'";
+					$where = "party_id = '" . $customer_id . "'";
 				}
 			}
 
 			if(!empty($agent_id)) {
 				if(!empty($where)) {
-					$where = $where." AND agent_id = '".$agent_id."'";
+					$where = $where . " AND agent_id = '" . $agent_id . "'";
 				} else {
-					$where = "agent_id = '".$agent_id."'";
+					$where = "agent_id = '" . $agent_id . "'";
 				}
 			}
 			
@@ -1218,27 +1218,27 @@
 		public function GetInwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
 			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
 			if(!empty($magazine_id)) {
-				$where = " magazine_id = '".$magazine_id."' AND ";
+				$where = " magazine_id = '" . $magazine_id . "' AND ";
 			}
 			if(!empty($godown_id)) {
 				if(!empty($where)) {
-					$where = $where." godown_id = '".$godown_id."' AND ";
+					$where = $where . " godown_id = '" . $godown_id . "' AND ";
 				}
 				else {
-					$where = " godown_id = '".$godown_id."' AND ";
+					$where = " godown_id = '" . $godown_id . "' AND ";
 				}
 			}
 			if(!empty($case_contains)) {
 				if(!empty($where)) {
-					$where = $where." case_contains = '".$case_contains."' AND ";
+					$where = $where . " case_contains = '" . $case_contains . "' AND ";
 				}
 				else {
-					$where = " case_contains = '".$case_contains."' AND ";
+					$where = " case_contains = '" . $case_contains . "' AND ";
 				}
 			}
 			if(!empty($product_id)) {
 				$select_query = "SELECT SUM(FLOOR(inward_unit * case_contains / case_contains)) AS unit_stock,
-								SUM(MOD(inward_unit * case_contains, case_contains)) AS subunit_stock FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND case_contains != '".$GLOBALS['null_value']."' AND deleted = '0'";
+								SUM(MOD(inward_unit * case_contains, case_contains)) AS subunit_stock FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND case_contains != '" . $GLOBALS['null_value'] . "' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1258,27 +1258,27 @@
 		public function GetOutwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {
 			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
 			if(!empty($magazine_id)) {
-				$where = " magazine_id = '".$magazine_id."' AND ";
+				$where = " magazine_id = '" . $magazine_id . "' AND ";
 			}
 			if(!empty($godown_id)) {
 				if(!empty($where)) {
-					$where = $where." godown_id = '".$godown_id."' AND ";
+					$where = $where . " godown_id = '" . $godown_id . "' AND ";
 				}
 				else {
-					$where = " godown_id = '".$godown_id."' AND ";
+					$where = " godown_id = '" . $godown_id . "' AND ";
 				}
 			}
 			if(!empty($case_contains)) {
 				if(!empty($where)) {
-					$where = $where." case_contains = '".$case_contains."' AND ";
+					$where = $where . " case_contains = '" . $case_contains . "' AND ";
 				}
 				else {
-					$where = " case_contains = '".$case_contains."' AND ";
+					$where = " case_contains = '" . $case_contains . "' AND ";
 				}
 			}
 			if(!empty($product_id)) {
 				$select_query = "SELECT SUM(FLOOR(outward_unit * case_contains / case_contains)) AS unit_stock,
-								SUM(MOD(outward_unit * case_contains, case_contains)) AS subunit_stock FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND case_contains != '".$GLOBALS['null_value']."' AND deleted = '0'";
+								SUM(MOD(outward_unit * case_contains, case_contains)) AS subunit_stock FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND case_contains != '" . $GLOBALS['null_value'] . "' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1298,22 +1298,20 @@
 		public function getCurrentStockCasewise($godown_id, $magazine_id, $product_id, $case_contains, $screen) {
 			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
 			if(!empty($magazine_id)) {
-				$where = " magazine_id = '".$magazine_id."' AND ";
+				$where = " magazine_id = '" . $magazine_id . "' AND ";
 			}
 			if(!empty($godown_id)) {
 				if(!empty($where)) {
-					$where = $where." godown_id = '".$godown_id."' AND ";
-				}
-				else {
-					$where = " godown_id = '".$godown_id."' AND ";
+					$where = $where . " godown_id = '" . $godown_id . "' AND ";
+				} else {
+					$where = " godown_id = '" . $godown_id . "' AND ";
 				}
 			}
 			if(!empty($case_contains)) {
 				if(!empty($where)) {
-					$where = $where." case_contains = '".$case_contains."' AND ";
-				}
-				else {
-					$where = " case_contains = '".$case_contains."' AND ";
+					$where = $where . " case_contains = '" . $case_contains . "' AND ";
+				} else {
+					$where = " case_contains = '" . $case_contains . "' AND ";
 				}
 			}
 			if(!empty($product_id)) {
@@ -1324,14 +1322,13 @@
 						$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
 
 						$case_contents_list = $this->getQueryRecords('', $case_contents_query);
-					}
-					else {
+					} else {
 						$case_contents_list[] = array('case_contains'=>$case_contains);
 					}
 
 					if(!empty($case_contents_list)) {
 						foreach($case_contents_list as $ccl) {
-							$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND case_contains = '".$ccl['case_contains']."' AND deleted = '0' group by case_contains";
+							$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND case_contains = '" . $ccl['case_contains'] . "' AND deleted = '0' group by case_contains";
 							$list = $this->getQueryRecords('', $select_query);
 			        
 							if(!empty($list)) {
@@ -1347,7 +1344,7 @@
 						} 
 					}
 				} else {
-					$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM ".$GLOBALS['stock_table']." WHERE ".$where." product_id = '".$product_id."' AND deleted = '0' group by case_contains";
+					$select_query = "SELECT CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN (SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit))) - 1 ELSE SUM(FLOOR(inward_unit)) - SUM(FLOOR(outward_unit)) END AS net_cases,CASE WHEN (SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) < 0 THEN ROUND((SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains)) + case_contains,0) ELSE ROUND(SUM((inward_unit - FLOOR(inward_unit)) * case_contains) - SUM((outward_unit - FLOOR(outward_unit)) * case_contains),0)END AS net_pcs FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " product_id = '" . $product_id . "' AND deleted = '0' group by case_contains";
 					$list = $this->getQueryRecords('', $select_query);
 	
 					if(!empty($list)) {
@@ -1370,9 +1367,9 @@
 		public function PendingOrderReportCustomerWise($customer_id) {
 			$select_query = ""; $list = array(); $where = ""; $unit_stock = 0; $subunit_stock = 0;
 			if(!empty($customer_id)) {
-				$where = " customer_id = '".$customer_id."' AND ";
+				$where = " customer_id = '" . $customer_id . "' AND ";
 			}
-			// $select_query = "SELECT product_id, SUM(FLOOR(inward_unit * case_contains / case_contains)) AS unit_stock, SUM(MOD(inward_unit * case_contains, case_contains)) AS subunit_stock FROM ".$GLOBALS['stock_table']." WHERE ".$where." case_contains != '".$GLOBALS['null_value']."' AND deleted = '0' group by product_id";
+			// $select_query = "SELECT product_id, SUM(FLOOR(inward_unit * case_contains / case_contains)) AS unit_stock, SUM(MOD(inward_unit * case_contains, case_contains)) AS subunit_stock FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " case_contains != '" . $GLOBALS['null_value'] . "' AND deleted = '0' group by product_id";
 			$select_query = "SELECT * FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE customer_id = '" . $customer_id . "' AND deleted = '0' ORDER BY id DESC";
 			$list = $this->getQueryRecords('', $select_query);
 			
@@ -1384,6 +1381,92 @@
 			}
 			$return_array = array($unit_stock, $subunit_stock);
 			return $return_array;
+		}
+		
+		public function getCaseContainsList($product_id) {
+			$case_contents_query = ""; $case_contents_list = array();
+			if(!empty($product_id)) {
+				$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
+
+				$case_contents_list = $this->getQueryRecords('', $case_contents_query);
+			}
+			return $case_contents_list;
+		}
+
+		public function getRawMaterialProductRate($product_id, $case_contains) {
+			$where = ""; $sub_unit_rate = 0;
+			if(!empty($product_id)) {
+				$where .= " FIND_IN_SET('" . $product_id . "' ,product_id) AND";
+			}
+			if(!empty($case_contains)) {
+				$where .= " FIND_IN_SET('" . $case_contains . "' ,content) AND";
+			}
+
+			$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " deleted = 0 ORDER BY id DESC LIMIT 1";
+
+			$purchase_entry_list = $this->getQueryRecords('', $select_query);
+			if(!empty($purchase_entry_list)) {
+				$product_ids = array();
+				$contents = array();
+				$total_qtys = array();
+				$rates = array();
+				$unit_types = array();
+				foreach($purchase_entry_list as $purchase) {
+					if(!empty($purchase['product_id'])) {
+						$product_ids = explode(',', $purchase['product_id']);
+					}
+					if(!empty($purchase['content'])) {
+						$contents = explode(',', $purchase['content']);
+					}
+					if(!empty($purchase['total_qty'])) {
+						$total_qtys = explode(',', $purchase['total_qty']);
+					}
+					if(!empty($purchase['rate'])) {
+						$rates = explode(',', $purchase['rate']);
+					}
+					if(!empty($purchase['unit_type'])) {
+						$unit_types = explode(',', $purchase['unit_type']);
+					}
+				}
+				
+				$total_quantity = 0;
+				$total_rate = 0;
+				for($i = 0; $i < count($product_ids); $i++) {
+					if(isset($contents[$i]) && !empty($case_contains)) {
+						if($product_ids[$i] == $product_id && $contents[$i] == $case_contains) {
+							$total_quantity += isset($total_qtys[$i]) ? $total_qtys[$i] : 0;
+
+							if(isset($unit_types[$i])) {
+								if($unit_types[$i] == "1") {
+									$total_rate += isset($rates[$i]) ? $rates[$i] : 0;
+								} else {
+									$total_rate += isset($rates[$i]) && isset($total_qtys[$i]) ? $rates[$i] * $total_qtys[$i] : 0;
+								}
+							}
+						}
+					} else {
+						if($product_ids[$i] == $product_id) {
+							$total_quantity += isset($total_qtys[$i]) ? $total_qtys[$i] : 0;
+
+							if(isset($unit_types[$i])) {
+								if($unit_types[$i] == "1") {
+									$total_rate += isset($rates[$i]) ? $rates[$i] : 0;
+								} else {
+									$total_rate += isset($rates[$i]) && isset($total_qtys[$i]) ? $rates[$i] * $total_qtys[$i] : 0;
+								}
+							}
+						}
+					}
+				}
+
+				if( $case_contains) {
+					$sub_unit_rate = $total_rate / $total_quantity;
+				} else {
+					$sub_unit_rate = $total_rate;
+				}
+			}
+
+			return $sub_unit_rate;
 		}
     }
 

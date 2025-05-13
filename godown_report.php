@@ -85,7 +85,7 @@
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '');
+        $total_records_list = $obj->getStockReportList($group_id, $godown_id, '', $product_id, $stock_type, $case_contains, '', '');
     }
 
 ?>
@@ -271,126 +271,228 @@
                                                     <tr style="vertical-align:middle!important;">
                                                         <th>#</th>
                                                         <th>Product</th>
+                                                        <th>Contains</th>
                                                         <th>Current Stock</th>
+                                                        <th>Stock Value</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                        $total_stock = 0; $sno = 1; $total_unit_stock = 0; $total_subunit_stock = 0; $unit_name_array = []; $sub_unit_name_array = [];
-                                                        if(!empty($total_records_list)) { 
-                                                            foreach($total_records_list as $key => $data) {
-                                                                $inward_unit = 0; $outward_unit = 0; $current_stock = "";
-                                                                $inward_array = array(); $outward_array = array();
-                                                                $inward_unit_stock = 0; $inward_subunit_stock = 0;
-                                                                $outward_unit_stock = 0; $outward_subunit_stock = 0;
-                                                                $current_unit_stock = 0; $current_subunit_stock = 0;
-                                                                $subunit_need = 0; $unit_name = ""; $subunit_name = "";
-                                                                $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_need');
-                                                                $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
-                                                                if($subunit_need == '1') {
-                                                                    $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
-                                                                }
-
-                                                                if($unit_type == "Unit") {
-                                                                    if($subunit_need == '1') {
-                                                                        $current_stock_array = $obj->getCurrentStockCasewise($godown_id, '', $data['product_id'], '', 1);
-                                                                        $current_unit_stock = $current_stock_array[0];
-                                                                        $current_subunit_stock = $current_stock_array[1];
-                                                                        if(!empty($current_unit_stock)) {
-                                                                            $current_stock = $current_unit_stock." ".($obj->encode_decode('decrypt', $unit_name));
-                                                                            $total_unit_stock += $current_unit_stock;
-                                                                            $unit_name_array[] = $unit_name;
-                                                                        }
-                                                                        if(!empty($current_subunit_stock)) {
-                                                                            if(!empty($current_stock)) {
-                                                                                $current_stock = $current_stock." ".$current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                                                                $sub_unit_name_array[] = $subunit_name;
-                                                                            } else {
-                                                                                $current_stock = $current_subunit_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                                                                $sub_unit_name_array[] = $subunit_name;
-                                                                            }
-                                                                            $total_subunit_stock += $current_subunit_stock;
-                                                                        }
-                                                                    } else {
-                                                                        $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
-                                                                        $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
-                                                                        $current_stock = $inward_unit - $outward_unit;
-                                                                        $total_unit_stock += $current_stock;
-                                                                        $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
-                                                                        $unit_name_array[] = $unit_name;
-                                                                    }
-                                                                } else if($unit_type == "Subunit") {
-                                                                    $inward_unit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                                                                    $outward_unit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], '');
-                                                                    $current_stock = $inward_unit - $outward_unit;
-                                                                    $total_subunit_stock += $current_stock;
-                                                                    $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $subunit_name));
-                                                                    $sub_unit_name_array[] = $subunit_name;
-                                                                }
-                                                                if(preg_match('/^[0]+$/', $current_stock) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
-                                              
-                                                    ?>
-                                                                <tr>
-                                                                    <th><?php echo $sno++; ?></th>
-                                                                    
-                                                                
-                                                                    <th onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
-                                                                        <?php
-                                                                            if(!empty($data['product_name']) && $data['product_name'] != $GLOBALS['null_value']) {
-                                                                                echo $obj->encode_decode('decrypt', $data['product_name']);
-                                                                            }
-                                                                        ?>
-                                                                    </th>
-                                                                    <th>
-                                                                        <?php
-                                                                            echo $current_stock;
-                                                                        ?>
-                                                                    </th>
-                                                                </tr>
-                                                    <?php 
-                                                                } 
+                                                    $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0; $unit_name_array = array(); $sub_unit_name_array = array();
+                                                    if(!empty($total_records_list)) { 
+                                                        foreach($total_records_list as $key => $data) {
+                                                            $unit_name = ""; $subunit_name = ""; $subunit_need = 0;
+                                                            $rate_per_unit = 0;
+                                                            $unit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'unit_name');
+                                                            $subunit_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_name');
+                                                            $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'subunit_need');
+                                                            $product_group = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'group_id');
+                                                            
+                                                            // $rate = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'sales_rate');
+                                                            // $per = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'per');
+                                                            $case_contains_list = array();
+                                                            if(!empty($subunit_need) && $subunit_need == 1) {
+                                                                $case_contains_list = $obj->getCaseContainsList($data['product_id']);
                                                             }
-                                                            ?>
-                                                            <tr>
-                                                                <th colspan="2" class="text-end">Total</th>
-                                                                <th>
-                                                                    <?php
-                                                                        if(!empty($total_unit_stock)) {
-                                                                            echo $total_unit_stock;
+                                                            $str_product_id = "";
+                                                            if(!empty($case_contains_list)) {
+                                                                foreach($case_contains_list as $row) {
+                                                                    if(!empty($row['case_contains']) && $row['case_contains'] != $GLOBALS['null_value']) {
+                                                                        $inward_subunit = 0; $outward_subunit = 0; $total_rate = 0;
+                                                                        $unit_rate = 0;
+                                                                        $current_stock_subunit = 0;
+                                                                        $inward_subunit = $obj->getInwardSubunitQty('', $godown_id, '', $data['product_id'], $row['case_contains']);
+                                                                        $outward_subunit = $obj->getOutwardSubunitQty('', $godown_id, '', $data['product_id'], $row['case_contains']);
+                                                                        $current_stock_subunit = $inward_subunit - $outward_subunit;
 
-                                                                            if(!empty($unit_name_array)) {
-                                                                                $unique_unit_names = array_unique($unit_name_array);
-                                                                                if(count($unique_unit_names) == 1) {
-                                                                                    echo " " . $obj->encode_decode('decrypt', $unique_unit_names[0]);
-                                                                                }
+                                                                        if(!empty($product_group)) {
+                                                                            if($product_group == $GLOBALS['raw_material_group_id']) {
+                                                                                $rate_per_unit = $obj->getRawMaterialProductRate($data['product_id'], $row['case_contains']);
                                                                             }
                                                                         }
-                                                                        if(!empty($total_unit_stock) && !empty($total_subunit_stock)) {
-                                                                            echo " + ";
-                                                                        }
-                                                                        if(!empty($total_subunit_stock)) {
-                                                                            echo $total_subunit_stock;
 
-                                                                            if(!empty($sub_unit_name_array)) {
-                                                                                $unique_sub_unit_names = array_unique($sub_unit_name_array);
-                                                                                if(count($unique_sub_unit_names) == 1) {
-                                                                                    echo " " . $obj->encode_decode('decrypt', $unique_sub_unit_names[0]);
-                                                                                }
+                                                                        $total_rate = $current_stock_subunit * $rate_per_unit;
+                                                                        if($unit_type == "Subunit") {
+                                                                            $total_current_subunit += $current_stock_subunit;
+                                                                        }
+                                                                        $current_stock_quotient = 0; $current_stock_remainder = 0;
+                                                                        $current_stock = 0;
+                                                                        $current_stock_quotient = floor($current_stock_subunit / $row['case_contains']);
+                                                                        $current_stock_remainder = round(fmod($current_stock_subunit, $row['case_contains']));
+                                                                        if(!empty($current_stock_quotient)) {
+                                                                            if($unit_type == "Unit") {
+                                                                                $total_current_unit += $current_stock_quotient;
+                                                                            }
+                                                                            $current_stock = $current_stock_quotient." ".($obj->encode_decode('decrypt', $unit_name));
+                                                                            $unit_name_array[] = $obj->encode_decode('decrypt', $unit_name);
+                                                                        }
+                                                                        if(!empty($current_stock_remainder)) {
+                                                                            if($unit_type == "Unit") {
+                                                                                $total_current_subunit += $current_stock_remainder;
+                                                                            }
+                                                                            if(!empty($current_stock)) {
+                                                                                $current_stock = $current_stock." ".$current_stock_remainder." ".($obj->encode_decode('decrypt', $subunit_name));
+                                                                                $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
+                                                                            } else {
+                                                                                $current_stock = $current_stock_remainder." ".($obj->encode_decode('decrypt', $subunit_name));
+                                                                                $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
                                                                             }
                                                                         }
-                                                                    ?>
-                                                                </th>
-                                                            </tr>
-                                                            <?php
-                                                        }  
-                                                        else {
-                                                    ?>
-                                                            <tr>
-                                                                <td colspan="3" class="text-center">Sorry! No records found</td>
-                                                            </tr>
-                                                    <?php 
+                                                                       
+                                                                        if(preg_match('/^[0]+$/', $current_stock) || preg_match('/^[0]+$/', $current_stock_subunit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                                                                        ?>
+                                                                            <tr>
+                                                                                <?php if($str_product_id != $data['product_id']) { ?>
+                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?>><?php echo $key+1; ?></th>
+                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?> onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
+                                                                                        <?php
+                                                                                            $product_name = "";
+                                                                                            $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                                                                                            
+                                                                                            echo $obj->encode_decode('decrypt', $product_name);
+                                                                                        ?>
+                                                                                    </th>
+                                                                                <?php } ?>
+                                                                                <th>
+                                                                                    <?php echo $row['case_contains']; ?>
+                                                                                </th>
+                                                                                <th>
+                                                                                    <?php
+                                                                                        if($unit_type == "Subunit") {
+                                                                                            echo $current_stock_subunit." ".($obj->encode_decode('decrypt', $subunit_name));
+                                                                                            $sub_unit_name_array[] = $obj->encode_decode('decrypt', $subunit_name);
+                                                                                        } else {
+                                                                                            echo $current_stock;
+                                                                                        }
+                                                                                    ?>
+                                                                                </th>
+                                                                                <th>
+                                                                                    <?php
+                                                                                    if(!empty($product_group)) {
+                                                                                        if($product_group == $GLOBALS['raw_material_group_id']) {
+                                                                                            if($total_rate > 0) {
+                                                                                                echo "Rs." . number_format($total_rate);
+                                                                                                $total_amount += $total_rate;
+                                                                                            } else {
+                                                                                                echo '-';
+                                                                                            }
+                                                                                        } else {
+                                                                                            echo '-';
+                                                                                        }
+                                                                                    }
+                                                                                    ?>
+                                                                                </th>
+                                                                            </tr>
+                                                                        <?php
+                                                                        }
+                                                                    }
+                                                                    $str_product_id = $data['product_id'];
+                                                                }
+                                                            } else {
+                                                                $inward_unit = 0; $outward_unit = 0; $total_rate = 0;
+                                                                $current_stock_unit = 0;
+                                                                $inward_unit = $obj->getInwardQty('', $godown_id, '', $data['product_id'], '');
+                                                                $outward_unit = $obj->getOutwardQty('', $godown_id, '', $data['product_id'], '');
+                                                                $current_stock_unit = $inward_unit - $outward_unit;
+                                                                if(!empty($current_stock_unit)) {
+                                                                    $total_current_unit += $current_stock_unit;
+                                                                }
+
+                                                                if(!empty($current_stock_unit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                                                                ?>
+                                                                    <tr>
+                                                                        <th><?php echo $key+1; ?></th>
+                                                                        <th onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
+                                                                            <?php
+                                                                                $product_name = "";
+                                                                                $product_name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $data['product_id'], 'product_name');
+                                                                                
+                                                                                echo $obj->encode_decode('decrypt', $product_name);
+                                                                            ?>
+                                                                        </th>
+                                                                        <th></th>
+                                                                        <th>
+                                                                            <?php 
+                                                                                if($current_stock_unit > 0) {
+                                                                                     if(!empty($product_group)) {
+                                                                                        if($product_group == $GLOBALS['raw_material_group_id']) {
+                                                                                            $rate_per_unit = $obj->getRawMaterialProductRate($data['product_id'], '');
+                                                                                        }
+                                                                                    }
+                                                                                    $total_rate = $current_stock_unit * $rate_per_unit;
+                                                                                    echo $current_stock_unit." ".($obj->encode_decode('decrypt', $unit_name));
+                                                                                    $unit_name_array[] = $obj->encode_decode('decrypt', $unit_name);
+                                                                                } else {
+                                                                                    echo '-';
+                                                                                }
+                                                                            ?>
+                                                                        </th>
+                                                                        <th>
+                                                                            <?php
+                                                                                if(!empty($product_group)) {
+                                                                                    if($product_group == $GLOBALS['raw_material_group_id']) {
+                                                                                        if($total_rate > 0) {
+                                                                                            echo "Rs." . number_format($total_rate, 0);
+                                                                                            $total_amount += $total_rate;
+                                                                                        } else {
+                                                                                            echo '-';
+                                                                                        }
+                                                                                    } else {
+                                                                                        echo '-';
+                                                                                    }
+                                                                                } 
+                                                                            ?>
+                                                                        </th>
+                                                                    </tr>
+                                                                <?php
+                                                                }
+                                                            }
                                                         } 
-                                                    ?>
+                                                        ?>
+                                                        <tr>
+                                                            <th colspan="3" class="text-end">Total</th>
+                                                            <th>
+                                                                <?php
+                                                                    if(!empty($total_current_unit)) {
+                                                                        echo $total_current_unit;
+                                                                        if(!empty($unit_name_array)) {
+                                                                            $unique_unit_names = array_unique($unit_name_array);
+                                                                            if(count($unique_unit_names) == 1) {
+                                                                                echo ' ' . $unique_unit_names[0];
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if(!empty($total_current_unit) && !empty($total_current_subunit)) {
+                                                                        echo " + ";
+                                                                    }
+                                                                    if(!empty($total_current_subunit)) {
+                                                                        echo $total_current_subunit;
+                                                                        if(!empty($sub_unit_name_array)) {
+                                                                            $unique_sub_unit_names = array_unique($sub_unit_name_array);
+                                                                            if(count($unique_sub_unit_names) == 1) {
+                                                                                echo ' ' . $unique_sub_unit_names[0];
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ?>
+                                                            </th>
+                                                            <th>
+                                                                <?php
+                                                                    if(!empty($total_amount)) {
+                                                                        echo "Rs." . number_format($total_amount, 0);
+                                                                    }
+                                                                ?>
+                                                            </th>
+                                                        </tr>
+                                                        <?php
+                                                    } else {
+                                                        ?>
+                                                        <tr>
+                                                            <td colspan="6" class="text-center">Sorry! No records found</td>
+                                                        </tr>
+                                                        <?php 
+                                                    } 
+                                                ?>
                                                 </tbody>
                                             </table>
                                             <?php } else if(!empty($product_id)) { ?>

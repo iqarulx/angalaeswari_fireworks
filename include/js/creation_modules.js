@@ -232,7 +232,6 @@ function DeleteRow(row_index, id_name) {
                         }
                     }
 
-                    //    console.log(jQuery('.'+id_name).length);
                     if (jQuery('.' + id_name).length == 0) {
                         if (jQuery('#div_selected_unit').length > 0) {
                             jQuery('#div_selected_unit').css({
@@ -581,9 +580,9 @@ function per_type_change() {
     var subunit_need = jQuery('#subunit_need').val();
     var option = '';
     if (subunit_need == '1') {
-        option = "<option value='2' selected >Sub Unit</option>";
+        option = "<option value='2' selected>Sub Unit</option>";
     } else {
-        option = "<option value='1' selected >Unit</option>";
+        option = "<option value='1' selected>Unit</option>";
     }
     $("select[name='per_type']").empty().append(option);
 }
@@ -1809,6 +1808,16 @@ function getSalesRate() {
         if (jQuery('.per_div').length > 0) {
             jQuery('.per_div').removeClass('d-none');
         }
+
+        var subunit_need = jQuery('#subunit_need').val();
+        if (typeof subunit_need != undefined && subunit_need != '') {
+            if (subunit_need == 1) {
+                if (jQuery('select[name="per_type"]').length > 0) {
+                    jQuery('select[name="per_type"]').val('2').trigger('change');
+                }
+            }
+        }
+
     }
 }
 

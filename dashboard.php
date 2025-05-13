@@ -25,6 +25,7 @@ if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_type']) && isset($_
 }
 
 if(!empty($access_dashboard)) {
+    include("dashboard_current_stock_report.php");
     include("dashboard_pending_order_report.php");
     include("dashboard_pending_balance_report.php");
 }

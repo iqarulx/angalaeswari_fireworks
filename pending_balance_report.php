@@ -686,7 +686,6 @@
     }
 
     function viewpreview(type,bill_id, sub_bill_id){
-        console.log(sub_bill_id);
         var url = "";
         bill_id = bill_id.trim();
         type = type.trim();

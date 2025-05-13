@@ -776,19 +776,18 @@
         $option = "";
         foreach ($list as $option_list) {
             if ($option_list['subunit_need'] == '1') {
-                if (!empty($option_list['unit_id'])) {
-                    $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['unit_id'], 'unit_name');
-                    $case = $obj->encode_decode('decrypt', $case);
-                } else {
-                    $case = "Unit";
-                }
-                  
-                $option .= "<option value='1'";
-                if ($option_list['per_type'] == '1') {
-                    $option .= " selected";
-                }
-                $option .= ">$case</option>";
+                // if (!empty($option_list['unit_id'])) {
+                //     $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['unit_id'], 'unit_name');
+                //     $case = $obj->encode_decode('decrypt', $case);
+                // } else {
+                //     $case = "Unit";
+                // }
 
+                // $option .= "<option value='1'";
+                // if ($option_list['per_type'] == '1') {
+                //     $option .= " selected";
+                // }
+                // $option .= ">$case</option>";
     
                 if (!empty($option_list['subunit_id'])) {
                     $piece = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['subunit_id'], 'unit_name');

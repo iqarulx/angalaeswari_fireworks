@@ -18,6 +18,7 @@
 			}
 			return $unit_id;
 		}
+
 		public function CheckProductCodeAlreadyExists($bill_company_id, $product_code) {
 			$list = array(); $select_query = ""; $product_id = "";
 			if(!empty($bill_company_id) && !empty($product_code)) {
@@ -60,7 +61,7 @@
 			$bill_company_details = "";
 			if(!empty($bill_company_id)) {
 				$check_company = array();
-				$check_company = $this->getTableRecords($GLOBALS['company_table'], '','');
+				$check_company = $this->getTableRecords($GLOBALS['company_table'], '','', '');
 				if(!empty($check_company)) {
 					foreach($check_company as $data) {
 						/*if(!empty($table) && $table == $GLOBALS['invoice_table']) {
@@ -84,20 +85,17 @@
 						}
 						if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
 							$bill_company_details = $bill_company_details."$$$".$this->encode_decode('decrypt', $data['mobile_number']);
-						}
-						else {
+						} else {
 							$bill_company_details = $bill_company_details."$$$".$GLOBALS['null_value'];
 						}
 						if(!empty($data['email']) && $data['email'] != $GLOBALS['null_value']) {
 							$bill_company_details = $bill_company_details."$$$".$this->encode_decode('decrypt', $data['email']);
-						}
-						else {
+						} else {
 							$bill_company_details = $bill_company_details."$$$".$GLOBALS['null_value'];
 						}
 						if(!empty($data['gst_number']) && $data['gst_number'] != $GLOBALS['null_value']) {
 							$bill_company_details = $bill_company_details."$$$".$this->encode_decode('decrypt', $data['gst_number']);
-						}
-						else {
+						} else {
 							$bill_company_details = $bill_company_details."$$$".$GLOBALS['null_value'];
 						}
 					}
@@ -114,7 +112,7 @@
 			$party_details = "";
 			if(!empty($party_id)) {
 				$check_party = array();
-				$check_party = $this->getTableRecords($GLOBALS['purchase_party_table'], 'purchase_party_id', $party_id);
+				$check_party = $this->getTableRecords($GLOBALS['purchase_party_table'], 'purchase_party_id', $party_id, '');
 				if(!empty($check_party)) {
 					foreach($check_party as $data) {
 						if(!empty($data['name'])) {
@@ -131,26 +129,22 @@
 						}
 						if(!empty($data['mobile_number']) && $data['mobile_number'] != $GLOBALS['null_value']) {
 							$party_details = $party_details."$$$".$this->encode_decode('decrypt', $data['mobile_number']);
-						}
-						else {
+						} else {
 							$party_details = $party_details."$$$".$GLOBALS['null_value'];
 						}
 						if(!empty($data['email']) && $data['email'] != $GLOBALS['null_value']) {
 							$party_details = $party_details."$$$".$this->encode_decode('decrypt', $data['email']);
-						}
-						else {
+						} else {
 							$party_details = $party_details."$$$".$GLOBALS['null_value'];
 						}
 						if(!empty($data['gst_number']) && $data['gst_number'] != $GLOBALS['null_value']) {
 							$party_details = $party_details."$$$".$this->encode_decode('decrypt', $data['gst_number']);
-						}
-						else {
+						} else {
 							$party_details = $party_details."$$$".$GLOBALS['null_value'];
 						}
 						if(!empty($data['identification']) && $data['identification'] != $GLOBALS['null_value']) {
 							$party_details = $party_details."$$$".$this->encode_decode('decrypt', $data['identification']);
-						}
-						else {
+						} else {
 							$party_details = $party_details."$$$".$GLOBALS['null_value'];
 						}
 					}

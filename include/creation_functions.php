@@ -4,7 +4,7 @@
 			$list = array(); $select_query = ""; $unit_id = ""; $where = "";
 		
 			if(!empty($unit_name)) {
-				$select_query = "SELECT unit_id FROM ".$GLOBALS['unit_table']." WHERE ".$where." lower_case_name = '".$unit_name."' AND deleted = '0'";	
+				$select_query = "SELECT unit_id FROM " . $GLOBALS['unit_table'] . " WHERE " . $where . " lower_case_name = '" . $unit_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['unit_table'], $select_query);
@@ -23,7 +23,7 @@
 			$list = array(); $select_query = ""; $group_id = ""; $where = "";
 		
 			if(!empty($group_name)) {
-				$select_query = "SELECT group_id FROM ".$GLOBALS['group_table']." WHERE ".$where." lower_case_name = '".$group_name."' AND deleted = '0'";	
+				$select_query = "SELECT group_id FROM " . $GLOBALS['group_table'] . " WHERE " . $where . " lower_case_name = '" . $group_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['group_table'], $select_query);
@@ -41,7 +41,7 @@
 		public function GetUnitLinkedCount($unit_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($unit_id)) {
-				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$unit_id."', unit_id) AND deleted = '0')) as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['product_table'] . " WHERE FIND_IN_SET('" . $unit_id . "', unit_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -58,7 +58,7 @@
 			$list = array(); $select_query = ""; $charges_id = ""; $where = "";
 
 			if(!empty($charge_name)) {
-				$select_query = "SELECT charges_id FROM ".$GLOBALS['charges_table']." WHERE ".$where." lower_case_name = '".$charge_name."' AND deleted = '0'";	
+				$select_query = "SELECT charges_id FROM " . $GLOBALS['charges_table'] . " WHERE " . $where . " lower_case_name = '" . $charge_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['charges_table'], $select_query);
@@ -77,7 +77,7 @@
 			$list = array(); $select_query = ""; $transport_id = ""; 
 			
 			if(!empty($mobile_number)) {
-				$select_query = "SELECT transport_id FROM ".$GLOBALS['transport_table']." WHERE mobile_number = '".$mobile_number."' AND deleted = '0'";	
+				$select_query = "SELECT transport_id FROM " . $GLOBALS['transport_table'] . " WHERE mobile_number = '" . $mobile_number . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['transport_table'], $select_query);
@@ -96,7 +96,7 @@
 			$list = array(); $select_query = ""; $contractor_id = ""; 
 			
 			if(!empty($mobile_number)) {
-				$select_query = "SELECT contractor_id FROM ".$GLOBALS['contractor_table']." WHERE mobile = '".$mobile_number."' AND deleted = '0'";	
+				$select_query = "SELECT contractor_id FROM " . $GLOBALS['contractor_table'] . " WHERE mobile = '" . $mobile_number . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['contractor_table'], $select_query);
@@ -110,20 +110,11 @@
 			}
 			return $contractor_id;
 		}
-
 	
 		public function GetPaymentmodeLinkedCount($payment_mode_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($payment_mode_id)) {
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['bank_table']." WHERE FIND_IN_SET('".$payment_mode_id."', payment_mode_id) AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['expense_table']." WHERE FIND_IN_SET('".$payment_mode_id."', payment_mode_id) AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE FIND_IN_SET('".$payment_mode_id."', payment_mode_id) AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['receipt_table']." WHERE FIND_IN_SET('".$payment_mode_id."', payment_mode_id) AND deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['bank_table'] . " WHERE FIND_IN_SET('" . $payment_mode_id . "', payment_mode_id) AND deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['expense_table'] . " WHERE FIND_IN_SET('" . $payment_mode_id . "', payment_mode_id) AND deleted = '0')	UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE FIND_IN_SET('" . $payment_mode_id . "', payment_mode_id) AND deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['receipt_table'] . " WHERE FIND_IN_SET('" . $payment_mode_id . "', payment_mode_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -139,19 +130,9 @@
 		public function GetBankLinkedCount($bank_id) {
 			$list = array(); $select_query = ""; $where = ""; $count = 0;
 			if(!empty($bank_id)) {
-				$where = " FIND_IN_SET('".$bank_id."', bank_id) AND ";
+				$where = " FIND_IN_SET('" . $bank_id . "', bank_id) AND ";
 
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE FIND_IN_SET('".$bank_id."', bank_id) AND cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE FIND_IN_SET('".$bank_id."', bank_id) AND cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['expense_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['receipt_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE FIND_IN_SET('" . $bank_id . "', bank_id) AND cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE FIND_IN_SET('" . $bank_id . "', bank_id) AND cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['expense_table'] . " WHERE " . $where . " deleted = '0')	UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['receipt_table'] . " WHERE " .$where . " deleted = '0') UNION ALL	(SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE " . $where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -168,7 +149,7 @@
 			$list = array(); $select_query = ""; $payment_mode_id = ""; $where = "";
 		
 			if(!empty($payment_mode_name)) {
-				$select_query = "SELECT payment_mode_id FROM ".$GLOBALS['payment_mode_table']." WHERE ".$where." lower_case_name = '".$payment_mode_name."' AND deleted = '0'";	
+				$select_query = "SELECT payment_mode_id FROM " . $GLOBALS['payment_mode_table'] . " WHERE " . $where . " lower_case_name = '" . $payment_mode_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['payment_mode_table'], $select_query);
@@ -187,7 +168,7 @@
 			$list = array(); $select_query = ""; $factory_id = ""; $where = "";
 		
 			if(!empty($lowercase_name_location)) {
-				$select_query = "SELECT factory_id FROM ".$GLOBALS['factory_table']." WHERE ".$where." lowercase_name_location = '".$lowercase_name_location."' AND deleted = '0'";	
+				$select_query = "SELECT factory_id FROM " . $GLOBALS['factory_table'] . " WHERE " . $where . " lowercase_name_location = '" . $lowercase_name_location . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['factory_table'], $select_query);
@@ -206,7 +187,7 @@
 			$list = array(); $select_query = ""; $godown_id = ""; $where = "";
 		
 			if(!empty($lowercase_name_location)) {
-				$select_query = "SELECT godown_id FROM ".$GLOBALS['godown_table']." WHERE ".$where." lowercase_name_location = '".$lowercase_name_location."' AND deleted = '0'";	
+				$select_query = "SELECT godown_id FROM " . $GLOBALS['godown_table'] . " WHERE " . $where . " lowercase_name_location = '" . $lowercase_name_location . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['godown_table'], $select_query);
@@ -225,7 +206,7 @@
 			$list = array(); $select_query = ""; $magazine_id = ""; $where = "";
 		
 			if(!empty($lowercase_name_location)) {
-				$select_query = "SELECT magazine_id FROM ".$GLOBALS['magazine_table']." WHERE ".$where." lowercase_name_location = '".$lowercase_name_location."' AND deleted = '0'";	
+				$select_query = "SELECT magazine_id FROM " . $GLOBALS['magazine_table'] . " WHERE " . $where . " lowercase_name_location = '" . $lowercase_name_location . "' AND deleted = '0'";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['magazine_table'], $select_query);
@@ -244,7 +225,7 @@
 			$list = array(); $select_query = ""; $contractor_id = ""; $where = "";
 		
 			if(!empty($lowercase_name_location)) {
-				$select_query = "SELECT contractor_id FROM ".$GLOBALS['contractor_table']." WHERE ".$where." lowercase_name_location = '".$lowercase_name_location."' AND deleted = '0'";	
+				$select_query = "SELECT contractor_id FROM " . $GLOBALS['contractor_table'] . " WHERE " . $where . " lowercase_name_location = '" . $lowercase_name_location . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['contractor_table'], $select_query);
@@ -262,7 +243,7 @@
 		public function getContractorKuliId($contractor_id, $product_id, $unit_type) {
 			$id = "";
 			if(!empty($contractor_id) && !empty($product_id) && $unit_type) {
-				$select_query = "SELECT id FROM ".$GLOBALS['contractor_product_table']." WHERE contractor_id = '".$contractor_id."' AND product_id = '".$product_id."' AND unit_type = '".$unit_type."' AND deleted = '0'";
+				$select_query = "SELECT id FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND unit_type = '" . $unit_type . "' AND deleted = '0'";
 				if(!empty($select_query)) {
 					// echo $select_query;
 					$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
@@ -283,7 +264,7 @@
 			$list = array(); $select_query = "";
 		
 			if(!empty($contractor_id)) {
-				$select_query = "SELECT product.product_id, product.product_name, kuli.unit_type, kuli.unit_id, kuli.unit_name, kuli.subunit_id, kuli.subunit_name, kuli.quantity, kuli.rate  FROM ".$GLOBALS['contractor_product_table']." AS kuli LEFT JOIN ".$GLOBALS['product_table']. " AS product ON kuli.product_id = product.product_id WHERE kuli.contractor_id = '".$contractor_id."' AND kuli.deleted = '0' AND product.deleted = '0'";	
+				$select_query = "SELECT product.product_id, product.product_name, kuli.unit_type, kuli.unit_id, kuli.unit_name, kuli.subunit_id, kuli.subunit_name, kuli.quantity, kuli.rate  FROM " . $GLOBALS['contractor_product_table'] . " AS kuli LEFT JOIN " . $GLOBALS['product_table'] . " AS product ON kuli.product_id = product.product_id WHERE kuli.contractor_id = '" . $contractor_id . "' AND kuli.deleted = '0' AND product.deleted = '0'";	
 			}
 			// echo $select_query;
 			if(!empty($select_query)) {
@@ -296,7 +277,7 @@
 			$delete = ''; $select_query = "";
 		
 			if(!empty($contractor_id)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['contractor_product_table']."  WHERE contractor_id = '".$contractor_id."' AND deleted = '0'";	
+				$select_query = "SELECT * FROM " . $GLOBALS['contractor_product_table'] . "  WHERE contractor_id = '" . $contractor_id . "' AND deleted = '0'";	
 			}
 			// echo $select_query;
 			if(!empty($select_query)) {
@@ -318,13 +299,13 @@
 		public function getProductWithGroup($type1, $type2, $type3) {
 			$where = $list = []; $select_query = "";
 			if(!empty($type1)) {
-				$where[] = "groups.lower_case_name = '".$this->encode_decode('encrypt',$type1)."'";
+				$where[] = "groups.lower_case_name = '" . $this->encode_decode('encrypt',$type1) . "'";
 			}
 			if(!empty($type2)) {
-				$where[] = "groups.lower_case_name = '".$this->encode_decode('encrypt',$type2)."'";
+				$where[] = "groups.lower_case_name = '" . $this->encode_decode('encrypt',$type2) . "'";
 			}
 			if(!empty($type3)) {
-				$where[] = "groups.lower_case_name = '".$this->encode_decode('encrypt',$type3)."'";
+				$where[] = "groups.lower_case_name = '" . $this->encode_decode('encrypt',$type3) . "'";
 			}
 
 			$join_condition = "product.group_id = groups.group_id";
@@ -335,7 +316,7 @@
                 "LEFT JOIN " . $GLOBALS['group_table'] . " AS groups ON " . $join_condition . " " .
                 "WHERE product.deleted = '0'";
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['product_table']." WHERE deleted = '0'";	
+				$select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE deleted = '0'";	
 			}
 			// echo $select_query;
 			if(!empty($select_query)) {
@@ -349,7 +330,7 @@
 			$list = array(); $select_query = ""; $transport_id = ""; $where = "";
 
 			if(!empty($lowercase_name_location)) {
-				$select_query = "SELECT transport_id FROM ".$GLOBALS['transport_table']." WHERE ".$where." lower_case_name_location = '".$lowercase_name_location."' AND deleted = '0'";	
+				$select_query = "SELECT transport_id FROM " . $GLOBALS['transport_table'] . " WHERE " . $where . " lower_case_name_location = '" . $lowercase_name_location . "' AND deleted = '0'";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['transport_table'], $select_query);
@@ -370,35 +351,32 @@
 			if(!empty($from_date)) {
                 $from_date = date("Y-m-d", strtotime($from_date));
                 if(!empty($where)) {
-                    $where = $where." AND entry_date >= '".$from_date."'";
-                }
-                else {
-                    $where = "entry_date >= '".$from_date."'";
+                    $where = $where . " AND entry_date >= '" . $from_date . "'";
+                } else {
+                    $where = "entry_date >= '" . $from_date . "'";
                 }
             }
             if(!empty($to_date)) {
                 $to_date = date("Y-m-d", strtotime($to_date));
                 if(!empty($where)) {
-                    $where = $where." AND entry_date <= '".$to_date."'";
-                }
-                else {
-                    $where = "entry_date <= '".$to_date."'";
+                    $where = $where . " AND entry_date <= '" . $to_date . "'";
+                } else {
+                    $where = "entry_date <= '" . $to_date . "'";
                 }
             }
 			if($show_bill == '0' || $show_bill == '1'){
                 if(!empty($where)) {
-                    $where = $where." AND cancelled = '".$show_bill."' ";
-                }
-                else {
-                    $where = "cancelled = '".$show_bill."' ";
+                    $where = $where . " AND cancelled = '" . $show_bill . "' ";
+                } else {
+                    $where = "cancelled = '" . $show_bill . "' ";
                 }
             }
 			// $select_query = "SELECT consumption.*, contractor.name_mobile_city FROM " . $GLOBALS['consumption_entry_table'] . " AS consumption LEFT JOIN " . $GLOBALS['contractor_table'] . " AS contractor ON consumption.contractor_id = contractor.contractor_id WHERE consumption.deleted = '0' ORDER BY consumption.id DESC";
 			// echo $select_query;
 			if(!empty($filter_contractor_id)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['consumption_entry_table']." WHERE  ".$where." AND contractor_id = '".$filter_contractor_id."' AND deleted = '0' ORDER BY id DESC";	
-			}else{
-				 $select_query = "SELECT * FROM ".$GLOBALS['consumption_entry_table']." WHERE  ".$where."  AND deleted = '0'  ORDER BY id DESC";	
+				$select_query = "SELECT * FROM " . $GLOBALS['consumption_entry_table'] . " WHERE  " . $where . " AND contractor_id = '" . $filter_contractor_id . "' AND deleted = '0' ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['consumption_entry_table'] . " WHERE  " . $where . "  AND deleted = '0'  ORDER BY id DESC";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['consumption_entry_table'], $select_query);
@@ -409,10 +387,10 @@
 		public function PurchaseBillNumberAlreadyExists($bill_company_id, $purchase_entry_number) {
 			$list = array(); $select_query = ""; $purchase_entry_id = ""; $where = "";
 			if(!empty($bill_company_id)) {
-				$where = " bill_company_id = '".$bill_company_id."' AND ";
+				$where = " bill_company_id = '" . $bill_company_id . "' AND ";
 			}
 			if(!empty($purchase_entry_number)) {
-				$select_query = "SELECT purchase_entry_id FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." purchase_entry_number = '".$purchase_entry_number."' AND deleted = '0'";	
+				$select_query = "SELECT purchase_entry_id FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " purchase_entry_number = '" . $purchase_entry_number . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['purchase_entry_table'], $select_query);
@@ -431,49 +409,43 @@
             $list = array(); $select_query = ""; $where = "";
             $bill_company_id = $GLOBALS['bill_company_id'];
             // if(!empty($bill_company_id)) {
-			// 	$where = "bill_company_id = '".$bill_company_id."' ";
+			// 	$where = "bill_company_id = '" . $bill_company_id . "' ";
 			// }
             if(!empty($from_date)) {
                 $from_date = date("Y-m-d", strtotime($from_date));
                 if(!empty($where)) {
-                    $where = $where." AND purchase_entry_date >= '".$from_date."'";
-                }
-                else {
-                    $where = "purchase_entry_date >= '".$from_date."'";
+                    $where = $where . " AND purchase_entry_date >= '" . $from_date . "'";
+                } else {
+                    $where = "purchase_entry_date >= '" . $from_date . "'";
                 }
             }
             if(!empty($to_date)) {
                 $to_date = date("Y-m-d", strtotime($to_date));
                 if(!empty($where)) {
-                    $where = $where." AND purchase_entry_date <= '".$to_date."'";
-                }
-                else {
-                    $where = "purchase_entry_date <= '".$to_date."'";
+                    $where = $where . " AND purchase_entry_date <= '" . $to_date . "'";
+                } else {
+                    $where = "purchase_entry_date <= '" . $to_date . "'";
                 }
             }
             if($show_bill == '0' || $show_bill == '1'){
                 if(!empty($where)) {
-                    $where = $where." AND cancelled = '".$show_bill."' ";
-                }
-                else {
-                    $where = "cancelled = '".$show_bill."' ";
+                    $where = $where . " AND cancelled = '" . $show_bill . "' ";
+                } else {
+                    $where = "cancelled = '" . $show_bill . "' ";
                 }
             }
 			if(!empty($product_group)) {
                 if(!empty($where)) {
-                    $where = $where." AND product_group = '".$product_group."' ";
-                }
-                else {
-                    $where = "product_group = '".$product_group."' ";
+                    $where = $where . " AND product_group = '" . $product_group . "' ";
+                } else {
+                    $where = "product_group = '" . $product_group . "' ";
                 }
             }
 
-
 			if(!empty($where)) {
-				 $select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+				 $select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " AND deleted = '0' ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
 			}
             
             if(!empty($select_query)) {
@@ -486,7 +458,7 @@
 			$list = array(); $select_query = "";
 		
 			if(!empty($contractor_id)) {
-				$select_query = "SELECT cp.product_id, p.product_name, cp.unit_type, cp.unit_id, cp.unit_name, cp.subunit_id, cp.subunit_name, cp.quantity, cp.rate  FROM ".$GLOBALS['contractor_product_table']." AS cp LEFT JOIN ".$GLOBALS['product_table']. " AS p ON cp.product_id = p.product_id WHERE cp.contractor_id = '".$contractor_id."' AND cp.group_id = '".$finished_product_group_id."' AND cp.deleted = '0' AND p.deleted = '0' GROUP BY cp.product_id ";	
+				$select_query = "SELECT cp.product_id, p.product_name, cp.unit_type, cp.unit_id, cp.unit_name, cp.subunit_id, cp.subunit_name, cp.quantity, cp.rate  FROM " . $GLOBALS['contractor_product_table'] . " AS cp LEFT JOIN " . $GLOBALS['product_table']. " AS p ON cp.product_id = p.product_id WHERE cp.contractor_id = '" . $contractor_id . "' AND cp.group_id = '" . $finished_product_group_id . "' AND cp.deleted = '0' AND p.deleted = '0' GROUP BY cp.product_id ";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
@@ -498,7 +470,7 @@
 			$list = array(); $select_query = "";
 		
 			if(!empty($product_id)) {
-				 $select_query = "SELECT Distinct case_contains FROM ".$GLOBALS['stock_table']." WHERE  product_id = '".$product_id."' AND deleted = '0'";
+				 $select_query = "SELECT Distinct case_contains FROM " . $GLOBALS['stock_table'] . " WHERE  product_id = '" . $product_id . "' AND deleted = '0'";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_table'], $select_query);
@@ -510,52 +482,46 @@
 			$list = array(); $select_query = ""; $where = "";
 			if(!empty($filter_magazine_id)) {
 				if(!empty($where)) {
-					$where = $where." AND magazine_id = '".$filter_magazine_id."'";
-				}
-				else {
-					$where = "magazine_id = '".$filter_magazine_id."'";
+					$where = $where . " AND magazine_id = '" . $filter_magazine_id . "'";
+				} else {
+					$where = "magazine_id = '" . $filter_magazine_id . "'";
 				}
 			}
 			if(!empty($filter_contractor_id)) {
 				if(!empty($where)) {
-					$where = $where." AND contractor_id = '".$filter_contractor_id."'";
-				}
-				else {
-					$where = "contractor_id = '".$filter_contractor_id."'";
+					$where = $where . " AND contractor_id = '" . $filter_contractor_id . "'";
+				} else {
+					$where = "contractor_id = '" . $filter_contractor_id . "'";
 				}
 			}
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date >= '".$from_date."'";
-				}
-				else {
-					$where = "entry_date >= '".$from_date."'";
+					$where = $where . " AND entry_date >= '" . $from_date . "'";
+				} else {
+					$where = "entry_date >= '" . $from_date . "'";
 				}
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date <= '".$to_date."'";
-				}
-				else {
-					$where = "entry_date <= '".$to_date."'";
+					$where = $where . " AND entry_date <= '" . $to_date . "'";
+				} else {
+					$where = "entry_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND cancelled = '".$show_bill."' ";
-				}
-				else {
-					$where = "cancelled = '".$show_bill."' ";
+					$where = $where . " AND cancelled = '" . $show_bill . "' ";
+				} else {
+					$where = "cancelled = '" . $show_bill . "' ";
 				}
 			}
 	
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['daily_production_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+				$select_query = "SELECT * FROM " . $GLOBALS['daily_production_table'] . " WHERE " . $where . " AND deleted = '0' ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['daily_production_table'] . " WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['daily_production_table'], $select_query);
@@ -567,7 +533,7 @@
 			$select_query = ""; $list = array(); $rate_type = ""; $amount = 0;
 
 			if(!empty($contractor_id) && !empty($product_id)) {
-				$select_query = "SELECT rate_per_unit, rate_per_subunit, unit_type FROM ".$GLOBALS['contractor_product_table']." WHERE contractor_id = '".$contractor_id."' AND product_id = '".$product_id."' AND deleted = '0'";
+				$select_query = "SELECT rate_per_unit, rate_per_subunit, unit_type FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND deleted = '0'";
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
 				}
@@ -580,7 +546,7 @@
 			$list = array(); $select_query = "";
 
 			if(!empty($contractor_id)) {
-				echo $select_query = "SELECT cp.product_id, p.product_name, cp.unit_type, cp.unit_id, cp.unit_name, cp.subunit_id, cp.subunit_name, cp.quantity, cp.rate  FROM ".$GLOBALS['contractor_product_table']." AS cp LEFT JOIN ".$GLOBALS['product_table']. " AS p ON cp.product_id = p.product_id WHERE cp.contractor_id = '".$contractor_id."' AND cp.group_id = '".$finished_product_group_id."' AND cp.deleted = '0' AND p.deleted = '0' GROUP BY cp.product_id ";	
+				echo $select_query = "SELECT cp.product_id, p.product_name, cp.unit_type, cp.unit_id, cp.unit_name, cp.subunit_id, cp.subunit_name, cp.quantity, cp.rate  FROM " . $GLOBALS['contractor_product_table'] . " AS cp LEFT JOIN " . $GLOBALS['product_table']. " AS p ON cp.product_id = p.product_id WHERE cp.contractor_id = '" . $contractor_id . "' AND cp.group_id = '" . $finished_product_group_id . "' AND cp.deleted = '0' AND p.deleted = '0' GROUP BY cp.product_id ";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
@@ -592,52 +558,46 @@
 			$list = array(); $select_query = ""; $where = "";
 			if(!empty($filter_godown_id)) {
 				if(!empty($where)) {
-					$where = $where." AND godown_id = '".$filter_godown_id."'";
-				}
-				else {
-					$where = "godown_id = '".$filter_godown_id."'";
+					$where = $where . " AND godown_id = '" . $filter_godown_id . "'";
+				} else {
+					$where = "godown_id = '" . $filter_godown_id . "'";
 				}
 			}
 			if(!empty($filter_contractor_id)) {
 				if(!empty($where)) {
-					$where = $where." AND contractor_id = '".$filter_contractor_id."'";
-				}
-				else {
-					$where = "contractor_id = '".$filter_contractor_id."'";
+					$where = $where . " AND contractor_id = '" . $filter_contractor_id . "'";
+				} else {
+					$where = "contractor_id = '" . $filter_contractor_id . "'";
 				}
 			}
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date >= '".$from_date."'";
-				}
-				else {
-					$where = "entry_date >= '".$from_date."'";
+					$where = $where . " AND entry_date >= '" . $from_date . "'";
+				} else {
+					$where = "entry_date >= '" . $from_date . "'";
 				}
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date <= '".$to_date."'";
-				}
-				else {
-					$where = "entry_date <= '".$to_date."'";
+					$where = $where . " AND entry_date <= '" . $to_date . "'";
+				} else {
+					$where = "entry_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND cancelled = '".$show_bill."' ";
-				}
-				else {
-					$where = "cancelled = '".$show_bill."' ";
+					$where = $where . " AND cancelled = '" . $show_bill . "' ";
+				} else {
+					$where = "cancelled = '" . $show_bill . "' ";
 				}
 			}
 	
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['semifinished_inward_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+				$select_query = "SELECT * FROM " . $GLOBALS['semifinished_inward_table'] . " WHERE " . $where . " AND deleted = '0' ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['semifinished_inward_table'] . " WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['semifinished_inward_table'], $select_query);
@@ -646,12 +606,11 @@
 		}
 
 		public function getAgentCustomerList($agent_id) {
-            if(empty($agent_id))
-            {
+            if(empty($agent_id)) {
                 $agent_id =$GLOBALS['null_value'];
             }
             $select_query ="";
-            $select_query ="SELECT * FROM ".$GLOBALS['customer_table']." WHERE agent_id ='".$agent_id."'  AND deleted = '0' ";
+            $select_query ="SELECT * FROM " . $GLOBALS['customer_table'] . " WHERE agent_id ='" . $agent_id . "'  AND deleted = '0' ";
             $agent_customer_list = $this->getQueryRecords($GLOBALS['customer_table'],$select_query);
             return $agent_customer_list;
         }
@@ -659,10 +618,10 @@
 		function getOpeningStockCount($product_id) {
 			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
 			if(!empty($product_id)) {
-				$where = " FIND_IN_SET('".$product_id."', product_id) AND ";
+				$where = " FIND_IN_SET('" . $product_id . "', product_id) AND ";
 	
 				$select_query = "SELECT id_count FROM 
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_table']." WHERE ".$where." stock_type = 'Opening Stock' AND deleted = '0')
+									(SELECT count(id) as id_count FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " stock_type = 'Opening Stock' AND deleted = '0')
 								as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
@@ -680,9 +639,9 @@
 			$select_query = ""; $list = array();
 			
 			if(!empty($godown)) {
-				$select_query = "SELECT godown.product_id, product.product_name FROM ". $GLOBALS['stock_by_godown_table'] ." as godown
-				LEFT JOIN ". $GLOBALS['product_table'] ." as product ON godown.product_id = product.product_id WHERE godown.godown_id =
-				'". $godown ."' AND godown.deleted = '0' GROUP BY godown.product_id";
+				$select_query = "SELECT godown.product_id, product.product_name FROM " .  $GLOBALS['stock_by_godown_table']  . " as godown
+				LEFT JOIN " .  $GLOBALS['product_table']  . " as product ON godown.product_id = product.product_id WHERE godown.godown_id =
+				'" .  $godown  . "' AND godown.deleted = '0' GROUP BY godown.product_id";
 			}
 				
 			if(!empty($select_query)) {
@@ -697,14 +656,13 @@
 			$select_query = ""; $list = array();
 			
 			if(!empty($magazine)) {
-				$select_query = "SELECT magazine.product_id, product.product_name FROM ". $GLOBALS['stock_by_magazine_table'] ." as
-				magazine LEFT JOIN ". $GLOBALS['product_table'] ." as product ON magazine.product_id = product.product_id WHERE
-				magazine.magazine_id = '". $magazine ."' AND magazine.deleted = '0' GROUP BY magazine.product_id";
+				$select_query = "SELECT magazine.product_id, product.product_name FROM " .  $GLOBALS['stock_by_magazine_table']  . " as
+				magazine LEFT JOIN " .  $GLOBALS['product_table']  . " as product ON magazine.product_id = product.product_id WHERE
+				magazine.magazine_id = '" .  $magazine  . "' AND magazine.deleted = '0' GROUP BY magazine.product_id";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_by_magazine_table'], $select_query);
 			}
-			
 			
 			return $list;
 		}
@@ -714,37 +672,37 @@
 			// $bill_company_id = $GLOBALS['bill_company_id'];
 
 			// if(!empty($bill_company_id)) {
-			// 	$where = "bill_company_id = '".$bill_company_id."' ";
+			// 	$where = "bill_company_id = '" . $bill_company_id . "' ";
 			// }
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND material_transfer_date >= '".$from_date."'";
+					$where = $where . " AND material_transfer_date >= '" . $from_date . "'";
 				} else {
-					$where = "material_transfer_date >= '".$from_date."'";
+					$where = "material_transfer_date >= '" . $from_date . "'";
 				}
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND material_transfer_date <= '".$to_date."'";
+					$where = $where . " AND material_transfer_date <= '" . $to_date . "'";
 				} else {
-					$where = " material_transfer_date <='".$to_date."'";
+					$where = " material_transfer_date <='" . $to_date . "'";
 				}
 			}
 
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND deleted = '".$show_bill."' ";
+					$where = $where . " AND deleted = '" . $show_bill . "' ";
 				} else {
-					$where = "deleted = '".$show_bill."' ";
+					$where = "deleted = '" . $show_bill . "' ";
 				}
 			}
 			
 			if(!empty($where)) {
-				$select_query = " SELECT * FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." ORDER BY id DESC"; 
-			} else{ 
-				$select_query="SELECT * FROM " .$GLOBALS['material_transfer_table']." WHERE AND deleted='0' ORDER BY id DESC"; 
+				$select_query = " SELECT * FROM " . $GLOBALS['material_transfer_table'] . " WHERE " . $where . " ORDER BY id DESC"; 
+			} else { 
+				$select_query="SELECT * FROM " .$GLOBALS['material_transfer_table'] . " WHERE AND deleted='0' ORDER BY id DESC"; 
 			} 
 
 			if(!empty($select_query)) {
@@ -757,31 +715,28 @@
 			$unique_id = "";
 
 			if(!empty($contractor_id)){
-				  $where = "contractor_id = '".$contractor_id."' ";
+				  $where = "contractor_id = '" . $contractor_id . "' ";
 			}
 
 			if(!empty($product_id)){
 				if(!empty($where)) {
-					$where = $where." AND product_id = '".$product_id."' ";
-				}
-				else {
-					$where = "product_id = '".$product_id."' ";
+					$where = $where . " AND product_id = '" . $product_id . "' ";
+				} else {
+					$where = "product_id = '" . $product_id . "' ";
 				}
 			}
 			if(!empty($unit_type)){
 				if(!empty($where)) {
-					$where = $where." AND unit_type = '".$unit_type."' ";
-				}
-				else {
-					$where = "unit_type = '".$unit_type."' ";
+					$where = $where . " AND unit_type = '" . $unit_type . "' ";
+				} else {
+					$where = "unit_type = '" . $unit_type . "' ";
 				}
 			}
 	
 			if(!empty($where)) {
-				 $select_query = "SELECT id FROM ".$GLOBALS['contractor_product_table']." WHERE ".$where." AND deleted = '0'";	
-			}
-			else{
-				$select_query = "SELECT id FROM ".$GLOBALS['contractor_product_table']." WHERE deleted = '0' ORDER BY id DESC";
+				 $select_query = "SELECT id FROM " . $GLOBALS['contractor_product_table'] . " WHERE " . $where . " AND deleted = '0'";	
+			} else {
+				$select_query = "SELECT id FROM " . $GLOBALS['contractor_product_table'] . " WHERE deleted = '0' ORDER BY id DESC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
@@ -801,7 +756,7 @@
 			$select_query = ""; $list = array();
 			
 			if(!empty($rawmaterial_group_id)) {
-				$select_query = "SELECT * FROM ". $GLOBALS['product_table'] ."  WHERE group_id != '". $rawmaterial_group_id ."' AND deleted = '0' GROUP BY id DESC";
+				$select_query = "SELECT * FROM " .  $GLOBALS['product_table']  . "  WHERE group_id != '" .  $rawmaterial_group_id  . "' AND deleted = '0' GROUP BY id DESC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['product_table'], $select_query);
@@ -814,7 +769,7 @@
 			$list = array(); $select_query = ""; $expense_category_id = ""; $where = "";
 		
 			if(!empty($expense_category_name)) {
-				$select_query = "SELECT expense_category_id FROM ".$GLOBALS['expense_category_table']." WHERE ".$where." lower_case_name = '".$expense_category_name."' AND deleted = '0'";	
+				$select_query = "SELECT expense_category_id FROM " . $GLOBALS['expense_category_table'] . " WHERE " . $where . " lower_case_name = '" . $expense_category_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['unit_table'], $select_query);
@@ -837,10 +792,9 @@
             $group_id = $this->getTableColumnValue($GLOBALS['group_table'], 'lower_case_name', $encrypted_product_type, 'group_id');
             
             if($product_type == "1"){
-                $select_query = "SELECT * FROM ".$GLOBALS['product_table']." WHERE NOT FIND_IN_SET('".$group_id."', group_id) AND deleted = '0' ORDER BY id DESC";
-            }
-            else if($product_type == "2"){
-                $select_query = "SELECT * FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$group_id."', group_id) AND deleted = '0' ORDER BY id DESC";
+                $select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE NOT FIND_IN_SET('" . $group_id . "', group_id) AND deleted = '0' ORDER BY id DESC";
+            } else if($product_type == "2"){
+                $select_query = "SELECT * FROM " . $GLOBALS['product_table'] . " WHERE FIND_IN_SET('" . $group_id . "', group_id) AND deleted = '0' ORDER BY id DESC";
             }
             $product_list = $this->getQueryRecords("", $select_query);
             return $product_list;
@@ -852,35 +806,31 @@
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date >= '".$from_date."'";
-				}
-				else {
-					$where = "entry_date >= '".$from_date."'";
+					$where = $where . " AND entry_date >= '" . $from_date . "'";
+				} else {
+					$where = "entry_date >= '" . $from_date . "'";
 				}
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND entry_date <= '".$to_date."'";
-				}
-				else {
-					$where = "entry_date <= '".$to_date."'";
+					$where = $where . " AND entry_date <= '" . $to_date . "'";
+				} else {
+					$where = "entry_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND cancelled = '".$show_bill."' ";
-				}
-				else {
-					$where = "cancelled = '".$show_bill."' ";
+					$where = $where . " AND cancelled = '" . $show_bill . "' ";
+				} else {
+					$where = "cancelled = '" . $show_bill . "' ";
 				}
 			}
 
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['stock_adjustment_table']." WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
+				$select_query = "SELECT * FROM " . $GLOBALS['stock_adjustment_table'] . " WHERE " . $where . " AND deleted = '0' ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['stock_adjustment_table'] . " WHERE cancelled = '0' AND deleted = '0' ORDER BY id DESC";
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['stock_adjustment_table'], $select_query);
@@ -893,40 +843,38 @@
 			
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
-				$where = "purchase_entry_date >= '".$from_date."'";
+				$where = "purchase_entry_date >= '" . $from_date . "'";
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND purchase_entry_date <= '".$to_date."'";
+					$where = $where . " AND purchase_entry_date <= '" . $to_date . "'";
 				} else {
-					$where = " purchase_entry_date <='".$to_date."'";
+					$where = " purchase_entry_date <='" . $to_date . "'";
 				}
 			}
 			if(!empty($supplier_id)) {
 				if(!empty($where)) {
-					$where = $where." AND supplier_id <='".$supplier_id."'";
+					$where = $where . " AND supplier_id <='" . $supplier_id . "'";
 				} else {
-					$where = " supplier_id <='".$supplier_id."'";
+					$where = " supplier_id <='" . $supplier_id . "'";
 				}
 			}
 
 			if(empty($cancel_bill_btn)) {
 				$cancel_bill_btn = 0;
 				if(!empty($where)) {
-					$where = $where." AND cancelled = '0'";
-				}
-				else {
+					$where = $where . " AND cancelled = '0'";
+				} else {
 					$where = "cancelled = '0'";
 				}
 			}
 			
 			if(!empty($where)) {
-				$select_query = " SELECT * FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." AND deleted='0' ORDER BY id
+				$select_query = " SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " AND deleted='0' ORDER BY id
 				DESC"; 
-			} 
-			else { 
-				$select_query="SELECT * FROM " .$GLOBALS['purchase_entry_table']." WHERE deleted='0' ORDER BY id
+			} else { 
+				$select_query="SELECT * FROM " .$GLOBALS['purchase_entry_table'] . " WHERE deleted='0' ORDER BY id
 				DESC"; 
 			} 
 			if(!empty($select_query)) { 
@@ -941,57 +889,57 @@
 			
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
-				$where = "estimate_date >= '".$from_date."'";
+				$where = "estimate_date >= '" . $from_date . "'";
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND estimate_date <= '".$to_date."'";
+					$where = $where . " AND estimate_date <= '" . $to_date . "'";
 				} else {
-					$where = " estimate_date <='".$to_date."'";
+					$where = " estimate_date <='" . $to_date . "'";
 				}
 			}
 			if(!empty($customer_id)) {
 				if(!empty($where)) {
-					$where = $where." AND customer_id='".$customer_id."'";
+					$where = $where . " AND customer_id='" . $customer_id . "'";
 				} else {
-					$where = " customer_id='".$customer_id."'";
+					$where = " customer_id='" . $customer_id . "'";
 				}
 			}
 			if(!empty($agent_id)) {
 				if(!empty($where)) {
-					$where = $where." AND agent_id='".$agent_id."'";
+					$where = $where . " AND agent_id='" . $agent_id . "'";
 				} else {
-					$where = " agent_id='".$agent_id."'";
+					$where = " agent_id='" . $agent_id . "'";
 				}
 			}
 			if(!empty($transport_id)) {
 				if(!empty($where)) {
-					$where = $where." AND transport_id='".$transport_id."'";
+					$where = $where . " AND transport_id='" . $transport_id . "'";
 				} else {
-					$where = " transport_id='".$transport_id."'";
+					$where = " transport_id='" . $transport_id . "'";
 				}
 			}
 
 			if(empty($cancel_bill_btn)) {
 				$cancel_bill_btn = 0;
 				if(!empty($where)) {
-					$where = $where." AND deleted = '0'";
+					$where = $where . " AND deleted = '0'";
 				} else {
 					$where = "deleted = '0'";
 				}
 			} else {
 				if(!empty($where)) {
-					$where = $where." AND deleted = '1'";
+					$where = $where . " AND deleted = '1'";
 				} else {
 					$where = "deleted = '1'";
 				}
 			}
 			
 			if(!empty($where)) {
-				$select_query = " SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." ORDER BY id DESC";
+				$select_query = " SELECT * FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " ORDER BY id DESC";
 			} else { 
-				$select_query="SELECT * FROM " .$GLOBALS['estimate_table']." ORDER BY id DESC"; 
+				$select_query="SELECT * FROM " .$GLOBALS['estimate_table'] . " ORDER BY id DESC"; 
 			}
 
 			if(!empty($select_query)) { 
@@ -1006,52 +954,49 @@
 		
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
-				$where = "proforma_invoice_date >= '".$from_date."'";
+				$where = "proforma_invoice_date >= '" . $from_date . "'";
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND proforma_invoice_date <= '".$to_date."'";
-				}
-				else {
-					$where = "proforma_invoice_date <= '".$to_date."'";
+					$where = $where . " AND proforma_invoice_date <= '" . $to_date . "'";
+				} else {
+					$where = "proforma_invoice_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND deleted = '".$show_bill."' ";
-				}
-				else {
-					$where = "deleted = '".$show_bill."' ";
+					$where = $where . " AND deleted = '" . $show_bill . "' ";
+				} else {
+					$where = "deleted = '" . $show_bill . "' ";
 				}
 			}
 		
 			if(!empty($customer_id)){
 				if(!empty($where)) {
-					$where = $where." AND customer_id = '".$customer_id."' ";
+					$where = $where . " AND customer_id = '" . $customer_id . "' ";
 				} else {
-					$where = "customer_id = '".$customer_id."' ";
+					$where = "customer_id = '" . $customer_id . "' ";
 				}
 			}
 			if(!empty($agent_id)){
 				if(!empty($where)) {
-					$where = $where." AND agent_id = '".$agent_id."' ";
+					$where = $where . " AND agent_id = '" . $agent_id . "' ";
 				} else {
-					$where = "agent_id = '".$agent_id."' ";
+					$where = "agent_id = '" . $agent_id . "' ";
 				}
 			}
 			if(!empty($transport_id)){
 				if(!empty($where)) {
-					$where = $where." AND transport_id = '".$transport_id."' ";
+					$where = $where . " AND transport_id = '" . $transport_id . "' ";
 				} else {
-					$where = "transport_id = '".$transport_id."' ";
+					$where = "transport_id = '" . $transport_id . "' ";
 				}
 			}
 			if(!empty($where)) {
-				 $select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE deleted = '0' ORDER BY id DESC";
+				 $select_query = "SELECT * FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE deleted = '0' ORDER BY id DESC";
 			}
 			
 			if(!empty($select_query)) {
@@ -1065,51 +1010,50 @@
 		
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
-				$where = "delivery_slip_date >= '".$from_date."'";
+				$where = "delivery_slip_date >= '" . $from_date . "'";
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND delivery_slip_date <= '".$to_date."'";
+					$where = $where . " AND delivery_slip_date <= '" . $to_date . "'";
 				} else {
-					$where = "delivery_slip_date <= '".$to_date."'";
+					$where = "delivery_slip_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND deleted = '".$show_bill."' ";
-				}
-				else {
-					$where = "deleted = '".$show_bill."' ";
+					$where = $where . " AND deleted = '" . $show_bill . "' ";
+				} else {
+					$where = "deleted = '" . $show_bill . "' ";
 				}
 			}
 		
 			if(!empty($customer_id)){
 				if(!empty($where)) {
-					$where = $where." AND customer_id = '".$customer_id."' ";
+					$where = $where . " AND customer_id = '" . $customer_id . "' ";
 				} else {
-					$where = "customer_id = '".$customer_id."' ";
+					$where = "customer_id = '" . $customer_id . "' ";
 				}
 			}
 			
 			if(!empty($agent_id)){
 				if(!empty($where)) {
-					$where = $where." AND agent_id = '".$agent_id."' ";
+					$where = $where . " AND agent_id = '" . $agent_id . "' ";
 				} else {
-					$where = "agent_id = '".$agent_id."' ";
+					$where = "agent_id = '" . $agent_id . "' ";
 				}
 			}
 			if(!empty($transport_id)){
 				if(!empty($where)) {
-					$where = $where." AND transport_id = '".$transport_id."' ";
+					$where = $where . " AND transport_id = '" . $transport_id . "' ";
 				} else {
-					$where = "transport_id = '".$transport_id."' ";
+					$where = "transport_id = '" . $transport_id . "' ";
 				}
 			}
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." ORDER BY id DESC";	
+				$select_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " ORDER BY id DESC";	
 			} else {
-				$select_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE deleted = '0' ORDER BY id DESC";
+				$select_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE deleted = '0' ORDER BY id DESC";
 			}
 		
 			if(!empty($select_query)) {
@@ -1297,8 +1241,8 @@
 		
 		public function getProformaInvoiceActions($proforma_invoice_id) {
 			$list = array();
-			$proforma_invoice_query = "SELECT * FROM ".$GLOBALS['proforma_invoice_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";    
-			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
+			$proforma_invoice_query = "SELECT * FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";    
+			$delivery_slip_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
 		
 			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
 			$proforma_invoice_list = $this->getQueryRecords($GLOBALS['proforma_invoice_table'], $proforma_invoice_query);
@@ -1360,8 +1304,7 @@
 		
 					// Now compare merged_old_products vs merged_new_products
 					$mismatch_found = false;
-		
-		
+
 					foreach ($merged_old_products as $product_id => $old_product) {
 						$old_qty = $old_product['quantity'];
 						$new_qty = isset($merged_new_products[$product_id]['quantity']) ? $merged_new_products[$product_id]['quantity'] : 0;
@@ -1395,8 +1338,8 @@
 		
 		public function getDeliverySlipActions($delivery_slip_id) {
 			$list = array();
-			$estimate_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE delivery_slip_id = '" . $delivery_slip_id . "' AND deleted = '0'";
-			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $delivery_slip_id . "' AND deleted = '0'";
+			$estimate_query = "SELECT * FROM " . $GLOBALS['estimate_table'] . " WHERE delivery_slip_id = '" . $delivery_slip_id . "' AND deleted = '0'";
+			$delivery_slip_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE proforma_invoice_id = '" . $delivery_slip_id . "' AND deleted = '0'";
 		
 			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
 			$estimate_list = $this->getQueryRecords($GLOBALS['estimate_table'], $estimate_query);
@@ -1494,7 +1437,7 @@
 		public function getDeliveryProductsFromPI($proforma_invoice_id) {
 			$list = array();
 		
-			$delivery_slip_query = "SELECT * FROM ".$GLOBALS['delivery_slip_table']." WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
+			$delivery_slip_query = "SELECT * FROM " . $GLOBALS['delivery_slip_table'] . " WHERE proforma_invoice_id = '" . $proforma_invoice_id . "' AND deleted = '0'";
 			$delivery_slip_list = $this->getQueryRecords($GLOBALS['delivery_slip_table'], $delivery_slip_query);
 		
 			$old_products_list = array();
@@ -1541,51 +1484,49 @@
 		
 			if(!empty($from_date)) {
 				$from_date = date("Y-m-d", strtotime($from_date));
-				$where = "estimate_date >= '".$from_date."'";
+				$where = "estimate_date >= '" . $from_date . "'";
 			}
 			if(!empty($to_date)) {
 				$to_date = date("Y-m-d", strtotime($to_date));
 				if(!empty($where)) {
-					$where = $where." AND estimate_date <= '".$to_date."'";
+					$where = $where . " AND estimate_date <= '" . $to_date . "'";
 				} else {
-					$where = "estimate_date <= '".$to_date."'";
+					$where = "estimate_date <= '" . $to_date . "'";
 				}
 			}
 			if($show_bill == '0' || $show_bill == '1'){
 				if(!empty($where)) {
-					$where = $where." AND deleted = '".$show_bill."' ";
-				}
-				else {
-					$where = "deleted = '".$show_bill."' ";
+					$where = $where . " AND deleted = '" . $show_bill . "' ";
+				} else {
+					$where = "deleted = '" . $show_bill . "' ";
 				}
 			}
 		
 			if(!empty($customer_id)){
 				if(!empty($where)) {
-					$where = $where." AND customer_id = '".$customer_id."' ";
+					$where = $where . " AND customer_id = '" . $customer_id . "' ";
 				} else {
-					$where = "customer_id = '".$customer_id."' ";
+					$where = "customer_id = '" . $customer_id . "' ";
 				}
 			}
 			if(!empty($agent_id)){
 				if(!empty($where)) {
-					$where = $where." AND agent_id = '".$agent_id."' ";
+					$where = $where . " AND agent_id = '" . $agent_id . "' ";
 				} else {
-					$where = "agent_id = '".$agent_id."' ";
+					$where = "agent_id = '" . $agent_id . "' ";
 				}
 			}
 			if(!empty($transport_id)){
 				if(!empty($where)) {
-					$where = $where." AND transport_id = '".$transport_id."' ";
+					$where = $where . " AND transport_id = '" . $transport_id . "' ";
 				} else {
-					$where = "transport_id = '".$transport_id."' ";
+					$where = "transport_id = '" . $transport_id . "' ";
 				}
 			}
 			if(!empty($where)) {
-				$select_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE ".$where." ORDER BY id DESC";	
-			}
-			else{
-				$select_query = "SELECT * FROM ".$GLOBALS['estimate_table']." WHERE deleted = '0' ORDER BY id DESC";
+				$select_query = "SELECT * FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " ORDER BY id DESC";	
+			} else {
+				$select_query = "SELECT * FROM " . $GLOBALS['estimate_table'] . " WHERE deleted = '0' ORDER BY id DESC";
 			}
 			
 			if(!empty($select_query)) {
@@ -1617,11 +1558,10 @@
 									}
 								}
 							}
-						}
-						else {
+						} else {
 							$table = trim(str_replace("'", "", $table));
 							$update_query = "";
-							$update_query = "UPDATE ".$table." SET deleted = '1'";
+							$update_query = "UPDATE " . $table . " SET deleted = '1'";
 							if(!empty($update_query)) {							
 								$result = $con->prepare($update_query);
 								if($result->execute() === TRUE) {
@@ -1633,8 +1573,7 @@
 				}
 				if($success == count($tables)) {
 					$success = 1;
-				}
-				else {
+				} else {
 					$success = "Unable to clear";
 				}
 			}
@@ -1781,9 +1720,9 @@
 						$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
 		
 						if($bill_type == "Proforma Invoice") {
-							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value ."'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value ."'", "'" . $null_value ."'", "'" . $null_value ."'");
+							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'", "'" . $null_value  . "'", "'" . $null_value  . "'");
 						} else {
-							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value ."'", "'" . $null_value ."'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value ."'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value ."'");
+							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value  . "'", "'" . $null_value  . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'");
 						}
 		
 						$this->UpdateSQL($GLOBALS['stock_conversion_table'], $stock_current_unique_id['id'], $columns, $values, '');
@@ -1804,9 +1743,9 @@
 					$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_ids[$i], 'unit_name');
 		
 					if($bill_type == "Proforma Invoice") {
-						$values = array("'" . $created_date_time . "'",  "'" . $creator . "'",  "'" . $creator_name . "'", "'" . $bill_company_id . "'",  "'" . $bill_id . "'",  "'" . $bill_number . "'", "'" . $bill_date . "'", "'" . $bill_type . "'", "'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value ."'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value ."'", "'" . $null_value ."'", "'" . $null_value ."'", "'0'");
+						$values = array("'" . $created_date_time . "'",  "'" . $creator . "'",  "'" . $creator_name . "'", "'" . $bill_company_id . "'",  "'" . $bill_id . "'",  "'" . $bill_number . "'", "'" . $bill_date . "'", "'" . $bill_type . "'", "'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'", "'" . $null_value  . "'", "'" . $null_value  . "'", "'0'");
 					} else {
-						$values = array("'" . $created_date_time . "'",  "'" . $creator . "'",  "'" . $creator_name . "'", "'" . $bill_company_id . "'",  "'" . $bill_id . "'",  "'" . $bill_number . "'", "'" . $bill_date . "'", "'" . $bill_type . "'", "'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value ."'", "'" . $null_value ."'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value ."'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value ."'", "'0'");
+						$values = array("'" . $created_date_time . "'",  "'" . $creator . "'",  "'" . $creator_name . "'", "'" . $bill_company_id . "'",  "'" . $bill_id . "'",  "'" . $bill_number . "'", "'" . $bill_date . "'", "'" . $bill_type . "'", "'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value  . "'", "'" . $null_value  . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'", "'0'");
 					}
 		
 					$this->InsertSQL($GLOBALS['stock_conversion_table'], $columns, $values, '', '', '');	
@@ -1841,15 +1780,11 @@
 				}
 			}
 		}
-		
-
-
-		// New 01052025
 
 		public function GetRoleLinkedCount($role_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($role_id)) {
-				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE FIND_IN_SET('".$role_id."', role_id) AND deleted = '0')) as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['user_table'] . " WHERE FIND_IN_SET('" . $role_id . "', role_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1866,20 +1801,10 @@
 		public function GetFactoryLinkedCount($factory_id) {
 			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
 			if(!empty($factory_id)) {
-				$where = " FIND_IN_SET('".$factory_id."', factory_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$factory_id."', from_factory_id) OR FIND_IN_SET('".$factory_id."', to_factory_id)) AND ";
+				$where = " FIND_IN_SET('" . $factory_id . "', factory_id) AND ";
+				$mt_where = " (FIND_IN_SET('" . $factory_id . "', from_factory_id) OR FIND_IN_SET('" . $factory_id . "', to_factory_id)) AND ";
 
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['daily_production_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['godown_table'] . " WHERE " . $where . " deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['magazine_table'] . " WHERE " . $where . " deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['semifinished_inward_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL	(SELECT count(id) as id_count FROM " . $GLOBALS['user_table'] . " WHERE " . $where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1896,23 +1821,11 @@
 		public function GetGodownLinkedCount($godown_id) {
 			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0;
 			if(!empty($godown_id)) {
-				$where = " FIND_IN_SET('".$godown_id."', godown_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$godown_id."', from_location) OR FIND_IN_SET('".$godown_id."', to_location)) AND ";
-				$pt_where = " FIND_IN_SET('".$godown_id."', location_id) AND ";
+				$where = " FIND_IN_SET('" . $godown_id . "', godown_id) AND ";
+				$mt_where = " (FIND_IN_SET('" . $godown_id . "', from_location) OR FIND_IN_SET('" . $godown_id . "', to_location)) AND ";
+				$pt_where = " FIND_IN_SET('" . $godown_id . "', location_id) AND ";
 
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$pt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$pt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['godown_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE ".$pt_where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['consumption_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $pt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['material_transfer_table'] . " WHERE " . $mt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['stock_adjustment_table'] . " WHERE " . $pt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['godown_table'] . " WHERE " . $where . " factory_id != '" . $GLOBALS['null_value'] . "' AND deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['product_table'] . " WHERE " . $pt_where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1928,30 +1841,13 @@
 		public function GetMagazineLinkedCount($magazine_id) {
 			$list = array(); $select_query = ""; $where = ""; $mt_where = ""; $count = 0; $pt_where = ""; $pft_where = "";
 			if(!empty($magazine_id)) {
-				$where = " FIND_IN_SET('".$magazine_id."', magazine_id) AND ";
-				$mt_where = " (FIND_IN_SET('".$magazine_id."', from_location) OR FIND_IN_SET('".$magazine_id."', to_location)) AND ";
-				$st_where = " (FIND_IN_SET('".$magazine_id."', magazine_id) OR FIND_IN_SET('".$magazine_id."', indv_magazine_id)) AND";
-				$pft_where = " FIND_IN_SET('".$magazine_id."', indv_magazine_id) AND ";
-				$pt_where = " FIND_IN_SET('".$magazine_id."', location_id) AND ";
+				$where = " FIND_IN_SET('" . $magazine_id . "', magazine_id) AND ";
+				$mt_where = " (FIND_IN_SET('" . $magazine_id . "', from_location) OR FIND_IN_SET('" . $magazine_id . "', to_location)) AND ";
+				$st_where = " (FIND_IN_SET('" . $magazine_id . "', magazine_id) OR FIND_IN_SET('" . $magazine_id . "', indv_magazine_id)) AND";
+				$pft_where = " FIND_IN_SET('" . $magazine_id . "', indv_magazine_id) AND ";
+				$pt_where = " FIND_IN_SET('" . $magazine_id . "', location_id) AND ";
 				
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$mt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$pft_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$st_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$st_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$pt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$pt_where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['magazine_table']." WHERE ".$where." factory_id != '".$GLOBALS['null_value']."' AND deleted = '0')
-								)
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['daily_production_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['material_transfer_table'] . " WHERE " . $mt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $pft_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $st_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $st_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['stock_adjustment_table'] . " WHERE " . $pt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $pt_where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['magazine_table'] . " WHERE " . $where . " factory_id != '" . $GLOBALS['null_value'] . "' AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -1968,31 +1864,9 @@
 		public function GetProductLinkedCount($product_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0;
 			if(!empty($product_id)) {
-				$where = " FIND_IN_SET('".$product_id."', product_id) AND ";
+				$where = " FIND_IN_SET('" . $product_id . "', product_id) AND ";
 
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['contractor_product_table']." WHERE ".$where." deleted = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['material_transfer_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['stock_adjustment_table']." WHERE ".$where." cancelled = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM  ((SELECT count(id) as id_count FROM " . $GLOBALS['consumption_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['contractor_product_table'] . " WHERE " . $where . " deleted = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['daily_production_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['material_transfer_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL(SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL	(SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['semifinished_inward_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['stock_adjustment_table'] . " WHERE " . $where . " cancelled = '0'))	as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2008,15 +1882,10 @@
 		public function GetSupplierLinkedCount($supplier_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0;
 			if(!empty($supplier_id)) {
-				$where = " FIND_IN_SET('".$supplier_id."', supplier_id) AND ";
-				$voucher_where = " FIND_IN_SET('".$supplier_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $supplier_id . "', supplier_id) AND ";
+				$voucher_where = " FIND_IN_SET('" . $supplier_id . "', party_id) AND ";
 
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$voucher_where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM  ((SELECT count(id) as id_count FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE " . $voucher_where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2033,19 +1902,10 @@
 		public function GetContractorLinkedCount($contractor_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0;
 			if(!empty($contractor_id)) {
-				$where = " FIND_IN_SET('".$contractor_id."', contractor_id) AND ";
-				$voucher_where = " FIND_IN_SET('".$contractor_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $contractor_id . "', contractor_id) AND ";
+				$voucher_where = " FIND_IN_SET('" . $contractor_id . "', party_id) AND ";
 
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['consumption_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['daily_production_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['semifinished_inward_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$voucher_where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['consumption_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['daily_production_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['semifinished_inward_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE " . $voucher_where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2062,20 +1922,10 @@
 		public function GetAgentLinkedCount($agent_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0; $agent_where = "";
 			if(!empty($agent_id)) {
-				$where = " FIND_IN_SET('".$agent_id."', agent_id) AND ";
-				$agent_where = " FIND_IN_SET('".$agent_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $agent_id . "', agent_id) AND ";
+				$agent_where = " FIND_IN_SET('" . $agent_id . "', party_id) AND ";
 
-
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$agent_where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE " . $agent_where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2091,20 +1941,10 @@
 		public function GetCustomerLinkedCount($customer_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0; $customer_where = "";
 			if(!empty($customer_id)) {
-				$where = " FIND_IN_SET('".$customer_id."', customer_id) AND ";
-				$customer_where = " FIND_IN_SET('".$customer_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $customer_id . "', customer_id) AND ";
+				$customer_where = " FIND_IN_SET('" . $customer_id . "', party_id) AND ";
 
-
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['voucher_table']." WHERE ".$customer_where." deleted = '0'))
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['voucher_table'] . " WHERE " . $customer_where . " deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2120,17 +1960,10 @@
 		public function GetTransportLinkedCount($transport_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0; $transport_where = "";
 			if(!empty($transport_id)) {
-				$where = " FIND_IN_SET('".$transport_id."', transport_id) AND ";
+				$where = " FIND_IN_SET('" . $transport_id . "', transport_id) AND ";
 
 
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
-									)
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " cancelled = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2142,22 +1975,13 @@
 			}
 			return $count;
 		}
+
 		public function GetChargesLinkedCount($charges_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0; $charges_where = "";
 			if(!empty($charges_id)) {
-				$where = " FIND_IN_SET('".$charges_id."', other_charges_id) AND ";
+				$where = " FIND_IN_SET('" . $charges_id . "', other_charges_id) AND ";
 
-
-				$select_query = "SELECT id_count FROM 
-									((SELECT count(id) as id_count FROM ".$GLOBALS['purchase_entry_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['proforma_invoice_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['estimate_table']." WHERE ".$where." cancelled = '0')
-									UNION ALL
-									(SELECT count(id) as id_count FROM ".$GLOBALS['delivery_slip_table']." WHERE ".$where." cancelled = '0')
-									)
-								as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['proforma_invoice_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['estimate_table'] . " WHERE " . $where . " cancelled = '0') UNION ALL (SELECT count(id) as id_count FROM " . $GLOBALS['delivery_slip_table'] . " WHERE " . $where . " cancelled = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2169,16 +1993,15 @@
 			}
 			return $count;
 		}
-
 		
 		public function linkedContractor($contractor_id){
 			$list = array(); $select_query = "";  $count = 0;
 			if(!empty($contractor_id)){
-				$where = " FIND_IN_SET('".$contractor_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $contractor_id . "', party_id) AND ";
 			}
 
 			if(!empty($where)){
-				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Contractor Opening Balance' AND deleted = '0'";
+				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type !='Contractor Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2194,11 +2017,11 @@
 		public function PaymentlinkedSupplier($supplier_id){
 			$list = array(); $select_query = "";  $count = 0;
 			if(!empty($supplier_id)){
-				$where = " FIND_IN_SET('".$supplier_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $supplier_id . "', party_id) AND ";
 			}
 
 			if(!empty($where)){
-				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Supplier Opening Balance' AND deleted = '0'";
+				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type !='Supplier Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2210,14 +2033,15 @@
 			}
 			return $count;
 		}
-		public function PaymentlinkedCustomer($customer_id){
+
+		public function PaymentlinkedCustomer($customer_id) {
 			$list = array(); $select_query = "";  $count = 0;
 			if(!empty($customer_id)){
-				$where = " FIND_IN_SET('".$customer_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $customer_id . "', party_id) AND ";
 			}
 
 			if(!empty($where)){
-				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Customer Opening Balance' AND deleted = '0'";
+				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type !='Customer Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2229,14 +2053,15 @@
 			}
 			return $count;
 		}
+
 		public function PaymentlinkedAgent($agent_id){
 			$list = array(); $select_query = "";  $count = 0;
 			if(!empty($agent_id)){
-				$where = " FIND_IN_SET('".$agent_id."', party_id) AND ";
+				$where = " FIND_IN_SET('" . $agent_id . "', party_id) AND ";
 			}
 
 			if(!empty($where)){
-				 $select_query = "SELECT count(id) as id_count FROM ".$GLOBALS['payment_table']." WHERE ".$where." bill_type !='Agent Opening Balance' AND deleted = '0'";
+				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type !='Agent Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2253,7 +2078,7 @@
 			$list = array(); $select_query = ""; $finished_group_id = ""; $where = "";
 		
 			if(!empty($finished_group_name)) {
-				$select_query = "SELECT finished_group_id FROM ".$GLOBALS['finished_group_table']." WHERE ".$where." lower_case_name = '".$finished_group_name."' AND deleted = '0'";	
+				$select_query = "SELECT finished_group_id FROM " . $GLOBALS['finished_group_table'] . " WHERE " . $where . " lower_case_name = '" . $finished_group_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['finished_group_table'], $select_query);
@@ -2272,7 +2097,7 @@
 			$list = array(); $select_query = ""; $raw_material_group_id = ""; $where = "";
 		
 			if(!empty($raw_material_group_name)) {
-				$select_query = "SELECT raw_material_group_id FROM ".$GLOBALS['raw_material_group_table']." WHERE ".$where." lower_case_name = '".$raw_material_group_name."' AND deleted = '0'";	
+				$select_query = "SELECT raw_material_group_id FROM " . $GLOBALS['raw_material_group_table'] . " WHERE " . $where . " lower_case_name = '" . $raw_material_group_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['raw_material_group_table'], $select_query);
@@ -2291,7 +2116,7 @@
 			$list = array(); $select_query = ""; $semi_finished_group_id = ""; $where = "";
 		
 			if(!empty($semi_finished_group_name)) {
-				$select_query = "SELECT semi_finished_group_id FROM ".$GLOBALS['semi_finished_group_table']." WHERE ".$where." lower_case_name = '".$semi_finished_group_name."' AND deleted = '0'";	
+				$select_query = "SELECT semi_finished_group_id FROM " . $GLOBALS['semi_finished_group_table'] . " WHERE " . $where . " lower_case_name = '" . $semi_finished_group_name . "' AND deleted = '0'";	
 			}
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['semi_finished_group_table'], $select_query);
@@ -2309,7 +2134,7 @@
 		public function GetFinishedGroupLinkedCount($finished_group_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($finished_group_id)) {
-				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$finished_group_id."', finished_group_id) AND deleted = '0')) as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['product_table'] . " WHERE FIND_IN_SET('" . $finished_group_id . "', finished_group_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2344,7 +2169,7 @@
 		public function GetSemiFinishedGroupLinkedCount($semi_finished_group_id) {
 			$list = array(); $select_query = ""; $count = 0;
 			if(!empty($semi_finished_group_id)) {
-				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM ".$GLOBALS['product_table']." WHERE FIND_IN_SET('".$semi_finished_group_id."', semi_finished_group_id) AND deleted = '0')) as g";
+				$select_query = "SELECT id_count FROM ((SELECT count(id) as id_count FROM " . $GLOBALS['product_table'] . " WHERE FIND_IN_SET('" . $semi_finished_group_id . "', semi_finished_group_id) AND deleted = '0')) as g";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {
@@ -2362,11 +2187,11 @@
 			$where = "";
 
 			if(!empty($group_id)) {
-				$where = " FIND_IN_SET('".$group_id."', group_id) AND ";
+				$where = " FIND_IN_SET('" . $group_id . "', group_id) AND ";
 			}
 
 			if(!empty($finished_group_id)) {
-				 $where .= " FIND_IN_SET('".$finished_group_id."', finished_group_id) AND ";
+				 $where .= " FIND_IN_SET('" . $finished_group_id . "', finished_group_id) AND ";
 			}
 
 			if(!empty($where)) {

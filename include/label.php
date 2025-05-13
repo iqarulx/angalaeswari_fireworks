@@ -156,4 +156,7 @@
 	$GLOBALS['stock_action_plus'] = "Plus"; $GLOBALS['stock_action_minus'] = "Minus";
 	$GLOBALS['stock_action_list'] = array($GLOBALS['stock_action_plus'], $GLOBALS['stock_action_minus']); 
 
+	$GLOBALS['raw_material_group_id'] = "4d5449774e4449774d6a55784d44557a4d444a664d444d3d";
+	$GLOBALS['semi_finished_group_id'] = "4d5449774e4449774d6a55784d4455794e4464664d44493d";
+	$GLOBALS['finished_group_id'] = "4d5449774e4449774d6a55784d4455794d7a4e664d44453d";
 	?>

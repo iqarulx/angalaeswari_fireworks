@@ -126,6 +126,9 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
+                    <div class="bg-googleplus card-header">
+                        <h5 class="text-dark">Pending Balance Report</h5>
+                    </div>
                     <div class="border card-box d-none add_update_form_content" id="add_update_form_content" ></div>
                     <form name="pending_balance_report_form" method="POST">
                         <div class="border card-box" id="table_records_cover">
@@ -666,7 +669,6 @@
     }
 
     function viewpreview(type,bill_id, sub_bill_id){
-        console.log(sub_bill_id);
         var url = "";
         bill_id = bill_id.trim();
         type = type.trim();

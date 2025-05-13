@@ -20,7 +20,6 @@ function GetProdetails() {
                             }
                             window.globalVar = result[1].split("%%");
                             if (result[4] != "" && result[4] != "NULL") {
-                                console.log(result[result.length - 1]);
                                 $("#contents_div").removeClass("d-none");
                                 if (jQuery('.content_name_span').length > 0) {
                                     jQuery('.content_name_span').html(result[result.length - 1]);

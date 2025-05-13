@@ -19,8 +19,8 @@
 
 			return $project_title;
 		}
-		public function select_values($table, $columns, $values, $order)
-		{
+
+		public function select_values($table, $columns, $values, $order) {
 			$con = parent::connect();
 			$select_query = "";
 			$check = ''; $data_values = array();
@@ -34,8 +34,7 @@
 				}
 				$check = trim($check);
 				$select_query = "SELECT * FROM ".$table." WHERE ".$check;
-			}
-			else			
+			} else			
 				$select_query = "SELECT * FROM ".$table;
 				
 			if(!empty($order)) {
@@ -87,38 +86,28 @@
             $prefix = "";
             if(!empty($table) && $table == $GLOBALS['purchase_entry_table']) {
                 $prefix = 'PE';
-            }
-			else if(!empty($table) && $table == $GLOBALS['expense_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['expense_table']) {
                 $prefix = 'EXP';
-            }
-			else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
                 $prefix = 'VC';
-            }
-			else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
                 $prefix = 'RC';
             }
 			if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
                 $prefix = 'CON';
-            }
-			else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                 $prefix = 'DAP';
-            }
-			else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
                 $prefix = 'STA';
-            }
-			else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
                 $prefix = 'SMI';
-            }
-			else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
                 $prefix = 'MAT';
-            }
-			else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                 $prefix = 'PI';
-            }
-			else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
                 $prefix = 'DS';
-            }
-			else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+            } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
                 $prefix = 'EST';
             }
 			// else if(!empty($table) && $table == $GLOBALS['sales_invoice_table']) {
@@ -152,48 +141,37 @@
 					if(!empty($table) && $table == $GLOBALS['purchase_entry_table']) {
                         $last_number = str_replace("PE","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['expense_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['expense_table']) {
                         $last_number = str_replace("EXP","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['voucher_table']) {
                         $last_number = str_replace("VC","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['receipt_table']) {
                         $last_number = str_replace("RC","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['consumption_entry_table']) {
                         $last_number = str_replace("CON","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['daily_production_table']) {
                         $last_number = str_replace("DAP","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['stock_adjustment_table']) {
                         $last_number = str_replace("STA","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['semifinished_inward_table']) {
                         $last_number = str_replace("SMI","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['material_transfer_table']) {
                         $last_number = str_replace("MAT","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['proforma_invoice_table']) {
                         $last_number = str_replace("PI","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['delivery_slip_table']) {
                         $last_number = str_replace("DS","",$last_number);
                         $last_number = trim($last_number);
-                    }
-					else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
+                    } else if(!empty($table) && $table == $GLOBALS['estimate_table']) {
                         $last_number = str_replace("EST","",$last_number);
                         $last_number = trim($last_number);
                     }
@@ -212,30 +190,24 @@
                     $current_year = date("y") - 1; $next_year = date("y");
                 }
                 if(date("d-m-Y") >= date("01-04-Y")) {
-                    if(strpos($last_id_number,($current_year.'-'.$next_year)) !== false){
-                        
-                    }
-                    else{
+                    if(strpos($last_id_number,($current_year.'-'.$next_year)) !== false) { } else {
                         $next_number = 1;
                     }
                 }
                 if(strlen($next_number) == "1"){
                     $next_number = '00'.$next_number;
-                }
-                else if(strlen($next_number) == "2"){
+                } else if(strlen($next_number) == "2"){
                     $next_number = '0'.$next_number;
                 }
                 
                 if(!empty($prefix)) {
                     $next_number = $prefix.$next_number.'/'.$current_year.'-'.$next_year;
-                }
-                else{
+                } else{
                     $next_number = $next_number.'/'.$current_year.'-'.$next_year;
                 }
             }
             return $next_number;
         }
-
 
 		public function InsertSQL($table, $columns, $values, $custom_id, $unique_number, $action) {
 			$con = $this->connect(); $last_insert_id = "";
@@ -268,8 +240,7 @@
 								$custom_id_value = "";
 								if($last_insert_id < 10) {
 									$custom_id_value = date("dmYhis")."_0".$last_insert_id;
-								}
-								else {
+								} else {
 									$custom_id_value = date("dmYhis")."_".$last_insert_id;
 								}
 
@@ -280,8 +251,7 @@
 								if(!empty($unique_number) && !empty($unique_number_value)) {
 									$columns = array($custom_id, $unique_number);
 									$values = array("'".$custom_id_value."'", "'".$unique_number_value."'");
-								}	
-								else {			
+								} else {			
 									$columns = array($custom_id);
 									$values = array("'".$custom_id_value."'");
 								}
@@ -289,17 +259,14 @@
 								if(preg_match("/^\d+$/", $update_id)) {
 									$last_log_id = $this->add_log($table, $last_insert_id, $insert_query, $action);			
 								}
-							}
-							else {
+							} else {
 								$last_log_id = $this->add_log($table, $last_insert_id, $insert_query, $action);
 							}
 						}
-					}
-					else {
+					} else {
 						$last_insert_id = "Unable to insert the data";
 					}
-				}
-				else {
+				} else {
 					$last_insert_id = "Columns are not match";
 				}
 			}			
@@ -327,16 +294,13 @@
 						if($result->execute() === TRUE) {
 							$msg = 1;							
 							$last_log_id = $this->add_log($table, $update_id, $update_query, $action);
-						}
-						else {
+						} else {
 							$msg = "Unable to update the data";
 						}
-					}
-					else {
+					} else {
 						$msg = "Unable to update the data";
 					}
-				}
-				else {
+				} else {
 					$msg = "Columns are not match";
 				}
 			}
@@ -465,8 +429,7 @@
 									$myfile = fopen($log_backup_file, "a");
 									fputcsv($myfile, $values);
 									fclose($myfile);
-								}
-								else {
+								} else {
 									$myfile = fopen($log_backup_file, "a");
 									fputcsv($myfile, $values);
 									fclose($myfile);
@@ -501,9 +464,7 @@
 									}
 								}
 							}
-						}
-						else {
-							
+						} else {	
 							$fp = fopen($log_backup_file,"w");
 							$log_headings = array('type', 'created_date_time', 'creator', 'creator_name', 'creator_mobile_number', 'table', 'table_unique_id', 'action', 'query');
 							
@@ -514,7 +475,6 @@
 							fputcsv($myfile, $values);
 							fclose($myfile);
 						}
-
 					}
 				}
 			}			
@@ -554,8 +514,7 @@
 			if(!empty($table)) {
 				if(!empty($column) && !empty($value)) {		
 					$select_query = "SELECT * FROM ".$table." WHERE ".$column." = '".$value."' AND deleted = '0' ORDER BY id ".$order;	
-				}
-				else if(empty($column) && empty($value)) {		
+				} else if(empty($column) && empty($value)) {		
 					$select_query = "SELECT * FROM ".$table." WHERE deleted = '0' ORDER BY id ".$order;	
 				}
 			}			
@@ -565,22 +524,20 @@
 			}
 			return $list;
 		}
+
 		public function getAllRecords($table, $column, $value) {
 			$result = ""; $select_query = "";
 			if(!empty($table)) {
 				if($table == 'user'){
 					if(!empty($column) && !empty($value)) {		
 						$select_query = "SELECT * FROM ".$table." WHERE ".$column." = '".$value."' ORDER BY id DESC";	
-					}
-					else if(empty($column) && empty($value)) {		
+					} else if(empty($column) && empty($value)) {		
 						$select_query = "SELECT * FROM ".$table." ORDER BY id DESC";	
 					}
-				}
-				else{
+				} else {
 					if(!empty($column) && !empty($value)) {		
 						$select_query = "SELECT * FROM ".$table." WHERE ".$column." = '".$value."' ORDER BY id DESC";	
-					}
-					else if(empty($column) && empty($value)) {		
+					} else if(empty($column) && empty($value)) {		
 						$select_query = "SELECT * FROM ".$table." ORDER BY id DESC";	
 					}
 				}
@@ -590,6 +547,7 @@
 			}
 			return $result;
 		}
+
 		public function getQueryRecords($table, $select_query) {
 			$con = $this->connect(); $list = array();
 			if(!empty($select_query)) {
@@ -700,8 +658,7 @@
 			$msg = "";
 			if(!empty($backupAlert) && $backupAlert == 1) {
 				$msg = $backup_file;
-			}
-			else {
+			} else {
 				$msg = $backupAlert;
 			}
 			return $msg;
@@ -711,10 +668,12 @@
 			$target_dir = "include/images/upload/";
 			return $target_dir;
 		}
+
 		public function temp_image_directory() {
 			$temp_dir = "include/images/temp/";
 			return $temp_dir;
 		}
+
 		public function clear_temp_image_directory() {
 			$temp_dir = "include/images/temp/";
 			
@@ -727,35 +686,11 @@
 			return true;
 		}
 		
-		// public function check_user_id_ip_address() {
-		// 	$con = $this->connect();
-		// 	$select_query = ""; $check_login_id = "";
-			
-		// 	if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
-		// 		$select_query = "SELECT id FROM ".$GLOBALS['login_table']." WHERE user_id = '".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']."' AND ip_address = '".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address']."' AND logout_date_time = '0000-00-00 00:00:00' ORDER BY id DESC LIMIT 1";
-				
-		// 		$result = 0; $pdo = "";			
-		// 		$pdo = $con->prepare($select_query);
-		// 		$pdo->execute();	
-		// 		$result = $pdo->setFetchMode(PDO::FETCH_ASSOC);
-		// 		if(!empty($result)) {
-		// 			foreach($pdo->fetchAll() as $row) {
-		// 				$check_login_id = $row['id'];
-		// 			}
-		// 		}
-		// 	}
-		// 	return $check_login_id;
-		// }
 		public function check_user_id_ip_address() {
 			$select_query = ""; $list = array(); $check_login_id = "";			
 			if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
 				if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address'])) {
-					$select_query = "SELECT l.id, u.id as user_unique_id
-										FROM ".$GLOBALS['login_table']." as l 
-										LEFT JOIN ".$GLOBALS['user_table']." as u ON u.user_id = l.user_id AND u.deleted = '0'
-										WHERE l.user_id = '".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']."' 
-											AND l.ip_address = '".$_SESSION[$GLOBALS['site_name_user_prefix'].'_user_ip_address']."' 
-											AND l.logout_date_time = login_date_time ORDER BY l.id DESC LIMIT 1";
+					$select_query = "SELECT l.id, u.id as user_unique_id FROM " . $GLOBALS['login_table'] . " as l LEFT JOIN " . $GLOBALS['user_table'] . " as u ON u.user_id = l.user_id AND u.deleted = '0' WHERE l.user_id = '" . $_SESSION[$GLOBALS['site_name_user_prefix'] . '_user_id'] . "' AND l.ip_address = '" . $_SESSION[$GLOBALS['site_name_user_prefix'] . '_user_ip_address'] . "' AND l.logout_date_time = login_date_time ORDER BY l.id DESC LIMIT 1";
 					$list = $this->getQueryRecords($GLOBALS['login_table'], $select_query);
 					if(!empty($list)) {
 						foreach($list as $row) {
@@ -851,6 +786,7 @@
 			$res = $mailin->send();
 			return $res;
 		}
+		
 		public function CheckRoleAccessPage($role_id, $permission_page) {
 			$list = array(); $select_query = ""; $acccess_permission = 0;
 			$select_query = "SELECT * FROM ".$GLOBALS['role_table']." WHERE role_id = '".$role_id."' AND deleted = '0'";
@@ -875,6 +811,7 @@
 			}
 			return $acccess_permission;
 		}
+
 		public function numberFormat($number, $decimals) {
 			$number = number_format($number, $decimals);
 			$number = trim(str_replace(",", "", $number));
@@ -882,8 +819,7 @@
             if (strpos($number,'.') != null) {
                 $decimalNumbers = substr($number, strpos($number,'.'));
                 $decimalNumbers = substr($decimalNumbers, 1, $decimals);
-            }
-            else {
+            } else {
                 $decimalNumbers = 0;
                 for ($i = 2; $i <=$decimals ; $i++) {
                     $decimalNumbers = $decimalNumbers.'0';
@@ -898,8 +834,7 @@
             for ($i = 0; $i < $stringlength; $i++) {
                 if ($i%2==0 && $i!=$stringlength-1 && $i>1) {
                     $n = $n.$number[$i].',';
-                }
-                else {
+                } else {
                     $n = $n.$number[$i];
                 }
             }
@@ -912,6 +847,7 @@
     
             return $number;
         }
+
 		public function CompanyCount() {
 			$select_query = ""; $list = array(); $count = 0;
 			$select_query = "SELECT COUNT(id) as company_count FROM ".$GLOBALS['company_table']." WHERE deleted = '0'";
@@ -937,7 +873,6 @@
 			$customer_query = "SELECT DISTINCT(city) as others_city FROM ".$GLOBALS['customer_table']." WHERE district = '".$district."' AND city != '".$GLOBALS['null_value']."' ORDER BY id DESC";
 	
 			$select_query = "SELECT DISTINCT(others_city) as city FROM ((".$company_query.") UNION ALL (".$agent_query.") UNION ALL (".$supplier_query.") UNION ALL (".$customer_query.") ) as g";
-			
 			
 			$list = $this->getQueryRecords('', $select_query);
 	

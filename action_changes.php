@@ -134,7 +134,7 @@
         $total_rate = 0;
         $unit_subunit = explode(",", $_REQUEST['unit_subunit']);
 
-        if($product_group == "4d5449774e4449774d6a55784d44557a4d444a664d444d3d" || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
+        if($product_group == $GLOBALS['raw_material_group_id'] || $product_group == "4d5449774e4449774d6a55784d4455794e4464664d44493d"){
             $lcoation_name = '';
             $lcoation_name = $obj->getTableColumnValue($GLOBALS['godown_table'], 'godown_id', $location_id, 'godown_name');
         } else if($product_group == "4d5449774e4449774d6a55784d4455794d7a4e664d44453d"){

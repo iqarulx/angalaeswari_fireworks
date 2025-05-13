@@ -24,9 +24,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         http_response_code(400);
         $output = ['status' => 'error', 'code' => '400', 'message' => 'Invalid Payload Received'];
     }
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $path = isset($_POST['path']) ? $_POST['path'] : (isset($input['path']) ? $input['path'] : null);
+    $content = isset($_POST['content']) ? $_POST['content'] : (isset($input['content']) ? $input['content'] : null);
+
+    if(!empty($path) && $path != null && !empty($content) && $content != null) {
+        $dir_path = __DIR__ . DIRECTORY_SEPARATOR . $path;
+        if (file_exists($dir_path)) {
+            $file_content = file_put_contents($dir_path, $content);
+            http_response_code(200);
+            $output = ['status' => 'success', 'code' => '200', 'message' => 'File updated successfully'];
+        } else {
+            http_response_code(400);
+            $output = ['status' => 'error', 'code' => '400', 'message' => 'File does not exist'];
+        }
+    } else {
+        http_response_code(400);
+        $output = ['status' => 'error', 'code' => '400', 'message' => 'Invalid Payload Received'];
+    }
 } else {
     http_response_code(400);
-    $output = ['status' => 'error', 'code' => '400', 'message' => 'Only GET methods are allowed'];
+    $output = ['status' => 'error', 'code' => '400', 'message' => 'Only GET, POST methods are allowed'];
 }
 
 if(!empty($output)) {
