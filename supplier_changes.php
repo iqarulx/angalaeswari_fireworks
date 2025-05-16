@@ -601,7 +601,8 @@
                             $result = array('number' => '2', 'msg' => $gst_supplier_error);
                         }
                     }
-                }  
+                }
+
                 if(!empty($balance) && $balance == 1) {
                     
                         $bill_id = $supplier_id; 
@@ -637,6 +638,14 @@
                         if(empty($opening_balance_type)){
                             $opening_balance_type = $GLOBALS['null_value'];
                         }
+
+                        if(!empty($edit_id)) {
+                            $date = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $bill_id, 'bill_date');
+                            if(!empty($date)) {
+                                $bill_date = $date;
+                            }
+                        }
+
                         if(!empty($opening_balance) && !empty($opening_balance_type)){
                             $update_balance ="";
                             $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);

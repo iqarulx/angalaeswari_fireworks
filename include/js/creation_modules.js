@@ -286,12 +286,6 @@ function DeleteRow(row_index, id_name) {
                         }
                     }
                 }
-                if (jQuery('#div_selected_supplier').length > 0) {
-                    jQuery('#div_selected_supplier').css({
-                        'pointer-events': 'auto',
-                        'background-color': ''
-                    });
-                }
                 SnoCalculation();
                 CalculateTotalRate();
             }
@@ -1746,10 +1740,6 @@ function AddPurchaseProducts() {
                                 if (jQuery('select[name="finished_group"]').length > 0) {
                                     jQuery('select[name="finished_group"]').val('').trigger('change');
                                 }
-                                jQuery('#div_selected_supplier').css({
-                                    'pointer-events': 'none',
-                                    'background-color': '#e9ecef'
-                                });
                                 calcPurchaseEntrySubTotal();
                                 CheckCharges();
                             }

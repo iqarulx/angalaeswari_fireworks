@@ -642,6 +642,12 @@
                     if(empty($opening_balance_type)){
                         $opening_balance_type = $GLOBALS['null_value'];
                     }
+                    if(!empty($edit_id)) {
+                        $date = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $bill_id, 'bill_date');
+                        if(!empty($date)) {
+                            $bill_date = $date;
+                        }
+                    }
                     if(!empty($opening_balance) && !empty($opening_balance_type)){
 
                         $update_balance ="";

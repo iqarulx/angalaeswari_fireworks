@@ -1470,39 +1470,41 @@ function GetSupplierProducts() {
         supplier_id = jQuery("select[name='supplier_id']").val();
     }
 
-    if (jQuery("select[name='raw_material_group']").length > 0) {
-        jQuery("select[name='raw_material_group']").val('').trigger('change');
-    }
-    if (jQuery("select[name='product_group']").length > 0) {
-        jQuery("select[name='product_group']").val('').trigger('change');
-    }
+    if (jQuery('.purchase_product_row').length == 0) {
+        if (jQuery("select[name='raw_material_group']").length > 0) {
+            jQuery("select[name='raw_material_group']").val('').trigger('change');
+        }
+        if (jQuery("select[name='product_group']").length > 0) {
+            jQuery("select[name='product_group']").val('').trigger('change');
+        }
 
-    var post_url = "dashboard_changes.php?check_login_session=1";
-    jQuery.ajax({
-        url: post_url, success: function (check_login_session) {
-            if (check_login_session == 1) {
-                post_url = "action_changes.php?get_supplier_products&supplier_id=" + supplier_id;
-                jQuery.ajax({
-                    url: post_url, success: function (result) {
-                        if (result != "") {
-                            result = result.split("$$$");
-                            if (result[0] != '') {
-                                if (jQuery("select[name='product']").length > 0) {
-                                    jQuery("select[name='product']").html(result); GetProdetails();
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url, success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    post_url = "action_changes.php?get_supplier_products&supplier_id=" + supplier_id;
+                    jQuery.ajax({
+                        url: post_url, success: function (result) {
+                            if (result != "") {
+                                result = result.split("$$$");
+                                if (result[0] != '') {
+                                    if (jQuery("select[name='product']").length > 0) {
+                                        jQuery("select[name='product']").html(result); GetProdetails();
+                                    }
                                 }
-                            }
-                            if (result[1] != '') {
-                                if (jQuery("select[name='raw_material_group']").length > 0) {
-                                    jQuery("select[name='raw_material_group']").val(result[1]).trigger('change');
-                                }
-                                if (jQuery("select[name='product_group']").length > 0) {
-                                    jQuery("select[name='product_group']").val("4d5449774e4449774d6a55784d44557a4d444a664d444d3d").trigger('change');
+                                if (result[1] != '') {
+                                    if (jQuery("select[name='raw_material_group']").length > 0) {
+                                        jQuery("select[name='raw_material_group']").val(result[1]).trigger('change');
+                                    }
+                                    if (jQuery("select[name='product_group']").length > 0) {
+                                        jQuery("select[name='product_group']").val("4d5449774e4449774d6a55784d44557a4d444a664d444d3d").trigger('change');
+                                    }
                                 }
                             }
                         }
-                    }
-                })
+                    })
+                }
             }
-        }
-    })
+        })
+    }
 }

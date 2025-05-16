@@ -534,9 +534,28 @@ function calQtyTotal() {
 
         /* Total Display */
         var unit_ids = [];
-        if (jQuery('input[name="unit_id[]"]').length > 0) {
-            jQuery('input[name="unit_id[]"]').each(function () {
-                unit_ids.push(jQuery(this).val());
+        if (jQuery('.product_row').length > 0) {
+            jQuery('.product_row').each(function (index, row) {
+                var unit_type = jQuery(row).find('input[name="unit_type[]"]').val();
+                var unit_id = '';
+                if (jQuery(row).find('input[name="unit_id[]"]').length > 0) {
+                    unit_id = jQuery(row).find('input[name="unit_id[]"]').val();
+                }
+                var subunit_id = '';
+                if (jQuery(row).find('input[name="subunit_id[]"]').length > 0) {
+                    subunit_id = jQuery(row).find('input[name="subunit_id[]"]').val();
+                }
+                if (unit_type == 1) {
+                    if (unit_id != '') {
+                        unit_ids.push(unit_id);
+                    }
+                } else if (unit_type == 2) {
+                    if (subunit_id != '') {
+                        unit_ids.push(subunit_id);
+                    } else if (unit_id != '' && subunit_id == '') {
+                        unit_ids.push(unit_id);
+                    }
+                }
             });
         }
         var product_ids = [];
