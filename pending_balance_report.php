@@ -13,11 +13,12 @@
     }
 
     $filter_party_id =""; 
-    $bill_company_id =$GLOBALS['bill_company_id'];
+    $bill_company_id = $GLOBALS['bill_company_id'];
 
-    $to_date = date('Y-m-d');  $current_date = date('Y-m-d');
+    // $from_date = date('Y-m-d', strtotime('-30 days', strtotime($to_date)));
+    $to_date = ""; $from_date = ""; $current_date = "";
+    $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
 
-    $from_date = date('Y-m-d', strtotime('-30 days', strtotime($to_date)));
     if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
     }
@@ -33,9 +34,8 @@
     $view_type = [];
     if (!isset($view_type) || empty($view_type)) {
         $view_type = ['1']; // Default to "Agent"
-    } 
-    else {
-        $view_type = (array)$view_type; // Ensure it's treated as an array
+    } else {
+        $view_type = (array) $view_type; // Ensure it's treated as an array
     }
     if (isset($_POST['view_type'])) {
         $view_type = $_POST['view_type']; // This will be an array
@@ -57,6 +57,9 @@
 
     $supplier_list = array();
     $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '','');
+
+    $contractor_list = array();
+    $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '','');
  
     $total_party_list = array();
     if (!empty($view_type)) {
@@ -65,6 +68,9 @@
         }
         if (in_array('2', $view_type)) {
             $total_party_list = array_merge($total_party_list, $supplier_list);
+        }
+        if (in_array('3', $view_type)) {
+            $total_party_list = array_merge($total_party_list, $contractor_list);
         }
         if (in_array('4', $view_type)) {
             $total_party_list = array_merge($total_party_list, $party_list);
@@ -80,6 +86,13 @@
         }
         if(!empty($supplier_list)) {
             foreach($supplier_list as $data) {
+                if(!empty($data)) {
+                    $total_party_list[] = $data;
+                }
+            }
+        }
+        if(!empty($contractor_list)) {
+            foreach($contractor_list as $data) {
                 if(!empty($data)) {
                     $total_party_list[] = $data;
                 }
@@ -104,6 +117,9 @@
         }
         if (in_array('2', $view_type)) {
             $type[] = "Supplier";
+        }
+        if (in_array('3', $view_type)) {
+            $type[] = "Contractor";
         }
         if (in_array('4', $view_type)) {
             $type[] = "Customer";
@@ -159,6 +175,7 @@
                                                         style="width: 100%;" multiple onchange="Javascript:getPartyName(this);getReport();">
                                                     <option value="1" <?php echo (in_array("1", $view_type) ? 'selected' : ''); ?>>Agent</option>
                                                     <option value="2" <?php echo (in_array("2", $view_type) ? 'selected' : ''); ?>>Supplier</option>
+                                                    <option value="3" <?php echo (in_array("3", $view_type) ? 'selected' : ''); ?>>Contractor</option>
                                                     <option value="4" <?php echo (in_array("4", $view_type) ? 'selected' : ''); ?>>Customer</option>
                                                 </select>
 
@@ -171,7 +188,7 @@
                                                 <div class="form-label-group in-border mb-0">
                                                     <select class="select2 select2-danger" name="filter_party_id"  data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getReport();" <?php if(empty($view_type)){ ?>disabled <?php } ?>>
                                                     <option value="">Select</option>
-                                                    <?php
+                                                        <?php
                                                             if(!empty($total_party_list)) {
                                                                 foreach($total_party_list as $data) {
                                                                     
@@ -182,10 +199,10 @@
                                                                                 if(!empty($data['agent_name'])) {
                                                                                     $data['agent_name'] = $obj->encode_decode('decrypt', $data['agent_name']);
                                                                                     echo html_entity_decode($data['agent_name']);
-                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                        echo " - ".$data['city'];
-                                                                                    }
+                                                                                    // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                    //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                    //     echo " - ".$data['city'];
+                                                                                    // }
                                                                                 }
                                                                             ?>
                                                                         </option>
@@ -199,10 +216,27 @@
                                                                                 if(!empty($data['supplier_name'])) {
                                                                                     $data['supplier_name'] = $obj->encode_decode('decrypt', $data['supplier_name']);
                                                                                     echo html_entity_decode($data['supplier_name']);
-                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                        echo " - ".$data['city'];
-                                                                                    }
+                                                                                    // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                    //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                    //     echo " - ".$data['city'];
+                                                                                    // }
+                                                                                }
+                                                                            ?>
+                                                                        </option>
+                                                                        <?php
+                                                                    }
+
+                                                                    if(!empty($data['contractor_id']) && $data['contractor_id'] !=$GLOBALS['null_value']) {
+                                                                        ?>
+                                                                        <option value="<?php if(!empty($data['contractor_id'])) { echo $data['contractor_id']; } ?>" <?php if(!empty($filter_party_id)){ if($filter_party_id == $data['contractor_id']){ echo "selected"; } } ?>>
+                                                                            <?php
+                                                                                if(!empty($data['contractor_name'])) {
+                                                                                    $data['contractor_name'] = $obj->encode_decode('decrypt', $data['contractor_name']);
+                                                                                    echo html_entity_decode($data['contractor_name']);
+                                                                                    // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                    //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                    //     echo " - ".$data['city'];
+                                                                                    // }
                                                                                 }
                                                                             ?>
                                                                         </option>
@@ -216,10 +250,10 @@
                                                                                 if(!empty($data['customer_name'])) {
                                                                                     $data['customer_name'] = $obj->encode_decode('decrypt', $data['customer_name']);
                                                                                     echo html_entity_decode($data['customer_name']);
-                                                                                    if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                        $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                        echo " - ".$data['city'];
-                                                                                    }
+                                                                                    // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
+                                                                                    //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
+                                                                                    //     echo " - ".$data['city'];
+                                                                                    // }
                                                                                 }
                                                                             ?>
                                                                         </option>
@@ -295,11 +329,13 @@
                                                                     $party_name = "";
                                                                     if(!empty($filter_party_id)) {
                                                                         $party_name="";
-                                                                        if($view_type == '1') {
+                                                                        if(in_array('1', $view_type)) {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'],'agent_id',$filter_party_id,'agent_name');
-                                                                        } else if($view_type == '2') {
+                                                                        } else if(in_array('2', $view_type)) {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$filter_party_id,'supplier_name');
-                                                                        } else if($view_type == '4') {
+                                                                        } else if(in_array('3', $view_type)) {
+                                                                            $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$filter_party_id,'supplier_name');
+                                                                        } else if(in_array('4', $view_type)) {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$filter_party_id,'customer_name');
                                                                         }
                                                                         if(!empty($party_name)) {
@@ -309,11 +345,11 @@
                                                                 ?>
                                                             </th>
                                                         </tr>
-                                                        <tr >
-                                                            <th style="border-top: 1px solid #000!important; border-left: 1px solid #000!important; border-bottom: 1px solid #000!important; border-right: 1px solid #000!important; text-align: center; padding: 3px; font-size: 13px;">S.No</th>
+                                                        <tr>
+                                                            <!-- <th style="border-top: 1px solid #000!important; border-left: 1px solid #000!important; border-bottom: 1px solid #000!important; border-right: 1px solid #000!important; text-align: center; padding: 3px; font-size: 13px;">S.No</th> -->
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Date</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Bill No</th>
-                                                            <?php if($view_type == "1") { ?> <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Customer</th> <?php } ?>
+                                                            <?php if(in_array('1', $view_type)) { ?> <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Customer</th> <?php } ?>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Type</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Credit</th>
                                                             <th style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Debit</th>
@@ -345,7 +381,7 @@
                                                             }
                                                             ?>
                                                                 <tr>
-                                                                    <th colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
+                                                                    <th colspan="<?php if(in_array('1', $view_type)) { echo 4; } else { echo 3; }?>" style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
                                                                         Opening Balance
                                                                     </th>
                                                                     <th style="text-align: right; border: 1px solid #000; padding: 5px 10px; white-space: inherit;">
@@ -369,103 +405,113 @@
                                                         if(!empty($total_records_list)) { ?>
                                                             <tbody>
                                                                 <?php
-                                                                    
-                                                                $sno=0;
+                                                                $sno = 0;
                                                             
                                                                 foreach($total_records_list as $key => $data) {
-                                                                if(!empty($data['bill_list'])){
-                                                                    foreach($data['bill_list'] as $key => $list) {
-                                                                        $credit =0; $debit =0; $total_credit =0; $total_debit =0;
-                                                                        if(!empty($list['credit'])) {
-                                                                            $credit =$list['credit'];
-                                                                        }
-                                                                        if(!empty($list['debit'])) {
-                                                                            $debit = $list['debit'];
-                                                                        }
-                                                                        
-                                                                        $sno++;
-                                                                        ?>
-                                                                        <tr>
-                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;"><?php echo $sno; ?></td>
-                                                                            <td style="border:1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-center px-2 py-2">
-                                                                                <?php 
-                                                                                    echo date('d-m-Y',strtotime($list['bill_date']));
-                                                                                    
-                                                                                ?>
-                                                                            </td>
-                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer; x" class="text-center px-2 py-2" onClick="Javascript:getBillPDF('<?php if(!empty($list['bill_id'])) { echo $list['bill_id']; } ?>');">
-                                                                                <?php
-                                                                                if(!empty($list['bill_number'])) {
-                                                                                    echo $bill_number =  $list['bill_number'];
-                                                                                }
-                                                                                ?>
-                                                                            </td>
-                                                                            <?php if($view_type == "1") { ?>
-                                                                            <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer; x" class="text-center px-2 py-2" onClick="Javascript:getBillPDF('<?php if(!empty($list['bill_id'])) { echo $list['bill_id']; } ?>');">
-                                                                                <?php
-                                                                                    $customer_name = "";
-                                                                                    if(!empty($list['bill_id']) && $list['bill_id'] != "NULL") {
-                                                                                        $customer_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id', $list['bill_id'], 'customer_id');
-                                                    
-                                                                                        if(!empty($customer_id)) {
-                                                                                            $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id', $customer_id, 'customer_name');
-                                                                                            if(!empty($customer_name)) {
-                                                                                                $customer_name = $obj->encode_decode('decrypt', $customer_name);
+                                                                    if(!empty($data['bill_list'])){
+                                                                        foreach($data['bill_list'] as $key => $list) {
+                                                                            $credit =0; $debit =0; $total_credit = 0; $total_debit = 0;
+                                                                            if(!empty($list['credit'])) {
+                                                                                $credit =$list['credit'];
+                                                                            }
+                                                                            if(!empty($list['debit'])) {
+                                                                                $debit = $list['debit'];
+                                                                            }
+                                                                            
+                                                                            $sno++;
+                                                                            ?>
+                                                                            <tr>
+                                                                                <!-- <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;"><?php echo $sno; ?></td> -->
+                                                                                <td style="border:1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-center px-2 py-2">
+                                                                                    <?php 
+                                                                                        echo date('d-m-Y',strtotime($list['bill_date']));
+                                                                                    ?>
+                                                                                </td>
+                                                                                <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer; x" class="text-center px-2 py-2" onClick="Javascript:getBillPDF('<?php if(!empty($list['bill_id'])) { echo $list['bill_id']; } ?>');">
+                                                                                    <?php
+                                                                                    if(!empty($list['bill_number'])) {
+                                                                                        echo $bill_number =  $list['bill_number'];
+                                                                                    }
+                                                                                    ?>
+                                                                                </td>
+                                                                                <?php if(in_array('1', $view_type)) { ?>
+                                                                                <td style="border: 1px solid #000; text-align: center; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer; x" class="text-center px-2 py-2" onClick="Javascript:getBillPDF('<?php if(!empty($list['bill_id'])) { echo $list['bill_id']; } ?>');">
+                                                                                    <?php
+                                                                                        $customer_name = "";
+                                                                                        if(!empty($list['bill_id']) && $list['bill_id'] != "NULL") {
+                                                                                            $customer_id = $obj->getTableColumnValue($GLOBALS['estimate_table'],'estimate_id', $list['bill_id'], 'customer_id');
+                                                        
+                                                                                            if(!empty($customer_id)) {
+                                                                                                $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id', $customer_id, 'customer_name');
+                                                                                                if(!empty($customer_name)) {
+                                                                                                    $customer_name = $obj->encode_decode('decrypt', $customer_name);
+                                                                                                }
                                                                                             }
                                                                                         }
-                                                                                    }
-                                                                                    if(!empty($customer_name)) {
-                                                                                        echo $customer_name;
-                                                                                    }
-                                                                                ?>
-                                                                            </td>
-                                                                            <?php } ?>
-                                                                            <td style="border: 1px solid #000; text-align: center; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer;" class="text-center px-2">
+                                                                                        if(!empty($customer_name)) {
+                                                                                            echo $customer_name;
+                                                                                        }
+                                                                                    ?>
+                                                                                </td>
+                                                                                <?php } ?>
+                                                                                <td style="border: 1px solid #000; text-align: center; font-size: 13px; vertical-align: middle; height: 30px;cursor: pointer;" class="text-center px-2">
                                                                                 <?php
-                                                                                if (!empty($list['bill_type'])) {
-                                                                                    if ($list['bill_type'] == "Estimate") {
-                                                                                        ?>
-                                                                                        <div style="display: flex;justify-content: space-between;">
-                                                                                            <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>', '');" style="width: 50%; cursor: pointer;border-right:1px solid;">
-                                                                                                Estimate
-                                                                                            </div>
-                                                                                            <?php 
-                                                                                                if(!empty($list['bill_id'])) { 
-                                                                                                    $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'estimate_id', $list['bill_id'], 'proforma_invoice_id');
-                                                                                                    ?>
-                                                                                                    <div onclick="viewpreview('2','', '<?php echo $proforma_invoice_id; ?>');" style="width: 50%; cursor: pointer;">
-                                                                                                        Proforma<br>Invoice
-                                                                                                    </div>
-                                                                                                    <?php
-                                                                                                } 
+                                                                                    if (!empty($list['bill_type'])) {
+                                                                                        if ($list['bill_type'] == "Estimate") {
                                                                                             ?>
-                                                                                        </div>
-                                                                                        <?php
+                                                                                            <div style="display: flex;justify-content: space-between;">
+                                                                                                <div onclick="viewpreview('1','<?php echo $list['bill_id']; ?>', '');" style="width: 50%; cursor: pointer;border-right:1px solid;">
+                                                                                                    Estimate
+                                                                                                </div>
+                                                                                                <?php 
+                                                                                                    if(!empty($list['bill_id'])) { 
+                                                                                                        $proforma_invoice_id = $obj->getTableColumnValue($GLOBALS['estimate_table'], 'estimate_id', $list['bill_id'], 'proforma_invoice_id');
+                                                                                                        ?>
+                                                                                                        <div onclick="viewpreview('2','', '<?php echo $proforma_invoice_id; ?>');" style="width: 50%; cursor: pointer;">
+                                                                                                            Proforma<br>Invoice
+                                                                                                        </div>
+                                                                                                        <?php
+                                                                                                    } 
+                                                                                                ?>
+                                                                                            </div>
+                                                                                            <?php
+                                                                                        } else if ($list['bill_type'] == "Voucher") { ?>
+                                                                                            <div onclick="viewpreview('3','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">
+                                                                                                    Voucher
+                                                                                                </div>
+                                                                                            <?php 
+                                                                                        } else if ($list['bill_type'] == "Receipt") { ?>
+                                                                                            <div onclick="viewpreview('4','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">
+                                                                                                    Receipt
+                                                                                                </div>
+                                                                                            <?php 
+                                                                                        }else if ($list['bill_type'] == "Purchase Bill") { ?>
+                                                                                            <div onclick="viewpreview('5','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">
+                                                                                                    Purchase Bill
+                                                                                                </div>
+                                                                                            <?php 
+                                                                                        }
                                                                                     } else {
-                                                                                        echo htmlspecialchars($list['bill_type']);
+                                                                                        echo " - ";
                                                                                     }
-                                                                                } else {
-                                                                                    echo " - ";
-                                                                                }
-                                                                                ?>
-                                                                            </td>
-
-                                                                            <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-right px-2 py-2">
-                                                                                <?php if(!empty($credit)) { 
-                                                                                    echo $obj->numberFormat($credit, 2); $credit_amount += $credit; ?>
-                                                                                <?php } ?>
-                                                                            </td>
-                                                                            <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-right px-2 py-2">
-                                                                                <?php 
-                                                                                if(!empty($debit)){ 
-                                                                                    echo $obj->numberFormat($debit, 2); $debit_amount += $debit; ?>
-                                                                                <?php } ?>
-                                                                            </td>
-                                                                        </tr>
-                                                                    
-                                                                        <?php
+                                                                                    ?>
+                                                                                </td>
+                                                                                <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-right px-2 py-2">
+                                                                                    <?php if(!empty($credit)) { 
+                                                                                        echo $obj->numberFormat($credit, 2); $credit_amount += $credit; ?>
+                                                                                    <?php } ?>
+                                                                                </td>
+                                                                                <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;" class="text-right px-2 py-2">
+                                                                                    <?php 
+                                                                                    if(!empty($debit)){ 
+                                                                                        echo $obj->numberFormat($debit, 2); $debit_amount += $debit; ?>
+                                                                                    <?php } ?>
+                                                                                </td>
+                                                                            </tr>
+                                                                        
+                                                                            <?php
+                                                                            }
                                                                         }
-                                                                    } 
                                                                     }
                                                                 ?>
                                                             </tbody>
@@ -488,12 +534,12 @@
                                                             ?>
                                                             <tfoot>
                                                                 <tr>
-                                                                    <th colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;">Total</th>
+                                                                    <th colspan="<?php if(in_array('1', $view_type)) { echo 4; } else { echo 3; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;">Total</th>
                                                                     <th class="sales_total" style="border: 1px solid #000; width: 100px; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;"><?php if(!empty($credit_amount)){ echo $obj->numberFormat($credit_amount,2); } ?></th>
                                                                     <th class="receipt_total" style="border: 1px solid #000; width: 100px; text-align: right; padding: 2px 10px; font-size: 12px; vertical-align: middle; height: 30px;"><?php if(!empty($debit_amount)){ echo $obj->numberFormat($debit_amount,2); } ?></th>
                                                                 </tr>
                                                                 <tr style="color:red;">
-                                                                    <th class="text-center px-2 py-2" colspan="<?php if($view_type == "1") { echo 5; } else { echo 4; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Total</th>
+                                                                    <th class="text-center px-2 py-2" colspan="<?php if(in_array('1', $view_type)) { echo 4; } else { echo 3; }?>" style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">Total</th>
                                                                     <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;font-weight:bold;" class="text-right px-2 py-credit_amount2"><?php if($credit_amount > $debit_amount) { echo $obj->numberFormat(($credit_amount- $debit_amount),2)." Cr"; } ?>
                                                                     <td style="border: 1px solid #000; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;font-weight:bold;" class="text-right px-2 py-2"> <?php if($debit_amount > $credit_amount){ 
                                                                         $total_pending_amount = $debit_amount - $credit_amount; echo $obj->numberFormat($total_pending_amount,2)." Dr"; } ?></td>
@@ -503,7 +549,7 @@
                                                             </tfoot>
                                                         <?php } else { ?>
                                                             <tr>
-                                                                <td colspan="<?php if($view_type == "1") { echo 7; } else { echo 6; }?>" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
+                                                                <td colspan="<?php if(in_array('1', $view_type)) { echo 7; } else { echo 6; }?>" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
                                                                     No Records Found
                                                                 </td>
                                                             </tr>
@@ -538,7 +584,7 @@
                                                                         <?php
                                                                             if(!empty($data['party_name'])) {
                                                                                 echo html_entity_decode($obj->encode_decode('decrypt',$data['party_name'])); 
-                                                                                if(!empty($data['party_mobile_number'])) {
+                                                                                if(!empty($data['party_mobile_number']) && $data['party_mobile_number'] !=$GLOBALS['null_value']) {
                                                                                     echo " - (".$obj->encode_decode('decrypt',$data['party_mobile_number']).")"; 
                                                                                 }
                                                                             }
@@ -590,7 +636,7 @@
                                                         <?php } ?>
                                                     </tbody>
                                                     <tfoot>
-                                                    <tr>
+                                                        <tr>
                                                             <th colspan="2" style="border: 1px solid #000; padding: 2px 10px; font-size: 13px; text-align: right; vertical-align: middle; height: 30px;"></th>
                                                             <th class="column1_total" style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; width: 15%; text-align: right; padding: 2px 10px; font-size: 13px; vertical-align: middle; height: 30px;">
                                                                 <?php 
@@ -695,6 +741,15 @@
         } else if(type == '2'){
             type ="Proforma Invoice";
             url = "reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=" + sub_bill_id;
+        }else if(type == '3'){
+            type ="Voucher";
+            url = "reports/rpt_voucher_a5.php?view_voucher_id=" + bill_id;
+        }else if(type == '4'){
+            type ="Receipt";
+            url = "reports/rpt_receipt_a5.php?view_receipt_id=" + bill_id;
+        }else if(type == '5'){
+            type ="Purchase Bill";
+            url = "reports/rpt_purchase_entry_a4.php?view_purchase_entry_id=" + bill_id;
         }
         var post_url = "dashboard_changes.php?check_login_session=1";
         jQuery.ajax({

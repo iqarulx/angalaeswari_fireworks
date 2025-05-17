@@ -12,8 +12,8 @@
         }
     }
     
-    $from_date=""; $to_date="";$current_date="";
-    $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');$current_date = date('Y-m-d');
+    $from_date = ""; $to_date = ""; $current_date = ""; $current_date = date('Y-m-d');
+    // $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
     $party_list = array(); $party_count = 0;
     $payment_mode_list = array(); 
     $payment_mode_list = $obj->getTableRecords($GLOBALS['payment_mode_table'], '', '', '');
@@ -37,12 +37,10 @@
         $filter_party_type = $_POST['filter_party_type'];
     }
 
-
     if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
     }
 
-    
     if(isset($_POST['to_date'])) {
         $to_date = $_POST['to_date'];
     }
@@ -167,13 +165,13 @@
                                                             if($filter_bill_type == "1") { ?>
                                                                 <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
-                                                                <?php /* <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> */ ?> <?php 
+                                                                <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option><?php 
                                                             } else if($filter_bill_type == "2") { ?>
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
                                                             } else { ?>
                                                                 <option value="1" <?php if(!empty($filter_party_type)) { if($filter_party_type == '1'){ echo "selected"; } } ?>>Supplier</option>
                                                                 <option value="2" <?php if(!empty($filter_party_type)) { if($filter_party_type == '2'){ echo "selected"; } } ?>>Agent</option>
-                                                                <?php /* <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option> */ ?> 
+                                                                <option value="3" <?php if(!empty($filter_party_type)) { if($filter_party_type == '3'){ echo "selected"; } } ?>>Contractor</option>
                                                                 <option value="4" <?php if(!empty($filter_party_type)) { if($filter_party_type == '4'){ echo "selected"; } } ?>>Customer</option> <?php 
                                                             } ?>
                                                         </select>
@@ -348,9 +346,7 @@
                                                                 $index = 1;
                                                                 $total_credit = 0;
                                                                 $total_debit = 0;
-                                                                
 
-                                                                
                                                                 foreach ($payment_list as $data) {
 
                                                                     if($data['bill_type'] != 'Purchase' && $data['bill_type'] != 'Estimate'){
@@ -361,14 +357,11 @@
                                                                         }
                                                                         if ($data['party_type'] == '1') {
                                                                             $party_type = "Supplier";
-                                                                        } 
-                                                                        else if ($data['party_type'] == '2') {
+                                                                        } else if ($data['party_type'] == '2') {
                                                                             $party_type = "Agent";
-                                                                        } 
-                                                                        else if ($data['party_type'] == '3') {
+                                                                        } else if ($data['party_type'] == '3') {
                                                                             $party_type = "Contractor";
-                                                                        } 
-                                                                        else if ($data['party_type'] == '4') {
+                                                                        } else if ($data['party_type'] == '4') {
                                                                             $party_type = "Customer";
                                                                         } 
                                                                         else {
@@ -580,6 +573,8 @@
         } else if (type == 'Expense') {
             url = "reports/rpt_expense_entry_a5.php?view_expense_id=" + bill_id;
         } 
+
+        console.log(url);
 
         var post_url = "dashboard_changes.php?check_login_session=1";
         jQuery.ajax({

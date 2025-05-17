@@ -548,6 +548,13 @@
 			$result = $stock_obj->getOutwardSubunitQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
 			return $result;
 		}
+		public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$result = "";
+			$result = $stock_obj->getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
+			return $result;
+		}
 		public function getProductContentsFromMagazine($product_id, $magazine_id) {
 			$stock_obj = "";
 			$stock_obj = $this->stock_function_object();
@@ -644,6 +651,13 @@
 			$stock_obj = $this->stock_function_object();
 			$list = array();
 			$list = $stock_obj->getOutwardQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
+			return $list;
+		}
+		public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
+			$stock_obj = "";
+			$stock_obj = $this->stock_function_object();
+			$list = array();
+			$list = $stock_obj->getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
 			return $list;
 		}
 		public function getInwardQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
@@ -772,6 +786,13 @@
 			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
 			return $list;
 		}
+		public function getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
+			return $list;
+		}
 		public function getStockContainsList($product_id) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
@@ -835,6 +856,13 @@
 			$result = $report_obj->getProductStockTransactionExist($product_id);
 			return $result;
 		}
+		public function getProductStockTransactionExistSales($product_id){
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$result = "";
+			$result = $report_obj->getProductStockTransactionExistSales($product_id);
+			return $result;
+		}
 		
 		public function getOpeningBalance($party_id,$from_date,$to_date,$bill_company_id,$filter_agent_party,$view_type){
 			$report_obj = "";
@@ -895,6 +923,13 @@
 			$result = $create_obj->GetSupplierLinkedCount($supplier_id);
 			return $result;
 		}
+		public function GetExpensePartyLinkedCount($expense_party_id) {
+			$result = "";
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = $create_obj->GetExpensePartyLinkedCount($expense_party_id);
+			return $result;
+		}
 		public function GetContractorLinkedCount($contractor_id) {
 			$result = "";
 			$create_obj = "";
@@ -952,6 +987,13 @@
 			$list = $create_obj->PaymentlinkedSupplier($supplier_id);
 			return $list;
 		}
+		public function PaymentlinkedExpenseParty($expense_party_id){
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->PaymentlinkedExpenseParty($expense_party_id);
+			return $list;
+		}
 		public function PaymentlinkedCustomer($customer_id){
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
@@ -1000,6 +1042,13 @@
 			$report_obj = $this->report_function_object();
 			$list = array();
 			$list = $report_obj->getRawMaterialProductRate($product_id, $case_contains);
+			return $list;
+		}
+		public function getCustomerWiseProformaInvoiceList($customer_id) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->getCustomerWiseProformaInvoiceList($customer_id);
 			return $list;
 		}
 		public function getStockReportByMagazine($product_id, $case_contains) {

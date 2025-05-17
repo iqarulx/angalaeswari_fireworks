@@ -18,7 +18,7 @@
         }
 
         $delivery_slip_id = ""; $delivery_slip_number = ""; $delivery_slip_date = date('Y-m-d'); $estimate_date = date('Y-m-d'); $customer_id = ""; $agent_id = ""; $transport_id = ""; $bank_id = ""; $magazine_type = ""; $magazine_id = ""; $gst_option = "";$address = ""; $tax_option = ""; $tax_type = ""; $overall_tax = ""; $company_state = "";$party_state = ""; $product_ids = array(); $product_names = array();$unit_types = array(); $subunit_needs = array(); $contents = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $old_quantity = array(); $rate = array(); $per = array(); $per_type = array(); $product_tax = array(); $final_rate = array(); $amount = array(); $other_charges_id = array();$charges_type = array(); $other_charges_value = array(); $agent_commission = ""; $bill_total = ""; $charges_count = 0; $proforma_invoice_id = "";
-
+    
         if(!empty($show_estimate_id)) {
             $estimate_list = $obj->getEstimateIndex($show_estimate_id, $conversion_update);
 
@@ -377,7 +377,7 @@
                     </div> 
                 </div>
                 */ ?>
-                <div class="col-lg-2 col-md-3 col-6 py-2">
+                <div class="col-lg-2 col-md-3 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
@@ -620,6 +620,7 @@
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end sub_tot"> Total : </td>
                                     <td colspan="1" class="text-end sub_total"></td>
                                 </tr>
+                                <?php if(!empty($agent_commission)){ ?>
                                 <tr style="color:green;" class="agent_tr <?php if(empty($agent_id) || $agent_id == "NULL"){ ?>d-none<?php } ?>">
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end agent_commission">
                                         Commission : <?php if(!empty($agent_commission)){ if(strpos($agent_commission, "%") !== false) { echo $agent_commission; } else { echo $agent_commission . "%"; }}?>
@@ -629,6 +630,7 @@
                                         <span class="commission_total"><?php if(!empty($agent_commission_value)){ echo $agent_commission_value; }?></span>
                                     </td>
                                 </tr>
+                                <?php } ?>
                                 <input type="hidden" name="charges_count" value="<?php if(!empty($charges_count)) { echo $charges_count - 1; } else { echo '0'; } ?>">
                                 <?php 
                                     $count = 1;
@@ -765,7 +767,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="<?php if($tax_type =='1' && $gst_option =='2'){ ?>9<?php }else{ ?>8<?php }?>" class="text-end grand_total">Total :</td>
-                                    <td colspan="2" class="text-end"><i class="bi bi-currency-rupee text-danger me-2"></i><span class="overall_total"></span></td>
+                                    <td colspan="1" class="text-end"><i class="bi bi-currency-rupee text-danger me-2"></i><span class="overall_total"></span></td>
                                 </tr>
                             </tfoot>
                         </table>

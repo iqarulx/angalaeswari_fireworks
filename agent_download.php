@@ -11,9 +11,9 @@
             <th style="text-align: center; width: 500px;">Mobile Number</th>
             <th style="text-align: center; width: 500px;">Commission</th>
             <th style="text-align: center; width: 500px;">Address</th>
-            <th style="text-align: center; width: 500px;">City</th> 
+            <!-- <th style="text-align: center; width: 500px;">City</th> 
             <th style="text-align: center; width: 500px;">District</th> 
-            <th style="text-align: center; width: 500px;">State</th> 
+            <th style="text-align: center; width: 500px;">State</th>  -->
         </tr>
     </thead>
     <tbody>
@@ -94,6 +94,7 @@
                                 }
                             ?>
                         </td>
+                        <?php /*
                         <td class="text-center">
                             <?php
                                 if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
@@ -124,6 +125,7 @@
                                 }
                             ?>
                         </td>
+                        <?php */ ?>
                     </tr>
         <?php 
                 }

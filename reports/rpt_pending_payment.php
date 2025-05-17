@@ -97,7 +97,7 @@
         $pdf->Cell(190, ($current_y - $yaxis), '', 1, 1, 'L', 0);
 
         $pdf->SetFont('Arial','B',11);
-        $pdf->Cell(0,10,'Customer Wise Transaction - ('.date('d-m-Y').')',1,1,'C',0);
+        $pdf->Cell(0,10,'Party Wise Transaction',1,1,'C',0);
         $pdf->SetFont('Arial','B',9);
         $pdf->SetX(10);
         $pdf->Cell(15,10,'S.No.',1,0,'C',0);
@@ -112,7 +112,7 @@
         $index = 0;
       
         if(!empty($sales_list)) {
-            $grand_pending = 0; $debit_amount =0; $debit_total =0; $debit_total_amount =0; $credit =0; $credit_amount =0; $credit_total =0; $credit_total_amount =0; $total = 0; $debit = 0; $grand_debit_total =0 ; $grand_credit_total =0;
+            $grand_pending = 0; $debit_amount =0; $debit_total =0; $debit_total_amount =0; $credit =0; $credit_amount =0; $credit_total = 0; $credit_total_amount =0; $total = 0; $debit = 0; $grand_debit_total =0 ; $grand_credit_total =0;
             foreach($sales_list as $key => $data) {
                 $credit_total = 0; $debit_total=0;
                
@@ -125,7 +125,7 @@
                     
                     $pdf->SetY($header_end);
                     $pdf->SetFont('Arial','B',11);
-                    $pdf->Cell(0,10,'Customer Wise Transaction - ('.date('d-m-Y').')',1,1,'C',0);
+                    $pdf->Cell(0,10,'Party Wise Transaction',1,1,'C',0);
                     $current_y = $pdf->GetY();
                     $pdf->SetY($yaxis);
                     $pdf->SetX(10);
@@ -243,10 +243,14 @@
         $pdf->SetY($header_end);
 
         $sy = $pdf->GetY();
-        if(!empty($from_date)){
-            $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($from_date))." - ".date('d-m-Y',strtotime($to_date)),0,1,'C',0);
+        if(!empty($from_date) || !empty($to_date)) {
+            if(!empty($from_date)){
+                $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($from_date))." - ".date('d-m-Y',strtotime($to_date)),0,1,'C',0);
+            } else {
+                $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($to_date)),0,1,'C',0);
+            }
         } else {
-            $pdf->Cell(0,10,'Party Overall Pending - '.date('d-m-Y',strtotime($to_date)),0,1,'C',0);
+            $pdf->Cell(0,10,'Party Overall Pending',0,1,'C',0);
         }
 
         $current_y = $pdf->GetY();
@@ -258,22 +262,22 @@
         $party_name = "";
         $pdf->SetFont('Arial', 'B', 10);
 
-        if($view_type =='1') {
+        if(in_array('1', $view_type)) {
             $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
-        } else if($view_type =='2') {
+        } else if(in_array('2', $view_type)) {
             $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'supplier_id', $party_id, 'supplier_name');
-        } else if($view_type =='3') {
+        } else if(in_array('3', $view_type)) {
             $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'contractor_name');
-        } else if($view_type =='4') {
+        } else if(in_array('4', $view_type)) {
             $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $party_id, 'customer_name');
         }
 
         $party_type = "";
-        if($view_type =='1') {
+        if(in_array('1', $view_type)) {
             $party_type = "Agent";
-        } else if($view_type =='2') {
+        } else if(in_array('2', $view_type)) {
             $party_type = "Supplier";
-        } else if($view_type =='4') {
+        } else if(in_array('3', $view_type)) {
             $party_type = "Customer";
         }
 
@@ -286,9 +290,9 @@
         $pdf->SetFont('Arial','B',9);
 
         $pdf->SetX(10);
-        $pdf->Cell(15,10,'S.No.',1,0,'C',0);
-        $pdf->SetX(25);
-        $pdf->Cell(25,10,'Date',1,0,'C',0);
+        // $pdf->Cell(15,10,'S.No.',1,0,'C',0);
+        // $pdf->SetX(25);
+        $pdf->Cell(40,10,'Date',1,0,'C',0);
         if($view_type =='1') {
             $pdf->SetX(50);
             $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
@@ -338,9 +342,9 @@
                     $party_name = "";
                     $pdf->SetFont('Arial', 'B', 10);
                     $pdf->SetX(10);
-                    $pdf->Cell(15,10,'S.No.',1,0,'C',0);
-                    $pdf->SetX(25);
-                    $pdf->Cell(25,10,'Date',1,0,'C',0);
+                    // $pdf->Cell(15,10,'S.No.',1,0,'C',0);
+                    // $pdf->SetX(25);
+                    $pdf->Cell(40,10,'Date',1,0,'C',0);
                     if($view_type =='1') {
                         $pdf->SetX(50);
                         $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
@@ -380,7 +384,6 @@
                         } 
                         
                         if($data['opening_balance_type'] == 'Debit') { 
-                            
                             $opening_debit += $data['opening_balance'];
                         } 
                     }
@@ -440,9 +443,9 @@
                             $party_name = "";
                             $pdf->SetFont('Arial', 'B', 10);
                             $pdf->SetX(10);
-                            $pdf->Cell(15,10,'S.No.',1,0,'C',0);
-                            $pdf->SetX(25);
-                            $pdf->Cell(25,10,'Date',1,0,'C',0);
+                            // $pdf->Cell(15,10,'S.No.',1,0,'C',0);
+                            // $pdf->SetX(25);
+                            $pdf->Cell(40,10,'Date',1,0,'C',0);
                             if($view_type =='1') {
                                 $pdf->SetX(50);
                                 $pdf->Cell(30,10,'Bill Number',1,0,'C',0);
@@ -468,11 +471,11 @@
 
                         $index = $key + 1;
                         $pdf->SetX(10);
-                        $pdf->Cell(15,10,$index,0,0,'C',0);
-                        $pdf->SetX(25);
+                        // $pdf->Cell(15,10,$index,0,0,'C',0);
+                        // $pdf->SetX(25);
                         if(!empty($data['bill_date'])) {
-                            $pdf->SetX(25);
-                            $pdf->Cell(25,10,date('d-m-Y',strtotime($data['bill_date'])),0,0,'C',0);
+                            // $pdf->SetX(25);
+                            $pdf->Cell(40,10,date('d-m-Y',strtotime($data['bill_date'])),0,0,'C',0);
                         }
 
                         if($view_type == "1") {
@@ -558,9 +561,9 @@
                         }
                         
                         $pdf->SetX(10);
-                        $pdf->Cell(15,10,'',1,0,'C',0);
-                        $pdf->SetX(25);
-                        $pdf->Cell(25,10,'',1,0,'C',0);
+                        // $pdf->Cell(15,10,'',1,0,'C',0);
+                        // $pdf->SetX(25);
+                        $pdf->Cell(40,10,'',1,0,'C',0);
                         if($view_type == "1") {
                             $pdf->SetX(50);
                             $pdf->Cell(30,10,'',1,0,'C',0);

@@ -3,9 +3,10 @@
     <thead class="thead-dark">
         <tr>
             <th style="text-align: center; width: 50px;">S.No</th>
-            <th style="text-align: center; width: 125px;">Group</th>
+            <th style="text-align: center; width: 125px;">Group Type</th>
+            <th style="text-align: center; width: 125px;">Group Name</th>
             <th style="text-align: center; width: 125px;">Product Name</th>
-            <th style="text-align: center; width: 125px;">HSN Code</th>
+            <!-- <th style="text-align: center; width: 125px;">HSN Code</th> -->
             <th style="text-align: center; width: 125px;">Unit</th>
             <th style="text-align: center; width: 125px;">SubUnit</th>
             <th style="text-align: center; width: 125px;">Rate</th>                 

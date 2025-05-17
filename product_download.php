@@ -7,9 +7,12 @@
     <thead class="thead-dark">
         <tr>
             <th style="text-align: center; width: 50px;">S.No</th>
+            <th style="text-align: center; width: 200px;">Group Type</th>
             <th style="text-align: center; width: 200px;">Group Name</th>
             <th style="text-align: center; width: 200px;">Product Name</th>
+            <?php /* ?>
             <th style="text-align: center; width: 125px;">HSN Code</th>
+            <?php */ ?>
             <th style="text-align: center; width: 125px;">Unit</th>
             <th style="text-align: center; width: 200px;">Sub Unit</th>           
             <th style="text-align: center; width: 125px;">Sales Rate</th>                 
@@ -63,7 +66,29 @@
                                 }
                             ?>
                         </div>
+                    </td> 
+                   
+                   
+                    <td class="text-center px-2 py-2">
+                        <div class="w-100">
+                            <?php                            
+                           
+                                if(!empty($data['finished_group_id']) && ($data['finished_group_id'] != $GLOBALS['null_value'])) {
+                                    $finished_group_name = $obj->getTableColumnValue($GLOBALS['finished_group_table'],'finished_group_id',$data['finished_group_id'],'finished_group_name');
+                                    echo $obj->encode_decode("decrypt",$finished_group_name);
+                                    
+                                }else if(!empty($data['raw_material_group_id']) && ($data['raw_material_group_id'] != $GLOBALS['null_value'])) {
+                                    $raw_material_group_name = "";
+                                    $raw_material_group_name = $obj->getTableColumnValue($GLOBALS['raw_material_group_table'],'raw_material_group_id',$data['raw_material_group_id'],'raw_material_group_name');
+                                    echo $obj->encode_decode("decrypt",$raw_material_group_name);
+                                }else if(!empty($data['semi_finished_group_id']) && ($data['semi_finished_group_id'] != $GLOBALS['null_value'])) {
+                                    $semi_finished_group_name = $obj->getTableColumnValue($GLOBALS['semi_finished_group_table'],'semi_finished_group_id',$data['semi_finished_group_id'],'semi_finished_group_name');
+                                    echo $obj->encode_decode("decrypt",$semi_finished_group_name);
+                                }
+                        ?>
+                        </div>
                     </td>
+                            
                     <td class="text-center px-2 py-2">
                         <div class="w-100">
                             <?php
@@ -74,6 +99,7 @@
                             ?>
                         </div>
                     </td>
+                    <?php /*
                     <td class="text-center px-2 py-2">
                         <div class="w-100">
                             <?php
@@ -84,6 +110,7 @@
                             ?>
                         </div>
                     </td>
+                     <?php */ ?>
                     <td class="text-center px-2 py-2">
                         <div class="w-100">
                             <?php

@@ -7,16 +7,16 @@ $current_date = date('Y-m-d');
 $from_date = "";
 if(isset($_POST['from_date'])) {
     $from_date = $_POST['from_date'];
-} else {
+} /* else {
     $from_date = date('Y-m-d', strtotime('-30 days'));
-}
+} */
 
 $to_date = "";
 if(isset($_POST['to_date'])) {
     $to_date = $_POST['to_date'];
-} else {
+} /* else {
     $to_date = date('Y-m-d');
-}
+} */
 
 $unit_type = "";
 if(isset($_GET['filter_unit_type'])) {
@@ -39,20 +39,24 @@ $total_records_list = array();
 $total_records_list = $obj->GetPendingOrderReportAgentWise($from_date, $to_date, $customer_id, $agent_id, $unit_type);
 
 $date_display ="";
-if($from_date == $to_date) {
-    $date_display = '( ' . date('d-m-Y', strtotime($from_date)) . ' )';
-} else {
-    $date_display = '('.date('d-m-Y', strtotime($from_date)) . ' to '. date('d-m-Y', strtotime($to_date)) . ')';
+if(!empty($from_date) || !empty($to_date)) {
+    if($from_date == $to_date) {
+        $date_display = '( ' . date('d-m-Y', strtotime($from_date)) . ' )';
+    } else {
+        $date_display = '('.date('d-m-Y', strtotime($from_date)) . ' to '. date('d-m-Y', strtotime($to_date)) . ')';
+    }
 }
 
 $agent_display = "";
 if(!empty($agent_id)) {
     $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_name');
     if(!empty($agent_name)) {
-        $agent_name = $obj->encode_decode('decrypt', $agent_name) ;
+        $agent_display = $obj->encode_decode('decrypt', $agent_name) ;
     }
-    if(!empty($from_date) && !empty($to_date) && !empty($agent_name)) {
-        $agent_display =  $agent_name . " (Pending Stock : " . date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)) . ")";
+    if(!empty($from_date) || !empty($to_date)) {
+        if(!empty($from_date) && !empty($to_date) && !empty($agent_name)) {
+            $agent_display .=  " (Pending Stock : " . date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)) . ")";
+        }
     }
 }
 

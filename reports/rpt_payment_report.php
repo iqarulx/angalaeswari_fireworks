@@ -27,12 +27,12 @@
         $filter_party_type = $_REQUEST['filter_party_type'];
     }
 
-    $from_date=""; $from_date = date('Y-m-d', strtotime('-7 days')); 
+    $from_date = "";
     if(isset($_REQUEST['from_date'])) {
         $from_date = $_REQUEST['from_date'];
     }
     
-    $to_date=""; $to_date = date('Y-m-d');
+    $to_date = "";
     if(isset($_REQUEST['to_date'])) {
         $to_date = $_REQUEST['to_date'];
     }
@@ -68,11 +68,23 @@
         $to_date = date('d-m-Y', strtotime($to_date));
     }
 
-    $date_display ="";
-    if($from_date == $to_date) {
-        $date_display = '( '.$from_date.' )';
-    } else {
-        $date_display = '('.$from_date . ' to '. $to_date . ')';
+    $date_display = "";
+    if(!empty($from_date) && !empty($to_date)) {
+        $date_display = "(";
+    }
+    if(!empty($from_date)) {
+        $date_display = $from_date;
+    }
+
+    if(!empty($from_date) && !empty($to_date)) {
+        $date_display .= ' - ';
+    }
+
+    if(!empty($to_date)) {
+        $date_display .= $to_date;
+    }
+    if(!empty($from_date) && !empty($to_date)) {
+        $date_display .= ")";
     }
 
     require_once('../fpdf/fpdf.php');

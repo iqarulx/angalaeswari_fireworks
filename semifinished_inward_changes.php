@@ -11,7 +11,7 @@
         $show_semifinished_inward_id = $_REQUEST['show_semifinished_inward_id'];
         $show_semifinished_inward_id = trim($show_semifinished_inward_id);
         
-        $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d'); $entry_date = date('Y-m-d'); $bill_date = date('Y-m-d'); /* $contractor_id = ""; $contractor_name_mobile_city = ""; */ $godown_id = ""; $product_ids = array(); $product_names = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $cooly_per_qty = array(); $cooly_rate = array(); $total_amount = ""; $contains = array(); $semifinished_inward_list = array();
+        $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d'); $entry_date = date('Y-m-d'); $bill_date = date('Y-m-d'); $contractor_id = ""; $contractor_name_mobile_city = "";  $godown_id = ""; $product_ids = array(); $product_names = array(); $unit_ids = array(); $unit_names = array(); $quantity = array(); $cooly_per_qty = array(); $cooly_rate = array(); $total_amount = ""; $contains = array(); $semifinished_inward_list = array();
         
         $semifinished_inward_list = $obj->getTableRecords($GLOBALS['semifinished_inward_table'], 'semifinished_inward_id', $show_semifinished_inward_id, '');
         if(!empty($semifinished_inward_list)) {
@@ -25,12 +25,12 @@
                 if(!empty($data['godown_id']) && $data['godown_id'] != $GLOBALS['null_value']) {
                     $godown_id = $data['godown_id'];
                 }
-                // if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
-                //     $contractor_id = $data['contractor_id'];
-                // }
-                // if(!empty($data['contractor_name_mobile_city']) && $data['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
-                //     $contractor_name_mobile_city = $data['contractor_name_mobile_city'];
-                // }
+                if(!empty($data['contractor_id']) && $data['contractor_id'] != $GLOBALS['null_value']) {
+                    $contractor_id = $data['contractor_id'];
+                }
+                if(!empty($data['contractor_name_mobile_city']) && $data['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
+                    $contractor_name_mobile_city = $data['contractor_name_mobile_city'];
+                }
                 if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) {
                     $product_ids = $data['product_id'];
                     $product_ids = explode(",", $product_ids);
@@ -52,14 +52,14 @@
                     $quantity = $data['quantity'];
                     $quantity = explode(",", $quantity);
                 }
-                // if(!empty($data['cooly_per_qty']) && $data['cooly_per_qty'] != $GLOBALS['null_value']) {
-                //     $cooly_per_qty = $data['cooly_per_qty'];
-                //     $cooly_per_qty = explode(",", $cooly_per_qty);
-                // }
-                // if(!empty($data['cooly_rate']) && $data['cooly_rate'] != $GLOBALS['null_value']) {
-                //     $cooly_rate = $data['cooly_rate'];
-                //     $cooly_rate = explode(",", $cooly_rate);
-                // }
+                if(!empty($data['cooly_per_qty']) && $data['cooly_per_qty'] != $GLOBALS['null_value']) {
+                    $cooly_per_qty = $data['cooly_per_qty'];
+                    $cooly_per_qty = explode(",", $cooly_per_qty);
+                }
+                if(!empty($data['cooly_rate']) && $data['cooly_rate'] != $GLOBALS['null_value']) {
+                    $cooly_rate = $data['cooly_rate'];
+                    $cooly_rate = explode(",", $cooly_rate);
+                }
                 if(!empty($data['total_amount']) && $data['total_amount'] != $GLOBALS['null_value']) {
                     $total_amount = $data['total_amount'];
                 }
@@ -86,13 +86,13 @@
         $semi_finished_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d44557a4d444a664d444d3d', '');
 
         $product_list = array();
-        // $product_list = array_merge($raw_product_list, $semi_finished_list);
-        $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
+        $product_list = array_merge($raw_product_list, $semi_finished_list);
+        // $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
 
         $count_of_product = 0; $selected_product_id = "";
         $count_of_product = count($product_list);
-        // $contractor_list = array();
-        // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
+        $contractor_list = array();
+        $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], '', '', '');
         ?>
         <form class="poppins pd-20" name="semifinished_inward_form" method="POST">
 			<div class="card-header">
@@ -121,7 +121,7 @@
                                 </div>
                             </div> 
                         </div>
-                        <?php /*
+                       
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -150,7 +150,7 @@
                             </div>       
                         </div>
                         <input type="hidden" name="selected_contractor_id" value="<?php if(!empty($contractor_id)) { echo $contractor_id; } ?>" <?php if(empty($show_semifinished_inward_id)) { ?>disabled<?php } ?>>
-                        */ ?>
+                       
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
@@ -254,8 +254,8 @@
                                             <th style="width:150px;">Unit</th>
                                             <th style="width:100px;">Content</th>
                                             <th style="width:100px;">Qty</th>
-                                            <!-- <th style="width:100px;">Cooly/Qty</th>
-                                            <th style="width:100px;">Total Cooly</th> -->
+                                            <th style="width:100px;">Cooly/Qty</th>
+                                            <th style="width:100px;">Total Cooly</th>
                                             <th style="width:100px;">Action</th>
                                         </tr>
                                     </thead>
@@ -304,15 +304,12 @@
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity[$i])) { echo $quantity[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
                                                         </th>
-                                                        <?php /*
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty[$i])) { echo $cooly_per_qty[$i]; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
                                                         </th>
                                                         <th class="text-center px-2 py-2">
                                                             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_rate[$i])) { echo $cooly_rate[$i]; } ?>" readonly>
                                                         </th>
-
-                                                        */ ?>
                                                         <th class="text-center px-2 py-2">
                                                             <?php
                                                             $negative_stock_allowed = "";
@@ -355,12 +352,12 @@
                             </div>
                         </div>
                         <div class="row mx-0 my-3">
-                            <div class="col-lg-8 col-md-6 col-12 text-end">
+                            <div class="col-lg-6 col-md-6 col-12 text-end">
                                 <h4>Total Quantity : <span class="overall_qty"></span></h3>
                             </div>
-                            <!-- <div class="col-lg-4 col-md-6 col-12 text-end">
+                            <div class="col-lg-3 col-md-6 col-12 text-end">
                                 <h4>Total Cooly : <span class="overall_total"></span></h3>
-                            </div> -->
+                            </div>
                         </div>
                         <div class="col-md-12 py-3 text-center">
                             <button class="btn btn-danger submit_button" type="button" onClick="Javascript:SaveModalContent(event,'semifinished_inward_form', 'semifinished_inward_changes.php', 'semifinished_inward.php');">
@@ -426,7 +423,7 @@
         }
 
         $entry_date = ""; $entry_date_error = ""; $bill_date = ""; $bill_date_error = "";
-        $godown_id = ""; $godown_id_error = ""; /* $contractor_id = ""; $contractor_id_error = ""; */
+        $godown_id = ""; $godown_id_error = "";  $contractor_id = ""; $contractor_id_error = ""; 
         $product_ids = array(); $unit_ids = array(); $quantity = array(); $cooly_per_qty = array(); $total_cooly = array(); $product_error = ""; $product_names = array(); $unit_names = array(); $total_quantity = 0; $total_amount = 0; $stock_unique_ids = array();
         $case_contains = array(); $cooly_amount = array();
         $valid_semifinished_inward = ""; $form_name = "semifinished_inward_form"; $edit_id = "";
@@ -470,7 +467,7 @@
             }
         }
 
-        /* if(isset($_POST['selected_contractor_id'])) {
+        if(isset($_POST['selected_contractor_id'])) {
 
             $contractor_id = $_POST['selected_contractor_id'];
             $contractor_id = trim($contractor_id);
@@ -490,7 +487,7 @@
                     $valid_semifinished_inward = $valid->error_display($form_name, 'selected_contractor_id', $contractor_id_error, 'select');
                 }
             }
-        } */
+        } 
 
         if(isset($_POST['product_id'])) {
             $product_ids = $_POST['product_id'];
@@ -504,12 +501,12 @@
         if(isset($_POST['contains'])) {
             $case_contains = $_POST['contains'];
         }
-        // if(isset($_POST['cooly_per_qty'])) {
-        //     $cooly_per_qty = $_POST['cooly_per_qty'];
-        // }
-        // if(isset($_POST['cooly_amount'])) {
-        //     $cooly_amount = $_POST['cooly_amount'];
-        // }
+        if(isset($_POST['cooly_per_qty'])) {
+            $cooly_per_qty = $_POST['cooly_per_qty'];
+        }
+        if(isset($_POST['cooly_amount'])) {
+            $cooly_amount = $_POST['cooly_amount'];
+        }
         $total_cooly = 0; $total_quantity = 0; $overall_cooly_total = 0; 
         if(!empty($product_ids)) {
             for($i=0; $i < count($product_ids); $i++) {
@@ -553,9 +550,9 @@
                                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $quantity[$i]) && $quantity[$i] <= 99999) {
                                     $total_quantity += $quantity[$i];
 
-                                    // if(!empty($cooly_amount[$i])){
-                                    //     $overall_cooly_total += $cooly_amount[$i];
-                                    // }
+                                    if(!empty($cooly_amount[$i])){
+                                        $overall_cooly_total += $cooly_amount[$i];
+                                    }
 
                                     if ($unit_type == '1') {
                                         $product_qty = $quantity[$i];
@@ -583,7 +580,6 @@
                                     //         $product_error = "Max Qty:  ".$accurate_qty." in Product - ".($obj->encode_decode('decrypt', $product_name));
                                     //     }
                                     // }
-                            
                                 }
                                 else {
                                     $product_error = "Invalid Quantity in Product - ".($obj->encode_decode('decrypt', $product_name));
@@ -690,10 +686,10 @@
                 }
             }
         }
-        // if(!empty($overall_cooly_total)) { 
-        //     $overall_cooly_total = number_format($overall_cooly_total,2); 
-        //     $overall_cooly_total = trim(str_replace(",", "", $overall_cooly_total));
-        // }
+        if(!empty($overall_cooly_total)) { 
+            $overall_cooly_total = number_format($overall_cooly_total,2); 
+            $overall_cooly_total = trim(str_replace(",", "", $overall_cooly_total));
+        }
         $total_amount = number_format((float)$total_amount, 2, '.', '');
 
 		$round_off = 0;
@@ -802,7 +798,7 @@
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
             if(preg_match("/^\d+$/", $check_user_id_ip_address)) {
                 $factory_id = "";
-                $factory_name_location = ""; $godown_name_location = ""; /* $contractor_name_mobile_city = ""; $contractor_details = ""; */ $factory_details = ""; $godown_details = "";
+                $factory_name_location = ""; $godown_name_location = ""; $contractor_name_mobile_city = ""; $contractor_details = ""; $factory_details = ""; $godown_details = "";
                 if(!empty($entry_date)) {
                     $entry_date = date('Y-m-d', strtotime($entry_date));
                 }
@@ -830,7 +826,7 @@
                     $factory_details = $GLOBALS['null_value'];
                 }
 
-                /* if(!empty($contractor_id)) {
+                if(!empty($contractor_id)) {
                     $contractor_name_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city');
                     $contractor_details = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'contractor_details');
         
@@ -838,7 +834,7 @@
                 else {
                     $contractor_id = $GLOBALS['null_value'];
                     $contractor_name_mobile_city = $GLOBALS['null_value'];
-                } */
+                } 
 
                 if(!empty($product_ids)) {
                     $product_ids = implode(",", $product_ids);
@@ -858,14 +854,12 @@
                 if(!empty($quantity)) {
                     $quantity = implode(",", $quantity);
                 }
-                // if(!empty($cooly_amount)) {
-                //     $cooly_amount = implode(",", $cooly_amount);
-                // }
-                // if(!empty($cooly_per_qty)) {
-                //     $cooly_per_qty = implode(",", $cooly_per_qty);
-                // }
-                
-              
+                if(!empty($cooly_amount)) {
+                    $cooly_amount = implode(",", $cooly_amount);
+                }
+                if(!empty($cooly_per_qty)) {
+                    $cooly_per_qty = implode(",", $cooly_per_qty);
+                }
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
                 $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
                 $stock_update = 0; $bill_company_id = $GLOBALS['bill_company_id'];
@@ -883,9 +877,8 @@
 
                     $null_value = $GLOBALS['null_value'];
                     $columns = array(); $values = array();
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'semifinished_inward_id', 'semifinished_inward_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'godown_id', 'godown_name_location', 'godown_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains','total_quantity','cancelled', 'deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$godown_id."'", "'".$godown_name_location."'", "'".$godown_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'","'".$total_quantity."'", "'0'", "'0'");
-                    // print_r($values);
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'semifinished_inward_id', 'semifinished_inward_number', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'godown_id', 'godown_name_location', 'godown_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains','total_quantity','contractor_id','contractor_name_mobile_city','contractor_details','cooly_per_qty','cooly_rate','overall_cooly_total ','cancelled', 'deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$null_value."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$godown_id."'", "'".$godown_name_location."'", "'".$godown_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'","'".$total_quantity."'", "'".$contractor_id."'", "'".$contractor_name_mobile_city."'", "'".$contractor_details."'", "'".$cooly_per_qty."'", "'".$cooly_amount."'", "'".$overall_cooly_total."'", "'0'", "'0'");
                     $semifinished_inward_insert_id = $obj->InsertSQL($GLOBALS['semifinished_inward_table'], $columns, $values,'semifinished_inward_id', 'semifinished_inward_number', $action);
 
                     if(preg_match("/^\d+$/", $semifinished_inward_insert_id)) {
@@ -906,8 +899,8 @@
                         $action = "Semi Finished Inward Updated.";
 
                         $columns = array(); $values = array();						
-                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'godown_id', 'godown_name_location', 'godown_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'total_quantity');
-                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$godown_id."'", "'".$godown_name_location."'", "'".$godown_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$total_quantity."'");    
+                        $columns = array('creator_name', 'entry_date', 'company_details','factory_id', 'factory_name_location', 'factory_details', 'godown_id', 'godown_name_location', 'godown_details', 'product_id', 'product_name', 'unit_id', 'unit_name', 'quantity', 'subunit_contains', 'total_quantity','contractor_id','contractor_name_mobile_city','contractor_details','cooly_per_qty','cooly_rate','overall_cooly_total');
+                        $values = array("'".$creator_name."'", "'".$entry_date."'", "'".$company_details."'","'".$factory_id."'", "'".$factory_name_location."'", "'".$factory_details."'", "'".$godown_id."'", "'".$godown_name_location."'", "'".$godown_details."'", "'".$product_ids."'", "'".$product_names."'", "'".$unit_ids."'", "'".$unit_names."'", "'".$quantity."'", "'".$case_contains."'", "'".$total_quantity."'", "'".$contractor_id."'", "'".$contractor_name_mobile_city."'", "'".$contractor_details."'", "'".$cooly_per_qty."'", "'".$cooly_amount."'", "'".$overall_cooly_total."'");    
 
                         $semifinished_inward_update_id = $obj->UpdateSQL($GLOBALS['semifinished_inward_table'], $getUniqueID, $columns, $values, $action);
 
@@ -929,9 +922,7 @@
                         $unit_ids = explode(",", $unit_ids);
                         $quantity = explode(",", $quantity);
                         $case_contains = explode(",", $case_contains);
-
                         for($i=0; $i < count($product_ids); $i++) {
-
                             if(!empty($godown_id)) {
                                 $group_id = "";
                                 $group_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_ids[$i], 'group_id');
@@ -943,7 +934,7 @@
                 }
 
                 if ($update_payment == 1) {
-                    /* $bill_date = date("Y-m-d");   $bill_number = $semifinished_inward_number; $bill_type = "SemiFinished Inward";
+                    $bill_date = date("Y-m-d");   $bill_number = $semifinished_inward_number; $bill_type = "SemiFinished Inward";
                     $party_id = $contractor_id;  $party_name = $contractor_name_mobile_city; $party_type = 'Contractor';
                     $payment_mode_id = $GLOBALS['null_value']; $payment_mode_name = $GLOBALS['null_value']; $bank_id = $GLOBALS['null_value'];
                     $bank_name = $GLOBALS['null_value'];  $credit  = 0; $debit = 0; $opening_balance = $GLOBALS['null_value']; $opening_balance_type = $GLOBALS['null_value']; $agent_id = $GLOBALS['null_value']; $agent_name = $GLOBALS['null_value'];
@@ -958,7 +949,6 @@
 
                     $update_balance = "";
                     $update_balance = $obj->UpdateBalance($semifinished_inward_id,$bill_number,$bill_date,$bill_type, $agent_id, $agent_name,$contractor_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit, $opening_balance_type);
-                    */
                 }
             }
             else {
@@ -984,7 +974,7 @@
 		$page_limit = $_POST['page_limit'];
 		$page_title = $_POST['page_title'];
         
-        $from_date = ""; $to_date = ""; $search_text = ""; $filter_factory_id = ""; $filter_godown_id = ""; /* $filter_contractor_id = ""; */
+        $from_date = ""; $to_date = ""; $search_text = ""; $filter_factory_id = ""; $filter_godown_id = "";  $filter_contractor_id = ""; 
         $show_bill = 0;
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
@@ -998,9 +988,9 @@
         if(isset($_POST['filter_godown_id'])) {
             $filter_godown_id = $_POST['filter_godown_id'];
         }
-        // if(isset($_POST['filter_contractor_id'])) {
-        //     $filter_contractor_id = $_POST['filter_contractor_id'];
-        // }
+        if(isset($_POST['filter_contractor_id'])) {
+            $filter_contractor_id = $_POST['filter_contractor_id'];
+        }
         if(isset($_POST['search_text'])) {
             $search_text = $_POST['search_text'];
         }
@@ -1080,8 +1070,8 @@
                     <th>Entry Date</th>
                     <th>Semifinished Inward No</th>
                     <th>Godown</th>
-                    <!-- <th>Contractor</th> -->
-                    <!-- <th>Total Amount</th> -->
+                    <th>Contractor</th>
+                    <th>Total Amount</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -1124,7 +1114,6 @@
                                         ?>
                                   
                                     </td>  
-                                    <?php /* 
                                     <td>
                                         <?php
                                             if(!empty($list['contractor_name_mobile_city']) && $list['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
@@ -1140,7 +1129,6 @@
                                             }
                                         ?>
                                     </td>
-                                      */ ?>
                                     <td>
                                         <div class="dropdown">
                                             <a href="#" role="button" id="dropdownMenuLink1"  class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
@@ -1242,14 +1230,14 @@ if(isset($_REQUEST['products_contractor_id'])) {
     if(!empty($product_type)){
         $finished_product_group_id = $obj->getTableColumnValue($GLOBALS['group_table'],'lower_case_name',$product_type,'group_id');
     }
-    // $product_list = array();
-    // if(!empty($contractor_id) && $contractor_id != "undefined") {
-    //     $products_list = $obj->getContractorSemiFinishedProducts($contractor_id,$finished_product_group_id);
-    // }
+    $product_list = array();
+    if(!empty($contractor_id) && $contractor_id != "undefined") {
+        $products_list = $obj->getContractorSemiFinishedProducts($contractor_id,$finished_product_group_id);
+    }
 
-    $products_list = array();
-    $products_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
-    // print_r($products_list);
+    // $products_list = array();
+    // $products_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
+    print_r($products_list);
     
     $product_count = 0;
     $product_count = count($products_list);
@@ -1384,7 +1372,6 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
     $quantity = $_REQUEST['selected_quantity'];
     $contains = $_REQUEST['selected_contains'];
 
-    
     $product_unit_id = ""; $product_subunit_id = ""; $unit_type = ""; $party_type = "Contractor";
     $product_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'unit_id');
     $product_subunit_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_id');
@@ -1398,55 +1385,55 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
         $unit_type = "Subunit";
     }
 
-    // $cooly_per_qty = 0; $total_cooly = 0; $rate_list = array();
-    // if(!empty($contractor_id) && $contractor_id != "undefined") {
-    //     $rate_list = $obj->getCoolyRate($contractor_id, $product_id, $unit_type);
-    //     if(!empty($rate_list)){
-    //         foreach($rate_list as $data) {
-    //             if(!empty($data['rate_per_unit'])){
-    //                 $rate_per_unit = $data['rate_per_unit'];
-    //             }
-    //             if(!empty($data['rate_per_subunit'])){
-    //                 $rate_per_subunit = $data['rate_per_subunit'];
-    //             }
-    //         }
-    //     }
-    // }
+    $cooly_per_qty = 0; $total_cooly = 0; $rate_list = array();
+    if(!empty($contractor_id) && $contractor_id != "undefined") {
+        $rate_list = $obj->getCoolyRate($contractor_id, $product_id, $unit_type);
+        if(!empty($rate_list)){
+            foreach($rate_list as $data) {
+                if(!empty($data['rate_per_unit'])){
+                    $rate_per_unit = $data['rate_per_unit'];
+                }
+                if(!empty($data['rate_per_subunit'])){
+                    $rate_per_subunit = $data['rate_per_subunit'];
+                }
+            }
+        }
+    }
 
-    // if($unit_type == 'Unit' && !empty($rate_per_unit)){
+    if($unit_type == 'Unit' && !empty($rate_per_unit)){
 
-    //     $cooly_amount = $rate_per_unit * $quantity;
-    //     $cooly_per_qty = $rate_per_unit;
+        $cooly_amount = $rate_per_unit * $quantity;
+        $cooly_per_qty = $rate_per_unit;
 
-    // }else if($unit_type == 'Subunit' && !empty($rate_per_subunit)){
+    }else if($unit_type == 'Subunit' && !empty($rate_per_subunit)){
 
-    //     $cooly_amount = $rate_per_subunit * $quantity;
-    //     $cooly_per_qty = $rate_per_subunit;
+        $cooly_amount = $rate_per_subunit * $quantity;
+        $cooly_per_qty = $rate_per_subunit;
 
-    // }else if($unit_type == 'Unit' && !empty($rate_per_subunit) && empty($rate_per_unit)){
+    }else if($unit_type == 'Unit' && !empty($rate_per_subunit) && empty($rate_per_unit)){
         
-    //     $rate_per_unit = $rate_per_subunit * $contains;
-    //     $cooly_amount = $rate_per_unit * $quantity;
+        $rate_per_unit = $rate_per_subunit * $contains;
+        $cooly_amount = $rate_per_unit * $quantity;
 
-    //     $cooly_per_qty = $rate_per_unit;
+        $cooly_per_qty = $rate_per_unit;
     
-    // }else if($unit_type == 'Subunit' && empty($rate_per_subunit) && !empty($rate_per_unit)){
+    }else if($unit_type == 'Subunit' && empty($rate_per_subunit) && !empty($rate_per_unit)){
 
-    //     $rate_per_subunit = $rate_per_unit / $contains;
-    //     $cooly_amount = $rate_per_subunit * $quantity;
+        $rate_per_subunit = $rate_per_unit / $contains;
+        $cooly_amount = $rate_per_subunit * $quantity;
 
-    //     $cooly_per_qty = $rate_per_subunit;
+        $cooly_per_qty = $rate_per_subunit;
 
-    // }
+    }
 
-    // if(!empty($cooly_per_qty)) { 
-    //     $cooly_per_qty = number_format($cooly_per_qty,2); 
-    //     $cooly_per_qty = trim(str_replace(",", "", $cooly_per_qty));
-    // }
-    // if(!empty($cooly_amount)) { 
-    //     $cooly_amount = number_format($cooly_amount,2); 
-    //     $cooly_amount = trim(str_replace(",", "", $cooly_amount));
-    // }
+    if(!empty($cooly_per_qty)) { 
+        $cooly_per_qty = number_format($cooly_per_qty,2); 
+        $cooly_per_qty = trim(str_replace(",", "", $cooly_per_qty));
+    }
+    if(!empty($cooly_amount)) { 
+        $cooly_amount = number_format($cooly_amount,2); 
+        $cooly_amount = trim(str_replace(",", "", $cooly_amount));
+    }
     ?>
     <tr class="product_row" id="product_row<?php if(!empty($product_semifinished_inward_row_index)) { echo $product_semifinished_inward_row_index; } ?>">
         <th class="text-center px-2 py-2 sno"><?php if(!empty($product_semifinished_inward_row_index)) { echo $product_semifinished_inward_row_index; } ?></th>
@@ -1486,14 +1473,12 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
         <th class="text-center px-2 py-2">
             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity)) { echo $quantity; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
-        <?php /*
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_amount)) { echo $cooly_amount; } ?>"  readonly>
         </th>
-        */ ?>
         <th class="text-center px-2 py-2">
             <button class="btn btn-danger" type="button" onclick="Javascript:DeleteSemiFinishedInwardRow('<?php if(!empty($product_semifinished_inward_row_index)) { echo $product_semifinished_inward_row_index; } ?>', 'product_row');"><i class="fa fa-trash"></i></button>
         </th>

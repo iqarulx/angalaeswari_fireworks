@@ -51,7 +51,7 @@
                                         <option value="">Select</option>
                                         <option value="1">Supplier</option>
                                         <option value="2">Agent</option>
-                                        <!-- <option value="3">Contractor</option> -->
+                                        <option value="3">Contractor</option>
                                     </select>
                                     <label>Party Type <span class="text-danger">*</span></label>  
                                 </div>
@@ -401,10 +401,10 @@
                 } elseif($party_type == '2'){
                     $party_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'agent_name');
                     $name_mobile_city = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $party_id, 'name_mobile_city');
-                } /* elseif ($party_type == '3'){
+                } elseif ($party_type == '3'){
                     $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'contractor_name');
                     $name_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $party_id, 'name_mobile_city');
-                } */ else {
+                } else {
                     $party_id = $GLOBALS['null_value'];
                     $party_name = $GLOBALS['null_value'];
                     $name_mobile_city = $GLOBALS['null_value'];
@@ -522,9 +522,9 @@
                                 $party_type = "Supplier";
                             } elseif ($party_type == '2'){
                                 $party_type = "Agent";
-                            } /* elseif ($party_type == '3'){
+                            } elseif ($party_type == '3'){
                                 $party_type = "Contractor";
-                            } */ 
+                            } 
                             $agent_id ="";
                             $agent_name = "";
                             if($party_type =="Agent"){
@@ -699,9 +699,9 @@
                                                 $party_type = "Supplier";
                                             } elseif ($party_type == '2'){
                                                 $party_type = "Agent";
-                                            } /* elseif ($party_type == '3'){
+                                            } elseif ($party_type == '3'){
                                                 $party_type = "Contractor";
-                                            } */
+                                            }
                                             if(!empty($party_type)) { 
                                                 echo $party_type;
                                             }
@@ -725,13 +725,8 @@
                                             }
                                         ?>                                        
                                         </div>
-                                        <?php
-                                        if(!empty($list['deleted'] =='1')) {
-                                            ?>
-                                                    <span style="color: red;">Cancelled</span>
-                                            <?php	
-                                        }	 
-                                        ?>
+                                        <?php if(!empty($list['deleted'] =='1')) { ?> <span style="color: red;">Cancelled</span><?php }	
+                                    ?>
                                 </td>
                                 <td>
                                     <?php if(!empty($list['total_amount'])) { echo $obj->numberFormat($list['total_amount'], 2); } ?>

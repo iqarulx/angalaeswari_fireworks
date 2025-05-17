@@ -102,7 +102,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" name="mobile_number" class="form-control shadow-none" value="<?php if(!empty($mobile_number)){echo $mobile_number;} ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'mobile_number',10,'');">
-                            <label>Contact Number(*)</label>
+                            <label>Contact Number</label>
                         </div>
                         <div class="new_smallfnt">Numbers Only (only 10 digits)</div>
                     </div>
@@ -115,7 +115,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="w-100" style="display:none;">
@@ -130,7 +130,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" name="district" onchange="Javascript:getDistricts('customer',this.value,'');">
@@ -140,7 +140,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group mb-2">
                         <div class="form-label-group in-border">
                             <select name="city" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getCities('customer','',this.value);">
@@ -256,37 +256,42 @@
             }  	
         }
     
-        $mobile_number = $_POST['mobile_number'];
-        $mobile_number = trim($mobile_number);
-        $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "1");
-        if(!empty($mobile_number_error)) {
-            if(!empty($valid_customer)) {
-                $valid_customer = $valid_customer." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
-            }
-            else {
-                $valid_customer = $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+        if(isset($_POST['mobile_number'])) {
+            $mobile_number = $_POST['mobile_number'];
+            $mobile_number = trim($mobile_number);
+            $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "");
+            if(!empty($mobile_number_error)) {
+                if(!empty($valid_customer)) {
+                    $valid_customer = $valid_customer." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+                }
+                else {
+                    $valid_customer = $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+                }
             }
         }
     
-        $address = $_POST['address'];
-        $address = trim($address);
-        if(!empty($address)) {
-            if(strlen($address) > 150) {
-                $address_error = "Only 150 characters allowed";
-            }
-            else {
-                $address_error = $valid->valid_address($address, "address", "0","150");   
-            }
-        }  
-        if(!empty($address_error)) {
-            if(!empty($valid_customer)) {
-                $valid_customer = $valid_customer." ".$valid->error_display($form_name, "address", $address_error, 'textarea');
-            }
-            else {
-                $valid_customer = $valid->error_display($form_name, "address", $address_error, 'textarea');
-            }
-        }  
+        if(isset($_POST['address'])) {
+            $address = $_POST['address'];
+            $address = trim($address);
+            if(!empty($address)) {
+                if(strlen($address) > 150) {
+                    $address_error = "Only 150 characters allowed";
+                }
+                else {
+                    $address_error = $valid->valid_address($address, "address", "0","150");   
+                }
+            }  
+            if(!empty($address_error)) {
+                if(!empty($valid_customer)) {
+                    $valid_customer = $valid_customer." ".$valid->error_display($form_name, "address", $address_error, 'textarea');
+                }
+                else {
+                    $valid_customer = $valid->error_display($form_name, "address", $address_error, 'textarea');
+                }
+            }  
+        }
 
+        /*
         if(isset($_POST['state'])) {
             $state = $_POST['state'];
             $state = trim($state);
@@ -355,6 +360,7 @@
                 }
             }
         }
+            */
         
         if(isset($_POST['identification'])) {
             $identification = $_POST['identification'];
@@ -510,15 +516,15 @@
                 $balance = 0;
 
                 $prev_customer_id = ""; $customer_error = "";	$prev_customer_name ="";
-                if(!empty($mobile_number)) {
+                if(!empty($lower_case_name)) {
                     // $obj->CustomerMobileExists($mobile_number);
-                    $prev_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'mobile_number', $mobile_number, 'customer_id');
+                    $prev_customer_id = $obj->getTableColumnValue($GLOBALS['customer_table'], 'lower_case_name', $lower_case_name, 'customer_id');
                     if(!empty($prev_customer_id) && $prev_customer_id != $edit_id) {
                     // echo $prev_customer_id . "cust$$$";
 
                         $prev_customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$prev_customer_id,'customer_name');
 						$prev_customer_name = $obj->encode_decode("decrypt",$prev_customer_name);
-                        $customer_error = "This mobile number is already exist in ".$prev_customer_name;
+                        $customer_error = $prev_customer_name." - This Customer Name is already exist";
                     }
                 }
 
@@ -773,7 +779,7 @@
                         <th>Customer Name</th>
                         <th>Mobile</th>
                         <th>Agent Name</th>
-                        <th>State</th>
+                        <th>Address</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -800,7 +806,7 @@
                                     </div>
                                 </td>
                                 <td> <?php
-                                    if(!empty($data['mobile_number'])) {
+                                    if(!empty($data['mobile_number']) && $data['mobile_number'] !=$GLOBALS['null_value']) {
                                         $data['mobile_number'] = $obj->encode_decode('decrypt', $data['mobile_number']);
                                         echo $data['mobile_number'];
                                     } ?>
@@ -815,9 +821,11 @@
                                     } ?>
                                 </td>
                                 <td> <?php 
-                                    if(!empty($data['state'])) {
-                                        $data['state'] = $obj->encode_decode('decrypt', $data['state']);
-                                        echo $data['state'];
+                                    if(!empty($data['address']) && $data['address']!=$GLOBALS['null_value'] ) {
+                                        $data['address'] = $obj->encode_decode('decrypt', $data['address']);
+                                        echo $data['address'];
+                                    }else{
+                                         echo "-";
                                     } ?>
                                 </td>
                                 <td>

@@ -8,11 +8,15 @@
                 <div class="col-12 my-3">
                     <div class="excel_back_upload_details back_button">
                         <button  onclick="window.open('product.php','_self')" style="font-size:11px;color:white;padding:5px 7px;margin-left:24px;" class=" btn btn-danger" type="button"><i class="fa fa-chevron-circle-left"></i> Back</button>
-                        <span  style="color:green;">Per Type 1 means Unit , </span><br>
-                        <span style="color:green;">Per Type 2 means Subunit  </span><br>
-                        <span style="color:green;">Group 1 means Raw Material  </span><br>
-                        <span style="color:green;">Group 2 means Semi Fineshed  </span><br>
-                        <span style="color:green;">Group 3 means Fineshed  </span><br>
+                    </div>
+                    <div class="mt-2" style="color:red;">
+                        <span>*Group 1 for Raw Material  </span><br>
+                        <span>*Group 2 for Semi Finished  </span><br>
+                        <span>*Group 3 for Finished  </span><br>
+                        <span>*Per Type 1 for Unit </span><br>
+                        <span>*Per Type 2 for Subunit  </span><br>
+                        <span>*Subunit not empty must be give Per Type 2</span><br>
+                        <span>*Subunit empty must be give Per Type 1</span><br>
                     </div>
                 </div>
                 <div class="col-12 my-3" style="position: relative;">
@@ -29,12 +33,13 @@
                                     <thead class="thead-dark">
                                         <tr>
                                             <th style="text-align: center; width: 50px;">S.No</th>
-                                            <th style="text-align: center; width: 125px;">Group</th>
+                                            <th style="text-align: center; width: 125px;">Group Type</th>
+                                            <th style="text-align: center; width: 125px;">Group Name</th>
                                             <th style="text-align: center; width: 125px;">Product Name</th>
-                                            <th style="text-align: center; width: 125px;">HSN Code</th>
+                                            <!-- <th style="text-align: center; width: 125px;">HSN Code</th> -->
                                             <th style="text-align: center; width: 125px;">Unit</th>
                                             <th style="text-align: center; width: 125px;">SubUnit</th>
-                                            <th style="text-align: center; width: 125px;">Case Rate</th>                 
+                                            <th style="text-align: center; width: 125px;">Sales Rate</th>                 
                                             <th style="text-align: center; width: 125px;">Per</th>                 
                                             <th style="text-align: center; width: 125px;">Per Type</th>   
                                         </tr>
@@ -59,7 +64,7 @@
 	}
 
     if(isset($_REQUEST['excel_row_index'])) {
-        $excel_row_index = ""; $excel_row_values = ""; $sno = ""; $hsn_code = ""; $group = "";$product_name = ""; $product_name_error = ""; $unit_id = ""; $unit_id_error = "";  $unit_name = ""; $unit_name_error = ""; $upload_type = ""; $purchase_price = ""; $purchase_price_error = ""; $case_rate = ""; $case_rate_error = "";  $per = ""; $per_error = ""; $per_type = ""; $per_type_error = "";
+        $excel_row_index = ""; $excel_row_values = ""; $sno = ""; $group_type_name = "";$group_type_name_error = ""; $group = "";$product_name = ""; $product_name_error = ""; $unit_id = ""; $unit_id_error = "";  $unit_name = ""; $unit_name_error = ""; $upload_type = ""; $purchase_price = ""; $purchase_price_error = ""; $case_rate = ""; $case_rate_error = "";  $per = ""; $per_error = ""; $per_type = ""; $per_type_error = "";
        $product_error="";
 
         if(isset($_REQUEST['upload_type'])){
@@ -86,14 +91,14 @@
 
             if(!empty($excel_row_values['2']) && $excel_row_values['2'] != 'undefined' && $excel_row_values['2'] != $GLOBALS['null_value']){
                 $excel_row_values['2']=trim($excel_row_values['2']);
-                $product_name = $excel_row_values['2'];
-				$product_name_error = $valid->valid_product_name($product_name, "Product Name", "1","50");              
+                $group_type_name = $excel_row_values['2'];
+				$group_type_name_error = $valid->valid_product_name($group_type_name, "Group Name", "1",'50');
             }
 
             if(!empty($excel_row_values['3']) && $excel_row_values['3'] != 'undefined' && $excel_row_values['3'] != $GLOBALS['null_value']){
                 $excel_row_values['3']=trim($excel_row_values['3']);
-                $hsn_code = $excel_row_values['3'];
-				$hsn_code_error = $valid->valid_hsn($hsn_code, "HSN Code", "1");
+                $product_name = $excel_row_values['3'];
+				$product_name_error = $valid->valid_product_name($product_name, "Product Name", "1","50");              
             }
 
             if(!empty($excel_row_values['4']) && $excel_row_values['4'] != 'undefined' && $excel_row_values['4'] != $GLOBALS['null_value']){
@@ -144,17 +149,25 @@
                 <?php } ?>
             </td>
             <td style="width: 100px;">
+                <input type="text" class="form-control mb-1" name="group_type_name" value="<?php if(!empty($group_type_name)) { echo $group_type_name; } ?>" placeholder="Group Name" onfocus="Javascript:KeyboardControls(this,'text',25,'');">
+                <?php if(!empty($group_type_name_error)) { ?>
+                <span class="infos"><?php $group_type_name_error; ?></span>
+                <?php } ?>
+            </td>
+            <td style="width: 100px;">
                 <input type="text" class="form-control mb-1" name="product_name" value="<?php if(!empty($product_name)) { echo $product_name; } ?>" placeholder="Product Name" onfocus="Javascript:KeyboardControls(this,'text',25,'');">
                 <?php if(!empty($product_name_error)) { ?>
                 <span class="infos"><?php $product_name_error; ?></span>
                 <?php } ?>
             </td>
+            <?php /*
             <td style="width: 100px;">
                 <input type="text" class="form-control mb-1" name="hsn_code" value="<?php if(!empty($hsn_code)) { echo $hsn_code; } ?>" placeholder="HSN Code" onfocus="Javascript:KeyboardControls(this,'text',25,'');">
                 <?php if(!empty($hsn_code_error)) { ?>
                 <span class="infos"><?php $hsn_code_error; ?></span>
                 <?php } ?>
             </td>
+            <?php */ ?>
             <td style="width: 100px;">
                 <input type="text" class="form-control mb-1" name="unit_name" value="<?php if(!empty($unit_name)) { echo $unit_name; } ?>" placeholder="Unit Name" onfocus="Javascript:KeyboardControls(this,'text',25,'');">
                 <?php if(!empty($unit_name_error)) { ?>
@@ -194,6 +207,7 @@
        $product_name = ""; $product_name_error = ""; $unit_name = ""; $unit_name_error = ""; $excel_upload_type=""; $subunit_contains = ""; $subunit_contains_error = "";$case_rate = ""; $case_rate_error = "";$subunit_name = ""; $subunit_name_error = "";  $per = ""; $per_error = ""; $per_type = ""; $per_type_error = "";
         $excel_upload_error = ""; $subunit_need = 1;
         $hsn_code = $hsn_code_error = "";
+        $group_type_name = $group_type_name_error = "";
         $group = $group_error = $group_id = $group_name = "";
         
         if(isset($_REQUEST['excel_upload_type'])){
@@ -268,18 +282,37 @@
             }
         }
 
-        if(isset($_REQUEST['hsn_code'])){
-            $hsn_code = $_REQUEST['hsn_code'];
-            $hsn_code = trim($hsn_code);
-            $hsn_code_error = $valid->valid_hsn($hsn_code, "HSN Code", "1");
+        // if(isset($_REQUEST['hsn_code'])){
+        //     $hsn_code = $_REQUEST['hsn_code'];
+        //     $hsn_code = trim($hsn_code);
+        //     $hsn_code_error = $valid->valid_hsn($hsn_code, "HSN Code", "1");
     
             
-            if(!empty($hsn_code_error)) {
+        //     if(!empty($hsn_code_error)) {
+        //         if(!empty($excel_upload_error)) {
+        //            $excel_upload_error = $excel_upload_error."<br>".$hsn_code_error;
+        //         }
+        //         else {
+        //             $excel_upload_error = $hsn_code_error;
+        //         }
+        //     }
+        // }
+
+        if(isset($_REQUEST['group_type_name'])){
+            $group_type_name = $_REQUEST['group_type_name'];
+            $group_type_name = trim($group_type_name);
+            $group_type_name_error = $valid->valid_text($group_type_name, "Group Name", "1");
+    
+            if(!empty($group_type_name) && empty($group_type_name_error) && strlen($group_type_name) > 25) {
+                $group_type_name_error = "Group Name - Max.Character Count : 10";
+            }
+            
+            if(!empty($group_type_name_error)) {
                 if(!empty($excel_upload_error)) {
-                   $excel_upload_error = $excel_upload_error."<br>".$hsn_code_error;
+                   $excel_upload_error = $excel_upload_error."<br>".$group_type_name_error;
                 }
                 else {
-                    $excel_upload_error = $hsn_code_error;
+                    $excel_upload_error = $group_type_name_error;
                 }
             }
         }
@@ -334,10 +367,8 @@
             if(!empty($case_rate) && empty($case_rate_error) && strlen($case_rate) > 8) {
                 $case_rate_error = "Case Rate - Max.Character Count : 8";
             }
-            
-           
         }
-
+    
         if(isset($_REQUEST['per'])){
             $per = $_REQUEST['per'];
             $per = trim($per);
@@ -345,11 +376,9 @@
     
             if(!empty($per) && empty($per_error) && strlen($per) > 8) {
                 $per_error = "Per - Max.Character Count : 4";
-            }
-            
-              
+            }  
         }
-
+    
         if(isset($_REQUEST['per_type'])){
             $per_type = $_REQUEST['per_type'];
             $per_type = trim($per_type);
@@ -360,11 +389,14 @@
                 if (!in_array($per_type, $valid_types)) {
                     $per_type_error = "Per Type must be (1 or 2)";
                 }
-            }
-            
-
-              
+            }    
         }
+        if($subunit_need == 1){
+            $per_type = 2;
+        }else{
+            $per_type = 1;
+        }
+
         if($group != 3) {
             $case_rate = $GLOBALS['null_value'];
             $per_type = $GLOBALS['null_value'];
@@ -402,12 +434,122 @@
        
         $result = "";  
         if(empty($excel_upload_error)) {
-            $product_unit_id = "";  $product_category_id = ""; 
+            $product_finished_group_id = "";$product_semi_finished_group_id = "";$product_subunit_id="";$product_raw_material_group_id = "";   $product_unit_id = "";  $product_category_id = ""; 
 
             $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
             $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
             $bill_company_id = $GLOBALS['bill_company_id'];
             $null_value = $GLOBALS['null_value'];
+
+            if($group == '1'){
+                if(!empty($group_type_name)) {
+                    $lower_case_name = "";
+                    $lower_case_name = strtolower($group_type_name);
+                    $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
+                    $group_type_name = $obj->encode_decode('encrypt',$group_type_name);
+                    // $bill_company_id = $GLOBALS['bill_company_id'];
+    
+                    $prev_group_type_id = "";	
+                    if(!empty($lower_case_name)) {
+                        $prev_group_type_id = ""; $unit_error = "";
+                        if(!empty($lower_case_name)) {
+                            $prev_group_type_id = $obj->getTableColumnValue($GLOBALS['raw_material_group_table'],'lower_case_name',$lower_case_name,'raw_material_group_id');
+                        }
+                        if(empty($prev_group_type_id)) {						
+                            $action = ""; $group_type_insert_id = "";
+                            if(!empty($group_type_name)) {
+                                $action = "New Group Created. Name - ".$obj->encode_decode('decrypt', $group_type_name);
+                            }
+    
+                            $null_value = $GLOBALS['null_value'];
+                            $columns = array();$values = array();
+                            $columns = array('created_date_time', 'creator', 'creator_name',  'raw_material_group_id', 'raw_material_group_name', 'lower_case_name', 'deleted');
+                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$group_type_name."'", "'".$lower_case_name."'", "'0'");
+                            $group_type_insert_id = $obj->InsertSQL($GLOBALS['raw_material_group_table'], $columns, $values, 'raw_material_group_id', '', $action);		
+                            if(preg_match("/^\d+$/", $group_type_insert_id)) {
+                                $group_type_id = $obj->getTableColumnValue($GLOBALS['raw_material_group_table'], 'id', $group_type_insert_id, 'raw_material_group_id');
+    
+                                $product_raw_material_group_id = $group_type_id;
+                            }
+                        }
+                        else {
+                            $product_raw_material_group_id = $prev_group_type_id;
+                        }
+                    }
+                }
+            }else if($group == '2'){
+                if(!empty($group_type_name)) {
+                    $lower_case_name = "";
+                    $lower_case_name = strtolower($group_type_name);
+                    $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
+                    $group_type_name = $obj->encode_decode('encrypt',$group_type_name);
+                    // $bill_company_id = $GLOBALS['bill_company_id'];
+    
+                    $prev_group_type_id = "";	
+                    if(!empty($lower_case_name)) {
+                        $prev_group_type_id = ""; $unit_error = "";
+                        if(!empty($lower_case_name)) {
+                            $prev_group_type_id = $obj->getTableColumnValue($GLOBALS['semi_finished_group_table'],'lower_case_name',$lower_case_name,'semi_finished_group_id');
+                        }
+                        if(empty($prev_group_type_id)) {						
+                            $action = ""; $group_type_insert_id = "";
+                            if(!empty($group_type_name)) {
+                                $action = "New Group Created. Name - ".$obj->encode_decode('decrypt', $group_type_name);
+                            }
+    
+                            $null_value = $GLOBALS['null_value'];
+                            $columns = array();$values = array();
+                            $columns = array('created_date_time', 'creator', 'creator_name',  'semi_finished_group_id', 'semi_finished_group_name', 'lower_case_name', 'deleted');
+                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$group_type_name."'", "'".$lower_case_name."'", "'0'");
+                            $group_type_insert_id = $obj->InsertSQL($GLOBALS['semi_finished_group_table'], $columns, $values, 'semi_finished_group_id', '', $action);		
+                            if(preg_match("/^\d+$/", $group_type_insert_id)) {
+                                $group_type_id = $obj->getTableColumnValue($GLOBALS['semi_finished_group_table'], 'id', $group_type_insert_id, 'semi_finished_group_id');
+    
+                                $product_semi_finished_group_id = $group_type_id;
+                            }
+                        }
+                        else {
+                            $product_semi_finished_group_id = $prev_group_type_id;
+                        }
+                    }
+                }
+            }else if($group == '3'){
+                if(!empty($group_type_name)) {
+                    $lower_case_name = "";
+                    $lower_case_name = strtolower($group_type_name);
+                    $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
+                    $group_type_name = $obj->encode_decode('encrypt',$group_type_name);
+                    // $bill_company_id = $GLOBALS['bill_company_id'];
+    
+                    $prev_group_type_id = "";	
+                    if(!empty($lower_case_name)) {
+                        $prev_group_type_id = ""; $unit_error = "";
+                        if(!empty($lower_case_name)) {
+                            $prev_group_type_id = $obj->getTableColumnValue($GLOBALS['finished_group_table'],'lower_case_name',$lower_case_name,'finished_group_id');
+                        }
+                        if(empty($prev_group_type_id)) {						
+                            $action = ""; $group_type_insert_id = "";
+                            if(!empty($group_type_name)) {
+                                $action = "New Group Created. Name - ".$obj->encode_decode('decrypt', $group_type_name);
+                            }
+    
+                            $null_value = $GLOBALS['null_value'];
+                            $columns = array();$values = array();
+                            $columns = array('created_date_time', 'creator', 'creator_name',  'finished_group_id', 'finished_group_name', 'lower_case_name', 'deleted');
+                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$group_type_name."'", "'".$lower_case_name."'", "'0'");
+                            $group_type_insert_id = $obj->InsertSQL($GLOBALS['finished_group_table'], $columns, $values, 'finished_group_id', '', $action);		
+                            if(preg_match("/^\d+$/", $group_type_insert_id)) {
+                                $group_type_id = $obj->getTableColumnValue($GLOBALS['finished_group_table'], 'id', $group_type_insert_id, 'finished_group_id');
+    
+                                $product_finished_group_id = $group_type_id;
+                            }
+                        }
+                        else {
+                            $product_finished_group_id = $prev_group_type_id;
+                        }
+                    }
+                }
+            }
             
             if(!empty($unit_name)) {
                 $lower_case_name = "";
@@ -490,8 +632,6 @@
                 $lower_case_name = strtolower($product_name);
                 $product_name = $obj->encode_decode('encrypt', $product_name);
                 $lower_case_name = $obj->encode_decode('encrypt', $lower_case_name);
-
-
                 $prev_product_id = ""; $prev_product_name = "";$product_error = ""; 
                 if(!empty($lower_case_name) && $lower_case_name != $GLOBALS['null_value']) {
                     $prev_product_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'lower_case_name', $lower_case_name, 'product_id');
@@ -508,9 +648,9 @@
                     }
 
                     $product_insert_id = ""; $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock', 'deleted');
+                    $columns = array('created_date_time', 'creator', 'creator_name','group_id', 'group_name','finished_group_id','raw_material_group_id','semi_finished_group_id', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock', 'deleted');
 
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'","'0'");
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$group_id."'","'".$group_name."'","'".$product_finished_group_id."'","'".$product_raw_material_group_id."'","'".$product_semi_finished_group_id."'", "'".$null_value."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'","'0'");
                     $product_insert_id = $obj->InsertSQL($GLOBALS['product_table'], $columns, $values,'product_id','', $action);
 
                     if(preg_match("/^\d+$/", $product_insert_id)) {
@@ -534,8 +674,8 @@
                             }
 
                             $columns = array(); $values = array();						
-                            $columns = array('creator_name','group_id', 'group_name', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock');
-                            $values = array("'".$creator_name."'","'".$group_id."'","'".$group_name."'", "'".$hsn_code."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'");
+                            $columns = array('creator_name','group_id', 'group_name','finished_group_id','raw_material_group_id','semi_finished_group_id', 'hsn_code',  'product_id', 'product_name', 'lower_case_name', 'unit_id', 'unit_name', 'subunit_need','subunit_id', 'subunit_name', 'sales_rate', 'subunit_contains', 'per','per_type', 'opening_stock', 'unit_type', 'stock_date', 'negative_stock');
+                            $values = array("'".$creator_name."'","'".$group_id."'","'".$group_name."'","'".$product_finished_group_id."'","'".$product_raw_material_group_id."'","'".$product_semi_finished_group_id."'", "'".$null_value."'","'".$null_value."'","'".$product_name."'", "'".$lower_case_name."'", "'".$product_unit_id."'", "'".$unit_name."'","'".$subunit_need."'", "'".$product_subunit_id."'","'".$subunit_name."'", "'".$case_rate."'", "'".$null_value."'", "'".$per."'","'".$per_type."'", "'".$null_value."'", "'".$null_value."'", "'".$null_value."'", "'0'");
 
                             $product_update_id = $obj->UpdateSQL($GLOBALS['product_table'], $getUniqueID, $columns, $values, $action);
                             $result = $product_update_id;

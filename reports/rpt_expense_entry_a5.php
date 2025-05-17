@@ -16,7 +16,7 @@ $expense_list = $obj->getAllRecords($GLOBALS['expense_table'], 'expense_id', $ex
 
 $expense_number = ""; $expense_date = ""; $expense_category_id = ""; $expense_category_name = "";
 $narration = ""; $amounts = array(); $payment_mode_ids = array(); $payment_mode_names = array(); $bank_ids = array(); 
-$bank_names = array(); $total_amount = 0; $deleted = 0; $company_id = "";
+$bank_names = array(); $total_amount = 0; $deleted = 0; $company_id = ""; $expense_party_id = "";
 
 if(!empty($expense_list)) {
     foreach($expense_list as $data) {
@@ -31,6 +31,9 @@ if(!empty($expense_list)) {
         }
         if(!empty($data['expense_category_name']) && $data['expense_category_name'] != $GLOBALS['null_value']) {
             $expense_category_name = $obj->encode_decode('decrypt', $data['expense_category_name']);
+        }
+        if(!empty($data['expense_party_id']) && $data['expense_party_id'] != $GLOBALS['null_value']) {
+            $expense_party_id = $data['expense_party_id'];
         }
         if(!empty($data['narration']) && $data['narration'] != $GLOBALS['null_value']) {
             $narration = $obj->encode_decode('decrypt', $data['narration']);
@@ -69,6 +72,11 @@ if(!empty($expense_category_id)) {
     $expense_category_name = $obj->getTableColumnValue($GLOBALS['expense_category_table'], 'expense_category_id', $expense_category_id, 'expense_category_name');
     $expense_category_name = $obj->encode_decode("decrypt",$expense_category_name);
 }
+$expense_party_name = "";
+if(!empty($expense_party_id)) {
+    $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $expense_party_id, 'expense_party_name');
+    $expense_party_name = $obj->encode_decode("decrypt",$expense_party_name);
+}
 
 require_once('../fpdf/AlphaPDF.php');
 $pdf = new AlphaPDF('L','mm','A5');
@@ -96,7 +104,7 @@ $pdf->Cell(93,5,'Expense For',0,1,'L');
 $pdf->SetTextColor(0,0,0);
 $pdf->SetFont('Arial','B',8);
 $pdf->SetX(20);
-$pdf->MultiCell(85,4,$expense_category_name,0,'L',0);
+$pdf->MultiCell(85,4, (!empty($expense_party_name) ? $expense_party_name . ' - ' : '' ). $expense_category_name,0,'L',0);
 
 $expense_category_y = $pdf->GetY();
 

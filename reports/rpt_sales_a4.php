@@ -34,12 +34,20 @@
     }
 
     $pdf_download_name ="";
-    $pdf_download_name = "Sales Report PDF -"." (".$from_date ." to ".$to_date .")";
+    if(!empty($from_date) || !empty($to_date)) {
+        $pdf_download_name = "Sales Report PDF -"." (".$from_date ." to ".$to_date .")";
+    } else {
+        $pdf_download_name = "Sales Report PDF";
+    }
 
     $total_records_list = array();
     $total_records_list = $obj->getSalesReportList($from_date, $to_date, $filter_party_id, $agent_id, $transport_id,$cancel_bill_btn );
-    $from_date = date('d-m-Y',strtotime($from_date));
-    $to_date = date('d-m-Y',strtotime($to_date));
+    if(!empty($from_date)) {
+        $from_date = date('d-m-Y',strtotime($from_date));
+    }
+    if(!empty($to_date)) {
+        $to_date = date('d-m-Y',strtotime($to_date));
+    }
     
     require_once('../fpdf/fpdf.php');
     $pdf = new FPDF('P','mm','A4');
@@ -54,7 +62,25 @@
     $pdf->SetY($header_end);
            
     $pdf->SetFont('Arial','B',10);
-    $pdf->Cell(0,5,'Sales Report - ('.$from_date.' - '.$to_date.')',0,1,'C',0);
+    if(!empty($from_date) || !empty($to_date)) {
+        $date_display = "(";
+        if(!empty($from_date)) {
+            $date_display = $from_date;
+        }
+
+        if(!empty($from_date) && !empty($to_date)) {
+            $date_display .= ' - ';
+        }
+
+        if(!empty($to_date)) {
+            $date_display .= $to_date;
+        }
+        $date_display .= ")";
+
+        $pdf->Cell(0,5,'Sales Report - '.$date_display,0,1,'C',0);
+    } else {
+        $pdf->Cell(0,5,'Sales Report',0,1,'C',0);
+    }
 
     $current_y = $pdf->GetY();
     $box_y = $pdf->GetY();
@@ -92,7 +118,25 @@
                 $pdf->SetY($header_end);
                     
                 $pdf->SetFont('Arial','B',10);
-                $pdf->Cell(0,5,'Sales Report - ('.$from_date.' - '.$to_date.')',0,1,'C',0);
+                if(!empty($from_date) || !empty($to_date)) {
+                    $date_display = "(";
+                    if(!empty($from_date)) {
+                        $date_display = $from_date;
+                    }
+
+                    if(!empty($from_date) && !empty($to_date)) {
+                        $date_display .= ' - ';
+                    }
+
+                    if(!empty($to_date)) {
+                        $date_display .= $to_date;
+                    }
+                    $date_display .= ")";
+
+                    $pdf->Cell(0,5,'Sales Report - '.$date_display,0,1,'C',0);
+                } else {
+                    $pdf->Cell(0,5,'Sales Report',0,1,'C',0);
+                }
                 $current_y = $pdf->GetY();
                 $box_y = $pdf->GetY();
 

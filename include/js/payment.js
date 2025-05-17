@@ -279,7 +279,11 @@ function HideDetails(type) {
 
 
 function ViewPartyDetails() {
-	var type = "";
+	var type = ""; var party_type = "";
+	if (jQuery('select[name="party_type"]').length > 0) {
+		party_type = jQuery('select[name="party_type"]').val();
+	}
+
 	if (jQuery('select[name="party_id"]').length > 0) {
 		type_id = jQuery('select[name="party_id"]').val();
 	}
@@ -289,7 +293,15 @@ function ViewPartyDetails() {
 			type = "agent";
 			type_id = type_id.replace("agent_", "");
 		} else {
-			type = "customer";
+			if (party_type == 1) {
+				type = "supplier";
+			} else if (party_type == 2) {
+				type = "agent";
+			} else if (party_type == 3) {
+				type = "contractor";
+			} else {
+				type = "customer";
+			}
 		}
 
 		var post_url = "payment_bill_changes.php?details_type=" + type + "&view_party_details=" + type_id;
@@ -474,4 +486,31 @@ function DeletePaymentRow(row_index) {
 			}
 		}
 	});
+}
+
+function ExpensePartyChange() {
+
+	var expense_party_id = "";
+	if (jQuery('select[name="expense_party_id"]')) {
+		expense_party_id = jQuery('select[name="expense_party_id"]').val();
+	}
+
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				var post_url = "payment_bill_changes.php?expense_party_id=" + expense_party_id;
+				jQuery.ajax({
+					url: post_url, success: function (result) {
+						if (result != '') {
+							if (jQuery('select[name="expense_category_id"]').length > 0) {
+								jQuery('select[name="expense_category_id"]').html(result);
+							}
+						}
+					}
+				});
+			}
+		}
+	});
+
 }

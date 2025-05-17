@@ -9,14 +9,14 @@
     }
 	if(isset($_REQUEST['show_consumption_entry_id'])) { 
         $show_consumption_entry_id = $_REQUEST['show_consumption_entry_id'];
-        $godown_id = array(); $product_id = array(); $unit_type = array(); $quantity = array(); /* $contractor_id = "";*/ $consumption_content = array(); $godown_type = ""; $entry_date = date('Y-m-d'); $first_godown_id = ""; $product_count =0;
+        $godown_id = array(); $product_id = array(); $unit_type = array(); $quantity = array();  $contractor_id = ""; $consumption_content = array(); $godown_type = ""; $entry_date = date('Y-m-d'); $first_godown_id = ""; $product_count =0;
        if(!empty($show_consumption_entry_id)) {
             $show_consumption_entry_list = $obj->getTableRecords($GLOBALS['consumption_entry_table'], 'consumption_id', $show_consumption_entry_id, '');
             if(!empty($show_consumption_entry_list)) {
                 foreach($show_consumption_entry_list as $consumption_entry) {
-                    // if(!empty($consumption_entry['contractor_id'])) {
-                    //     $contractor_id = $consumption_entry['contractor_id'];
-                    // }
+                    if(!empty($consumption_entry['contractor_id'])) {
+                        $contractor_id = $consumption_entry['contractor_id'];
+                    }
                     if(!empty($consumption_entry['godown_type'])) {
                         $godown_type = $consumption_entry['godown_type'];
                     }
@@ -46,7 +46,7 @@
             }
         }
 
-        // $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], "", "", "");
+        $contractor_list = $obj->getTableRecords($GLOBALS['contractor_table'], "", "", "");
         
         if(!empty($login_godown_id)){
             $godown_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
@@ -96,11 +96,10 @@
                                 </div>
                             </div> 
                         </div>
-                        <?php /*
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <select class="select2 select2-danger <?php if(!empty($show_consumption_entry_id)) { echo 'Product_Fix_field'; } ?>" name="contractor"  data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                    <select class="select2 select2-danger <?php if(!empty($show_consumption_entry_id)) { echo 'Product_Fix_field'; } ?>" name="contractor"  data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_consumption_entry_id)) { echo "disabled"; } ?>>
                                         <option value="">Select Contractor</option>
                                         <?php if(!empty($contractor_list)) {
                                             foreach($contractor_list as $contractor) { ?>
@@ -112,14 +111,11 @@
                                 </div>
                             </div>       
                         </div>
-                        */ ?>
-                        <?php /*
                         <input type="hidden" name="contractor" value="<?php if(!empty($contractor_id)) { echo $contractor_id; } ?>" <?php if(empty($show_consumption_entry_id)) { ?>disabled<?php } ?>>
-                        <?php */ ?>
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <select class="select2 select2-danger <?php if(!empty($show_consumption_entry_id)) { echo 'Product_Fix_field'; } ?>" name="godown_type" data-dropdown-css-class="select2-danger" style="width: 100%;" <?php if(!empty($show_consumption_entry_id)) { echo "disabled"; } ?> onchange="Javascript:getGodownType(this.value);">
+                                    <select class="select2 select2-danger <?php if(!empty($show_consumption_entry_id)) { echo 'Product_Fix_field'; } ?>" name="godown_type" data-dropdown-css-class="select2-danger" style="width: 100%;"   onchange="Javascript:getGodownType(this.value);">
                                         <option value="">Select Godown type</option>
                                         <option value="1"  <?php if(!empty($godown_type) && $godown_type == 1){ ?>Selected <?php } ?> >Overall Godown</option>
                                         <option value="2" <?php if(!empty($godown_type) && $godown_type == 2){ ?>Selected <?php } ?> >Productwise Godown</option>
@@ -439,7 +435,7 @@
             return $finalArray;
         }
 
-        $edit_id = ""; /* $contractor_id = ""; */ $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = "";
+        $edit_id = "";  $contractor_id = "";  $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = "";
         $consumption_id = ""; $stock_unique_ids = array(); $group_id = array(); $unit_id = array(); $subunit_id = array();
         $contractor_error = ""; $consumption_content = array(); $godown_type_error = ""; $overall_godown_error = ""; $overall_godown = "";
         if(isset($_POST['edit_id'])) {
@@ -461,7 +457,7 @@
         }
 
 
-        /* if(isset($_POST['contractor'])) {
+        if(isset($_POST['contractor'])) {
             $contractor_id = $_POST['contractor'];
         }
         if(empty($contractor_id)) {
@@ -473,7 +469,7 @@
             } else {
                 $valid_consumption = $valid->error_display($form_name, 'contractor', $contractor_error, 'select');
             }
-        } */
+        } 
 
         if(isset($_POST['godown_type'])) {
             $godown_type = $_POST['godown_type'];
@@ -760,7 +756,6 @@
         }
 
         // echo $valid_stock.= "Hi";
-
         if(empty($valid_consumption) && empty($product_error) && empty($valid_stock)) {
             $check_user_id_ip_address = "";
             $check_user_id_ip_address = $obj->check_user_id_ip_address();
@@ -801,9 +796,9 @@
                     $entry_date = date('Y-m-d', strtotime($entry_date));
                 }
 
-                /* $contractor_details = ""; $consumption_entry_number = "";
+                $contractor_details = ""; $consumption_entry_number = "";
                 $contractor_details = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'contractor_details');
-                $contractor_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city'); */
+                $contractor_mobile_city = $obj->getTableColumnValue($GLOBALS['contractor_table'], 'contractor_id', $contractor_id, 'name_mobile_city'); 
 
                 $company_details = "";
                 $company_details = $obj->getTableColumnValue($GLOBALS['company_table'], 'primary_company', '1', 'company_details');
@@ -815,8 +810,8 @@
                 if (empty($edit_id)) {
                     $action = "New consumption Created ";
                     $null_value = $GLOBALS['null_value'];
-                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'company_details','consumption_id','consumption_entry_number', 'entry_date','godown_type','product_id', 'godown_id', 'unit_type', 'quantity','content', 'total_quantity', 'cancelled','deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$company_details."'","'".$null_value."'", "'".$null_value."'","'".$entry_date."'", "'".$godown_type."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$consumption_content."'", "'".$total_qty."'", "'0'","'0'");
+                    $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'company_details','consumption_id','consumption_entry_number', 'entry_date','godown_type','product_id', 'godown_id', 'unit_type', 'quantity','content', 'total_quantity','contractor_id','contractor_details','contractor_mobile_city ', 'cancelled','deleted');
+                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$company_details."'","'".$null_value."'", "'".$null_value."'","'".$entry_date."'", "'".$godown_type."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$consumption_content."'", "'".$total_qty."'",  "'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'","'0'","'0'");
                     $insert_id = $obj->InsertSQL($GLOBALS['consumption_entry_table'], $columns, $values, "consumption_id", "consumption_entry_number", $action);
                     if (preg_match("/^\d+$/", $insert_id)) {
 
@@ -833,8 +828,8 @@
                     if(preg_match("/^\d+$/", $getUniqueID)) {
                         $action = "consumption Updated.";
                         $columns = array(); $values = array();	
-                        $columns = array('company_details', 'product_id', 'godown_id', 'unit_type', 'quantity', 'total_quantity','entry_date','content','godown_type');
-                        $values = array("'".$company_details."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$total_qty."'","'".$entry_date."'","'".$consumption_content."'","'".$godown_type."'");
+                        $columns = array('company_details', 'product_id', 'godown_id', 'unit_type', 'quantity', 'total_quantity','entry_date','content','godown_type','contractor_id','contractor_details','contractor_mobile_city ');
+                        $values = array("'".$company_details."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$total_qty."'","'".$entry_date."'","'".$consumption_content."'","'".$godown_type."'","'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'");
                         $consumption_update_id = $obj->UpdateSQL($GLOBALS['consumption_entry_table'], $getUniqueID, $columns, $values, $action);
                         if(preg_match("/^\d+$/", $consumption_update_id)) {
                             $consumption_id = $edit_id;
@@ -911,11 +906,10 @@
 		   $search_text = $_POST['search_text'];
 		}
 
-        /* $filter_contractor_id = "";  $from_date = ""; $to_date = "";
+        $filter_contractor_id = "";  $from_date = ""; $to_date = "";
 		if(isset($_POST['filter_contractor_id'])) {
 		   $filter_contractor_id = $_POST['filter_contractor_id'];
-		} */
-
+		} 
         if(isset($_POST['from_date'])) {
             $from_date = $_POST['from_date'];
         }
@@ -925,7 +919,7 @@
         if(isset($_POST['show_bill'])) {
             $show_bill = $_POST['show_bill'];
         }
-        $total_records_list = $obj->getConsumptionTableRecords('', $show_bill, $from_date, $to_date);
+        $total_records_list = $obj->getConsumptionTableRecords($filter_contractor_id, $show_bill, $from_date, $to_date);
 
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);

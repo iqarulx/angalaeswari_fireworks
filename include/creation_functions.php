@@ -1582,10 +1582,6 @@
 
 		//Arul Murugan
 		public function UpdateConversionStock($bill_id, $bill_type) {
-			$stock_unique_id = "";
-			$stock_query = "SELECT id FROM " . $GLOBALS['stock_conversion_table'] . " WHERE bill_id = '" . $bill_id . "' AND bill_type = '" . $bill_type . "' AND deleted = '0'";
-			$stock_unique_id = $this->getQueryRecords($GLOBALS['stock_conversion_table'], $stock_query);
-		
 			$proforma_list = array();
 			$bill_number = "";
 			$bill_date = "";
@@ -1677,6 +1673,7 @@
 			}
 		
 			for ($i = 0; $i < count($product_ids); $i++) {
+				$where = "";
 				$product_id = "";
 				$unit_id = "";
 				$content = "";
@@ -1685,48 +1682,57 @@
 		
 				if(!empty($product_ids[$i])) {
 					$product_id = $product_ids[$i];
+					$where .= " product_id = '" . $product_ids[$i] . "' AND";
 				}
 				if(!empty($unit_ids[$i])) {
 					$unit_id = $unit_ids[$i];
+					$where .= " unit_id = '" . $unit_ids[$i] . "' AND";
 				}
 				if(!empty($contents[$i])) {
 					$content = $contents[$i];
+					$where .= " case_contains = '" . $contents[$i] . "' AND";
 				}
 				if(!empty($unit_types[$i])) {
 					$unit_type = $unit_types[$i];
+					if($unit_type == '1') {
+						$where .= " inward_sub_unit = 'NULL' AND outward_sub_unit = 'NULL' AND";
+					} else if($unit_type == '2') {
+						$where .= " inward_unit = 'NULL' AND outward_unit = 'NULL' AND";
+					}
 				}
 				if(!empty($quantitys[$i])) {
 					$quantity = $quantitys[$i];
 				}
-		
+
+				$stock_unique_id = "";
+
+				if(!empty($where)) {
+					$stock_query = "SELECT id FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " bill_id = '" . $bill_id . "' AND bill_type = '" . $bill_type . "' AND deleted = '0'";
+					$stock_unique_id = $this->getQueryRecords($GLOBALS['stock_conversion_table'], $stock_query);
+				}
+			
 				if(!empty($stock_unique_id)) {
-					$stock_current_query = "SELECT id FROM " . $GLOBALS['stock_conversion_table'] . " WHERE bill_id = '" . $bill_id . "' AND bill_type = '" . $bill_type . "' AND product_id = '" . $product_id . "' AND deleted = '0'";
-		
-					$stock_current_unique_id_arrays = $this->getQueryRecords($GLOBALS['stock_conversion_table'], $stock_current_query);
-		
-					if(!empty($stock_current_unique_id_arrays)) {
-						$stock_current_unique_id = $stock_current_unique_id_arrays[0];
-		
-						$columns = array();
-						$values = array();
-		
-						$null_value = $GLOBALS['null_value'];
-		
-						$columns = array('party_id', 'party_name', 'agent_id', 'agent_name', 'product_id', 'product_name', 'unit_id', 'unit_name', 'case_contains', 'inward_unit', 'inward_sub_unit', 'outward_unit', 'outward_sub_unit');
-		
-						$product_name = "";
-						$product_name = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
-						$unit_name = "";
-						$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
-		
-						if($bill_type == "Proforma Invoice") {
-							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'", "'" . $null_value  . "'", "'" . $null_value  . "'");
-						} else {
-							$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value  . "'", "'" . $null_value  . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'");
-						}
-		
-						$this->UpdateSQL($GLOBALS['stock_conversion_table'], $stock_current_unique_id['id'], $columns, $values, '');
+					$stock_current_unique_id = $stock_unique_id[0];
+	
+					$columns = array();
+					$values = array();
+	
+					$null_value = $GLOBALS['null_value'];
+	
+					$columns = array('party_id', 'party_name', 'agent_id', 'agent_name', 'product_id', 'product_name', 'unit_id', 'unit_name', 'case_contains', 'inward_unit', 'inward_sub_unit', 'outward_unit', 'outward_sub_unit');
+	
+					$product_name = "";
+					$product_name = $this->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'product_name');
+					$unit_name = "";
+					$unit_name = $this->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id, 'unit_name');
+	
+					if($bill_type == "Proforma Invoice") {
+						$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'", "'" . $null_value  . "'", "'" . $null_value  . "'");
+					} else {
+						$values = array("'" . $customer_id . "'", "'" . $customer_name . "'", "'" . $agent_id . "'", "'" . $agent_name . "'", "'" . $product_id . "'", "'" . $product_name . "'", "'" . $unit_id . "'", "'" . $unit_name . "'", "'" . $content . "'", "'" . $null_value  . "'", "'" . $null_value  . "'", $unit_type == "1" ? "'" . $quantity . "'" : "'" . $null_value  . "'", $unit_type == "2" ? "'" . $quantity . "'" : "'" . $null_value  . "'");
 					}
+	
+					$this->UpdateSQL($GLOBALS['stock_conversion_table'], $stock_current_unique_id['id'], $columns, $values, '');
 				} else {
 					$columns = array();
 					$values = array();
@@ -1898,6 +1904,24 @@
 			return $count;
 		}
 
+		public function GetExpensePartyLinkedCount($expense_party_id) {
+			$list = array(); $select_query = ""; $where = "";  $count = 0;
+			if(!empty($expense_party_id)) {
+				$where = " FIND_IN_SET('" . $expense_party_id . "', expense_party_id) AND ";
+
+				$select_query = "SELECT COUNT(id) as id_count FROM " . $GLOBALS['expense_table'] . " WHERE " . $where . " deleted = '0'";
+				
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
 
 		public function GetContractorLinkedCount($contractor_id) {
 			$list = array(); $select_query = ""; $where = "";  $count = 0;
@@ -2022,6 +2046,26 @@
 
 			if(!empty($where)){
 				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type !='Supplier Opening Balance' AND deleted = '0'";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['id_count']) && $data['id_count'] != $GLOBALS['null_value']) {
+						$count = $data['id_count'];
+					}
+				}
+			}
+			return $count;
+		}
+
+		public function PaymentlinkedExpenseParty($expense_party_id){
+			$list = array(); $select_query = "";  $count = 0;
+			if(!empty($expense_party_id)){
+				$where = " FIND_IN_SET('" . $expense_party_id . "', party_id) AND ";
+			}
+
+			if(!empty($where)){
+				 $select_query = "SELECT count(id) as id_count FROM " . $GLOBALS['payment_table'] . " WHERE " . $where . " bill_type != 'Expense Party Opening Balance' AND deleted = '0'";
 				$list = $this->getQueryRecords('', $select_query);
 			}
 			if(!empty($list)) {

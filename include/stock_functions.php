@@ -479,6 +479,66 @@ class Stock_functions extends Basic_Functions
         return $outward_unit;
     }
 
+    public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains)
+    {
+        $where = "";
+        $select_query = "";
+        $list = array();
+        $outward_unit = 0;
+
+        if (!empty($bill_unique_id)) {
+            if (!empty($where)) {
+                $where = $where . " bill_unique_id != '" . $bill_unique_id . "' AND ";
+            } else {
+                $where = " bill_unique_id != '" . $bill_unique_id . "' AND ";
+            }
+        }
+
+        if (!empty($godown_id) && $godown_id != $GLOBALS['null_value']) {
+            if (!empty($where)) {
+                $where = $where . " godown_id = '" . $godown_id . "' AND ";
+            } else {
+                $where = " godown_id = '" . $godown_id . "' AND ";
+            }
+        }
+        if (!empty($magazine_id) && $magazine_id != $GLOBALS['null_value']) {
+            if (!empty($where)) {
+                $where = $where . " magazine_id = '" . $magazine_id . "' AND ";
+            } else {
+                $where = " magazine_id = '" . $magazine_id . "' AND ";
+            }
+        }
+        if (!empty($product_id)) {
+            if (!empty($where)) {
+                $where = $where . " product_id = '" . $product_id . "' AND ";
+            } else {
+                $where = " product_id = '" . $product_id . "' AND ";
+            }
+        }
+        if (!empty($case_contains)) {
+            if (!empty($where)) {
+                $where = $where . " case_contains = '" . $case_contains . "' AND ";
+            } else {
+                $where = " case_contains = '" . $case_contains . "' AND ";
+            }
+        }
+        if (!empty($where)) {
+            $select_query = "SELECT SUM(outward_unit) as outward_unit FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " stock_type = 'Delivery Slip' AND deleted = '0'";
+            $list = $this->getQueryRecords('', $select_query);
+        } else {
+            $select_query = "SELECT SUM(outward_unit) as outward_unit FROM " . $GLOBALS['stock_table'] . " WHERE  stock_type = 'Delivery Slip' AND deleted = '0'";
+            $list = $this->getQueryRecords('', $select_query);
+        }
+        if (!empty($list)) {
+            foreach ($list as $data) {
+                if (!empty($data['outward_unit']) && $data['outward_unit'] != $GLOBALS['null_value']) {
+                    $outward_unit = $data['outward_unit'];
+                }
+            }
+        }
+        return $outward_unit;
+    }
+
     public function getCurrentStockUnit($table, $godown_id, $magazine_id, $product_id, $case_contains)
     {
         $where = "";
@@ -943,6 +1003,66 @@ class Stock_functions extends Basic_Functions
             $list = $this->getQueryRecords('', $select_query);
         } else {
             $select_query = "SELECT SUM(outward_subunit) as outward_subunit FROM " . $GLOBALS['stock_table'] . " WHERE  deleted = '0'";
+            $list = $this->getQueryRecords('', $select_query);
+        }
+        if (!empty($list)) {
+            foreach ($list as $data) {
+                if (!empty($data['outward_subunit']) && $data['outward_subunit'] != $GLOBALS['null_value']) {
+                    $outward_subunit = $data['outward_subunit'];
+                }
+            }
+        }
+        return $outward_subunit;
+    }
+
+    public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains)
+    {
+        $where = "";
+        $select_query = "";
+        $list = array();
+        $outward_subunit = 0;
+
+        if (!empty($bill_unique_id)) {
+            if (!empty($where)) {
+                $where = $where . " bill_unique_id != '" . $bill_unique_id . "' AND ";
+            } else {
+                $where = " bill_unique_id != '" . $bill_unique_id . "' AND ";
+            }
+        }
+
+        if (!empty($godown_id) && $godown_id != $GLOBALS['null_value']) {
+            if (!empty($where)) {
+                $where = $where . " godown_id = '" . $godown_id . "' AND ";
+            } else {
+                $where = " godown_id = '" . $godown_id . "' AND ";
+            }
+        }
+        if (!empty($magazine_id) && $magazine_id != $GLOBALS['null_value']) {
+            if (!empty($where)) {
+                $where = $where . " magazine_id = '" . $magazine_id . "' AND ";
+            } else {
+                $where = " magazine_id = '" . $magazine_id . "' AND ";
+            }
+        }
+        if (!empty($product_id)) {
+            if (!empty($where)) {
+                $where = $where . " product_id = '" . $product_id . "' AND ";
+            } else {
+                $where = " product_id = '" . $product_id . "' AND ";
+            }
+        }
+        if (!empty($case_contains)) {
+            if (!empty($where)) {
+                $where = $where . " case_contains = '" . $case_contains . "' AND ";
+            } else {
+                $where = " case_contains = '" . $case_contains . "' AND ";
+            }
+        }
+        if (!empty($where)) {
+            $select_query = "SELECT SUM(outward_subunit) as outward_subunit FROM " . $GLOBALS['stock_table'] . " WHERE " . $where . " stock_type = 'Delivery Slip' AND deleted = '0'";
+            $list = $this->getQueryRecords('', $select_query);
+        } else {
+            $select_query = "SELECT SUM(outward_subunit) as outward_subunit FROM " . $GLOBALS['stock_table'] . " WHERE stock_type = 'Delivery Slip' AND deleted = '0'";
             $list = $this->getQueryRecords('', $select_query);
         }
         if (!empty($list)) {

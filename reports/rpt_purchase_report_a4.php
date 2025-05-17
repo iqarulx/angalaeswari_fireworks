@@ -2,7 +2,6 @@
     include("../include_user_check.php");
     include("../include/number2words.php");
 
-
     $filter_party_id = "";
     if(isset($_REQUEST['filter_party_id'])) {
         $filter_party_id = $_REQUEST['filter_party_id'];
@@ -50,8 +49,13 @@
         }
         $total_records_list = $list;
     }
-    $from_date = date('d-m-Y',strtotime($from_date));
-    $to_date = date('d-m-Y',strtotime($to_date));
+
+    if(!empty($from_date)) {
+        $from_date = date('d-m-Y',strtotime($from_date));
+    }
+    if(!empty($to_date)) {
+        $to_date = date('d-m-Y',strtotime($to_date));
+    }
     
     require_once('../fpdf/fpdf.php');
     $pdf = new FPDF('P','mm','A4');
@@ -66,7 +70,25 @@
     $pdf->SetY($header_end);
            
     $pdf->SetFont('Arial','B',10);
-    $pdf->Cell(0,5,'Purchase Report - ('.$from_date.' - '.$to_date.')',0,1,'C',0);
+    if(!empty($from_date) || !empty($to_date)) {
+        $date_display = "(";
+        if(!empty($from_date)) {
+            $date_display = $from_date;
+        }
+
+        if(!empty($from_date) && !empty($to_date)) {
+            $date_display .= ' - ';
+        }
+
+        if(!empty($to_date)) {
+            $date_display .= $to_date;
+        }
+        $date_display .= ")";
+
+        $pdf->Cell(0,5,"Purchase Report - " . $date_display,0,1,'C',0);
+    } else {
+        $pdf->Cell(0,5,'Purchase Report',0,1,'C',0);
+    }
 
     $current_y = $pdf->GetY();
     $box_y = $pdf->GetY();
@@ -105,7 +127,27 @@
                 $pdf->SetY($header_end);
                     
                 $pdf->SetFont('Arial','B',10);
-                $pdf->Cell(0,5,'Purchase Report - ('.$from_date.' - '.$to_date.')',0,1,'C',0);
+                $pdf->SetFont('Arial','B',10);
+                if(!empty($from_date) || !empty($to_date)){
+                    $date_display = "(";
+                    if(!empty($from_date)) {
+                        $date_display = $from_date;
+                    }
+
+                    if(!empty($from_date) && !empty($to_date)) {
+                        $date_display .= ' - ';
+                    }
+
+                    if(!empty($to_date)) {
+                        $date_display .= $to_date;
+                    }
+                    $date_display .= ")";
+
+                    $pdf->Cell(0,5,'Purchase Report -' . $date_display,0,1,'C',0);
+                } else {
+                    $pdf->Cell(0,5,'Purchase Report',0,1,'C',0);
+                }
+
                 $current_y = $pdf->GetY();
                 $box_y = $pdf->GetY();
 

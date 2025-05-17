@@ -82,6 +82,7 @@
 	$GLOBALS['voucher_table'] = $GLOBALS['table_prefix'].'voucher'; 
 	$GLOBALS['receipt_table'] = $GLOBALS['table_prefix'].'receipt'; 
 	$GLOBALS['expense_category_table'] = $GLOBALS['table_prefix'].'expense_category'; 
+	$GLOBALS['expense_party_table'] = $GLOBALS['table_prefix'].'expense_party'; 
 	$GLOBALS['expense_table'] = $GLOBALS['table_prefix'].'expense'; 
 	$GLOBALS['stock_conversion_table'] = $GLOBALS['table_prefix'].'stock_conversion'; 
 
@@ -127,7 +128,7 @@
 	$GLOBALS['semi_finished_group_module'] = "Semi Finished Group";
 	$GLOBALS['product_module'] = "Product";
 	$GLOBALS['supplier_module'] = "Supplier";
-	// $GLOBALS['contractor_module'] = "Contractor";
+	$GLOBALS['contractor_module'] = "Contractor";
 	$GLOBALS['agent_module'] = "Agent";
 	$GLOBALS['customer_module'] = "Customer";
 	$GLOBALS['payment_mode_module'] = "Payment Mode";
@@ -144,13 +145,14 @@
 	$GLOBALS['delivery_slip_module'] = "Delivery Slip";
 	$GLOBALS['estimate_module'] = "Estimate";
 	$GLOBALS['expense_category_module'] = "Expense Category";
+	$GLOBALS['expense_party_module'] = "Expense Party";
 	$GLOBALS['expense_module'] = "Expense";
 	$GLOBALS['voucher_module'] = "Voucher";
 	$GLOBALS['receipt_module'] = "Receipt";
 	$GLOBALS['reports_module'] = "Report";
 
 	// Access Pages List
-	$GLOBALS['access_pages_list'] = [$GLOBALS['dashboard_module'], $GLOBALS['factory_module'], $GLOBALS['godown_module'], $GLOBALS['magazine_module'], $GLOBALS['group_module'], $GLOBALS['unit_module'], $GLOBALS['finished_group_module'], $GLOBALS['raw_material_group_module'], $GLOBALS['semi_finished_group_module'],$GLOBALS['product_module'], $GLOBALS['supplier_module'], $GLOBALS['agent_module'], $GLOBALS['customer_module'], $GLOBALS['payment_mode_module'], $GLOBALS['bank_module'], $GLOBALS['charges_module'], $GLOBALS['transport_module'], $GLOBALS['purchase_entry_module'], $GLOBALS['consumption_entry_module'], $GLOBALS['stock_adjustment_module'], $GLOBALS['daily_production_module'], $GLOBALS['semifinished_entry_module'], $GLOBALS['material_transfer_module'], $GLOBALS['proforma_invoice_module'], $GLOBALS['delivery_slip_module'], $GLOBALS['estimate_module'], $GLOBALS['voucher_module'], $GLOBALS['receipt_module'], $GLOBALS['expense_category_module'], $GLOBALS['expense_module'], $GLOBALS['reports_module']];
+	$GLOBALS['access_pages_list'] = [$GLOBALS['dashboard_module'], $GLOBALS['factory_module'], $GLOBALS['godown_module'], $GLOBALS['magazine_module'], $GLOBALS['group_module'], $GLOBALS['unit_module'], $GLOBALS['finished_group_module'], $GLOBALS['raw_material_group_module'], $GLOBALS['semi_finished_group_module'],$GLOBALS['product_module'], $GLOBALS['supplier_module'], $GLOBALS['contractor_module'], $GLOBALS['agent_module'], $GLOBALS['customer_module'], $GLOBALS['payment_mode_module'], $GLOBALS['bank_module'], $GLOBALS['charges_module'], $GLOBALS['transport_module'], $GLOBALS['purchase_entry_module'], $GLOBALS['consumption_entry_module'], $GLOBALS['stock_adjustment_module'], $GLOBALS['daily_production_module'], $GLOBALS['semifinished_entry_module'], $GLOBALS['material_transfer_module'], $GLOBALS['proforma_invoice_module'], $GLOBALS['delivery_slip_module'], $GLOBALS['estimate_module'], $GLOBALS['voucher_module'], $GLOBALS['receipt_module'], $GLOBALS['expense_category_module'], $GLOBALS['expense_party_module'], $GLOBALS['expense_module'], $GLOBALS['reports_module']];
 	
 	// Stock Actions
 	$GLOBALS['stock_action_plus'] = "Plus"; $GLOBALS['stock_action_minus'] = "Minus";

@@ -11,6 +11,48 @@
             include("permission_check.php");
         }
     }
+
+    $from_date = ""; $to_date = ""; $current_date = ""; $current_date = date('Y-m-d');
+    // $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $supplier_id = ""; $bill = "";
+    $total_records_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], '', '', '');
+    $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
+
+    $excel_name = "";
+    $excel_name = "Purchase Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+
+    $cancel_bill_btn = "";
+    $supplier_id = ""; $bill = "";
+    if(isset($_POST['from_date'])) {
+        $from_date = $_POST['from_date'];
+    }
+    if(isset($_POST['to_date'])) {
+        $to_date = $_POST['to_date'];
+    }
+    if(isset($_POST['supplier_id'])) {
+        $supplier_id = $_POST['supplier_id'];
+    }
+    if(isset($_POST['bill'])) {
+        $bill = $_POST['bill'];
+    }
+    $cancel_bill_btn = "";
+    if(isset($_POST['cancel_bill_btn'])){
+        $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
+    }
+
+    $total_records_list = array();
+    $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn);
+    if(!empty($bill)) {
+        $bill = strtolower($bill);
+        $list = array();
+        if(!empty($total_records_list)) {
+            foreach($total_records_list as $val) {
+                if((strpos(strtolower($val['purchase_entry_number']), $bill) !== false) ) {
+                    $list[] = $val;
+                }
+            }
+        }
+        $total_records_list = $list;
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,51 +62,7 @@
 	include "link_style_script.php"; ?>
 </head>	
 <body>
-<?php include "header.php"; 
-$from_date = ""; $to_date = ""; 
-    $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');  $supplier_id = ""; $bill = "";
-    $total_records_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], '', '', '');
-    $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
-    $excel_name = "";
-    $excel_name = "Purchase Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
-    $cancel_bill_btn = "";
-    // if(isset($_POST['page_number'])) {
-    //     $page_number = $_POST['page_number'];
-    //     $page_limit = $_POST['page_limit'];
-    //     $page_title = $_POST['page_title']; 
-        $supplier_id = ""; $bill = "";
-        if(isset($_POST['from_date'])) {
-            $from_date = $_POST['from_date'];
-        }
-        if(isset($_POST['to_date'])) {
-            $to_date = $_POST['to_date'];
-        }
-        if(isset($_POST['supplier_id'])) {
-            $supplier_id = $_POST['supplier_id'];
-        }
-        if(isset($_POST['bill'])) {
-            $bill = $_POST['bill'];
-        }
-        $cancel_bill_btn = "";
-        if(isset($_POST['cancel_bill_btn'])){
-           $cancel_bill_btn = $_REQUEST['cancel_bill_btn'];
-        }
-    
-        $total_records_list = array();
-        $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn);
-        if(!empty($bill)) {
-            $bill = strtolower($bill);
-            $list = array();
-            if(!empty($total_records_list)) {
-                foreach($total_records_list as $val) {
-                    if((strpos(strtolower($val['purchase_entry_number']), $bill) !== false) ) {
-                        $list[] = $val;
-                    }
-                }
-            }
-            $total_records_list = $list;
-        }
-    // } ?>
+<?php include "header.php"; ?>
 <!--Right Content-->
     <div class="main-content">
         <div class="page-content">

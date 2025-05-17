@@ -102,7 +102,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="mobile_number" name="mobile_number" class="form-control shadow-none" required value="<?php if(!empty($mobile_number)){echo $mobile_number;} ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'mobile_number',10,'');">
-                            <label>Mobile Number<span class="text-danger">*</span></label>
+                            <label>Mobile Number</label>
                         </div>
                         <div class="new_smallfnt">Numbers Only (only 10 digits)</div>
                     </div>
@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-4 col-12 py-2">
+                <div class="col-lg-3 col-md-4 col-12 py-2 d-none">
                     <div class="form-group pb-3">
                         <div class="form-label-group in-border mb-0">
                             <div class="w-100" style="display:none;">
@@ -131,7 +131,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select name="district" class="select2 select2-danger" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getDistricts('supplier',this.value,'');">
@@ -141,7 +141,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group mb-2">
                         <div class="form-label-group in-border">
                             <select name="city" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getCities('supplier','',this.value);">
@@ -268,15 +268,17 @@
             }  	
         }
     
-        $mobile_number = $_POST['mobile_number'];
-        $mobile_number = trim($mobile_number);
-        $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "1");
-        if(!empty($mobile_number_error)) {
-            if(!empty($valid_supplier)) {
-                $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
-            }
-            else {
-                $valid_supplier = $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+        if(isset($_POST['mobile_number'])) {
+            $mobile_number = $_POST['mobile_number'];
+            $mobile_number = trim($mobile_number);
+            $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "");
+            if(!empty($mobile_number_error)) {
+                if(!empty($valid_supplier)) {
+                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+                }
+                else {
+                    $valid_supplier = $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+                }
             }
         }
     
@@ -297,10 +299,11 @@
             }
         }  
 
+        /*
         if(isset($_POST['state'])) {
             $state = $_POST['state'];
             $state = trim($state);
-            $state_error = $valid->common_validation($state,'State','select');
+            $state_error = $valid->common_validation($state,'State','');
             if(!empty($state_error)) {
                 if(!empty($valid_supplier)) {
                     $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "state", $state_error, 'select');
@@ -314,7 +317,7 @@
         if(isset($_POST['district'])) {
             $district = $_POST['district'];
             $district = trim($district);
-            $district_error = $valid->common_validation($district,'District','select');
+            $district_error = $valid->common_validation($district,'District','');
             if(!empty($district_error)) {
                 if(!empty($valid_supplier)) {
                     $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "district", $district_error, 'select');
@@ -328,7 +331,7 @@
         if(isset($_POST['city'])) {
             $city = $_POST['city'];
             $city = trim($city);
-            $city_error = $valid->common_validation($city,'City','select');
+            $city_error = $valid->common_validation($city,'City','');
             
             if(!empty($city_error)) {
                 if(!empty($valid_supplier)) {
@@ -365,6 +368,8 @@
                 }
             }
         }
+
+        */
         
         if(isset($_POST['gst_number'])) {
             $gst_number = $_POST['gst_number'];
@@ -473,6 +478,10 @@
                     $state = $obj->encode_decode('encrypt', $state);
                 }
 
+                if(empty($mobile_number)){
+                    $mobile_number ="";
+                }
+
                 if(!empty($mobile_number)) {
                     $mobile_number = str_replace(" ", "", $mobile_number);
 
@@ -516,14 +525,14 @@
                 $balance = 0;
 
                 $prev_supplier_id = ""; $supplier_error = "";	$prev_supplier_name ="";
-                if(!empty($mobile_number)) {
+                if(!empty($lower_case_name)) {
                     // $obj->SupplierMobileExists($mobile_number);
-                    $prev_supplier_id = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'mobile_number', $mobile_number, 'supplier_id');
+                    $prev_supplier_id = $obj->getTableColumnValue($GLOBALS['supplier_table'], 'lower_case_name', $lower_case_name, 'supplier_id');
 
                     if(!empty($prev_supplier_id) && $prev_supplier_id != $edit_id) {
                         $prev_supplier_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$prev_supplier_id,'supplier_name');
 						$prev_supplier_name = $obj->encode_decode("decrypt",$prev_supplier_name);
-                        $supplier_error = "This mobile number is already exist in ".$prev_supplier_name;
+                        $supplier_error = $prev_supplier_name." - This Supplier Name is already exist";
                     }
                 }
 
@@ -759,7 +768,7 @@
                     <tr style="white-space:pre;">
                         <th>S.No</th>
                         <th>Supplier Name</th>
-                        <th>State</th>
+                        <th>Address</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -786,9 +795,11 @@
                                     </div>
                                 </td>
                                 <td> <?php
-                                    if(!empty($data['state'])) {
-                                        $data['state'] = $obj->encode_decode('decrypt', $data['state']);
-                                        echo $data['state'];
+                                    if(!empty($data['address']) && $data['address'] !=$GLOBALS['null_value']) {
+                                        $data['address'] = $obj->encode_decode('decrypt', $data['address']);
+                                        echo $data['address'];
+                                    }else{
+                                        echo "-";
                                     } ?>
                                 </td>
                                 <td>

@@ -367,7 +367,7 @@
                     </div>  
                 </div>
                 
-                <div class="col-lg-3 col-md-2 col-12">
+                <div class="col-lg-3 col-md-2 col-12 d-none">
                     <div class="form-group mb-1">
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
@@ -2232,7 +2232,7 @@
                             if(!empty($purchase_entry_number)) {
                                 $action = "Purchase Entry Updated. Bill No. - ".$purchase_entry_number;
                             }
-                        
+                            
                             $columns = array(); $values = array();						
                             $columns = array('creator_name','bill_company_details', 'purchase_entry_date','supplier_id', 'supplier_name_mobile_city', 'supplier_details', 'vehicle', 'gst_option', 'tax_type', 'tax_option', 'company_state', 'supplier_state','product_id', 'product_name','quantity', 'unit_type', 'content', 'total_qty','rate','per','per_type','final_rate','product_amount', 'overall_tax',  'sub_total', 'cgst_value', 'sgst_value', 'igst_value', 'total_tax_value', 'round_off', 'total_amount','unit_id','unit_name','other_charges_id', 'charges_type', 'other_charges_value', 'other_charges_total','product_tax','rate_per_unit', 'location_id', 'location_type', 'product_group', 'location_name');
                             $values = array("'".$creator_name."'", "'".$bill_company_details."'", "'".$bill_date."'","'".$supplier_id."'", "'".$supplier_name_mobile_city."'", "'".$supplier_details."'", "'".$Vehicle_name."'", "'".$gst_option."'", "'".$tax_type."'", "'".$tax_option."'", "'".$company_state."'", "'".$party_state."'","'".$product_ids."'", "'".$product_names."'","'".$quantity."'", "'".$unit_types."'",  "'".$contents."'", "'".$total_qty."'","'".$rates."'","'".$per."'","'".$per_type."'","'".$final_rate."'", "'".$product_amount."'","'".$overall_tax."'", "'".$sub_total."'",  "'".$cgst_value."'", "'".$sgst_value."'", "'".$igst_value."'", "'".$total_tax_value."'", "'".$round_off."'", "'".$total_amount."'","'".$unit_ids."'","'".$unit_names."'", "'".$other_charges_id."'", "'".$charges_type."'", "'".$other_charges_values."'", "'".$other_charges_total."'","'".$product_tax."'","'".$rate_per_unit."'", "'".$location_ids."'", "'".$location_type."'", "'".$product_group."'", "'".$location_names."'");
@@ -2413,6 +2413,13 @@
 
             if($can_delete == '1'){
             if (preg_match("/^\d+$/", $purchase_unique_id)) {
+                $payment_unique_id = "";
+                $payment_unique_id = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $delete_purchase_entry_id, 'id');
+
+                if(!empty($payment_unique_id)) {
+                    $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, array('deleted'), array("'1'"), "Payment Deleted");
+                }
+
                 $action = "Purchase Entry Deleted. ";
                 
                 $prev_stock_list = array();

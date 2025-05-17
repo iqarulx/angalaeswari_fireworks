@@ -167,57 +167,84 @@ if (!empty($view_daily_production_id)) {
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->SetY(11);
 
+    $pdf->SetX(35);
     if(!empty($company_details)) {
-        for($i=0; $i<count($company_details); $i++) {
-            if($i==0) {
+        if(isset($company_details[0]) && !empty($company_details[0])) {
+            $pdf->SetFont("Arial", "B", 10);
+            $pdf->cell(55, 4, html_entity_decode($company_details[0]), 0, 1, 'C', 0);
+        }
+        if(isset($company_details[2]) && !empty($company_details[2])) {
+            $pdf->SetX(35);
+            $pdf->SetFont("Arial", "", 8);
+            $pdf->cell(55, 4, html_entity_decode($company_details[2]), 0, 1, 'C', 0);
+        }
+    }
+
+    $pdf->SetY(11);
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetX(90);
+    $pdf->Cell(48, 4, 'Magazine Details', 0, 1, 'C', 0);
+    $pdf->SetFont('Arial', 'B', 9);
+
+    if(!empty($magazine_details)) {
+        for($i=0; $i<count($magazine_details); $i++) {
+            if($i == 0) {
+                $pdf->SetX(90);
                 $pdf->SetFont("Arial", "B", 10);
-                $pdf->cell(0, 4, html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
+                $pdf->cell(48, 5, $magazine_details[$i], 0, 1, 'L', 0);
             } else {
+                $pdf->SetX(90);
                 $pdf->SetFont("Arial", "", 8);
-                $pdf->cell(0, 4,html_entity_decode($company_details[$i]), 0, 1, 'C', 0);
+                if($magazine_details[$i] != "NULL"){
+                    $pdf->cell(48, 5, $magazine_details[$i], 0, 1, 'L', 0);
+                }
             }
         }
     }
 
+    $magazine_end_y = $pdf->GetY();
+    // $pdf->SetY(11);
+    // $pdf->Cell(30, 4, '', 1, 1, 'C', 0);
+
     if(!empty($company_logo)) {
         if(file_exists('../include/images/upload/'.$company_logo)){
-            $pdf->Image('../include/images/upload/'.$company_logo,15,15,20,20);
+            $pdf->Image('../include/images/upload/'.$company_logo,15,13,15,15);
         }
     }
 
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
     $y1 = $pdf->GetY();
     $pdf->SetY(10);
-    $pdf->Cell(128, ($y1 - 10), '', 1, 1, 'L', 0);
+    $pdf->Cell(25, ($y1 - 10), '', 1, 0, 'L', 0);
+    $pdf->Cell(55, ($y1 - 10), '', 1, 0, 'L', 0);
+    $pdf->Cell(48, ($y1 - 10), '', 1, 1, 'L', 0);
 
     $bill_to_y = $pdf->GetY();
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetX(10);
     $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
-    // $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
-    $pdf->Cell(74, 4, '', 0, 1, 'L', 0);
-    $pdf->Cell(0, 1, '', 0, 1, 'L', 0);
+    $pdf->Cell(74, 4, 'Contractor Details', 0, 1, 'L', 0);
     $pdf->SetFont('Arial', 'B', 9);
-    $pdf->SetX(12);
+    $pdf->SetX(16);
 
     if(!empty($contractor_details)) {
         for($i=0; $i<count($contractor_details); $i++) {
             if($i==0) {
-                $pdf->SetFont("Arial", "B", 10);
-                $pdf->cell(60, 5, $contractor_details[$i], 0, 1, 'L', 0);
+                $pdf->SetFont("Arial", "B", 8);
+                $pdf->cell(122, 5, $contractor_details[$i], 0, 1, 'L', 0);
             } 
             else {
-                $pdf->SetX(12);
+                $pdf->SetX(16);
                 $pdf->SetFont("Arial", "", 8);
                 if($contractor_details[$i] != "NULL"){
-                    $pdf->cell(60, 5, $contractor_details[$i], 0, 1, 'L', 0);
+                    $pdf->cell(122, 5, $contractor_details[$i], 0, 1, 'L', 0);
                 }
             }
         }
     } else {
         for($i = 0; $i < 3; $i++) {
             $pdf->SetX(12);
-            $pdf->cell(60, 5, '', 0, 1, 'L', 0);
+            $pdf->cell(126, 5, '', 0, 1, 'L', 0);
         }
     }
 
@@ -225,28 +252,27 @@ if (!empty($view_daily_production_id)) {
 
     $pdf->SetY($bill_to_y);
 
-    $pdf->SetFont('Arial', 'B', 10);
-    $pdf->SetX(12);
-    $pdf->Cell(50, 4, 'Magazine Details', 0, 1, 'L', 0);
-    $pdf->SetFont('Arial', 'B', 9);
+    // $pdf->SetFont('Arial', 'B', 10);
+    // $pdf->SetX(12);
+    // $pdf->Cell(50, 4, 'Magazine Details', 0, 1, 'L', 0);
+    // $pdf->SetFont('Arial', 'B', 9);
 
-
-    if(!empty($magazine_details)) {
-        for($i=0; $i<count($magazine_details); $i++) {
-            if($i==0) {
-                $pdf->SetX(12);
-                $pdf->SetFont("Arial", "B", 10);
-                $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
-            } 
-            else {
-                $pdf->SetX(12);
-                $pdf->SetFont("Arial", "", 8);
-                if($magazine_details[$i] != "NULL"){
-                    $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
-                }
-            }
-        }
-    }
+    // if(!empty($magazine_details)) {
+    //     for($i=0; $i<count($magazine_details); $i++) {
+    //         if($i==0) {
+    //             $pdf->SetX(12);
+    //             $pdf->SetFont("Arial", "B", 10);
+    //             $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
+    //         } 
+    //         else {
+    //             $pdf->SetX(12);
+    //             $pdf->SetFont("Arial", "", 8);
+    //             if($magazine_details[$i] != "NULL"){
+    //                 $pdf->cell(60, 5, $magazine_details[$i], 0, 1, 'L', 0);
+    //             }
+    //         }
+    //     }
+    // }
 
     $bill_to_y2 = $pdf->GetY();
 
@@ -254,17 +280,13 @@ if (!empty($view_daily_production_id)) {
     $max_bill_y = max($y_array);
     $pdf->SetY($bill_to_y);
     $pdf->SetX(10);
-    $pdf->cell(64, ($max_bill_y - $bill_to_y), '', 1, 0, 'L', 0);
-
-    $pdf->SetX(74);
-    $pdf->Cell(64, ($max_bill_y - $bill_to_y), '', 1, 1, 'L', 0);
-
+    $pdf->cell(128, ($max_bill_y - $bill_to_y), '', 1, 1, 'L', 0);
 
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->SetX(10);
     $pdf->Cell(64, 6, 'Entry No. : ' . $dailyproduction_entry_number, 1, 0, 'L');
 
-    $pdf->SetY($bill_to_y1);
+    // $pdf->SetY($bill_to_y1);
     $pdf->SetX(74);
     $pdf->Cell(64, 6, 'Date : ' . $dailyproduction_entry_date, 1, 1, 'L'); 
 

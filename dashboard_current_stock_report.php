@@ -85,14 +85,12 @@
         <div class="container-fluid">
             <div class="row mx-0">
                 <div class="col-12">
-                    <div class="bg-googleplus card-header">
-                        <h5 class="text-dark">Current Stock Report</h5>
-                    </div>
                     <form name="current_stock_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
+                               
                                 <div class="col-lg-3 col-md-3 col-4">
-                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_stock_report_a4.php?filter_finished_group_id=<?php echo $filter_finished_group_id; ?>&filter_magazine_id=<?php echo $magazine_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
+                                    <button class="btn btn-primary" style="font-size:11px;" type="button" onClick="window.open('reports/rpt_stock_report_a4.php?filter_finished_group_id=<?php echo $finished_group_id; ?>&filter_magazine_id=<?php echo $magazine_id; ?>&filter_product_id=<?php echo $product_id; ?>&filter_contains=<?php echo $case_contains; ?>&unit_type=<?php echo $unit_type; ?>&stock_type=<?php echo $stock_type; ?>')"> <i class="fa fa-print"></i> Print </button>
                                     <button class="btn btn-success" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
                                     <?php if(!empty($product_id)) { ?>
                                         <button class="btn btn-danger" style="font-size:11px;" type="button" onclick="window.open('current_stock_report.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> Back </button>

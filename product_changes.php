@@ -257,7 +257,7 @@
                         <!-- <div class="new_smallfnt">Contains Text Only</div> -->
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                            <input type="number" name="hsn_code" value="<?php if (!empty($hsn_code)) { echo $hsn_code; } ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'number',8,'');">
@@ -1001,18 +1001,19 @@
             }
         }
 
-        if(isset($_POST['hsn_code'])) {
-            $hsn_code = $_POST['hsn_code'];
-            $hsn_code = trim($hsn_code);
-        }
-        $hsn_code_error = $valid->valid_number($hsn_code, "Hsn Code", "1", "8");
-        if (!empty($hsn_code_error)) {
-            if (!empty($valid_product)) {
-                $valid_product = $valid_product . " " . $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
-            } else {
-                $valid_product = $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
-            }
-        }
+        // if(isset($_POST['hsn_code'])) {
+        //     $hsn_code = $_POST['hsn_code'];
+        //     $hsn_code = trim($hsn_code);
+        
+        //     $hsn_code_error = $valid->valid_number($hsn_code, "Hsn Code", "1", "8");
+        //     if (!empty($hsn_code_error)) {
+        //         if (!empty($valid_product)) {
+        //             $valid_product = $valid_product . " " . $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
+        //         } else {
+        //             $valid_product = $valid->error_display($form_name, 'hsn_code', $hsn_code_error, 'text');
+        //         }
+        //     }
+        // }
 
         if(isset($_POST['description'])) {
             $description = $_POST['description'];
@@ -1437,9 +1438,9 @@
                 if (empty($rate_per_case)) {
                     $rate_per_case = $GLOBALS['null_value'];
                 }
-                if (empty($hsn_code)) {
-                    $hsn_code = $GLOBALS['null_value'];
-                }
+                // if (empty($hsn_code)) {
+                //     $hsn_code = $GLOBALS['null_value'];
+                // }
                 if (!empty($description)) {
                     $description = $obj->encode_decode('encrypt', $description);
                 } else {

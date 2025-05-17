@@ -22,7 +22,7 @@
 
         $sidebar_admin_user = 0;
         $login_user_name = ""; $login_user_type = ""; $login_role_id = ""; $login_role_name = "";
-        $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_group = 0; $sidebar_unit = 0; $sidebar_product = 0; $sidebar_supplier = 0; /* $sidebar_contractor = 0; */ $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_transport = 0; $sidebar_charges = 0; $sidebar_purchase_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0; $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_delivery_slip = 0; $sidebar_estimate = 0; $sidebar_expense_category = 0; $sidebar_expense_entry = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_reports = 0; $sidebar_finished_group = 0; $sidebar_raw_material_group = 0; $sidebar_semi_finished_group = 0;
+        $sidebar_factory = 0; $sidebar_godown = 0; $sidebar_magazine = 0; $sidebar_group = 0; $sidebar_unit = 0; $sidebar_product = 0; $sidebar_supplier = 0; $sidebar_contractor = 0; $sidebar_agent = 0; $sidebar_customer = 0; $sidebar_payment_mode = 0; $sidebar_bank = 0; $sidebar_transport = 0; $sidebar_charges = 0; $sidebar_purchase_entry = 0; $sidebar_consumption_entry = 0; $sidebar_daily_production = 0; $sidebar_stock_adjustment = 0; $sidebar_semifinished_inward = 0; $sidebar_material_transfer = 0; $sidebar_proforma_invoice = 0; $sidebar_delivery_slip = 0; $sidebar_estimate = 0; $sidebar_expense_category = 0; $sidebar_expense_entry = 0; $sidebar_voucher = 0; $sidebar_receipt = 0; $sidebar_reports = 0; $sidebar_finished_group = 0; $sidebar_raw_material_group = 0; $sidebar_semi_finished_group = 0;$sidebar_expense_party = 0;
         if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
             $login_user_name = $obj->getTableColumnValue($GLOBALS['user_table'], 'user_id', $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'], 'name');
             if(!empty($login_user_name) && $login_user_name != $GLOBALS['null_value']) {
@@ -63,7 +63,7 @@
                         $sidebar_unit = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['unit_module']);
                         $sidebar_product = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['product_module']);
                         $sidebar_supplier = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['supplier_module']);
-                        // $sidebar_contractor = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['contractor_module']);
+                        $sidebar_contractor = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['contractor_module']);
                         $sidebar_agent = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['agent_module']);
                         $sidebar_customer = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['customer_module']);
                         $sidebar_payment_mode = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['payment_mode_module']);
@@ -80,6 +80,7 @@
                         $sidebar_delivery_slip = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['delivery_slip_module']);
                         $sidebar_estimate = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['estimate_module']);
                         $sidebar_expense_category = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['expense_category_module']);
+                        $sidebar_expense_party = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['expense_party_module']);
                         $sidebar_expense_entry = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['expense_module']);
                         $sidebar_voucher = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['voucher_module']);
                         $sidebar_receipt = $obj->CheckRoleAccessPage($login_role_id, $GLOBALS['receipt_module']);
@@ -400,7 +401,7 @@
                             </div>
                         </li>
                     <?php } ?>
-                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1') || (!empty($sidebar_group) && $sidebar_group == '1') || (!empty($sidebar_finished_group) && $sidebar_finished_group == '1') || (!empty($sidebar_raw_material_group) && $sidebar_raw_material_group == '1') ||  (!empty($sidebar_unit) && $sidebar_unit == '1') || (!empty($sidebar_product) && $sidebar_product == '1') || (!empty($sidebar_supplier) && $sidebar_supplier == '1') || /* (!empty($sidebar_contractor) && $sidebar_contractor == '1') || */ (!empty($sidebar_agent) && $sidebar_agent == '1') || (!empty($sidebar_customer) && $sidebar_customer == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
+                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_factory) && $sidebar_factory == '1') || (!empty($sidebar_godown) && $sidebar_godown == '1') || (!empty($sidebar_magazine) && $sidebar_magazine == '1') || (!empty($sidebar_group) && $sidebar_group == '1') || (!empty($sidebar_finished_group) && $sidebar_finished_group == '1') || (!empty($sidebar_raw_material_group) && $sidebar_raw_material_group == '1') ||  (!empty($sidebar_unit) && $sidebar_unit == '1') || (!empty($sidebar_product) && $sidebar_product == '1') || (!empty($sidebar_supplier) && $sidebar_supplier == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1') || (!empty($sidebar_agent) && $sidebar_agent == '1') || (!empty($sidebar_customer) && $sidebar_customer == '1') || (!empty($sidebar_payment_mode) && $sidebar_payment_mode == '1') || (!empty($sidebar_bank) && $sidebar_bank == '1') || (!empty($sidebar_transport) && $sidebar_transport == '1') || (!empty($sidebar_charges) && $sidebar_charges == '1')) { ?>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#creation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="company">
                                 <i class="bi bi-folder-plus"></i> <span>Creation</span>
@@ -457,11 +458,11 @@
                                             <a href="supplier.php" class="nav-link"><i class="bi bi-dash"></i><span>Supplier</span></a>
                                         </li>
                                     <?php } ?>
-                                    <?php /* if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1')) { ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_contractor) && $sidebar_contractor == '1')) { ?>
                                         <li class="nav-item" id="contractor">
                                             <a href="contractor.php" class="nav-link"><i class="bi bi-dash"></i><span>Contractor</span></a>
                                         </li>
-                                    <?php } */ ?>
+                                    <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_agent) && $sidebar_agent == '1')) { ?>
                                         <li class="nav-item" id="agent">
                                             <a href="agent.php" class="nav-link"><i class="bi bi-dash"></i><span>Agent</span></a>
@@ -577,6 +578,11 @@
                                             <a href="expense_category.php" class="nav-link"><i class="bi bi-dash"></i> Expense Category </a>
                                         </li>
                                     <?php } ?>
+                                    <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_expense_party) && $sidebar_expense_party == '1')) { ?>
+                                        <li class="nav-item" id="expense_party">
+                                            <a href="expense_party.php" class="nav-link"><i class="bi bi-dash"></i> Expense Party </a>
+                                        </li>
+                                    <?php } ?>
                                     <?php if((!empty($sidebar_admin_user) && $sidebar_admin_user == '1') || (!empty($sidebar_expense_entry) && $sidebar_expense_entry == '1')) { ?>
                                         <li class="nav-item" id="expenseentry">
                                             <a href="expense_entry.php" class="nav-link"><i class="bi bi-dash"></i> Expense Entry </a>
@@ -611,6 +617,9 @@
                                     </li>
                                     <li class="nav-item" id="currentstockreport">
                                         <a href="current_stock_report.php" class="nav-link"><i class="bi bi-dash"></i> Current Stock Report </a>
+                                    </li>
+                                    <li class="nav-item" id="salesstockreport">
+                                        <a href="sales_stock_report.php" class="nav-link"><i class="bi bi-dash"></i> Sales Stock Report </a>
                                     </li>
                                     <li class="nav-item" id="pendingbalancereport">
                                         <a href="pending_balance_report.php" class="nav-link"><i class="bi bi-dash"></i> Pending Balance Report </a>

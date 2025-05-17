@@ -8,7 +8,7 @@ function GetProducts() {
         contractor_id = jQuery('select[name="selected_contractor_id"]').val();
         contractor_id = contractor_id.trim();
     }
-    var post_url = "daily_production_changes.php?products_contractor_id=1";
+    var post_url = "daily_production_changes.php?products_contractor_id=" + contractor_id;
     jQuery.ajax({
         url: post_url, success: function (result) {
             result = result.trim();
@@ -750,12 +750,17 @@ function GetGroupProducts() {
         finished_group_id = jQuery('select[name="finished_group_id"]').val();
     }
 
+    var contractor_id = "";
+    if (jQuery('select[name="selected_contractor_id"]').length > 0) {
+        contractor_id = jQuery('select[name="selected_contractor_id"]').val();
+    }
+
     var check_login_session = 1;
     var post_url = "dashboard_changes.php?check_login_session=1";
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                var post_url = "daily_production_changes.php?get_product_by_group&finished_group_id=" + finished_group_id;
+                var post_url = "daily_production_changes.php?get_product_by_group&finished_group_id=" + finished_group_id + "&contractor_id=" + contractor_id;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (jQuery('select[name="selected_product_id"]').length > 0) {

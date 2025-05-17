@@ -1,7 +1,6 @@
 <?php
 
-include("../include_user_check.php");
-
+    include("../include_user_check.php");
 
     $from_date ="";
     if(isset($_REQUEST['from_date'])) {
@@ -75,11 +74,16 @@ include("../include_user_check.php");
         $pdf->Cell(190, ($current_y - $yaxis), '', 1, 1, 'L', 0);
         $pdf->SetFont('Arial','B',9);
         $pdf->SetX(10);
-        if($from_date != $to_date){
-            $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($from_date)).'  to  '.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
-        }else{
-            $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+        if(!empty($from_date) || !empty($to_date)) {
+            if($from_date != $to_date){
+                $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($from_date)).'  to  '.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+            } else {
+                $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+            }
+        } else {
+            $pdf->Cell(190,6,'Daybook Report',1,1,'C',0);
         }
+        
         $pdf->SetFont('Arial','B',8);
         $starty = $pdf->GetY();
         $pdf->SetX(10);
@@ -118,10 +122,14 @@ include("../include_user_check.php");
 
                     $pdf->SetFont('Arial','B',9);
                     $pdf->SetX(10);
-                    if($from_date != $to_date){
-                        $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($from_date)).'  to  '.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
-                    }else{
-                        $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+                    if(!empty($from_date) || !empty($to_date)) {
+                        if($from_date != $to_date){
+                            $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($from_date)).'  to  '.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+                        } else {
+                            $pdf->Cell(190,6,'Daybook Report - ('.date('d-m-Y',strtotime($to_date)).')',1,1,'C',0);
+                        }
+                    } else {
+                        $pdf->Cell(190,6,'Daybook Report',1,1,'C',0);
                     }
                     $pdf->SetFont('Arial', 'B', 9);
                     $starty = $pdf->GetY();
@@ -161,14 +169,22 @@ include("../include_user_check.php");
                     $pdf->Cell(30,8,$data['type'],0,0,'C',0);
                 }
                
-                if (!empty($data['party_name'])) {
-                    if(!empty($data['party_name'])){ 
-                        $name =html_entity_decode($obj->encode_decode('decrypt', $data['party_name'])); 
+
+                if(!empty($data['party_name']) && $data['party_name'] != 'NULL') {
+                    if($data['type'] != "Expense") {
+                        $name = html_entity_decode($obj->encode_decode('decrypt', $data['party_name'])); 
+                        $pdf->MultiCell(50, 8,$name, 0, 'C', 0);
+                    } else {
+                        $expense_party_name = "";
+                        $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $data['party_id'], 'expense_party_name');
+                        if(!empty($expense_party_name)) {
+                            $name = html_entity_decode($obj->encode_decode('decrypt', $expense_party_name)); 
+                            $pdf->MultiCell(50, 8,$name, 0, 'C', 0);
+                        } else {
+                            $pdf->MultiCell(50, 8,'', 0, 'C', 0);
+                        }
                     }
-                    $pdf->MultiCell(50, 8,$name, 0, 'C', 0);
-                }
-               
-                else {
+                } else {
                     $pdf->SetX(60);
                     $pdf->Cell(50, 8, ' - ', 0, 0, 'C', 0);
                 }

@@ -119,13 +119,21 @@
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <input type="text" id="mobile_number" name="mobile_number" class="form-control shadow-none" value="<?php if(!empty($mobile_number)){echo $mobile_number;} ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'mobile_number',10,'');">
-                            <label>Contact Number (*)</label>
+                            <input type="text" id="mobile_number" name="mobile_number" class="form-control shadow-none" value="<?php if(!empty($mobile_number)){ echo $mobile_number;} ?>" class="form-control shadow-none" onfocus="Javascript:KeyboardControls(this,'mobile_number',10,'');">
+                            <label>Contact Number</label>
                         </div>
                         <div class="new_smallfnt">Numbers Only (only 10 digits)</div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-12 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <textarea class="form-control" id="address" name="address" placeholder="Enter Your Address" onkeydown="Javascript:KeyboardControls(this,'',150,'');InputBoxColor(this,'text');" > <?php if(!empty($address)){echo $address;} ?></textarea>
+                            <label>Address</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <div class="w-100" style="display:none;">
@@ -140,7 +148,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <select name="district" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getDistricts('agent',this.value,'');">
@@ -150,7 +158,7 @@
                         </div>
                     </div>        
                 </div>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
+                <div class="col-lg-3 col-md-4 col-6 py-2 d-none">
                     <div class="form-group mb-2">
                         <div class="form-label-group in-border">
                             <select name = "city" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getCities('agent','',this.value);">
@@ -173,7 +181,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" id="commission" name="commission" class="form-control shadow-none" value="<?php if(!empty($commission)){echo $commission;} ?>" onfocus="Javascript:KeyboardControls(this,'number',3,'');" maxlength = "3">
-                            <label>Commission % </label>
+                            <label>Commission %</label>
                         </div>
                     </div>
                 </div>
@@ -256,7 +264,7 @@
         if(isset($_POST['mobile_number'])) {	
             $mobile_number = $_POST['mobile_number'];
             $mobile_number = trim($mobile_number);
-            $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "1");
+            $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "");
             if(!empty($mobile_number_error)) {
                 if(!empty($valid_agent)) {
                     $valid_agent = $valid_agent." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
@@ -286,10 +294,12 @@
                 }
             }
         }  
+
+        /*
         if(isset($_POST['state'])) {
             $state = $_POST['state'];
             $state = trim($state);
-            $state_error = $valid->common_validation($state,'State','select');
+            $state_error = $valid->common_validation($state,'State','');
             if(!empty($state_error)) {
                 if(!empty($valid_agent)) {
                     $valid_agent = $valid_agent." ".$valid->error_display($form_name, "state", $state_error, 'select');
@@ -302,7 +312,7 @@
         if(isset($_POST['district'])) {
             $district = $_POST['district'];
             $district = trim($district);
-            $district_error = $valid->common_validation($district,'District','select');
+            $district_error = $valid->common_validation($district,'District','');
             if(!empty($district_error)) {
                 if(!empty($valid_agent)) {
                     $valid_agent = $valid_agent." ".$valid->error_display($form_name, "district", $district_error, 'select');
@@ -315,7 +325,7 @@
         if(isset($_POST['city'])) {
             $city = $_POST['city'];
             $city = trim($city);
-            $city_error = $valid->common_validation($city,'City','select');
+            $city_error = $valid->common_validation($city,'City','');
             if(!empty($city_error)) {
                 if(!empty($valid_agent)) {
                     $valid_agent = $valid_agent." ".$valid->error_display($form_name, "city", $city_error, 'select');
@@ -350,7 +360,8 @@
                     }
                 }
             }
-        }
+        } 
+            */
 
         if(isset($_POST['opening_balance'])){
             $opening_balance = $_POST['opening_balance'];
@@ -386,17 +397,17 @@
 
         if(isset($_POST['commission'])){
 			$commission = $_POST['commission'];
-            $commission_error = $valid->common_validation($commission,'commission','text');
-            if(!empty($commission_error)) {
-                if(!empty($valid_agent)) {
-                    $valid_agent = $valid_agent." ".$valid->error_display($form_name, "commission", $commission_error, 'text');
-                }
-                else {
-                    $valid_agent = $valid->error_display($form_name, "commission", $commission_error, 'text');
-                }
-            }
+            // $commission_error = $valid->common_validation($commission,'commission','text');
+            // if(!empty($commission_error)) {
+            //     if(!empty($valid_agent)) {
+            //         $valid_agent = $valid_agent." ".$valid->error_display($form_name, "commission", $commission_error, 'text');
+            //     }
+            //     else {
+            //         $valid_agent = $valid->error_display($form_name, "commission", $commission_error, 'text');
+            //     }
+            // }
 			if(!empty($commission)) {
-				$commission_error = $valid->valid_percentage($commission, "commission", "1");
+				$commission_error = $valid->valid_percentage($commission, "commission", "");
 
                 if($commission > 99) {
                     $commission_error = "Commission allowed lessthan 100%";
@@ -509,14 +520,14 @@
                     $agent_details = $obj->encode_decode('encrypt', $agent_details);
                 }
                 $prev_agent_id = ""; $agent_error = "";	$prev_agent_name ="";
-                if(!empty($mobile_number)) {
+                if(!empty($lower_case_name)) {
                     // $prev_agent_id = $obj->AgentMobileExists($mobile_number);
                     
-                    $prev_agent_id = $obj->getTableColumnValue($GLOBALS['agent_table'], 'mobile_number', $mobile_number, 'agent_id');
+                    $prev_agent_id = $obj->getTableColumnValue($GLOBALS['agent_table'], 'lower_case_name', $lower_case_name, 'agent_id');
                     if(!empty($prev_agent_id) && $prev_agent_id != $edit_id) {
                         $prev_agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'],'agent_id',$prev_agent_id,'agent_name');
 						$prev_agent_name = $obj->encode_decode("decrypt",$prev_agent_name);
-                        $agent_error = "This mobile number is already exist in ".$prev_agent_name;
+                        $agent_error = $prev_agent_name." - This Agent Name is already exist";
                         
                     }
                 }
@@ -735,7 +746,7 @@
                         <th>S.No</th>
                         <th>Agent Name</th>
                         <th>Mobile</th>
-                        <th>State</th>
+                        <th>Address</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -762,15 +773,19 @@
                                     </div>
                                 </td>
                                 <td> <?php
-                                    if(!empty($data['mobile_number'])) {
+                                    if(!empty($data['mobile_number']) && $data['mobile_number']!=$GLOBALS['null_value']) {
                                         $data['mobile_number'] = $obj->encode_decode('decrypt', $data['mobile_number']);
                                         echo $data['mobile_number'];
+                                    }else{
+                                        echo "-";
                                     } ?>
                                 </td>
                                 <td> <?php
-                                    if(!empty($data['state'])) {
-                                        $data['state'] = $obj->encode_decode('decrypt', $data['state']);
-                                        echo $data['state'];
+                                    if(!empty($data['address']) && $data['address']!=$GLOBALS['null_value']) {
+                                        $data['address'] = $obj->encode_decode('decrypt', $data['address']);
+                                        echo $data['address'];
+                                    }else{
+                                        echo "-";
                                     } ?>
                                 </td>
                                 <td>

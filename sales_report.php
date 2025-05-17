@@ -12,8 +12,9 @@
         }
     }
 
-    $from_date = ""; $to_date = ""; 
-    $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
+    $from_date = ""; $to_date = ""; $current_date = "";
+    // $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d'); 
+    $current_date = date('Y-m-d');
     $total_records_list = $obj->getTableRecords($GLOBALS['estimate_table'], '', '', '');
     $excel_name = ""; $transport_id =""; $agent_id = "";
     $excel_name = "Sales Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";

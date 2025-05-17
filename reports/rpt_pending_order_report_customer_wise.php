@@ -13,8 +13,11 @@ if(isset($_GET['customer_id'])) {
     $customer_mobile_number = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'mobile_number');
 }
 
+// $total_records_list = array();
+// $total_records_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'customer_id', $customer_id, '');
+
 $total_records_list = array();
-$total_records_list = $obj->getTableRecords($GLOBALS['proforma_invoice_table'], 'customer_id', $customer_id, '');
+$total_records_list = $obj->getCustomerWiseProformaInvoiceList($customer_id);
 
 $customer_display = "";
 if(!empty($customer_name)) {
@@ -143,7 +146,7 @@ if (!empty($total_records_list)) {
 
         if(!empty($record['quantity'])) {
             $quantity = explode(',', $record['quantity']);
-            $unit_name = explode(',', $record['unit_name']);
+            $unit_id = explode(',', $record['unit_id']);
 
             $quantity_loop_y = $start_y;
 
@@ -151,8 +154,9 @@ if (!empty($total_records_list)) {
             for($i = 0; $i < count($quantity); $i++) {
                 $quantity_display = $quantity[$i];
 
-                if(isset($unit_name[$i]) && !empty($unit_name[$i])) {
-                    $quantity_display .= " " . $obj->encode_decode('decrypt', $unit_name[$i]);
+                if(isset($unit_id[$i]) && !empty($unit_id[$i])) {
+                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unit_id[$i], 'unit_name');
+                    $quantity_display .= " " . $obj->encode_decode('decrypt', $unit_name);
                 }
 
                 $pdf->SetY($quantity_loop_y);

@@ -1,18 +1,19 @@
 <?php
+    $current_date = "";
     $current_date = date('Y-m-d');
     $from_date = "";
     if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
-    } else {
+    } /* else {
         $from_date = date('Y-m-d', strtotime('-30 days'));
-    }
+    } */
 
     $to_date = "";
     if(isset($_POST['to_date'])) {
         $to_date = $_POST['to_date'];
-    } else {
+    } /* else {
         $to_date = date('Y-m-d');
-    }
+    } */
 
     $customer_id = "";
     if(isset($_POST['filter_customer_id'])) {
@@ -50,9 +51,6 @@
         <div class="container-fluid">
             <div class="row mx-0">
                 <div class="col-12">
-                    <div class="bg-googleplus card-header">
-                        <h5 class="text-dark">Pending Order Report</h5>
-                    </div>
                     <form name="current_stock_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
@@ -154,7 +152,8 @@
                                 } */ ?>
                                 <div class="col-lg-2 col-md-4 col-6 mb-2">
                                     <div class="form-group mb-1">
-                                        <div class="form-label-group in-border pb-2">                                            <select class="select2 select2-danger" name="filter_agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getReport();">
+                                        <div class="form-label-group in-border pb-2">
+                                            <select class="select2 select2-danger" name="filter_agent_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getReport();">
                                                 <option value="">Select Agent</option>
                                                 <?php if (!empty($agent_list)) {
                                                     foreach ($agent_list as $customer) { ?>
@@ -453,9 +452,15 @@
                                                                     $agent_name = $obj->encode_decode('decrypt', $agent_name) ;
                                                                 }
 
-                                                                if(!empty($from_date) && !empty($to_date) && !empty($agent_name)) {
+                                                                if(!empty($agent_name)) {
                                                                     ?>
-                                                                    <span class="ms-auto" style="font-size:13px;"><?php echo $agent_name; ?> (Ordered Stock : <?php echo date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)); ?>)</span>
+                                                                    <span class="ms-auto" style="font-size:13px;"><?php echo $agent_name; ?> 
+                                                                    <?php
+                                                                }
+
+                                                                if(!empty($from_date) && !empty($to_date)) {
+                                                                    ?>
+                                                                    (Ordered Stock : <?php echo date('d-m-Y', strtotime($from_date)) . " To " . date('d-m-Y', strtotime($to_date)); ?>)</span>
                                                                     <?php
                                                                 }
                                                             ?>
@@ -529,8 +534,6 @@
                                                             } 
                                                         ?>
                                                     </tbody>
-
-
                                                     <?php
                                                 } ?>
                                             </table>
@@ -588,7 +591,9 @@
     }
 
     function ShowProformaRecords(party_id) {
+        console.log('rpt_pending_order_report_customer_wise.php?customer_id=' + party_id);
         var url = 'reports/rpt_pending_order_report_customer_wise.php?customer_id=' + party_id;
+        console.log(url);
         var post_url = "dashboard_changes.php?check_login_session=1";
         jQuery('#PaymentModal .modal-header h1').html("Customer - Proforma List Preview");
 

@@ -12,24 +12,23 @@
         }
     }
 
-    $from_date = date('Y-m-d'); $to_date = date("Y-m-d");
-    if(isset($_POST['from_date']))
-    {
+    // $from_date = date('Y-m-d'); $to_date = date("Y-m-d");
+    $from_date = ""; $to_date = "";
+    
+    if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
     }
-    if(isset($_POST['to_date']))
-    {
+    if(isset($_POST['to_date'])) {
         $to_date = $_POST['to_date'];
     }
     
     $party_id="";
-    if(isset($_POST['party_id']))
-    {
+    if(isset($_POST['party_id'])) {
         $party_id = $_POST['party_id'];
     }
-    $payment_mode_id="";
-    if(isset($_POST['payment_mode_id']))
-    {
+
+    $payment_mode_id = "";
+    if(isset($_POST['payment_mode_id'])) {
         $payment_mode_id = $_POST['payment_mode_id'];
     }
    
@@ -128,7 +127,7 @@
                                             <thead class="bg-light">
                                                 <tr>
                                                     <th colspan="8" class="text-center py-2 px-2">
-                                                        Daybook - <?php echo "( ".date('d-m-Y', strtotime($from_date)). "&nbsp;  to &nbsp; ".date('d-m-Y', strtotime($to_date))." )"; ?> <br>
+                                                        Daybook Ledger <?php if(!empty($from_date)) { echo " - ( ".date('d-m-Y', strtotime($from_date)). "&nbsp;  to &nbsp; "; } if(!empty($to_date)) { echo  date('d-m-Y', strtotime($to_date))." )"; }  ?> <br>
                                                     </th>
                                                 </tr>
                                                 <tr>
@@ -173,9 +172,18 @@
                                                             </td>
                                                             <td  class="text-center py-2 px-2">
                                                                 <?php
-                                                                    if(!empty($data['party_name']) && $data['party_name'] != 'NULL')
-                                                                    {
-                                                                        echo html_entity_decode($obj->encode_decode("decrypt",$data['party_name']));
+                                                                    if(!empty($data['party_name']) && $data['party_name'] != 'NULL') {
+                                                                        if($data['type'] != "Expense") {
+                                                                            echo html_entity_decode($obj->encode_decode("decrypt",$data['party_name']));
+                                                                        } else {
+                                                                            $expense_party_name = "";
+                                                                            $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $data['party_id'], 'expense_party_name');
+                                                                            if(!empty($expense_party_name)) {
+                                                                                echo html_entity_decode($obj->encode_decode("decrypt", $expense_party_name));
+                                                                            } else {
+                                                                                echo "-";
+                                                                            }
+                                                                        }
                                                                     }
                                                                 ?>
                                                             </td>

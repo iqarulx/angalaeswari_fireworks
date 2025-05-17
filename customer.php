@@ -63,7 +63,7 @@
                                                                         <option value="<?php echo $data['agent_id']; ?>" <?php if(!empty($agent_id) && $agent_id == $data['agent_id']) { ?>selected<?php } ?>>
                                                                             <?php
                                                                                 if(!empty($data['agent_name']) && $data['agent_name'] != $GLOBALS['null_value']) {
-                                                                                    echo $obj->encode_decode('decrypt', $data['agent_name']) . " - " .$obj->encode_decode("decrypt", $data['mobile_number']);
+                                                                                    echo $obj->encode_decode('decrypt', $data['agent_name']);
                                                                                 }
                                                                             ?>
                                                                         </option>

@@ -22,12 +22,18 @@
         $bank_list = array();
 		$bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '','',''); 
         
+        $expense_party_list = array();
+		$expense_party_list = $obj->getTableRecords($GLOBALS['expense_party_table'], '','',''); 
+        
         // print_r($bank_list);
         $current_date = date("Y-m-d");
         $selected_payment_mode = "";
         
         $category_count = 0;
         $category_count = count($expense_category_list);
+
+        $party_count = 0;
+        $party_count = count($expense_party_list);
 
         $bank_count = 0;
         $bank_count = count($bank_list);
@@ -56,6 +62,25 @@
                                 <label>Date</label>
                             </div>
                         </div> 
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-12">
+                        <div class="form-group pb-2">
+                            <div class="form-label-group in-border mb-0">
+                                <select name="expense_party_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:ExpensePartyChange();">
+                                    <option value = "">Select</option> <?php 
+                                    if(!empty($expense_party_list)) {
+                                        foreach($expense_party_list as $data) { ?>
+                                            <option value="<?php if(!empty($data['expense_party_id'])) { echo $data['expense_party_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php } ?>> <?php
+                                                if(!empty($data['expense_party_name'])) {
+                                                    echo $obj->encode_decode('decrypt', $data['expense_party_name']);
+                                                } ?>
+                                            </option> <?php
+                                        }
+                                    } ?>
+                                </select>
+                                <label>Expense Party</label>
+                            </div>
+                        </div>        
                     </div>
                     <div class="col-lg-3 col-md-3 col-12">
                         <div class="form-group pb-2">
@@ -151,7 +176,7 @@
                                 <thead class="bg-dark">
                                     <tr style="white-space:pre;">
                                         <th>#</th>
-                                        <th style="with:400px;">Payment Mode</th>
+                                        <th style="width:400px;">Payment Mode</th>
                                         <th style="width:200px;">Bank Name</th>
                                         <th style="width:200px;">Amount</th>
                                         <th>Action</th>
@@ -201,6 +226,7 @@
                             }
                         }
                     });
+                    ExpensePartyChange();
                 });
             </script>
         </form> <?php
@@ -209,7 +235,7 @@
     if(isset($_POST['edit_id'])) {
         $expense_date = ""; $expense_date_error = ""; $expense_category_id = ""; $expense_category_id_error = "";
         $payment_mode_ids = array(); $bank_ids = array(); $bank_names = array(); $payment_mode_names = array(); $amount = array(); $total_amount = 0; $payment_error = ""; $expense_category_name = ""; $description = ""; $description_error = "";  $balance_type=""; $balance_type_error=""; $selected_payment_mode_id = "";
-        $form_name = "expense_entry_form"; $valid_expense = ""; $selected_amount = ""; $selected_amount_error = ""; $selected_bank_id = ""; $selected_payment_mode_id = ""; $selected_payment_mode_id_error = "";
+        $form_name = "expense_entry_form"; $valid_expense = ""; $selected_amount = ""; $selected_amount_error = ""; $selected_bank_id = ""; $selected_payment_mode_id = ""; $selected_payment_mode_id_error = ""; $expense_party_id = "";
 
         $edit_id = "";
         if(isset($_POST['edit_id'])) {
@@ -352,6 +378,10 @@
                 }
             }
         }
+
+        if(isset($_POST['expense_party_id'])) {
+            $expense_party_id = $_POST['expense_party_id'];
+        }
         
         if(empty($valid_expense) && empty($payment_error)) {
             $check_user_id_ip_address = 0;
@@ -412,6 +442,10 @@
                 else {
                     $description = $GLOBALS['null_value'];
                 }
+
+                if(empty($expense_party_id)) {
+                    $expense_party_id = $GLOBALS['null_value'];
+                } 
                 
                 if(empty($edit_id)) {	
                     $action = "";
@@ -419,8 +453,8 @@
 						$action = "New Entry Created. Name - ".($obj->encode_decode('decrypt', $expense_category_name));
 					}
 					$null_value = $GLOBALS['null_value'];
-					$columns = array('created_date_time', 'creator', 'creator_name', 'expense_id', 'expense_number', 'expense_date', 'expense_category_id', 'narration', 'amount', 'payment_mode_id', 'payment_mode_name', 'bank_id', 'bank_name','total_amount', 'deleted');
-					$values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'",  "'".$null_value."'", "'".$null_value."'", "'".$expense_date."'", "'".$expense_category_id."'", "'".$description."'", "'".$amount."'", "'".$payment_mode_ids."'", "'".$payment_mode_names."'", "'".$bank_ids."'", "'".$bank_names."'", "'".$total_amount."'", "'0'");
+					$columns = array('created_date_time', 'creator', 'creator_name', 'expense_id', 'expense_number', 'expense_date', 'expense_category_id', 'narration', 'amount', 'payment_mode_id', 'payment_mode_name', 'bank_id', 'bank_name','total_amount', 'expense_party_id', 'deleted');
+					$values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'",  "'".$null_value."'", "'".$null_value."'", "'".$expense_date."'", "'".$expense_category_id."'", "'".$description."'", "'".$amount."'", "'".$payment_mode_ids."'", "'".$payment_mode_names."'", "'".$bank_ids."'", "'".$bank_names."'", "'".$total_amount."'", "'" . $expense_party_id . "'","'0'");
                     $expense_insert_id = $obj->InsertSQL($GLOBALS['expense_table'], $columns, $values, 'expense_id', 'expense_number', $action);		
                     if(preg_match("/^\d+$/", $expense_insert_id)) {								
                         $balance = 1;
@@ -437,7 +471,8 @@
                     
                     $bill_id = $expense_id; $bill_date = $expense_date;
                     $credit  = 0; $debit = 0; $bill_type ="Expense";
-                    $bill_number = $expense_number; $party_type = "Expense";
+                    $bill_number = $expense_number; 
+                    $party_type = "Expense";
 
                     if(!empty($payment_mode_ids)) {
                         $payment_mode_id = explode(',', $payment_mode_ids);
@@ -477,9 +512,14 @@
                                 $bank_name[$i] =$GLOBALS['null_value'];
                             }
 
-
                             $update_balance ="";
-                            $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type, $null_value,$null_value,$expense_category_id,$expense_category_name,$party_type,$payment_mode_id[$i],$payment_mode_name[$i],$bank_id[$i],$bank_name[$i],$credit,$debit,'');
+                            if(!empty($expense_party_id)) {
+                                $expense_party_name = "";
+                                $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $expense_party_id, 'expense_party_name');
+                                $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type, $null_value,$null_value,$expense_party_id,$expense_party_name,$party_type,$payment_mode_id[$i],$payment_mode_name[$i],$bank_id[$i],$bank_name[$i],$credit,$debit,'');
+                            } else {
+                                $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type, $null_value,$null_value,$expense_category_id,$expense_category_name,$party_type,$payment_mode_id[$i],$payment_mode_name[$i],$bank_id[$i],$bank_name[$i],$credit,$debit,'');
+                            }
                         }
                     }
                     

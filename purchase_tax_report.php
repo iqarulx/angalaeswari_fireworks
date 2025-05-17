@@ -49,7 +49,7 @@
         $filter_supplier_id = $_POST['filter_supplier_id'];
     }
     
-    $from_date = date('d-m-Y', strtotime('-30 days')); $to_date = date("d-m-Y"); 
+    // $from_date = date('d-m-Y', strtotime('-30 days')); $to_date = date("d-m-Y"); 
     if(isset($_POST['from_date'])) {
         $from_date = $_POST['from_date'];
     }
