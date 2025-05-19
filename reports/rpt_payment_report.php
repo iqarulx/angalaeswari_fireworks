@@ -51,6 +51,11 @@
     if(isset($_REQUEST['filter_category_id'])) {
         $filter_category_id = $_REQUEST['filter_category_id'];
     }
+
+    $filter_expense_category_id = "";
+    if(isset($_REQUEST['filter_expense_category_id'])) {
+        $filter_expense_category_id = $_REQUEST['filter_expense_category_id'];
+    }
     
     $party_list = array();
     $party_list = $obj->getPaymentPartyList($filter_party_type,$filter_bill_type); 
@@ -59,7 +64,7 @@
     $category_list = $obj->getTableRecords($GLOBALS['expense_category_table'],'','','');
 
     $payment_list =array();
-    $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id);
+    $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id, $filter_expense_category_id);
    
     if(!empty($from_date)){
         $from_date = date('d-m-Y', strtotime($from_date));

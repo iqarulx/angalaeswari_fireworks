@@ -59,17 +59,23 @@
     if(isset($_POST['filter_category_id'])) {
         $filter_category_id = $_POST['filter_category_id'];
     }
+
+    $filter_expense_party_id = "";
+    if(isset($_POST['filter_expense_party_id'])) {
+        $filter_expense_party_id = $_POST['filter_expense_party_id'];
+    }
     
     $party_list = array();
-    
     $party_list = $obj->getPaymentPartyList($filter_party_type,$filter_bill_type);
-    
+
+    $expense_party_list = array();
+    $expense_party_list = $obj->getTableRecords($GLOBALS['expense_party_table'], '', '', '');
 
     $category_list = array();
     $category_list = $obj->getTableRecords($GLOBALS['expense_category_table'],'','','');
 
     $payment_list =array();
-    $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id);
+    $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id, $filter_expense_party_id);
 
     $excel_name = "";
     $excel_name = "Payment Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
@@ -118,7 +124,7 @@
 <?php include "header.php"; ?>
 <!--Right Content-->
     <div class="main-content">
-    <div class="page-content">
+        <div class="page-content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
@@ -228,7 +234,32 @@
                                                         <label>Category</label>
                                                     </div>
                                                 </div>        
-                                            </div> <?php 
+                                            </div> 
+                                            <div class="col-lg-2 col-md-4 col-12">
+                                                <div class="form-group">
+                                                    <div class="form-label-group in-border mb-0" id="expense_party_list">
+                                                        <select class="select2 select2-danger" name="filter_expense_party_id" data-dropdown-css-class="select2-danger"  style="width: 100%;" onchange="Javascript:getOverallReport();">
+                                                            <option value="">Select</option> <?php
+                                                            if(!empty($expense_party_list)) {
+                                                                foreach($expense_party_list as $data) { 
+                                                                    if(!empty($data['expense_party_id']) && $data['expense_party_id'] != "NULL") {
+                                                                    ?>
+                                                                        <option value="<?php if(!empty($data['expense_party_id'])) { echo $data['expense_party_id']; } ?>"<?php if(!empty($filter_expense_party_id)){ if($filter_expense_party_id == $data['expense_party_id']){ echo "selected"; } } ?>> <?php
+                                                                            if(!empty($data['expense_party_name']) && $data['expense_party_name'] != "NULL") {
+                                                                                $data['expense_party_name'] = $obj->encode_decode('decrypt', $data['expense_party_name']);
+                                                                                echo html_entity_decode($data['expense_party_name']);
+                                                                            } ?>
+                                                                        </option>
+                                                                    <?php
+                                                                    }
+                                                                }
+                                                            } ?>
+                                                        </select>
+                                                        <label>Exp. Party</label>
+                                                    </div>
+                                                </div>        
+                                            </div>
+                                            <?php 
                                         } ?>
                                         <div class="col-lg-2 col-md-4 col-12">
                                             <div class="form-group">
@@ -277,9 +308,9 @@
                                         </div>
                                         <div class="col-lg-4 col-md-6 col-12">
                                             <div class="ps-2 ">
-                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>" target="_blank" > <i class="fa fa-print"></i> Print </a>
+                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>&filter_expense_party_id=<?php if(!empty($filter_expense_party_id)) { echo $filter_expense_party_id; } ?>" target="_blank" > <i class="fa fa-print"></i> Print </a>
 
-                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>&from=D" target="_blank" > <i class="fa fa-download"></i> PDF </a>
+                                                <a class="btn btn-success m-1" style="font-size:11px;" href="reports/rpt_payment_report.php?filter_bill_type=<?php if(!empty($filter_bill_type)) { echo $filter_bill_type; } ?>&filter_payment_mode_id=<?php if(!empty($filter_payment_mode_id)) { echo $filter_payment_mode_id; } ?>&filter_party_type=<?php if(!empty($filter_party_type)) { echo $filter_party_type; } ?>&filter_bank_id=<?php if(!empty($filter_bank_id)) { echo $filter_bank_id; } ?>&filter_party_id=<?php if(!empty($filter_party_id)) { echo $filter_party_id; } ?>&from_date=<?php if(!empty($from_date)) { echo $from_date; } ?>&to_date=<?php if(!empty($to_date)) { echo $to_date; } ?>&filter_category_id=<?php if(!empty($filter_category_id)) { echo $filter_category_id; } ?>&filter_expense_party_id=<?php if(!empty($filter_expense_party_id)) { echo $filter_expense_party_id; } ?>&from=D" target="_blank" > <i class="fa fa-download"></i> PDF </a>
 
                                                 <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="ExportToExcel();"> <i class="fa fa-download"></i> Excel</button>
                                             </div>
@@ -500,7 +531,8 @@
                     </div>
                 </div>  
             </div>
-        </div>         
+        </div>
+    </div>        
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript">

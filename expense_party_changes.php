@@ -89,6 +89,34 @@
 			</div>
             <div class="row p-3">
                 <input type="hidden" name="edit_id" value="<?php if(!empty($show_expense_party_id)) { echo $show_expense_party_id; } ?>">
+                 <div class="col-lg-3 col-md-4 col-6 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <select class="select2 select2-danger" name="expense_category_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="">Select</option>
+                                <?php
+                                    if (!empty($expense_category_list)) {
+                                        foreach ($expense_category_list as $data) {
+                                            if (!empty($data['expense_category_id'])) {
+                                                ?>
+                                                <option value="<?php echo $data['expense_category_id']; ?>" <?php if (!empty($expense_category_id) && $data['expense_category_id'] == $expense_category_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                    <?php
+                                                    if (!empty($data['expense_category_name'])) {
+                                                        $data['expense_category_name'] = $obj->encode_decode('decrypt', $data['expense_category_name']);
+                                                        echo $data['expense_category_name'];
+                                                    }
+                                                    ?>
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </select>
+                            <label>Expense Category<span class="text-danger">*</span></label>
+                        </div>
+                    </div> 
+                </div>
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
@@ -128,34 +156,7 @@
                     <input type="hidden" name="opening_balance_type" value="<?php if(!empty($opening_balance_type)){ echo $opening_balance_type; } ?>">
                 <?php 
                 } ?>
-                <div class="col-lg-3 col-md-4 col-6 py-2">
-                    <div class="form-group">
-                        <div class="form-label-group in-border">
-                            <select class="select2 select2-danger" name="expense_category_id" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                <option value="">Select</option>
-                                <?php
-                                    if (!empty($expense_category_list)) {
-                                        foreach ($expense_category_list as $data) {
-                                            if (!empty($data['expense_category_id'])) {
-                                                ?>
-                                                <option value="<?php echo $data['expense_category_id']; ?>" <?php if (!empty($expense_category_id) && $data['expense_category_id'] == $expense_category_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
-                                                    <?php
-                                                    if (!empty($data['expense_category_name'])) {
-                                                        $data['expense_category_name'] = $obj->encode_decode('decrypt', $data['expense_category_name']);
-                                                        echo $data['expense_category_name'];
-                                                    }
-                                                    ?>
-                                                </option>
-                                                <?php
-                                            }
-                                        }
-                                    }
-                                ?>
-                            </select>
-                            <label>Expense Category<span class="text-danger">*</span></label>
-                        </div>
-                    </div> 
-                </div>
+               
                 <div class="col-md-12 py-3 text-center submit_button">
                     <button class="btn btn-danger" type="button" onClick="Javascript:SaveModalContent(event,'expense_party_form', 'expense_party_changes.php', 'expense_party.php');">
                         Submit

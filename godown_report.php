@@ -278,7 +278,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0; $unit_name_array = array(); $sub_unit_name_array = array();
+                                                    $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0; $unit_name_array = array(); $sub_unit_name_array = array(); $index = 1;
                                                     if(!empty($total_records_list)) { 
                                                         foreach($total_records_list as $key => $data) {
                                                             $unit_name = ""; $subunit_name = ""; $subunit_need = 0;
@@ -343,7 +343,7 @@
                                                                         ?>
                                                                             <tr>
                                                                                 <?php if($str_product_id != $data['product_id']) { ?>
-                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?>><?php echo $key+1; ?></th>
+                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?>><?php echo $index; ?></th>
                                                                                     <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?> onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
                                                                                         <?php
                                                                                             $product_name = "";
@@ -401,7 +401,7 @@
                                                                 if(!empty($current_stock_unit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
                                                                 ?>
                                                                     <tr>
-                                                                        <th><?php echo $key+1; ?></th>
+                                                                        <th><?php echo $index; ?></th>
                                                                         <th onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
                                                                             <?php
                                                                                 $product_name = "";
@@ -447,6 +447,7 @@
                                                                 <?php
                                                                 }
                                                             }
+                                                            $index++;
                                                         } 
                                                         ?>
                                                         <tr>

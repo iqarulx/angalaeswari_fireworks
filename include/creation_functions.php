@@ -533,9 +533,39 @@
 			$select_query = ""; $list = array(); $rate_type = ""; $amount = 0;
 
 			if(!empty($contractor_id) && !empty($product_id)) {
-				$select_query = "SELECT rate_per_unit, rate_per_subunit, unit_type FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND deleted = '0'";
+				$select_query = "SELECT rate_per_unit, rate_per_subunit, unit_type, quantity FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND deleted = '0'";
 				if(!empty($select_query)) {
 					$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
+				}
+			}
+		  
+			return $list;
+		}
+
+		public function getContractorProductUnitId($contractor_id, $product_id, $unit_type) {
+			$select_query = ""; $list = array(); $rate_type = ""; $amount = 0;
+
+			if(!empty($contractor_id) && !empty($product_id)) {
+				if($unit_type == "Unit") {
+					$select_query = "SELECT unit_id FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND unit_type = '1' AND deleted = '0'";
+				} else {
+					$select_query = "SELECT subunit_id FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND unit_type = '2' AND deleted = '0'";
+				}
+				
+				if(!empty($select_query)) {
+					$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
+				}
+
+				if(empty($list)) {
+					if($unit_type == "Unit") {
+						$select_query = "SELECT subunit_id FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND unit_type = '2' AND deleted = '0'";
+					} else {
+						$select_query = "SELECT unit_id FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND unit_type = '1' AND deleted = '0'";
+					}
+
+					if(!empty($select_query)) {
+						$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
+					}
 				}
 			}
 		  

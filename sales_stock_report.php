@@ -290,7 +290,7 @@
                                                             $rate_per_unit = $rate / $per;
                                                             $case_contains_list = array();
                                                             if(!empty($subunit_need) && $subunit_need == 1) {
-                                                                $case_contains_list = $obj->getCaseContainsList($data['product_id']);
+                                                                $case_contains_list = $obj->getCaseContainsListSales($data['product_id']);
                                                             }
                                                             $str_product_id = "";
                                                             if(!empty($case_contains_list)) {
@@ -331,7 +331,7 @@
                                                                             }
                                                                         }
                                                                        
-                                                                        if(preg_match('/^[0]+$/', $current_stock) || preg_match('/^[0]+$/', $current_stock_subunit) || !empty($obj->getProductStockTransactionExistSales($data['product_id']))) {
+                                                                        if(!empty($current_stock) || !empty($current_stock_subunit) || !empty($obj->getProductStockTransactionExistSales($data['product_id']))) {
                                                                         ?>
                                                                             <tr>
                                                                                 <?php if($str_product_id != $data['product_id']) { ?>

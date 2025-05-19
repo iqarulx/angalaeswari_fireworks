@@ -298,7 +298,7 @@
         if(isset($_POST['mobile'])) {
             $mobile = $_POST['mobile'];
             $mobile = trim($mobile);
-            $mobile_error = $valid->valid_mobile_number($mobile, "Mobile", "1");
+            $mobile_error = $valid->valid_mobile_number($mobile, "Mobile", "0");
             if(!empty($mobile_error)) {
                 if(!empty($valid_contractor)) {
                     $valid_contractor = $valid_contractor." ".$valid->error_display($form_name, "mobile", $mobile_error, 'text');

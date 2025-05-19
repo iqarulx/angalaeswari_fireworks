@@ -269,7 +269,7 @@
                 <div class="col-lg-3 col-md-4 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border" id="div_selected_unit">
-                            <select class="select2 select2-danger Product_Fix_field" name="unit_id" data-dropdown-css-class="select2-danger" onchange="AddUnitForStock();" style="width: 100%;" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                            <select class="select2 select2-danger Product_Fix_field" name="unit_id" data-dropdown-css-class="select2-danger" onchange="AddUnitForStock();AddUnitForStockProductAppend();" style="width: 100%;" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                                 <option value="">Select Unit</option>
                                 <?php
                                     if (!empty($unit_list)) {
@@ -300,7 +300,7 @@
                             <div class="flex-shrink-0">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
                                     <label for="FormSelectDefault" class="form-label text-muted smallfnt">Need Sub Unit  YES / NO</label>
-                                    <input name="subunit_need"  id="subunit_need"class="form-check-input code-switcher Product_Fix_field" type="checkbox"  onchange="Javascript:subunitNeed();AddUnitForStock();per_type_change();" value="<?php if ($subunit_need == '1') { echo '1';} else { echo '0'; } ?>" <?php if ($subunit_need == '1') { ?>checked="checked" <?php } ?> <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
+                                    <input name="subunit_need"  id="subunit_need"class="form-check-input code-switcher Product_Fix_field" type="checkbox"  onchange="Javascript:subunitNeed();AddUnitForStock();AddUnitForStockProductAppend();per_type_change();" value="<?php if ($subunit_need == '1') { echo '1';} else { echo '0'; } ?>" <?php if ($subunit_need == '1') { ?>checked="checked" <?php } ?> <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?>>
                                 </div>
                             </div>
                         </div>    
@@ -313,7 +313,7 @@
                         <div class="form-label-group in-border">
                             <div class="input-group">
                                 <div class="input-group-append" style="width:100%;" id="div_selected_subunit">
-                                    <select name="subunit_id" class="select2 select2-danger select2-hidden-accessible Product_Fix_field" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="AddUnitForStock()" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?> >
+                                    <select name="subunit_id" class="select2 select2-danger select2-hidden-accessible Product_Fix_field" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="AddUnitForStock();AddUnitForStockProductAppend();" <?php if(!empty($linked_count) || !empty($opening_stock_count)) { ?>disabled<?php } ?> >
                                     <option value="">Select SubUnit</option>
                                     <?php
                                         if (!empty($unit_list)) {
@@ -563,6 +563,7 @@
             <script>
                  jQuery(document).ready(function () {
                     AddUnitForStock();
+                    AddUnitForStockProductAppend();
                     subunitNeed();
                     CalProductAmount();
                     per_type_change();     
@@ -800,6 +801,52 @@
                 if ($option_list['per_type'] == '2') {
                     $option .= " selected";
                 }
+                $option .= ">$piece</option>";
+                
+            } else {
+                if (!empty($option_list['unit_id'])) {
+                    $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['unit_id'], 'unit_name');
+                    $case = $obj->encode_decode('decrypt', $case);
+                } else {
+                    $case = "Unit";
+                }
+                $option = $option . "<option value = '1' selected>" . $case . "</option>";
+            }
+    
+            echo $option;
+        }
+    }
+
+    if (isset($_REQUEST['unit_select_change_for_stock_append'])) {
+        $list = json_decode($_REQUEST['unit_select_change_for_stock_append'], true);
+
+        $option = "";
+        foreach ($list as $option_list) {
+            if ($option_list['subunit_need'] == '1') {
+                if (!empty($option_list['unit_id'])) {
+                    $case = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['unit_id'], 'unit_name');
+                    $case = $obj->encode_decode('decrypt', $case);
+                } else {
+                    $case = "Unit";
+                }
+
+                $option .= "<option value='1'";
+                // if ($option_list['per_type'] == '1') {
+                    $option .= " selected";
+                // }
+                $option .= ">$case</option>";
+    
+                if (!empty($option_list['subunit_id'])) {
+                    $piece = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $option_list['subunit_id'], 'unit_name');
+                    $piece = $obj->encode_decode('decrypt', $piece);
+                } else {
+                    $piece = "SubUnit";
+                }
+               
+                $option .= "<option value='2'";
+                // if ($option_list['per_type'] == '2') {
+                //     $option .= " selected";
+                // }
                 $option .= ">$piece</option>";
                 
             } else {

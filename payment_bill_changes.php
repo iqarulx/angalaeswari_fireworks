@@ -837,29 +837,24 @@ if(isset($_REQUEST['party_type'])) {
     echo "$$$".$party_name." <span class='text-center text-danger'>(Balance : ".($obj->numberFormat($current_balance,2).$current_type).")</span>"; 
 }
 
-if(isset($_REQUEST['expense_party_id'])) {
-    $expense_party_id = $_REQUEST['expense_party_id'];
+if(isset($_REQUEST['expense_category_id'])) {
+    $expense_category_id = $_REQUEST['expense_category_id'];
 
-    $expense_category_id = "";
-    $expense_category_id = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $expense_party_id, 'expense_category_id');
-    
-    $expense_category_list = array();
-    if(!empty($expense_category_id)) {
-        $expense_category_list = $obj->getTableRecords($GLOBALS['expense_category_table'],'expense_category_id',$expense_category_id,'');
-    } else {
-        $expense_category_list = $obj->getTableRecords($GLOBALS['expense_category_table'],'','','');
-    }
+    $query = "SELECT * FROM " . $GLOBALS['expense_party_table'] . " WHERE expense_category_id = '" . $expense_category_id . "' AND deleted = '0' ORDER BY id DESC";
 
-    $category_count = 0;
-    $category_count = count($expense_category_list);
+    $expense_party_list = array();
+    $expense_party_list = $obj->getQueryRecords('', $query);
+
+    $party_count = 0;
+    $party_count = count($expense_party_list);
 
     ?>
-    <option value = "">Select Expense Category</option> <?php 
-    if(!empty($expense_category_list)) {
-        foreach($expense_category_list as $data) { ?>
-            <option value="<?php if(!empty($data['expense_category_id'])) { echo $data['expense_category_id']; } ?>" <?php if(!empty($category_count) && $category_count == 1){ ?> selected <?php } ?>> <?php
-                if(!empty($data['expense_category_name'])) {
-                    echo $obj->encode_decode('decrypt', $data['expense_category_name']);
+    <option value = "">Select Expense Party</option> <?php 
+    if(!empty($expense_party_list)) {
+        foreach($expense_party_list as $data) { ?>
+            <option value="<?php if(!empty($data['expense_party_id'])) { echo $data['expense_party_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php } ?>> <?php
+                if(!empty($data['expense_party_name'])) {
+                    echo $obj->encode_decode('decrypt', $data['expense_party_name']);
                 } ?>
             </option> <?php
         }

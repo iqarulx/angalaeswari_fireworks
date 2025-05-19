@@ -1843,11 +1843,51 @@ function AddUnitForStock() {
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (result != "") {
-                            if ($("select[name='selected_unit_type']").length > 0) {
-                                $("select[name='selected_unit_type']").empty().append(result);
-                            }
+
                             if ($("select[name='per_type']").length > 0) {
                                 $("select[name='per_type']").empty().append(result);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
+function AddUnitForStockProductAppend() {
+    var subunit_need = "";
+    var unit_id = jQuery('select[name="unit_id"]').val();
+    var subunit_id = jQuery('select[name="subunit_id"]').val();
+    var per_type = jQuery('select[name="per_type"]').val();
+    if (jQuery('#subunit_need').length > 0) {
+        subunit_need = jQuery('#subunit_need').val();
+    } else {
+        if (jQuery('input[name="subunit_need"]').length > 0) {
+            subunit_need = jQuery('input[name="subunit_need"]').val();
+        }
+    }
+
+    var listdetials = [];
+    var list = {
+        unit_id: unit_id,
+        subunit_id: subunit_id,
+        subunit_need: subunit_need,
+        per_type: per_type,
+    };
+
+    listdetials.push(list);
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                post_url = "product_changes.php?unit_select_change_for_stock_append=" + JSON.stringify(listdetials);
+                jQuery.ajax({
+                    url: post_url, success: function (result) {
+                        if (result != "") {
+                            if ($("select[name='selected_unit_type']").length > 0) {
+                                $("select[name='selected_unit_type']").empty().append(result);
                             }
                         }
                     }

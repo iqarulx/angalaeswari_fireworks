@@ -51,6 +51,9 @@
         <div class="container-fluid">
             <div class="row mx-0">
                 <div class="col-12">
+                    <div class="bg-googleplus card-header">
+                        <h5 class="text-dark">Pending Order Report</h5>
+                    </div>
                     <form name="current_stock_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
@@ -542,7 +545,7 @@
                                 </div>
                             </div>
                         </div>  
-                    </form> 
+                    </form>
                 </div>
             </div>  
         </div>

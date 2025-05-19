@@ -85,6 +85,9 @@
         <div class="container-fluid">
             <div class="row mx-0">
                 <div class="col-12">
+                    <div class="bg-googleplus card-header">
+                        <h5 class="text-dark">Current Stock Report</h5>
+                    </div>
                     <form name="current_stock_report_form" method="post">
                         <div class="card">
                             <div class="row justify-content-end mx-0 mt-3 px-2">
@@ -308,7 +311,7 @@
                                                                             }
                                                                         }
                                                                        
-                                                                        if(preg_match('/^[0]+$/', $current_stock) || preg_match('/^[0]+$/', $current_stock_subunit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
+                                                                        if(!empty($current_stock) || !empty($current_stock_subunit) || !empty($obj->getProductStockTransactionExist($data['product_id']))) {
                                                                         ?>
                                                                             <tr>
                                                                                 <?php if($str_product_id != $data['product_id']) { ?>
@@ -726,7 +729,7 @@
                                 </div>
                             </div>
                         </div>  
-                    </form> 
+                    </form>
                 </div>
             </div>  
         </div>

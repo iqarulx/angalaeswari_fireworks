@@ -488,23 +488,23 @@ function DeletePaymentRow(row_index) {
 	});
 }
 
-function ExpensePartyChange() {
+function ExpenseCategoryChange() {
 
-	var expense_party_id = "";
-	if (jQuery('select[name="expense_party_id"]')) {
-		expense_party_id = jQuery('select[name="expense_party_id"]').val();
+	var expense_category_id = "";
+	if (jQuery('select[name="expense_category_id"]')) {
+		expense_category_id = jQuery('select[name="expense_category_id"]').val();
 	}
 
 	var post_url = "dashboard_changes.php?check_login_session=1";
 	jQuery.ajax({
 		url: post_url, success: function (check_login_session) {
 			if (check_login_session == 1) {
-				var post_url = "payment_bill_changes.php?expense_party_id=" + expense_party_id;
+				var post_url = "payment_bill_changes.php?expense_category_id=" + expense_category_id;
 				jQuery.ajax({
 					url: post_url, success: function (result) {
 						if (result != '') {
-							if (jQuery('select[name="expense_category_id"]').length > 0) {
-								jQuery('select[name="expense_category_id"]').html(result);
+							if (jQuery('select[name="expense_party_id"]').length > 0) {
+								jQuery('select[name="expense_party_id"]').html(result);
 							}
 						}
 					}

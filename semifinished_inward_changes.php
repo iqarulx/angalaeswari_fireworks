@@ -125,7 +125,7 @@
                         <div class="col-lg-3 col-md-3 col-6 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <select name="selected_contractor_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetSemiFinishedProducts();" <?php if(!empty($show_semifinished_inward_id)) { ?>disabled<?php } ?>>
+                                    <select name="selected_contractor_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetSemiFinishedProducts();GetUnit();" <?php if(!empty($show_semifinished_inward_id)) { ?>disabled<?php } ?>>
                                         <option value="">Select Contractor</option>
                                         <?php
                                             if(!empty($contractor_list)) {
@@ -184,7 +184,7 @@
                         <div class="col-lg-3 col-md-3 col-6 px-lg-1 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <select name="selected_product_id" class="select2 select2-danger"  onchange="Javascript:GetUnit(this.value);" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                    <select name="selected_product_id" class="select2 select2-danger" onchange="Javascript:GetUnit(this.value);" data-dropdown-css-class="select2-danger" style="width: 100%;">
                                         <option value="">Select Product</option>
                                         <?php if (!empty($product_list)) {
                                             foreach ($product_list as $Pro_list) { 
@@ -192,14 +192,15 @@
                                                 ?>
                                                 <option value="<?php if (!empty($Pro_list['product_id'])) {
                                                     echo $Pro_list['product_id'];
-                                                } ?>"  <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> Selected <?php } ?>>
+                                                } ?>"  <?php if(!empty($count_of_product) && $count_of_product == 1){ ?> selected <?php } ?>>
                                                     <?php 
-                                                         if($count_of_product == 1){
+                                                        if($count_of_product == 1) {
                                                             $selected_product_id = $Pro_list['product_id'];
                                                         }
                                                         if (!empty($Pro_list['product_name'])) {
-                                                        echo $obj->encode_decode('decrypt', $Pro_list['product_name']);
-                                                    } ?>
+                                                            echo $obj->encode_decode('decrypt', $Pro_list['product_name']);
+                                                        } 
+                                                    ?>
                                                 </option>
                                             <?php }
                                         } ?>
@@ -254,7 +255,7 @@
                                             <th style="width:150px;">Unit</th>
                                             <th style="width:100px;">Content</th>
                                             <th style="width:100px;">Qty</th>
-                                            <th style="width:100px;">Cooly/Qty</th>
+                                            <th style="width:100px;">Cooly</th>
                                             <th style="width:100px;">Total Cooly</th>
                                             <th style="width:100px;">Action</th>
                                         </tr>
@@ -374,12 +375,13 @@
                             ?>
                             calQuantityTotal();
                             GetSemiFinishedProducts();
+                            GetUnit();
                             <?php 
                         }
                     ?>
                             <?php
                           if(empty($show_daily_production_id)) { 
-                              if($count_of_product == 1){ ?>  GetUnit('<?php if(!empty($selected_product_id)) { echo  $selected_product_id; } ?>'); <?php } 
+                              if($count_of_product == 1){ ?>  GetUnit('<?php if(!empty($selected_product_id)) { echo $selected_product_id; } ?>'); <?php } 
                            } ?>
 
                     jQuery('input[name="selected_quantity"]').on("keypress", function(e) {
@@ -1385,7 +1387,7 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
         $unit_type = "Subunit";
     }
 
-    $cooly_per_qty = 0; $total_cooly = 0; $rate_list = array();
+    $rate_per_unit = 0; $rate_per_subunit = 0; $contractor_unit_type = 0; $contractor_quantity = 0; $cooly_per_qty = 0; $total_cooly = 0; $rate_list = array();
     if(!empty($contractor_id) && $contractor_id != "undefined") {
         $rate_list = $obj->getCoolyRate($contractor_id, $product_id, $unit_type);
         if(!empty($rate_list)){
@@ -1396,34 +1398,47 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
                 if(!empty($data['rate_per_subunit'])){
                     $rate_per_subunit = $data['rate_per_subunit'];
                 }
+                if(!empty($data['quantity'])){
+                    $contractor_quantity = $data['quantity'];
+                }
+                if(!empty($data['unit_type'])){
+                    $contractor_unit_type = $data['unit_type'];
+                }
+            }
+        }
+    }
+    
+    $contractor_unit_id = $obj->getContractorProductUnitId($contractor_id, $product_id, $unit_type);
+
+    $c_unit_name = "";
+    if(!empty($contractor_unit_id)) {
+        if(!empty($contractor_unit_id[0]) && !empty($contractor_unit_id[0]['unit_id'])) {
+            $c_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $contractor_unit_id[0]['unit_id'], 'unit_name');
+            if(!empty($c_unit_name)) {
+                $c_unit_name = $obj->encode_decode('decrypt', $c_unit_name);
+            }
+        } else if(!empty($contractor_unit_id[0]) && !empty($contractor_unit_id[0]['subunit_id'])) {
+            $c_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $contractor_unit_id[0]['subunit_id'], 'unit_name');
+            if(!empty($c_unit_name)) {
+                $c_unit_name = $obj->encode_decode('decrypt', $c_unit_name);
             }
         }
     }
 
-    if($unit_type == 'Unit' && !empty($rate_per_unit)){
-
+    if($unit_type == 'Unit' && !empty($rate_per_unit)) {
         $cooly_amount = $rate_per_unit * $quantity;
         $cooly_per_qty = $rate_per_unit;
-
-    }else if($unit_type == 'Subunit' && !empty($rate_per_subunit)){
-
+    } else if($unit_type == 'Subunit' && !empty($rate_per_subunit)) {
         $cooly_amount = $rate_per_subunit * $quantity;
         $cooly_per_qty = $rate_per_subunit;
-
-    }else if($unit_type == 'Unit' && !empty($rate_per_subunit) && empty($rate_per_unit)){
-        
+    } else if($unit_type == 'Unit' && !empty($rate_per_subunit) && empty($rate_per_unit)) {  
         $rate_per_unit = $rate_per_subunit * $contains;
         $cooly_amount = $rate_per_unit * $quantity;
-
         $cooly_per_qty = $rate_per_unit;
-    
-    }else if($unit_type == 'Subunit' && empty($rate_per_subunit) && !empty($rate_per_unit)){
-
+    } else if($unit_type == 'Subunit' && empty($rate_per_subunit) && !empty($rate_per_unit)) {
         $rate_per_subunit = $rate_per_unit / $contains;
         $cooly_amount = $rate_per_subunit * $quantity;
-
         $cooly_per_qty = $rate_per_subunit;
-
     }
 
     if(!empty($cooly_per_qty)) { 
@@ -1474,7 +1489,7 @@ if(isset($_REQUEST['product_semifinished_inward_row_index'])) {
             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity)) { echo $quantity; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
         <th class="text-center px-2 py-2">
-            <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
+            <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);"><?php if(!empty($contains) && $contains != $GLOBALS['null_value']){ echo $contains . '/' . $c_unit_name; } else { echo $c_unit_name; }; ?>
         </th>
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_amount)) { echo $cooly_amount; } ?>"  readonly>

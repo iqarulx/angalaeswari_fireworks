@@ -23,7 +23,7 @@
 		$bank_list = $obj->getTableRecords($GLOBALS['bank_table'], '','',''); 
         
         $expense_party_list = array();
-		$expense_party_list = $obj->getTableRecords($GLOBALS['expense_party_table'], '','',''); 
+		// $expense_party_list = $obj->getTableRecords($GLOBALS['expense_party_table'], '','',''); 
         
         // print_r($bank_list);
         $current_date = date("Y-m-d");
@@ -66,26 +66,7 @@
                     <div class="col-lg-3 col-md-3 col-12">
                         <div class="form-group pb-2">
                             <div class="form-label-group in-border mb-0">
-                                <select name="expense_party_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:ExpensePartyChange();">
-                                    <option value = "">Select</option> <?php 
-                                    if(!empty($expense_party_list)) {
-                                        foreach($expense_party_list as $data) { ?>
-                                            <option value="<?php if(!empty($data['expense_party_id'])) { echo $data['expense_party_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php } ?>> <?php
-                                                if(!empty($data['expense_party_name'])) {
-                                                    echo $obj->encode_decode('decrypt', $data['expense_party_name']);
-                                                } ?>
-                                            </option> <?php
-                                        }
-                                    } ?>
-                                </select>
-                                <label>Expense Party</label>
-                            </div>
-                        </div>        
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-12">
-                        <div class="form-group pb-2">
-                            <div class="form-label-group in-border mb-0">
-                                <select name="expense_category_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <select name="expense_category_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:ExpenseCategoryChange();">
                                     <option value = "">Select Expense Category</option> <?php 
                                     if(!empty($expense_category_list)) {
                                         foreach($expense_category_list as $data) { ?>
@@ -98,6 +79,25 @@
                                     } ?>
                                 </select>
                                 <label>Expense Category (*)</label>
+                            </div>
+                        </div>        
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-12">
+                        <div class="form-group pb-2">
+                            <div class="form-label-group in-border mb-0">
+                                <select name="expense_party_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                    <option value = "">Select</option> <?php 
+                                    if(!empty($expense_party_list)) {
+                                        foreach($expense_party_list as $data) { ?>
+                                            <option value="<?php if(!empty($data['expense_party_id'])) { echo $data['expense_party_id']; } ?>" <?php if(!empty($party_count) && $party_count == 1){ ?> selected <?php } ?>> <?php
+                                                if(!empty($data['expense_party_name'])) {
+                                                    echo $obj->encode_decode('decrypt', $data['expense_party_name']);
+                                                } ?>
+                                            </option> <?php
+                                        }
+                                    } ?>
+                                </select>
+                                <label>Expense Party</label>
                             </div>
                         </div>        
                     </div>

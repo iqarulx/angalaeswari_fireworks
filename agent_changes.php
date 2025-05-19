@@ -746,7 +746,7 @@
                         <th>S.No</th>
                         <th>Agent Name</th>
                         <th>Mobile</th>
-                        <th>Address</th>
+                        <!-- <th>Address</th> -->
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -780,6 +780,7 @@
                                         echo "-";
                                     } ?>
                                 </td>
+                                <?php /*
                                 <td> <?php
                                     if(!empty($data['address']) && $data['address']!=$GLOBALS['null_value']) {
                                         $data['address'] = $obj->encode_decode('decrypt', $data['address']);
@@ -788,6 +789,7 @@
                                         echo "-";
                                     } ?>
                                 </td>
+                                */ ?>
                                 <td>
                                     <?php 
                                         $edit_access_error = "";

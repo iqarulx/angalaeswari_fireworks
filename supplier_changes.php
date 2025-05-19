@@ -768,7 +768,7 @@
                     <tr style="white-space:pre;">
                         <th>S.No</th>
                         <th>Supplier Name</th>
-                        <th>Address</th>
+                        <!-- <th>Address</th> -->
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -794,6 +794,7 @@
                                         } ?>                                        
                                     </div>
                                 </td>
+                                <?php /*
                                 <td> <?php
                                     if(!empty($data['address']) && $data['address'] !=$GLOBALS['null_value']) {
                                         $data['address'] = $obj->encode_decode('decrypt', $data['address']);
@@ -802,6 +803,7 @@
                                         echo "-";
                                     } ?>
                                 </td>
+                                */ ?>
                                 <td>
                                     <?php 
                                         $edit_access_error = "";

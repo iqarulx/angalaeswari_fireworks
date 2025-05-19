@@ -52,7 +52,7 @@
 			return $list;
 		}
 		
-		public function getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$payment_mode_id,$bank_id,$filter_category_id){
+		public function getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$payment_mode_id,$bank_id,$filter_category_id, $filter_expense_party_id){
 			$reports = array();
 			$where ="";
 			if(!empty($from_date)) {
@@ -103,6 +103,14 @@
 					$where = $where . " AND party_id = '" . $filter_category_id . "' ";
 				} else {
 					$where = "party_id = '" . $filter_category_id . "'";
+				}
+			}
+
+			if(!empty($filter_expense_party_id)){ 
+				if(!empty($where)) {
+					$where = $where . " AND party_id = '" . $filter_expense_party_id . "' ";
+				} else {
+					$where = "party_id = '" . $filter_expense_party_id . "'";
 				}
 			}
 
@@ -623,7 +631,7 @@
 					}
 				}
 
-			}else if(!empty($type_str) && empty($party_id)) {
+			} else if(!empty($type_str) && empty($party_id)) {
 				// echo "hii";
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
@@ -734,7 +742,7 @@
 						}
 					}
 				}
-			}else{
+			} else {
 				if(!empty($from_date)) {
 					$from_date = date("Y-m-d",strtotime($from_date));
 					$bill_where = "e.bill_date >='" . $from_date . "' AND ";
@@ -1483,7 +1491,17 @@
 		public function getCaseContainsList($product_id) {
 			$case_contents_query = ""; $case_contents_list = array();
 			if(!empty($product_id)) {
-				$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' ORDER BY case_contains DESC";
+				$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND deleted = '0' ORDER BY case_contains DESC";
+
+				$case_contents_list = $this->getQueryRecords('', $case_contents_query);
+			}
+			return $case_contents_list;
+		}
+
+		public function getCaseContainsListSales($product_id) {
+			$case_contents_query = ""; $case_contents_list = array();
+			if(!empty($product_id)) {
+				$case_contents_query = "SELECT DISTINCT case_contains as case_contains FROM " . $GLOBALS['stock_table'] . " WHERE product_id = '" . $product_id . "' AND deleted = '0' AND stock_type = 'Delivery Slip' ORDER BY case_contains DESC";
 
 				$case_contents_list = $this->getQueryRecords('', $case_contents_query);
 			}

@@ -457,6 +457,13 @@
 			$list = $create_obj-> getCoolyRate($contractor_id, $product_id, $unit_type);
 			return $list;
 		}
+		public function getContractorProductUnitId($contractor_id, $product_id, $unit_type) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj-> getContractorProductUnitId($contractor_id, $product_id, $unit_type);
+			return $list;
+		}
 		public function GetProductLinkedCount($product_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
@@ -765,11 +772,11 @@
 			$list = $report_obj->getPaymentPartyList($filter_party_type,$filter_bill_type);
 			return $list;
 		}
-		public function getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id) {
+		public function getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id, $filter_expense_party_id) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id);
+			$list = $report_obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id, $filter_expense_party_id);
 			return $list;
 		}
 		public function getGroupList($group_type) {
@@ -1034,6 +1041,13 @@
 			$report_obj = $this->report_function_object();
 			$list = array();
 			$list = $report_obj->getCaseContainsList($product_id);
+			return $list;
+		}
+		public function getCaseContainsListSales($product_id) {
+			$report_obj = "";
+			$report_obj = $this->report_function_object();
+			$list = array();
+			$list = $report_obj->getCaseContainsListSales($product_id);
 			return $list;
 		}
 

@@ -24,6 +24,13 @@ function GetUnit(product_id) {
         jQuery('.current_stock_div').html('');
     }
 
+    if (product_id == '' || typeof product_id == "undefined" || product_id == null) {
+        if (jQuery('select[name="selected_product_id"]').length > 0) {
+            product_id = jQuery('select[name="selected_product_id"]').val();
+            product_id = jQuery.trim(product_id);
+        }
+    }
+
     var magazine_id = "";
     if (jQuery('select[name="selected_magazine_id"]').length > 0) {
         magazine_id = jQuery('select[name="selected_magazine_id"]').val();
@@ -517,6 +524,7 @@ function GetSemiFinishedProducts() {
             result = result.trim();
             if (jQuery('select[name="selected_product_id"]').length > 0) {
                 jQuery('select[name="selected_product_id"]').html(result);
+                GetUnit();
             }
         }
     });

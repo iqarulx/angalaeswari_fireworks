@@ -2017,7 +2017,7 @@
                     <th>#</th>
                     <th>Bill No / Bill Date</th>
                     <th>Customer Name</th>
-                    <!-- <th>Amount</th> -->
+                    <th>Total Qty</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -2060,19 +2060,74 @@
                                     <?php	
                                 }	 ?>
                             </td>
-                            <?php /*
                             <td>
                                 <?php
-                                    if(!empty($list['bill_total'])) {
-                                        echo number_format($list['bill_total'],2);
-                                    }
-                                    else {
+                                    if(!empty($list['product_id'])) {
+
+                                        $unit_name_array = array();
+                                        $sub_unit_name_array = array();
+                                        $unit_qunatity = 0;
+                                        $sub_unit_quantity = 0;
+
+                                        $product_id = explode(',', $list['product_id']);
+                                        $unit_id = explode(',', $list['unit_id']);
+                                        $unit_type = explode(',', $list['unit_type']);
+                                        $quantity = explode(',', $list['quantity']);
+
+                                        for($i = 0; $i < count($product_id); $i++) {
+                                            if(isset($unit_type[$i]) && !empty($unit_type[$i])) {
+                                                if($unit_type[$i] == 1) {
+                                                    $unit_qunatity += isset($quantity[$i]) && !empty($quantity[$i]) ? $quantity[$i] : 0;
+                                                    if(isset($unit_id[$i]) && !empty($unit_id[$i])) {
+                                                        $unit_name_array[] = $unit_id[$i];
+                                                    }
+                                                } else if($unit_type[$i] == 2) {
+                                                    $sub_unit_quantity += isset($quantity[$i]) && !empty($quantity[$i]) ? $quantity[$i] : 0;
+                                                    if(isset($unit_id[$i]) && !empty($unit_id[$i])) {
+                                                        $sub_unit_name_array[] = $unit_id[$i];
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if(!empty($unit_qunatity)) {
+                                            echo $unit_qunatity;
+
+                                            if(!empty($unit_name_array)) {
+                                                $unique_unit_name = array_unique($unit_name_array);
+                                                if(count($unique_unit_name) == 1) {
+                                                    $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_unit_name[0], 'unit_name');
+                                                    if(!empty($unit_name)) {
+                                                        $unit_name = $obj->encode_decode('decrypt', $unit_name);
+                                                        echo ' ' . $unit_name;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if(!empty($unit_qunatity) && !empty($sub_unit_quantity)) {
+                                            echo ' + ';
+                                        }
+
+                                        if(!empty($sub_unit_quantity)) {
+                                            echo $sub_unit_quantity;
+
+                                            if(!empty($sub_unit_name_array)) {
+                                                $unique_sub_unit_name = array_unique($sub_unit_name_array);
+                                                if(count($unique_sub_unit_name) == 1) {
+                                                    $sub_unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $unique_sub_unit_name[0], 'unit_name');
+                                                    if(!empty($sub_unit_name)) {
+                                                        $sub_unit_name = $obj->encode_decode('decrypt', $sub_unit_name);
+                                                        echo ' ' . $sub_unit_name;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
                                         echo '-';
                                     }
                                 ?>
                             </td>
-                            */ ?>
-
                             <td>
                                 <?php 
                                     $edit_access_error = "";

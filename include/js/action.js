@@ -1423,16 +1423,16 @@ function GetStockProduct() {
             godown = jQuery('select[name="indv_godown"]').val();
         }
     }
-    // if (jQuery('select[name="contractor"]').length > 0) {
-    //     contractor_id = jQuery('select[name="contractor"]').val();
-    // }
+    if (jQuery('select[name="contractor"]').length > 0) {
+        contractor_id = jQuery('select[name="contractor"]').val();
+    }
     var check_login_session = 1;
     var post_url = "dashboard_changes.php?check_login_session=1";
     jQuery.ajax({
         url: post_url, success: function (check_login_session) {
             if (check_login_session == 1) {
-                // var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown + "&contractor_id=" + contractor_id;
-                var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown;
+                var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown + "&contractor_id=" + contractor_id;
+                // var post_url = "action_changes.php?get_stock_product=1&godown_id=" + godown;
                 jQuery.ajax({
                     url: post_url, success: function (result) {
                         if (jQuery('select[name="product"]').length > 0) {

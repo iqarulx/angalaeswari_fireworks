@@ -32,9 +32,12 @@
     }
 
     $view_type = [];
-    if (!isset($view_type) || empty($view_type)) {
-        $view_type = ['1']; // Default to "Agent"
-    } else {
+    // if (!isset($view_type) || empty($view_type)) {
+    //     $view_type = ['1']; // Default to "Agent"
+    // } else {
+    //     $view_type = (array) $view_type; // Ensure it's treated as an array
+    // }
+    if (isset($view_type) || !empty($view_type)) {
         $view_type = (array) $view_type; // Ensure it's treated as an array
     }
     if (isset($_POST['view_type'])) {
@@ -75,8 +78,7 @@
         if (in_array('4', $view_type)) {
             $total_party_list = array_merge($total_party_list, $party_list);
         }
-    }
-    else {
+    } else {
         if(!empty($agent_list)) {
             foreach($agent_list as $data) {
                 if(!empty($data)) {
@@ -164,9 +166,7 @@
                                                 <div class="form-label-group in-border mb-0">
                                                 <?php
                                                 // Set default if not provided
-                                                if (!isset($view_type) || empty($view_type)) {
-                                                    $view_type = ['1']; // Default to "Agent"
-                                                } else {
+                                                if (isset($view_type) || !empty($view_type)) {
                                                     $view_type = (array)$view_type; // Ensure it's always an array
                                                 }
                                                 ?>
@@ -485,10 +485,16 @@
                                                                                                     Receipt
                                                                                                 </div>
                                                                                             <?php 
-                                                                                        }else if ($list['bill_type'] == "Purchase Bill") { ?>
+                                                                                        } else if ($list['bill_type'] == "Purchase Bill") { ?>
                                                                                             <div onclick="viewpreview('5','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">
                                                                                                     Purchase Bill
                                                                                                 </div>
+                                                                                            <?php 
+                                                                                        } else if ($list['bill_type'] == "Daily Production") { ?>
+                                                                                            <div onclick="viewpreview('6','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">Daily Production</div>
+                                                                                            <?php 
+                                                                                        } else if ($list['bill_type'] == "SemiFinished Inward") { ?>
+                                                                                            <div onclick="viewpreview('7','<?php echo $list['bill_id']; ?>', '');" style="width: 100%; cursor: pointer;">SemiFinished Inward</div>
                                                                                             <?php 
                                                                                         }
                                                                                     } else {
@@ -738,18 +744,24 @@
         if (type == '1') {
             type ="Estimate";
             url = "reports/rpt_estimate_a4.php?estimate_id=" + bill_id;
-        } else if(type == '2'){
+        } else if(type == '2') {
             type ="Proforma Invoice";
             url = "reports/rpt_proforma_invoice_a4.php?proforma_invoice_id=" + sub_bill_id;
-        }else if(type == '3'){
+        } else if(type == '3') {
             type ="Voucher";
             url = "reports/rpt_voucher_a5.php?view_voucher_id=" + bill_id;
-        }else if(type == '4'){
+        } else if(type == '4') {
             type ="Receipt";
             url = "reports/rpt_receipt_a5.php?view_receipt_id=" + bill_id;
-        }else if(type == '5'){
+        } else if(type == '5') {
             type ="Purchase Bill";
             url = "reports/rpt_purchase_entry_a4.php?view_purchase_entry_id=" + bill_id;
+        } else if(type == '6') {
+            type ="Daily Production";
+            url = "reports/rpt_daily_production_a5.php?view_daily_production_id=" + bill_id;
+        } else if(type == '7') {
+            type ="Daily Production";
+            url = "reports/rpt_semifinished_inward_a5.php?view_semifinished_inward_id=" + bill_id;
         }
         var post_url = "dashboard_changes.php?check_login_session=1";
         jQuery.ajax({
