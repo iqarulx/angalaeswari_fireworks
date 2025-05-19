@@ -22,7 +22,6 @@ if (isset($_REQUEST['change_product_id'])) {
          $content_option = "<option value = ''>Select Content</option>";
     }
 
-    // print_r($content_list);
     if (!empty($content_list)) {
         foreach($content_list as $C_list) {
             if (!empty($C_list['case_contains'])) {

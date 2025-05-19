@@ -387,7 +387,6 @@
                 }
             }
             return $finalArray;
-            // print_r($final_array);
         }
 
         $location = $from_location = $to_location = $material_date = $valid_material_transfer = $product_error = ""; 
@@ -760,13 +759,6 @@
                         }
                     }
                     
-
-                    // echo $stock_id ." / ";
-                    // print_r($stock_unique_ids);
-                    // echo " / ". $stock_table_unique_id. "<br>";
-
-                    // echo $current_stock_unit." / ". $current_stock_subunit." <br>";                   
-    
                      if(!in_array($stock_id, $stock_unique_ids)) {
                         $columns = array(); $values = array();
                         $columns = array('deleted');

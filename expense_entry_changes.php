@@ -25,7 +25,6 @@
         $expense_party_list = array();
 		// $expense_party_list = $obj->getTableRecords($GLOBALS['expense_party_table'], '','',''); 
         
-        // print_r($bank_list);
         $current_date = date("Y-m-d");
         $selected_payment_mode = "";
         

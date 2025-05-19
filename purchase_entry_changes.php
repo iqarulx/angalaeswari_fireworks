@@ -903,14 +903,15 @@
             <script type="text/javascript" src="include/js/creation_modules.js"></script>
             <script>
                 $(document).ready(function() {
-                  <?php if(!empty($show_purchase_entry_id)) { ?>
+                <?php if(!empty($show_purchase_entry_id)) { ?>
                     show_product("<?php echo $product_group; ?>")
                     show_godown_magazine("<?php echo $product_group; ?>")
                     calcPurchaseEntrySubTotal();
                     CheckCharges();
                     getRateByTaxOption();
                     <?php } 
-                    ?>
+                ?>
+                GetSupplierProducts();
                 });
             </script>
         </form>
@@ -1168,7 +1169,6 @@
                 }
             }
             return $finalArray;
-            // print_r($final_array);
         }
 
         $bill_date = ""; $bill_date_error = ""; $purchase_entry_number = ""; $purchase_entry_number_error = "";$supplier_id = ""; $supplier_id_error = ""; $godown_id = array(); $godown_id_error = "";  $gst_option = ""; $gst_option_error = ""; $tax_type = ""; $tax_type_error = "";$tax_option = ""; $tax_option_error = ""; $product_ids = array(); $quantity = array(); $types = array();$contents = array();$total_qty = array();$rates = array(); $per = array(); $per_type =array(); $final_rate =array(); $product_amount =array();  $product_error = ""; $product_names = array();  $cgst_value = 0; $sgst_value = 0; $igst_value = 0; $round_off = ""; $sub_total = 0; $total_amount = 0; $total_tax_value = 0; $overall_tax ="";$unit_id = "";$unit_ids = array(); $unit_id_error =""; $selected_per =""; $selected_per_type =""; $selected_per_error =""; $selected_per_type_error =""; $gst_option =""; $product_tax =array();

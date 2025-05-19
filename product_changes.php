@@ -100,8 +100,14 @@
         $semi_finished_group_list = array();
         $semi_finished_group_list = $obj->getTableRecords($GLOBALS['semi_finished_group_table'], '', '', '');
 
-        $count_group = 0;
-        $count_group = count($finished_group_list);
+        $count_finished_group = 0;
+        $count_finished_group = count($finished_group_list);
+
+        $count_semi_finished_group = 0;
+        $count_semi_finished_group = count($semi_finished_group_list);
+
+        $count_raw_material_group = 0;
+        $count_raw_material_group = count($raw_material_group_list);
 
         $unit_list = $obj->getTableRecords($GLOBALS['unit_table'], '', '', '');
         $unit_count = 0;
@@ -171,7 +177,7 @@
                                         foreach ($finished_group_list as $data) {
                                             if (!empty($data['finished_group_id'])) {
                                                 ?>
-                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                <option value="<?php echo $data['finished_group_id']; ?>" <?php if (!empty($finished_group_id) && $data['finished_group_id'] == $finished_group_id || (!empty($count_finished_group) && $count_finished_group == 1)) { ?>selected<?php } ?>>
                                                     <?php
                                                     if (!empty($data['finished_group_name'])) {
                                                         $data['finished_group_name'] = $obj->encode_decode('decrypt', $data['finished_group_name']);
@@ -200,7 +206,7 @@
                                         foreach ($raw_material_group_list as $data) {
                                             if (!empty($data['raw_material_group_id'])) {
                                                 ?>
-                                                <option value="<?php echo $data['raw_material_group_id']; ?>" <?php if (!empty($raw_material_group_id) && $data['raw_material_group_id'] == $raw_material_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                <option value="<?php echo $data['raw_material_group_id']; ?>" <?php if (!empty($raw_material_group_id) && $data['raw_material_group_id'] == $raw_material_group_id || (!empty($count_raw_material_group) && $count_raw_material_group == 1)) { ?>selected<?php } ?>>
                                                     <?php
                                                     if (!empty($data['raw_material_group_name'])) {
                                                         $data['raw_material_group_name'] = $obj->encode_decode('decrypt', $data['raw_material_group_name']);
@@ -229,7 +235,7 @@
                                         foreach ($semi_finished_group_list as $data) {
                                             if (!empty($data['semi_finished_group_id'])) {
                                                 ?>
-                                                <option value="<?php echo $data['semi_finished_group_id']; ?>" <?php if (!empty($semi_finished_group_id) && $data['semi_finished_group_id'] == $semi_finished_group_id || (!empty($count_group) && $count_group == 1)) { ?>selected<?php } ?>>
+                                                <option value="<?php echo $data['semi_finished_group_id']; ?>" <?php if (!empty($semi_finished_group_id) && $data['semi_finished_group_id'] == $semi_finished_group_id || (!empty($count_semi_finished_group) && $count_semi_finished_group == 1)) { ?>selected<?php } ?>>
                                                     <?php
                                                     if (!empty($data['semi_finished_group_name'])) {
                                                         $data['semi_finished_group_name'] = $obj->encode_decode('decrypt', $data['semi_finished_group_name']);
@@ -1016,7 +1022,6 @@
             $edit_id = $_POST['edit_id'];
             $edit_id = trim($edit_id);
         }
-        // print_r($_POST);
         if (isset($_POST['group'])) {
             $group = $_POST['group'];
             $group = trim($group);

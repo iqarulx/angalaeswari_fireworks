@@ -99,7 +99,6 @@ if (!empty($view_daily_production_id)) {
                 $company_details = $data['company_details'];
                 $company_details = $obj->encode_decode('decrypt',$company_details);
                 $company_details = explode("$$$", $company_details);
-                // print_r($company_details);
             }
             if(!empty($data['total_quantity']) && $data['total_quantity'] != $GLOBALS['null_value']){
                 $total_quantity = $data['total_quantity'];

@@ -1,23 +1,30 @@
-ALTER TABLE `af_expense` ADD `expense_party_id` MEDIUMTEXT NULL DEFAULT NULL AFTER `bank_name`; 
-
-CREATE TABLE `af_expense_party` (
-  `id` int(100) NOT NULL,
-  `created_date_time` datetime NOT NULL,
-  `creator` mediumtext NOT NULL,
-  `creator_name` mediumtext NOT NULL,
-  `expense_party_id` mediumtext NOT NULL,
-  `expense_party_name` mediumtext NOT NULL,
-  `lower_case_name` mediumtext NOT NULL,
-  `mobile_number` mediumtext NOT NULL,
-  `opening_balance` mediumtext NOT NULL,
-  `opening_balance_type` mediumtext NOT NULL,
-  `expense_party_details` mediumtext NOT NULL,
-  `expense_category_id` mediumtext DEFAULT NULL,
-  `deleted` int(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-ALTER TABLE `af_expense_party`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `af_expense_party`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT;
+TRUNCATE `af_agent`;
+TRUNCATE `af_consumption_entry`;
+TRUNCATE `af_contractor`;
+TRUNCATE `af_contractor_product`;
+TRUNCATE `af_customer`;
+TRUNCATE `af_daily_production`;
+TRUNCATE `af_delivery_slip`;
+TRUNCATE `af_estimate`;
+TRUNCATE `af_expense`;
+TRUNCATE `af_expense_category`;
+TRUNCATE `af_expense_party`;
+TRUNCATE `af_finished_group`;
+TRUNCATE `af_material_transfer`;
+TRUNCATE `af_payment`;
+TRUNCATE `af_product`;
+TRUNCATE `af_proforma_invoice`;
+TRUNCATE `af_purchase_entry`;
+TRUNCATE `af_raw_material_group`;
+TRUNCATE `af_receipt`;
+TRUNCATE `af_semifinished_inward`;
+TRUNCATE `af_semi_finished_group`;
+TRUNCATE `af_stock`;
+TRUNCATE `af_stock_adjustment`;
+TRUNCATE `af_stock_by_godown`;
+TRUNCATE `af_stock_by_magazine`;
+TRUNCATE `af_stock_conversion`;
+TRUNCATE `af_supplier`;
+TRUNCATE `af_transport`;
+TRUNCATE `af_unit`;
+TRUNCATE `af_voucher`;

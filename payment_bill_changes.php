@@ -623,7 +623,6 @@ if(isset($_REQUEST['party_type'])) {
                     // }
                     
                     $s_no = 1;
-// print_r($list);
                     if (!empty($list)) {
                         $merged_data = [];
 
@@ -719,7 +718,6 @@ if(isset($_REQUEST['party_type'])) {
 
                                     $bank_id = explode(",",$data['bank_id']);
                                     $bank_id = array_reverse($bank_id);
-                                    // print_r($payment_mode_name);
                                     for($i=0; $i < count($payment_mode_name); $i++) {
                                         $payment_mode ="";
 
@@ -727,7 +725,6 @@ if(isset($_REQUEST['party_type'])) {
                                         {
                                             $payment_mode =$obj->encode_decode("decrypt", $payment_mode_name[$i]);
                                         
-                                            // echo $data['credit'];
                                             if (!empty($data['credit']) || !empty($data['debit'])) {
                                                 $amounts= array();
                                                 if($data['bill_type'] == 'Receipt' || $data['bill_type'] == 'Daily Production'){
@@ -737,7 +734,6 @@ if(isset($_REQUEST['party_type'])) {
                                                 }
                                                 $amounts = array_reverse($amounts);
                                             }
-                                            // print_r($amounts);
                                             $bank_name = "";
                                             if(!empty($bank_id[$i]) && $bank_id[$i] != $GLOBALS['null_value']){
                                                 $bank_name =  $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $bank_id[$i], 'bank_name');

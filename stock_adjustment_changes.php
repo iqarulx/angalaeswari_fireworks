@@ -615,7 +615,6 @@
         if(isset($_POST['quantity'])) {
             $quantity = $_POST['quantity'];
         }
-        // print_r($quantity);
         if(isset($_POST['stock_action'])) {
             $stock_action = $_POST['stock_action'];
         }
@@ -914,11 +913,7 @@
                             $current_stock_subunit = 0;
                         }
                     }
-                    // echo $stock_id."*";
-                    // print_r($stock_unique_ids);
-                    // echo $stock_table_unique_id."<br>";
-                    // echo $current_stock_unit."/".$current_stock_subunit."<br>";
-
+                    
                     if(!in_array($stock_id, $stock_unique_ids)) {
                         $columns = array(); $values = array();
                         $columns = array('deleted');

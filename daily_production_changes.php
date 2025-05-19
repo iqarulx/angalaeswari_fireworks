@@ -1192,7 +1192,7 @@
                     }
                     else { ?>
                         <tr>
-                            <td colspan="5" class="text-center">Sorry! No records found</td>
+                            <td colspan="7" class="text-center">Sorry! No records found</td>
                         </tr> <?php 
                     } 
                 ?>

@@ -1239,11 +1239,9 @@ if(isset($_REQUEST['products_contractor_id'])) {
 
     // $products_list = array();
     // $products_list = $obj->getTableRecords($GLOBALS['product_table'], 'group_id', '4d5449774e4449774d6a55784d4455794e4464664d44493d', '');
-    print_r($products_list);
     
     $product_count = 0;
     $product_count = count($products_list);
-    // print_r($products_list);
     ?>
     <option value="">Select</option>
     <?php

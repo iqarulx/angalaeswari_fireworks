@@ -578,7 +578,6 @@
                 $individual_tax[] = array( 'godown_id' => $godown_id[$i],'product_id' => $product_id[$i],'consumption_content' => $consumption_content[$i],'quantity' => $product_qty);
 
             }
-            // print_r($individual_tax);
 
             array_multisort(array_column($individual_tax, "godown_id"), SORT_ASC, array_column($individual_tax, "consumption_content"), SORT_ASC, array_column($individual_tax, "product_id"), SORT_ASC, $individual_tax);
 
@@ -1107,7 +1106,7 @@
                     } else {
                 ?>
                         <tr>
-                            <td colspan="4" class="text-center">Sorry! No records found</td>
+                            <td colspan="5" class="text-center">Sorry! No records found</td>
                         </tr>
                 <?php 
                     } 

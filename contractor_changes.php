@@ -19,13 +19,13 @@
             $contractor_product_list = $obj->getContractorProductTable($show_contractor_id);
             if(!empty($contractor_list)) {
                 foreach($contractor_list as $con_list) {
-                    if(!empty($con_list['contractor_name'])) {
+                    if(!empty($con_list['contractor_name']) && $con_list['contractor_name'] != $GLOBALS['null_value']) {
                         $contractor_name = $obj->encode_decode('decrypt', $con_list['contractor_name']);
                     }
-                    if(!empty($con_list['location'])) {
+                    if(!empty($con_list['location']) && $con_list['location'] != $GLOBALS['null_value']) {
                         $location = $obj->encode_decode('decrypt', $con_list['location']);
                     }
-                    if(!empty($con_list['mobile'])) {
+                    if(!empty($con_list['mobile']) && $con_list['mobile'] != $GLOBALS['null_value']) {
                         $mobile = $obj->encode_decode('decrypt', $con_list['mobile']);
                     }
                     if(!empty($con_list['opening_balance']) && $con_list['opening_balance'] != $GLOBALS['null_value']) {
@@ -549,7 +549,7 @@
                     }
                 }
 
-                if(!empty($mobile)) {
+                if(!empty($mobile) && $mobile != $GLOBALS['null_value']) {
                     $prev_mbl_contractor_id = $obj ->CheckContractorMobileNoAlreadyExist($mobile);
                     if(!empty($prev_mbl_contractor_id)) {
                             $prev_contractor_name = $obj->getTableColumnValue($GLOBALS['contractor_table'],'contractor_id',$prev_mbl_contractor_id,'contractor_name');

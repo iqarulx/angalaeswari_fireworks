@@ -43,8 +43,6 @@
     if (isset($_POST['view_type'])) {
         $view_type = $_POST['view_type']; // This will be an array
     }
-
-    // print_r($view_type);
     
     $filter_agent_customer ="";
     if(isset($_POST['filter_agent_customer']))

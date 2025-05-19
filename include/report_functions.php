@@ -1517,7 +1517,7 @@
 				$where .= " FIND_IN_SET('" . $case_contains . "' ,content) AND";
 			}
 
-			$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " deleted = 0 ORDER BY id DESC LIMIT 1";
+			$select_query = "SELECT * FROM " . $GLOBALS['purchase_entry_table'] . " WHERE " . $where . " deleted = '0' AND cancelled = '0' ORDER BY id DESC LIMIT 1";
 
 			$purchase_entry_list = $this->getQueryRecords('', $select_query);
 			if(!empty($purchase_entry_list)) {

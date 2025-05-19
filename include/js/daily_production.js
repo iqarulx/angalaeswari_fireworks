@@ -14,6 +14,7 @@ function GetProducts() {
             result = result.trim();
             if (jQuery('select[name="selected_product_id"]').length > 0) {
                 jQuery('select[name="selected_product_id"]').html(result);
+                GetUnit();
             }
         }
     });
