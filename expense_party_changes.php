@@ -53,8 +53,8 @@
                     if(!empty($data['opening_balance_type']) && $data['opening_balance_type'] != $GLOBALS['null_value']){
                         $opening_balance_type = $data['opening_balance_type'];
                     }
-                    if(!empty($data['raw_material_group_id']) && $data['raw_material_group_id'] != $GLOBALS['null_value']){
-                        $raw_material_group_id = $data['raw_material_group_id'];
+                    if(!empty($data['expense_category_id']) && $data['expense_category_id'] != $GLOBALS['null_value']){
+                        $expense_category_id = $data['expense_category_id'];
                     }
                 }
             }
@@ -510,7 +510,7 @@
             $list = array();
             if(!empty($total_records_list)) {
                 foreach($total_records_list as $val) {
-                    if(strpos(strtolower($obj->encode_decode('decrypt', $val['name_mobile_city'])), $search_text) !== false) {
+                    if(strpos(strtolower($obj->encode_decode('decrypt', $val['expense_party_name'])), $search_text) !== false) {
                         $list[] = $val;
                     }
                 }
@@ -579,9 +579,9 @@
                                     echo $index; ?>
                                 </td>
                                 <td> <?php
-                                    if(!empty($data['expense_party_details'])) {
-                                        $data['expense_party_details'] = html_entity_decode($obj->encode_decode('decrypt', $data['expense_party_details']));
-                                        echo $data['expense_party_details'];
+                                    if(!empty($data['expense_party_name'])) {
+                                        $data['expense_party_name'] = html_entity_decode($obj->encode_decode('decrypt', $data['expense_party_name']));
+                                        echo $data['expense_party_name'];
                                     } ?>
                                     <div class="w-100 py-2">
                                         Creator : <?php

@@ -44,7 +44,11 @@
     $current_date = date('Y-m-d');
 
     $excel_name = "";
-    $excel_name = "Daybook Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+    if(!empty($from_date) && !empty($to_date)){
+        $excel_name = "Daybook Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+    }else{
+        $excel_name = "Daybook Report"; 
+    }
 
 ?>
 <!DOCTYPE html>
@@ -339,7 +343,8 @@
                     </div>
                 </div>  
             </div>
-        </div>          
+        </div>
+    </div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>

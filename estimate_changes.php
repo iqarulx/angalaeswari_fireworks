@@ -1748,6 +1748,11 @@
                                     if(!empty($list['estimate_date'])) {
                                         echo date('d-m-Y', strtotime($list['estimate_date']));
                                     }
+                                    if(!empty($list['deleted'])) {
+                                        ?>
+                                            <br><span style="color: red;">Cancelled</span>
+                                        <?php
+                                    }
                                 ?>
                             </td>
                             <td>

@@ -68,7 +68,7 @@
 				if(!empty($where)) {
 					$where = $where . " AND bill_date <= '" . $to_date . "'";
 				} else {
-					$where = "bill_date <= '" . $to_date . "' AND";
+					$where = "bill_date <= '" . $to_date . "'";
 				}
 			}
 			if(!empty($filter_party_type)){ 
@@ -239,8 +239,25 @@
 			return $list;
 		}
 
-		public function getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
+		public function getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $from_date, $to_date) {
 			$select_query = ""; $list = array(); $where = "";
+			if(!empty($from_date)) {
+				$from_date = date("Y-m-d", strtotime($from_date));
+				if(!empty($where)) {
+					$where = $where . " AND stock_date >= '" . $from_date . "'"; 
+				} else {
+					$where = "stock_date >= '" . $from_date . "' ";
+				}
+			}
+
+			if(!empty($to_date)) {
+				$to_date = date("Y-m-d", strtotime($to_date));
+				if(!empty($where)) {
+					$where = $where . " AND stock_date <= '" . $to_date . "'"; 	
+				} else {
+					$where = "stock_date <= '" . $to_date . "'";
+				}
+			}
 			if(!empty($group_id)) {
 				if(!empty($where)) {
 					$where = $where . " AND group_id = '" . $group_id . "'";
@@ -283,6 +300,7 @@
 					$where = "case_contains = '" . $case_contains . "'";
 				}
 			}
+			
 			if(!empty($contractor_id)) {
 				if(!empty($where)) {
 					$where = $where . " AND party_id = '" . $contractor_id . "'";

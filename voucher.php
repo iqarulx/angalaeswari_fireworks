@@ -48,7 +48,7 @@
                                             <div class="col-lg-2 col-md-3 col-12">
                                                 <div class="form-group pb-2">
                                                     <div class="form-label-group in-border">
-                                                    <input type="date" name="from_date" class="form-control shadow-none" value="<?php if(!empty($from_date)) { echo $from_date; } ?>" onchange="Javascript:table_listing_records_filter();checkDateCheck();" placeholder="">
+                                                    <input type="date" name="from_date" class="form-control shadow-none" value="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($current_date)) { echo $current_date; } ?>" onchange="Javascript:table_listing_records_filter();checkDateCheck();" placeholder="">
                                                     <label>From Date</label>
                                                     </div>
                                                 </div> 
@@ -135,7 +135,8 @@
                     </div>
                 </div>  
             </div>
-        </div>          
+        </div>
+    </div>         
     <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script>

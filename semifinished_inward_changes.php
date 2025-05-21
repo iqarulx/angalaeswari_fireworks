@@ -116,7 +116,7 @@
                         <div class="col-lg-2 col-md-4 col-12 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>">
+                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php /* if(!empty($from_date)) { echo $from_date; } */ ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>">
                                     <label>Entry Date <span class="text-danger">*</span></label>
                                 </div>
                             </div> 
@@ -1078,105 +1078,109 @@
                 </tr>
             </thead>
             <tbody>
-                    <?php 
-                        if(!empty($show_records_list)) {
-                            foreach($show_records_list as $key => $list) {
-                                $index = $key + 1;
-                                if(!empty($prefix)) { $index = $index + $prefix; } ?>
-            
-                                <tr>
-                                    <td><?php echo $index; ?></td>
-                                    <td>
-                                        <?php
-                                            if(!empty($list['entry_date'])) {
-                                                echo date('d-m-Y', strtotime($list['entry_date']));
-                                            }
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <?php
-                                            if(!empty($list['semifinished_inward_number']) && $list['semifinished_inward_number'] != $GLOBALS['null_value']) {
-                                                echo $list['semifinished_inward_number'];
-                                            }
-                                        ?>
-                                        <div class="w-100 py-2">
-                                            <?php
-                                                if(!empty($list['creator_name'])) {
-                                                    $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
-                                                    echo " Creator : ". $list['creator_name'];
-                                                }
-                                            ?>                                        
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <?php
-                                            if(!empty($list['godown_name_location']) && $list['godown_name_location'] != $GLOBALS['null_value']) {
-                                                echo $obj->encode_decode('decrypt', $list['godown_name_location']);
-                                            }
-                                        ?>
-                                  
-                                    </td>  
-                                    <td>
-                                        <?php
-                                            if(!empty($list['contractor_name_mobile_city']) && $list['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
-                                                echo $obj->encode_decode('decrypt', $list['contractor_name_mobile_city']);
-                                            }
-                                        ?>
-                                    </td>
-                                  
-                                    <td>
-                                        <?php
-                                            if(!empty($list['overall_cooly_total']) && $list['overall_cooly_total'] != $GLOBALS['null_value']) {
-                                                echo $list['overall_cooly_total'];
-                                            }
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a href="#" role="button" id="dropdownMenuLink1"  class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                                <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_semifinished_inward_a5.php?view_semifinished_inward_id=<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
-                                                <?php
-                                                    $edit_access_error = "";
-                                                    if(!empty($login_staff_id)) {
-                                                        $permission_action = $edit_action;
-                                                        include('permission_action.php');
-                                                    }
-                                                    if(empty($edit_access_error) && empty($list['cancelled'])) { 
-                                                        ?>
-                                                    <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
-                                                    <?php } 
-                                                    $delete_access_error = "";
-                                                    if(!empty($login_staff_id)) {
-                                                        $permission_action = $delete_action;
-                                                        include('permission_action.php');
-                                                    }
-                                                    if(empty($delete_access_error) && empty($list['cancelled'])) {
-                                                        $linked_count = 0;
-                                                        if(!empty($linked_count)) {
-                                                            ?>
-                                                            <li><a style="cursor:pointer;" class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-                                                    <?php }else{ ?>
-                                                        <li><a style="cursor:pointer;" class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
-                                                        <?php } 
-                                                            }
-                                                    ?>
-                                            </ul>
-                                        </div> 
-                                    </td>
-                                </tr>
-                                <?php
-                            }
-                        }
-                        else { ?>
+                <?php 
+                    if(!empty($show_records_list)) {
+                        foreach($show_records_list as $key => $list) {
+                            $index = $key + 1;
+                            if(!empty($prefix)) { $index = $index + $prefix; } ?>
+        
                             <tr>
-                                <td colspan="5" class="text-center">Sorry! No records found</td>
-                            </tr> <?php 
-                        } 
-                    ?>
-            
+                                <td><?php echo $index; ?></td>
+                                <td>
+                                    <?php
+                                        if(!empty($list['entry_date'])) {
+                                            echo date('d-m-Y', strtotime($list['entry_date']));
+                                        }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php
+                                        if(!empty($list['semifinished_inward_number']) && $list['semifinished_inward_number'] != $GLOBALS['null_value']) {
+                                            echo $list['semifinished_inward_number'];
+                                        }
+                                    ?>
+                                    <div class="w-100 py-2">
+                                        <?php
+                                            if(!empty($list['creator_name'])) {
+                                                $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
+                                                echo " Creator : ". $list['creator_name'];
+                                            }
+                                            if(!empty($list['cancelled'])) {
+                                            ?>
+                                                <br><span style="color: red;">Cancelled</span>
+                                            <?php
+                                            }
+                                        ?>                                        
+                                    </div>
+                                </td>
+                                <td>
+                                    <?php
+                                        if(!empty($list['godown_name_location']) && $list['godown_name_location'] != $GLOBALS['null_value']) {
+                                            echo $obj->encode_decode('decrypt', $list['godown_name_location']);
+                                        }
+                                    ?>
+                                
+                                </td>  
+                                <td>
+                                    <?php
+                                        if(!empty($list['contractor_name_mobile_city']) && $list['contractor_name_mobile_city'] != $GLOBALS['null_value']) {
+                                            echo $obj->encode_decode('decrypt', $list['contractor_name_mobile_city']);
+                                        }
+                                    ?>
+                                </td>
+                                
+                                <td>
+                                    <?php
+                                        if(!empty($list['overall_cooly_total']) && $list['overall_cooly_total'] != $GLOBALS['null_value']) {
+                                            echo number_format(round($list['overall_cooly_total']), 2);
+                                        }
+                                    ?>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <a href="#" role="button" id="dropdownMenuLink1"  class="btn btn-dark show-button"  data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                            <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_semifinished_inward_a5.php?view_semifinished_inward_id=<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
+                                            <?php
+                                                $edit_access_error = "";
+                                                if(!empty($login_staff_id)) {
+                                                    $permission_action = $edit_action;
+                                                    include('permission_action.php');
+                                                }
+                                                if(empty($edit_access_error) && empty($list['cancelled'])) { 
+                                                    ?>
+                                                <li><a class="dropdown-item" style="cursor:pointer;" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li>
+                                                <?php } 
+                                                $delete_access_error = "";
+                                                if(!empty($login_staff_id)) {
+                                                    $permission_action = $delete_action;
+                                                    include('permission_action.php');
+                                                }
+                                                if(empty($delete_access_error) && empty($list['cancelled'])) {
+                                                    $linked_count = 0;
+                                                    if(!empty($linked_count)) {
+                                                        ?>
+                                                        <li><a style="cursor:pointer;" class="dropdown-item text-secondary"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                <?php }else{ ?>
+                                                    <li><a style="cursor:pointer;" class="dropdown-item" onclick="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title;} ?>', '<?php if(!empty($list['semifinished_inward_id'])) { echo $list['semifinished_inward_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li>
+                                                    <?php } 
+                                                        }
+                                                ?>
+                                        </ul>
+                                    </div> 
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    else { ?>
+                        <tr>
+                            <td colspan="5" class="text-center">Sorry! No records found</td>
+                        </tr> <?php 
+                    } 
+                ?>
             </tbody>
         </table>                  
         <?php 

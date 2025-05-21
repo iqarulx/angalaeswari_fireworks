@@ -17,8 +17,6 @@
     $total_records_list = $obj->getTableRecords($GLOBALS['purchase_entry_table'], '', '', '');
     $supplier_list = $obj->getTableRecords($GLOBALS['supplier_table'], '', '', '');
 
-    $excel_name = "";
-    $excel_name = "Purchase Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
 
     $cancel_bill_btn = "";
     $supplier_id = ""; $bill = "";
@@ -41,6 +39,7 @@
 
     $total_records_list = array();
     $total_records_list = $obj->getPurchaseReportList($from_date, $to_date, $supplier_id,$cancel_bill_btn);
+    
     if(!empty($bill)) {
         $bill = strtolower($bill);
         $list = array();
@@ -53,6 +52,13 @@
         }
         $total_records_list = $list;
     }
+
+     $excel_name = "";
+     if(!empty($from_date) && !empty($to_date)){
+        $excel_name = "Purchase Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+     }else{
+         $excel_name = "Purchase Report";
+     }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -173,7 +179,7 @@
                                                                 } 
                                                                 if (!empty($list['cancelled'])) {
                                                                     ?>
-                                                                    <span style="color: red;">Cancelled</span>
+                                                                    <br><span style="color: red;">Cancelled</span>
                                                                     <?php
                                                                 }
                                                                ?>

@@ -129,7 +129,7 @@
                 <div class="col-lg-2 col-md-3 col-6 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <input type="date" name="entry_date" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>" class="form-control shadow-none" placeholder="" required="">
+                            <input type="date" name="entry_date" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php /* if(!empty($from_date)) { echo $from_date; } */?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>" class="form-control shadow-none" placeholder="" required="">
                             <label style="font-size:10px;">Stock Adjustment Date <span class="text-danger">*</span></label>
                         </div>
                     </div> 

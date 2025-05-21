@@ -168,8 +168,7 @@
                 if(!empty($data['type'])) {
                     $pdf->Cell(30,8,$data['type'],0,0,'C',0);
                 }
-               
-
+                
                 if(!empty($data['party_name']) && $data['party_name'] != 'NULL') {
                     if($data['type'] != "Expense") {
                         $name = html_entity_decode($obj->encode_decode('decrypt', $data['party_name'])); 
@@ -218,14 +217,14 @@
                         $payment_bank_str = '';
                     }
                     
-                   
                     $pdf->SetX(130);
-                    $pdf->MultiCell(30, 8, $payment_bank_str ?: ' - ', 0,  'C', 0);
+                    $pdf->MultiCell(30, 4, $payment_bank_str ?: ' - ', 0,  'C', 0);
                     
                 }else {
                     $pdf->SetX(130);
                     $pdf->MultiCell(30, 8, ' - ', 0,  'C', 0);
                 }
+                $payment_name_y = $pdf->GetY();
                 $pdf->SetY($starty);
                 if (!empty($data['type'])) {
                     if ($data['type'] == "Receipt" || $data['type'] == "Purchase Entry") {
@@ -286,7 +285,7 @@
                     }
                 }
 
-                $final_end_y = max($bill_date_y,$customer_name_y);
+                $final_end_y = max($bill_date_y,$customer_name_y,$payment_name_y);
                 // echo $final_end_y;
                 $pdf->SetY($starty);
                 $pdf->Cell(10,$final_end_y - $starty, '', 1, 0, 'C', 0);
@@ -321,6 +320,7 @@
         $pdf->SetX(10);
         $pdf->SetFont('Arial', 'B', 7);
         $pdf->Cell(150, 8, 'Balance', 1, 0, 'R', 0);
+        
         $balance = $credit_amount - $debit_amount;
         if(strlen($obj->numberFormat($balance,2)) <= 15) {
             $pdf->SetFont('Arial', '', 7);

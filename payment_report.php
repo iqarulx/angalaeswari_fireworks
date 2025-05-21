@@ -77,8 +77,10 @@
     $payment_list =array();
     $payment_list = $obj->getPaymentReportList($from_date,$to_date,$filter_bill_type,$filter_party_type,$filter_party_id,$filter_payment_mode_id,$filter_bank_id,$filter_category_id, $filter_expense_party_id);
 
-    $excel_name = "";
-    $excel_name = "Payment Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+    $excel_name = "Payment Report";
+    if(!empty($from_date) && !empty($to_date)) {
+        $excel_name = "Payment Report(" . date('d-m-Y', strtotime($from_date )) . " to " . date('d-m-Y', strtotime($to_date )) . ")";
+    }
 
     $company_list = array();
     $company_list =$obj ->getTableRecords($GLOBALS['company_table'],'primary_company','1','');

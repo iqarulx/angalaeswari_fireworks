@@ -1780,6 +1780,11 @@
                                     if(!empty($list['proforma_invoice_number']) && $list['proforma_invoice_number'] != $GLOBALS['null_value']) {
                                         echo $list['proforma_invoice_number'];
                                     }
+                                    if(!empty($list['deleted'])) {
+                                        ?>
+                                            <br><span style="color: red;">Cancelled</span>
+                                        <?php
+                                    }
                                 ?>
                                 <br>
                                 <?php

@@ -958,12 +958,6 @@
 				} else {
 					$where = "deleted = '0'";
 				}
-			} else {
-				if(!empty($where)) {
-					$where = $where . " AND deleted = '1'";
-				} else {
-					$where = "deleted = '1'";
-				}
 			}
 			
 			if(!empty($where)) {

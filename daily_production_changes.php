@@ -121,7 +121,7 @@
                         <div class="col-lg-2 col-md-4 col-12 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>">
+                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php /* if(!empty($from_date)) { echo $from_date; } */ ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>">
                                     <label>Entry Date <span class="text-danger">*</span></label>
                                 </div>
                             </div> 
@@ -1016,7 +1016,7 @@
         // }
 
         $total_records_list = array();
-        $total_records_list = $obj->getDailyProductionList($from_date, $to_date, $filter_factory_id, $filter_magazine_id, '', $show_bill);
+        $total_records_list = $obj->getDailyProductionList($from_date, $to_date, $filter_factory_id, $filter_magazine_id, $filter_contractor_id, $show_bill);
 
         if(!empty($search_text)) {
             $search_text = strtolower($search_text);
@@ -1107,6 +1107,7 @@
                                         if(!empty($list['daily_production_number']) && $list['daily_production_number'] != $GLOBALS['null_value']) {
                                             echo $list['daily_production_number'];
                                         }
+                                        
                                     ?>
                                     <div class="w-100 py-2">
                                         <?php
@@ -1114,6 +1115,11 @@
                                                 $list['creator_name'] = $obj->encode_decode('decrypt', $list['creator_name']);
                                                 echo " Creator : ". $list['creator_name'];
                                             }
+                                            if(!empty($list['cancelled'])) {
+                                            ?>
+                                                <br><span style="color: red;">Cancelled</span>
+                                            <?php
+                                        }
                                         ?>                                        
                                     </div>
                                 </td>

@@ -47,6 +47,9 @@
         if (in_array('2', $view_type)) {
             $type[] = "Supplier";
         }
+        if (in_array('3', $view_type)) {
+            $type[] = "Contractor";
+        }
         if (in_array('4', $view_type)) {
             $type[] = "Customer";
         }
@@ -278,6 +281,8 @@
         } else if(in_array('2', $view_type)) {
             $party_type = "Supplier";
         } else if(in_array('3', $view_type)) {
+            $party_type = "Contractor";
+        } else if(in_array('4', $view_type)) {
             $party_type = "Customer";
         }
 

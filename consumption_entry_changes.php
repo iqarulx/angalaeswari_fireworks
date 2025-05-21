@@ -36,9 +36,10 @@
                     if(!empty($consumption_entry['content'])) {
                         $consumption_content = explode(",", $consumption_entry['content']);
                     }
-                    if(!empty($data['entry_date'])) {
-                        $entry_date = date('Y-m-d', strtotime($data['entry_date']));
+                    if(!empty($consumption_entry['entry_date'])) {
+                        $entry_date = date('Y-m-d', strtotime($consumption_entry['entry_date']));
                     }
+
                     if($godown_type == 1){
                         $first_godown_id = trim($godown_id[0]);
                     }
@@ -91,7 +92,7 @@
                         <div class="col-lg-2 col-md-4 col-12 py-2">
                             <div class="form-group">
                                 <div class="form-label-group in-border">
-                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($to_date)) { echo $to_date; } ?>">
+                                    <input type="date" name="entry_date" class="form-control shadow-none" value="<?php if(!empty($entry_date)) { echo $entry_date; } ?>" min="<?php if(!empty($from_date)) { echo $from_date; } ?>" max="<?php if(!empty($to_date)) { echo $to_date; } else { echo date('Y-m-d'); } ?>">
                                     <label>Entry Date <span class="text-danger">*</span></label>
                                 </div>
                             </div> 
@@ -169,7 +170,7 @@
                                             <?php }
                                         } ?>
                                     </select>
-                                    <label>Select Group</label>
+                                    <label>Select Sub Group</label>
                                 </div>
                             </div>
                         </div>

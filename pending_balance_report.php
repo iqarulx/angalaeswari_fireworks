@@ -332,7 +332,7 @@
                                                                         } else if(in_array('2', $view_type)) {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$filter_party_id,'supplier_name');
                                                                         } else if(in_array('3', $view_type)) {
-                                                                            $party_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$filter_party_id,'supplier_name');
+                                                                            $party_name = $obj->getTableColumnValue($GLOBALS['contractor_table'],'contractor_id',$filter_party_id,'contractor_name');
                                                                         } else if(in_array('4', $view_type)) {
                                                                             $party_name = $obj->getTableColumnValue($GLOBALS['customer_table'],'customer_id',$filter_party_id,'customer_name');
                                                                         }
@@ -367,7 +367,7 @@
                                                                     if(!empty($data['credit'])) {
                                                                         $opening_credit += $data['credit'];
                                                                     }
-                                                                    if(!empty($data['opening_balance'])) {
+                                                                    if(!empty($data['opening_balance']) && $data['opening_balance'] !=$GLOBALS['null_value']) {
                                                                         if($data['opening_balance_type'] == 'Credit') {
                                                                             $opening_credit += $data['opening_balance'];
                                                                         }
@@ -725,12 +725,16 @@
             type = '1';
         } else if(view_type =='supplier') {
             type = '2';
+            
+        }else if(view_type =='contractor') {
+            type = '3';
+            
         } else if(view_type =='customer') {
             type = '4';
         }
 
-        if(jQuery('select[name="view_type"]').length > 0) {
-            jQuery('select[name="view_type"]').val(type);
+        if(jQuery('select[name="view_type[]"]').length > 0) {
+            jQuery('select[name="view_type[]"]').val(type).trigger('change');
         }
         getReport();
     }
@@ -758,7 +762,7 @@
             type ="Daily Production";
             url = "reports/rpt_daily_production_a5.php?view_daily_production_id=" + bill_id;
         } else if(type == '7') {
-            type ="Daily Production";
+            type ="Semifinished Inward";
             url = "reports/rpt_semifinished_inward_a5.php?view_semifinished_inward_id=" + bill_id;
         }
         var post_url = "dashboard_changes.php?check_login_session=1";

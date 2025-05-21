@@ -17,7 +17,7 @@
     $current_date = date('Y-m-d');
     $total_records_list = $obj->getTableRecords($GLOBALS['estimate_table'], '', '', '');
     $excel_name = ""; $transport_id =""; $agent_id = "";
-    $excel_name = "Sales Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+   
     $cancel_bill_btn = "";
     // if(isset($_POST['page_number'])) {
     //     $page_number = $_POST['page_number'];
@@ -59,6 +59,12 @@
 
     $transport_list =array();
     $transport_list = $obj->getTableRecords($GLOBALS['transport_table'], '', '', '');
+
+    if(!empty($from_date) && !empty($to_date)){
+        $excel_name = "Sales Report( ".date('d-m-Y',strtotime($from_date ))." to ".date('d-m-Y',strtotime($to_date )).")";
+    }else{
+        $excel_name = "Sales Report";
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">

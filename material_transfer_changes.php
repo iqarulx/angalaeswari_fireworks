@@ -1094,7 +1094,12 @@
                                 <?php echo $index; ?>
                             </td>
                             <td>
-                                <?php echo  date("d-m-Y", strtotime($list['material_transfer_date'])); ?>
+                                <?php echo date("d-m-Y", strtotime($list['material_transfer_date'])); 
+                                if(!empty($list['deleted'])) {
+                                    ?>
+                                        <br><span style="color: red;">Cancelled</span>
+                                    <?php
+                                } ?>
                             </td>
                             <td>
                                 <?php if($list['location'] == 1) {

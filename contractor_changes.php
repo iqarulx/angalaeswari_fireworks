@@ -175,7 +175,7 @@
             <div class="row justify-content-center"> 
                 <div class="col-lg-8">
                     <div class="table-responsive text-center">
-                    <input type="hidden" name="product_count" value="<?php if (!empty($product_row_index)) { echo $product_row_index; } else { echo "0"; } ?>">
+                    <input type="hidden" name="product_count" value="<?php if(!empty($contractor_product_list)) { echo count($contractor_product_list) ; } else { echo "0"; } ?>">
                         <table class="table nowrap cursor smallfnt table-bordered product_constractor_table">
                             <thead class="bg-dark smallfnt">
                                 <tr style="white-space:pre;">
@@ -190,7 +190,7 @@
                             <tbody>
                                 <?php 
                                    if(!empty($contractor_product_list)) {
-                                    $i =1;
+                                    $i = count($contractor_product_list);
                                     foreach($contractor_product_list as $con_product_list) { ?>
                                             <tr class="product_row" id="product_row<?php echo $i; ?>">
                                                 <td class="sno text-center px-2 py-2"><?php echo $i; ?></td>
@@ -237,7 +237,7 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                        <?php $i++; }
+                                        <?php $i--; }
                                     } ?>
                             </tbody>
                             <tfoot>
@@ -372,7 +372,7 @@
         }
         $total_rate = 0; $group_id = array();
         if(!empty($product_id) && count($product_id) > 0) {
-            if(empty($edit_id)) {
+            // if(empty($edit_id)) {
                 $product_id = array_reverse($product_id);
                 $unit_id = array_reverse($unit_id);
                 $unit_name = array_reverse($unit_name);
@@ -381,7 +381,7 @@
                 $unit_type = array_reverse($unit_type);
                 $quantity = array_reverse($quantity);
                 $rate = array_reverse($rate);
-            }
+            // }
             for($i = 0; $i < count($product_id); $i++) {
                 $product_id[$i] = trim($product_id[$i]);
                 $unit_id[$i] = trim($unit_id[$i]);
@@ -432,7 +432,7 @@
                 }
                 
             }
-            if(empty($edit_id)) {
+            // if(empty($edit_id)) {
                 $product_id = array_reverse($product_id);
                 $unit_id = array_reverse($unit_id);
                 $unit_name = array_reverse($unit_name);
@@ -441,7 +441,7 @@
                 $unit_type = array_reverse($unit_type);
                 $quantity = array_reverse($quantity);
                 $rate = array_reverse($rate);
-            }
+            // }
 
         } else {
             $product_error = "Please select product and its details";

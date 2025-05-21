@@ -555,11 +555,11 @@
 			$result = $stock_obj->getOutwardSubunitQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
 			return $result;
 		}
-		public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
+		public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date) {
 			$stock_obj = "";
 			$stock_obj = $this->stock_function_object();
 			$result = "";
-			$result = $stock_obj->getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
+			$result = $stock_obj->getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date);
 			return $result;
 		}
 		public function getProductContentsFromMagazine($product_id, $magazine_id) {
@@ -660,11 +660,11 @@
 			$list = $stock_obj->getOutwardQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
 			return $list;
 		}
-		public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
+		public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date) {
 			$stock_obj = "";
 			$stock_obj = $this->stock_function_object();
 			$list = array();
-			$list = $stock_obj->getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains);
+			$list = $stock_obj->getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date);
 			return $list;
 		}
 		public function getInwardQty($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains) {
@@ -793,11 +793,11 @@
 			$list = $report_obj->getStockReportList($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
 			return $list;
 		}
-		public function getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id) {
+		public function getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $from_date, $to_date) {
 			$report_obj = "";
 			$report_obj = $this->report_function_object();
 			$list = array();
-			$list = $report_obj->getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id);
+			$list = $report_obj->getStockReportListSales($group_id, $godown_id, $magazine_id, $product_id, $stock_type, $case_contains, $contractor_id, $from_date, $to_date);
 			return $list;
 		}
 		public function getStockContainsList($product_id) {

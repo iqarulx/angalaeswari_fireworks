@@ -104,7 +104,7 @@
             $pdf->Cell(20,8,'#',1,0,'C',0);
             $pdf->Cell(60,8,'Product',1,0,'C',0);
             $pdf->Cell(30,8,'Contains',1,0,'C',0);
-            $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+            $pdf->Cell(40,8,'Sales Stock',1,0,'C',0);
             $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
             $pdf->SetFont('Arial','',7);
             
@@ -157,7 +157,7 @@
                     $pdf->Cell(20,8,'#',1,0,'C',0);
                     $pdf->Cell(60,8,'Product',1,0,'C',0);
                     $pdf->Cell(30,8,'Contains',1,0,'C',0);
-                    $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+                    $pdf->Cell(40,8,'Sales Stock',1,0,'C',0);
                     $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
                     $pdf->SetFont('Arial','',7);
 
@@ -344,7 +344,7 @@
                 $pdf->Cell(20,8,'#',1,0,'C',0);
                 $pdf->Cell(60,8,'Product',1,0,'C',0);
                 $pdf->Cell(30,8,'Contains',1,0,'C',0);
-                $pdf->Cell(40,8,'Current Stock',1,0,'C',0);
+                $pdf->Cell(40,8,'Sales Stock',1,0,'C',0);
                 $pdf->Cell(40,8,'Stock Value',1,1,'C',0);
                 $pdf->SetFont('Arial','',7);
                 
@@ -473,7 +473,7 @@
 
             $pdf->SetY($bill_to_y);
             $pdf->SetX(10);
-            $pdf->Cell(190,7,$product_name . '  ( Current stock : '.$current_stock.')',1,1,'C',0);
+            $pdf->Cell(190,7,$product_name . '  ( Sales stock : '.$current_stock.')',1,1,'C',0);
             $product_start_y = $pdf->GetY();
             $pdf->SetX(10);
             $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);
@@ -550,7 +550,7 @@
                         $bill_to_y = $pdf->GetY();
                         $pdf->SetY($bill_to_y);
                         $pdf->SetX(10);
-                        $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Current stock : '.$current_stock . " " . $unit_name.  ')',1,1,'C',0);
+                        $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name_code). '  ( Sales stock : '.$current_stock . " " . $unit_name.  ')',1,1,'C',0);
                         $product_start_y = $pdf->GetY();
                         $pdf->SetX(10);
                         $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);
@@ -905,7 +905,7 @@
                 $pdf->SetFont('Arial','B',8);
                 $pdf->SetY($bill_to_y);
                 $pdf->SetX(10);
-                $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name). '  ( Current stock : '.$current_stock . " " . $unit_name.  ')',1,1,'C',0);
+                $pdf->Cell(190,7,$obj->encode_decode('decrypt', $product_name). '  ( Sales stock : '.$current_stock . " " . $unit_name.  ')',1,1,'C',0);
                 $product_start_y = $pdf->GetY();
                 $pdf->SetX(10);
                 $pdf->Cell(10, 10, '#', 1, 0, 'C', 0);

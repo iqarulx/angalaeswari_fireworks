@@ -53,6 +53,14 @@
         $unit_type = "Unit";
     }
 
+    $from_date = ""; $to_date = ""; $current_date = ""; $current_date = date('Y-m-d');
+    if(isset($_POST['from_date'])) {
+        $from_date = $_POST['from_date'];
+    }
+    if(isset($_POST['to_date'])) {
+        $to_date = $_POST['to_date'];
+    }
+
     $finished_group_list = array();
     $finished_group_list = $obj->getTableRecords($GLOBALS['finished_group_table'], '', '', '');
 
@@ -88,7 +96,7 @@
         if($subunit_hide == '1') {
             $contains_list = $obj->getStockContainsList($product_id);
         }
-        $total_records_list = $obj->getStockReportListSales($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '');
+        $total_records_list = $obj->getStockReportListSales($group_id, '', $magazine_id, $product_id, $stock_type, $case_contains, '', $from_date, $to_date);
     }
 ?>
 <!DOCTYPE html>
@@ -121,6 +129,22 @@
                                
                             </div>
                             <div class="row px-2 mx-0 mt-3">
+                                <div class="col-lg-2 col-md-3 col-12">
+                                    <div class="form-group pb-1">
+                                        <div class="form-label-group in-border pb-1">
+                                        <input type="date" class="form-control shadow-none" placeholder="" required="" name="from_date" onchange="Javascript:getReport();checkDateCheck();"  value="<?php if(!empty($from_date)) { echo $from_date; } ?>"  max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                            <label>From Date</label>
+                                        </div>
+                                    </div> 
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-12">
+                                    <div class="form-group pb-1">
+                                        <div class="form-label-group in-border pb-1">
+                                            <input type="date" class="form-control shadow-none" placeholder="" required="" name="to_date" onchange="Javascript:getReport();checkDateCheck();" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" max="<?php if(!empty($current_date)) { echo $current_date; } ?>">
+                                            <label>To Date</label>
+                                        </div>
+                                    </div> 
+                                </div>
                                 <div class="col-lg-2 col-md-4 col-6">
                                     <div class="form-group mb-1">
                                         <div class="form-label-group in-border pb-2">
@@ -271,13 +295,13 @@
                                                         <th>#</th>
                                                         <th>Product</th>
                                                         <th>Contains</th>
-                                                        <th>Current Stock</th>
+                                                        <th>Sales Stock</th>
                                                         <th>Stock Value</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0; $unit_name_array = array(); $sub_unit_name_array = array();
+                                                    $total_current_unit = 0; $total_current_subunit = 0; $total_amount = 0; $unit_name_array = array(); $sub_unit_name_array = array(); $index = 1;
                                                     if(!empty($total_records_list)) { 
                                                         foreach($total_records_list as $key => $data) {
                                                             $unit_name = ""; $subunit_name = ""; $subunit_need = 0;
@@ -300,7 +324,7 @@
                                                                         $unit_rate = 0;
                                                                         $current_stock_subunit = 0;
                                                                        
-                                                                        $outward_subunit = $obj->getSubunitQtySales('', '', $magazine_id, $data['product_id'], $row['case_contains']);
+                                                                        $outward_subunit = $obj->getSubunitQtySales('', '', $magazine_id, $data['product_id'], $row['case_contains'], $from_date, $to_date);
                                                                      
                                                                         $current_stock_subunit = $outward_subunit;
                                                                         $total_rate = $current_stock_subunit * $rate_per_unit;
@@ -335,7 +359,7 @@
                                                                         ?>
                                                                             <tr>
                                                                                 <?php if($str_product_id != $data['product_id']) { ?>
-                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?>><?php echo $key+1; ?></th>
+                                                                                    <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?>><?php echo  $index; ?></th>
                                                                                     <th <?php if(!empty($case_contains_list)) { ?>rowspan="<?php echo count($case_contains_list); ?>"<?php } ?> onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
                                                                                         <?php
                                                                                             $product_name = "";
@@ -374,10 +398,11 @@
                                                                     }
                                                                     $str_product_id = $data['product_id'];
                                                                 }
+                                                                $index++;
                                                             } else {
                                                                 $outward_unit = 0; $total_rate = 0;
                                                                 $current_stock_unit = 0;
-                                                                $outward_unit = $obj->getOutwardQtySales('', '', $magazine_id, $data['product_id'], '');
+                                                                $outward_unit = $obj->getOutwardQtySales('', '', $magazine_id, $data['product_id'], '', $from_date, $to_date);
                                                                 $current_stock_unit = $outward_unit;
                                                                 if(!empty($current_stock_unit)) {
                                                                     $total_current_unit += $current_stock_unit;
@@ -386,7 +411,7 @@
                                                                 if(!empty($current_stock_unit) || !empty($obj->getProductStockTransactionExistSales($data['product_id']))) {
                                                                 ?>
                                                                     <tr>
-                                                                        <th><?php echo $key+1; ?></th>
+                                                                        <th><?php echo $index; ?></th>
                                                                         <th onclick="Javascript:ShowStockProduct('<?php if(!empty($data['product_id']) && $data['product_id'] != $GLOBALS['null_value']) { echo $data['product_id']; } ?>');" style="cursor:pointer!important;">
                                                                             <?php
                                                                                 $product_name = "";
@@ -395,6 +420,7 @@
                                                                                 echo $obj->encode_decode('decrypt', $product_name);
                                                                             ?>
                                                                         </th>
+                                                                        <th>-</th>
                                                                         <th>
                                                                             <?php 
                                                                                 if($current_stock_unit > 0) {
@@ -418,6 +444,7 @@
                                                                         </th>
                                                                     </tr>
                                                                 <?php
+                                                                $index++;
                                                                 }
                                                             }
                                                         } 
@@ -502,12 +529,12 @@
                                                                             }
                                                                         }
                                                                     } else {
-                                                                        $outward_unit = $obj->getOutwardQtySales('', '', $magazine_id, $product_id, $case_contains);
+                                                                        $outward_unit = $obj->getOutwardQtySales('', '', $magazine_id, $product_id, $case_contains, $from_date, $to_date);
                                                                         $current_stock = $outward_unit;
                                                                         $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $unit_name));
                                                                     }
                                                                 } else if($unit_type == "Subunit") {
-                                                                    $outward_unit = $obj->getSubunitQtySales('', '', $magazine_id, $product_id, $case_contains);
+                                                                    $outward_unit = $obj->getSubunitQtySales('', '', $magazine_id, $product_id, $case_contains, $from_date, $to_date);
                                                                     $current_stock = $inward_unit - $outward_unit;
                                                                     $current_stock = $current_stock." ".($obj->encode_decode('decrypt', $subunit_name));
                                                                 }
@@ -518,7 +545,7 @@
                                                                 }
                                                             ?>
                                                             <?php if(empty($stock_type)) { ?>
-                                                            <span class="ms-auto" style="font-size:13px;">(Current Stock : <?php echo $current_stock; ?>)</span>
+                                                            <span class="ms-auto" style="font-size:13px;">(Sales Stock : <?php echo $current_stock; ?>)</span>
                                                             <?php } ?>
                                                         </th>
                                                     </tr>

@@ -41,6 +41,7 @@ function GetUnit(product_id) {
     jQuery.ajax({
         url: post_url, success: function (result) {
 
+            console.log(result);
             result = result.trim();
             result = result.split("$$$");
             if (jQuery('select[name="selected_unit_id"]').length > 0) {
@@ -774,7 +775,8 @@ function GetGroupProducts() {
                     url: post_url, success: function (result) {
                         if (jQuery('select[name="selected_product_id"]').length > 0) {
                             jQuery('select[name="selected_product_id"]').html(result);
-                            GetProdetails();
+                            // GetProdetails();
+                            GetUnit();
                         }
                     }
                 });

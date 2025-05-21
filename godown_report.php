@@ -388,6 +388,7 @@
                                                                     }
                                                                     $str_product_id = $data['product_id'];
                                                                 }
+                                                                $index++;
                                                             } else {
                                                                 $inward_unit = 0; $outward_unit = 0; $total_rate = 0;
                                                                 $current_stock_unit = 0;
@@ -445,9 +446,9 @@
                                                                         </th>
                                                                     </tr>
                                                                 <?php
+                                                                $index++;
                                                                 }
                                                             }
-                                                            $index++;
                                                         } 
                                                         ?>
                                                         <tr>
@@ -785,7 +786,8 @@
                 </div>
             </div>  
         </div>
-    </div>          
+    </div>
+</div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript">

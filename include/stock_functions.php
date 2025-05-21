@@ -479,12 +479,30 @@ class Stock_functions extends Basic_Functions
         return $outward_unit;
     }
 
-    public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains)
+    public function getOutwardQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date)
     {
         $where = "";
         $select_query = "";
         $list = array();
         $outward_unit = 0;
+
+        if(!empty($from_date)) {
+            $from_date = date("Y-m-d", strtotime($from_date));
+            if(!empty($where)) {
+                $where = $where . " stock_date >= '" . $from_date . "' AND "; 
+            } else {
+                $where = "stock_date >= '" . $from_date . "' AND";
+            }
+        }
+
+        if(!empty($to_date)) {
+            $to_date = date("Y-m-d", strtotime($to_date));
+            if(!empty($where)) {
+                $where = $where . " stock_date <= '" . $to_date . "' AND "; 	
+            } else {
+                $where = "stock_date <= '" . $to_date . "' AND ";
+            }
+        }
 
         if (!empty($bill_unique_id)) {
             if (!empty($where)) {
@@ -1015,12 +1033,30 @@ class Stock_functions extends Basic_Functions
         return $outward_subunit;
     }
 
-    public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains)
+    public function getSubunitQtySales($bill_unique_id, $godown_id, $magazine_id, $product_id, $case_contains, $from_date, $to_date)
     {
         $where = "";
         $select_query = "";
         $list = array();
         $outward_subunit = 0;
+
+        if(!empty($from_date)) {
+            $from_date = date("Y-m-d", strtotime($from_date));
+            if(!empty($where)) {
+                $where = $where . " stock_date >= '" . $from_date . "' AND "; 
+            } else {
+                $where = "stock_date >= '" . $from_date . "' AND ";
+            }
+        }
+
+        if(!empty($to_date)) {
+            $to_date = date("Y-m-d", strtotime($to_date));
+            if(!empty($where)) {
+                $where = $where . " stock_date <= '" . $to_date . "' AND "; 	
+            } else {
+                $where = "stock_date <= '" . $to_date . "' AND ";
+            }
+        }
 
         if (!empty($bill_unique_id)) {
             if (!empty($where)) {

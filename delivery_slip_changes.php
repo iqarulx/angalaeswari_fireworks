@@ -2037,6 +2037,11 @@
                                     if(!empty($list['delivery_slip_number']) && $list['delivery_slip_number'] != $GLOBALS['null_value']) {
                                         echo $list['delivery_slip_number'];
                                     }
+                                    if(!empty($list['deleted'])) {
+                                        ?>
+                                            <br><span style="color: red;">Cancelled</span>
+                                        <?php
+                                    }
                                 ?>
                                 <br>
                                 <?php
