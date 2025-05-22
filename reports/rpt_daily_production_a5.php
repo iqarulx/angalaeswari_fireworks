@@ -11,7 +11,6 @@ if (isset($_REQUEST['view_daily_production_id'])) {
     exit;
 }
 
-
 $from_date = date('Y-m-d', strtotime('-7 days')); $to_date = date('Y-m-d');
 $entry_date = date('Y-m-d'); $bill_number = ""; $entry_date = date('Y-m-d');
 $contractor_id = ""; $magazine_id = ""; $contractor_name_mobile_city = ""; $dailyproduction_entry_number = "";
@@ -231,8 +230,7 @@ if (!empty($view_daily_production_id)) {
             if($i==0) {
                 $pdf->SetFont("Arial", "B", 8);
                 $pdf->cell(122, 5, $contractor_details[$i], 0, 1, 'L', 0);
-            } 
-            else {
+            } else {
                 $pdf->SetX(16);
                 $pdf->SetFont("Arial", "", 8);
                 if($contractor_details[$i] != "NULL"){
@@ -484,16 +482,13 @@ if (!empty($view_daily_production_id)) {
             $content_display = "";
             if(!empty($case_contains[$p]) && $case_contains[$p] != $GLOBALS['null_value']) {                 
                 $content_display .= ' (' . $case_contains[$p];
-
                 if(!empty($product_subunit_id)) {
                     $subunit_name = $obj->getTableColumnValue($GLOBALS['unit_table'], 'unit_id', $product_subunit_id, 'unit_name');
-
                     if(!empty($subunit_name)) {
                         $subunit_name = $obj->encode_decode('decrypt', $subunit_name);
                         $content_display .= " " . $subunit_name;
                     }
                 }
-
                 $content_display .= ')';
             }
 
@@ -654,7 +649,7 @@ if (!empty($view_daily_production_id)) {
         $pdf->Cell(10, 7, 'S.No', 1, 0, 'C', 0);
         $pdf->Cell(48, 7, 'Products', 1, 0, 'C', 0);
         $pdf->Cell(30, 7, 'Unit', 1, 0, 'C', 0);
-        $pdf->Cell(20, 7, 'Content', 1, 0, 'C', 0);
+        $pdf->Cell(20, 7, 'Case Contains', 1, 0, 'C', 0);
         $pdf->Cell(20, 7, 'Qty', 1, 1, 'C', 0);
         $pdf->SetFont('Arial', '', 8);
 

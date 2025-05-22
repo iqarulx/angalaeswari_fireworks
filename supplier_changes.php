@@ -13,8 +13,7 @@
         $show_supplier_id = $_REQUEST['show_supplier_id'];
         $show_supplier_id = trim($show_supplier_id);
         
-        $country = "India";$state = "";$district = "";$city = "";$supplier_name = "";$mobile_number = "";$address = "";$email = "";$pincode = "";$product_id="";$product_name="";$pincode = ""; $state = "Tamil Nadu";$identification = ""; $raw_material_group_id = "";
-
+        $country = "India"; $state = ""; $district = ""; $city = ""; $supplier_name = ""; $mobile_number = ""; $address = ""; $email = ""; $pincode = ""; $product_id=""; $product_name=""; $pincode = ""; $state = "Tamil Nadu"; $identification = ""; $raw_material_group_id = "";
 
         if(!empty($show_supplier_id)){
             $supplier_list = array();
@@ -69,7 +68,6 @@
         ?>
 		<script type="text/javascript" src="include/js/creation_modules.js"></script>
 
-
         <form class="poppins pd-20 redirection_form" name="supplier_form" method="POST">
 			<div class="card-header">
 				<div class="row p-2">
@@ -116,7 +114,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-4 col-12 py-2 d-none">
+                <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group pb-3">
                         <div class="form-label-group in-border mb-0">
                             <div class="w-100" style="display:none;">
@@ -234,9 +232,8 @@
             <script src="include/select2/js/select.js"></script>
         </form>
 		<?php
-    } 
-
-
+    }
+    
     if(isset($_POST['edit_id'])) {	
         $supplier_name = ""; $supplier_name_error = "";  $mobile_number = ""; $mobile_number_error = ""; 	$address = ""; $address_error = ""; $state = ""; $state_error = ""; $district = ""; $district_error = ""; $city = ""; $city_error = ""; $others_city = ""; $others_city_error = ""; $gst_number = ""; $gst_number_error = ""; $opening_balance = 0; $opening_balance_error = ""; $opening_balance_type = ""; $opening_balance_type_error = ""; $raw_material_group_id = ""; $raw_material_group_id_error = ""; 
         $valid_supplier = ""; $form_name = "supplier_form"; $edit_id = "";
@@ -260,9 +257,8 @@
             $valid_supplier = $valid->error_display($form_name, "supplier_name", $supplier_name_error, 'text');		
             if(!empty($address_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "supplier_name", $supplier_name_error, 'text');
-                }
-                else {
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "supplier_name", $supplier_name_error, 'text');
+                } else {
                     $valid_supplier = $valid->error_display($form_name, "supplier_name", $supplier_name_error, 'text');
                 }
             }  	
@@ -274,9 +270,8 @@
             $mobile_number_error = $valid->valid_mobile_number($mobile_number, "Mobile number", "");
             if(!empty($mobile_number_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
-                }
-                else {
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
+                } else {
                     $valid_supplier = $valid->error_display($form_name, "mobile_number", $mobile_number_error, 'text');
                 }
             }
@@ -292,35 +287,33 @@
         }  
         if(!empty($address_error)) {
             if(!empty($valid_supplier)) {
-                $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "address", $address_error, 'textarea');
-            }
-            else {
+                $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "address", $address_error, 'textarea');
+            } else {
                 $valid_supplier = $valid->error_display($form_name, "address", $address_error, 'textarea');
             }
         }  
 
-        /*
         if(isset($_POST['state'])) {
             $state = $_POST['state'];
             $state = trim($state);
             $state_error = $valid->common_validation($state,'State','');
             if(!empty($state_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "state", $state_error, 'select');
-                }
-                else {
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "state", $state_error, 'select');
+                } else {
                     $valid_supplier = $valid->error_display($form_name, "state", $state_error, 'select');
                 }
             }
         }
 
+        /*
         if(isset($_POST['district'])) {
             $district = $_POST['district'];
             $district = trim($district);
             $district_error = $valid->common_validation($district,'District','');
             if(!empty($district_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "district", $district_error, 'select');
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "district", $district_error, 'select');
                 }
                 else {
                     $valid_supplier = $valid->error_display($form_name, "district", $district_error, 'select');
@@ -335,7 +328,7 @@
             
             if(!empty($city_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "city", $city_error, 'select');
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "city", $city_error, 'select');
                 }
                 else {
                     $valid_supplier = $valid->error_display($form_name, "city", $city_error, 'select');
@@ -354,7 +347,7 @@
                         }
                         if(!empty($others_city_error)) {
                             if(!empty($valid_supplier)) {
-                                $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "others_city", $others_city_error, 'text');
+                                $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "others_city", $others_city_error, 'text');
                             }
                             else {
                                 $valid_supplier = $valid->error_display($form_name, "others_city", $others_city_error, 'text');
@@ -368,7 +361,6 @@
                 }
             }
         }
-
         */
         
         if(isset($_POST['gst_number'])) {
@@ -377,9 +369,8 @@
             $gst_number_error = $valid->valid_gst_number($gst_number,'gst number','text');
             if(!empty($gst_number_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "gst_number", $gst_number_error, 'text');
-                }
-                else {
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "gst_number", $gst_number_error, 'text');
+                } else {
                     $valid_supplier = $valid->error_display($form_name, "gst_number", $gst_number_error, 'text');
                 }
             }
@@ -410,9 +401,8 @@
         
         if(!empty($opening_balance_error)){
             if(!empty($valid_supplier)) {
-                $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "opening_balance_type", $opening_balance_error, 'select');
-            }
-            else {
+                $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "opening_balance_type", $opening_balance_error, 'select');
+            } else {
                 $valid_supplier = $valid->error_display($form_name, "opening_balance_type", $opening_balance_error, 'select');
             }
         }
@@ -423,7 +413,7 @@
             $raw_material_group_id_error = $valid->common_validation($raw_material_group_id,'Raw Material Group','select');
             if(!empty($raw_material_group_id_error)) {
                 if(!empty($valid_supplier)) {
-                    $valid_supplier = $valid_supplier." ".$valid->error_display($form_name, "raw_material_group_id", $raw_material_group_id_error, 'select');
+                    $valid_supplier = $valid_supplier . " " . $valid->error_display($form_name, "raw_material_group_id", $raw_material_group_id_error, 'select');
                 } else {
                     $valid_supplier = $valid->error_display($form_name, "raw_material_group_id", $raw_material_group_id_error, 'select');
                 }
@@ -452,7 +442,7 @@
                
                 if(!empty($address)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."$$$".str_replace("\r\n", "$$$", $address);
+                        $supplier_details = $supplier_details . "$$$" . str_replace("\r\n", "$$$", $address);
                     }
                     $address = $obj->encode_decode('encrypt', $address);
                 } else {
@@ -461,19 +451,19 @@
 
                 if(!empty($city)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."$$$".$city;
+                        $supplier_details = $supplier_details . "$$$" . $city;
                     }
                 }
 
                 if(!empty($district)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."$$$".$district."(Dist.)";
+                        $supplier_details = $supplier_details . "$$$" . $district . "(Dist.)";
                     }
                 }
 
                 if(!empty($state)) {
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."$$$".$state;
+                        $supplier_details = $supplier_details . "$$$" . $state;
                     }
                     $state = $obj->encode_decode('encrypt', $state);
                 }
@@ -486,18 +476,17 @@
                     $mobile_number = str_replace(" ", "", $mobile_number);
 
                     if(!empty($supplier_details)) {
-                        $supplier_details = $supplier_details."$$$ Mobile : ".$mobile_number;
+                        $supplier_details = $supplier_details . "$$$ Mobile : " . $mobile_number;
                     }
                     if(!empty($name_mobile_city)) {
-                        $name_mobile_city = $name_mobile_city." (".$mobile_number.")";
+                        $name_mobile_city = $name_mobile_city . " (" . $mobile_number . ")";
                         if(!empty($city)) {
-                            $name_mobile_city = $name_mobile_city." - ".$city;
+                            $name_mobile_city = $name_mobile_city . " - " . $city;
                         }
-                       
                     }
                    
                     $mobile_number = $obj->encode_decode('encrypt', $mobile_number);
-                }else {
+                } else {
                     $mobile_number = $GLOBALS['null_value'];
                 }
                 if(!empty($name_mobile_city)){
@@ -507,15 +496,13 @@
 
                 if(!empty($city)) {
                     $city = $obj->encode_decode('encrypt', $city);
-                }
-                else{
+                } else {
                     $city = $GLOBALS['null_value'];
                 }
                
                 if(!empty($district)) {
                     $district = $obj->encode_decode('encrypt', $district);
-                }
-                else{
+                } else {
                     $district = $GLOBALS['null_value'];
                 }
                 if(!empty($supplier_details)) {
@@ -532,7 +519,7 @@
                     if(!empty($prev_supplier_id) && $prev_supplier_id != $edit_id) {
                         $prev_supplier_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$prev_supplier_id,'supplier_name');
 						$prev_supplier_name = $obj->encode_decode("decrypt",$prev_supplier_name);
-                        $supplier_error = $prev_supplier_name." - This Supplier Name is already exist";
+                        $supplier_error = $prev_supplier_name . " - This Supplier Name is already exist";
                     }
                 }
 
@@ -543,7 +530,7 @@
                     if(!empty($prev_gst_supplier_id) && $prev_gst_supplier_id != $edit_id) {
                         $prev_gst_supplier_name = $obj->getTableColumnValue($GLOBALS['supplier_table'],'supplier_id',$prev_gst_supplier_id,'supplier_name');
 						$prev_gst_supplier_name = $obj->encode_decode("decrypt",$prev_gst_supplier_name);
-                        $gst_supplier_error = "This GST number is already exist in ".$prev_gst_supplier_name;
+                        $gst_supplier_error = "This GST number is already exist in " . $prev_gst_supplier_name;
                     }
                 }
         
@@ -554,11 +541,11 @@
                     if(empty($prev_supplier_id) && empty($prev_gst_supplier_id)) {
                         $action = "";
                         if(!empty($name_mobile_city)) {
-                            $action = "New supplier Created. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
+                            $action = "New supplier Created. Details - " . $obj->encode_decode('decrypt', $name_mobile_city);
                         }
                         $null_value = $GLOBALS['null_value'];
                         $columns = array('created_date_time', 'creator', 'creator_name', 'supplier_id', 'supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city', 'raw_material_group_id', 'deleted');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'", "'" . $raw_material_group_id . "'", "'0'");
+                        $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'", "'" . $null_value . "'", "'" . $supplier_name . "'", "'" . $lower_case_name . "'", "'" . $address . "'", "'" . $city . "'", "'" . $district . "'", "'" . $state . "'", "'" . $mobile_number . "'", "'" . $others_city . "'","'" . $opening_balance . "'","'" . $opening_balance_type . "'", "'" . $supplier_details . "'", "'" . $gst_number . "'", "'" . $name_mobile_city . "'", "'" . $raw_material_group_id . "'", "'0'");
                         $supplier_insert_id = $obj->InsertSQL($GLOBALS['supplier_table'], $columns, $values, 'supplier_id', '', $action);
                         if(preg_match("/^\d+$/", $supplier_insert_id)) {	
                             $supplier_id = "";
@@ -585,24 +572,21 @@
                         if(preg_match("/^\d+$/", $getUniqueID)) {
                             $action = "";
                             if(!empty($name_mobile_city)) {
-                                $action = "supplier Updated. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
+                                $action = "supplier Updated. Details - " . $obj->encode_decode('decrypt', $name_mobile_city);
                             }
                         
                             $columns = array(); $values = array();						
                             $columns = array('creator_name','supplier_name', 'lower_case_name', 'address', 'city', 'district', 'state', 'mobile_number', 'others_city', 'opening_balance', 'opening_balance_type', 'supplier_details',  'gst_number', 'name_mobile_city', 'raw_material_group_id');
-                            $values = array("'".$creator_name."'", "'".$supplier_name."'", "'".$lower_case_name."'", "'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$mobile_number."'", "'".$others_city."'","'".$opening_balance."'","'".$opening_balance_type."'", "'".$supplier_details."'", "'".$gst_number."'", "'".$name_mobile_city."'", "'" . $raw_material_group_id . "'");
+                            $values = array("'" . $creator_name . "'", "'" . $supplier_name . "'", "'" . $lower_case_name . "'", "'" . $address . "'", "'" . $city . "'", "'" . $district . "'", "'" . $state . "'", "'" . $mobile_number . "'", "'" . $others_city . "'","'" . $opening_balance . "'","'" . $opening_balance_type . "'", "'" . $supplier_details . "'", "'" . $gst_number . "'", "'" . $name_mobile_city . "'", "'" . $raw_material_group_id . "'");
                             $user_update_id = $obj->UpdateSQL($GLOBALS['supplier_table'], $getUniqueID, $columns, $values, $action);
                             if(preg_match("/^\d+$/", $user_update_id)) {
-                                
                                 $balance = 1;
                                 $result = array('number' => '1', 'msg' => 'Updated Successfully');						
-                            }
-                            else {
+                            } else {
                                 $result = array('number' => '2', 'msg' => $user_update_id);
                             }							
                         }
-                    }
-                    else {
+                    } else {
                         if(!empty($supplier_error)) {
                             $result = array('number' => '2', 'msg' => $supplier_error);
                         }
@@ -613,71 +597,67 @@
                 }
 
                 if(!empty($balance) && $balance == 1) {
-                    
-                        $bill_id = $supplier_id; 
-                        $bill_date = date("Y-m-d");
-                        $bill_number = $GLOBALS['null_value'];
-                        $bill_type = "Supplier Opening Balance";
-                        $agent_id = $GLOBALS['null_value'];
-                        $agent_name = $GLOBALS['null_value'];
-                        $party_id = $supplier_id;
-                        $party_name = $supplier_name;
-                        $party_type = 'Supplier';
-                        $payment_mode_id = $GLOBALS['null_value'];
-                        $payment_mode_name = $GLOBALS['null_value'];
-                        $bank_id = $GLOBALS['null_value'];
-                        $bank_name = $GLOBALS['null_value'];
-                        $imploded_amount = $GLOBALS['null_value'];
-                        $credit  = 0; $debit = 0; 
+                    $bill_id = $supplier_id; 
+                    $bill_date = date("Y-m-d");
+                    $bill_number = $GLOBALS['null_value'];
+                    $bill_type = "Supplier Opening Balance";
+                    $agent_id = $GLOBALS['null_value'];
+                    $agent_name = $GLOBALS['null_value'];
+                    $party_id = $supplier_id;
+                    $party_name = $supplier_name;
+                    $party_type = 'Supplier';
+                    $payment_mode_id = $GLOBALS['null_value'];
+                    $payment_mode_name = $GLOBALS['null_value'];
+                    $bank_id = $GLOBALS['null_value'];
+                    $bank_name = $GLOBALS['null_value'];
+                    $imploded_amount = $GLOBALS['null_value'];
+                    $credit  = 0; $debit = 0; 
 
-                        if($opening_balance_type =='Credit'){
-                            $credit  = $opening_balance; 
-                        }else if($opening_balance_type =='Debit'){
-                            $debit  = $opening_balance; 
-                        }
-                        if(empty($credit)){
-                            $credit = 0;
-                        }
-                        if(empty($debit)){
-                            $debit = 0;
-                        }
-                        if(empty($opening_balance)){
-                            $opening_balance = 0;
-                        }
-                        if(empty($opening_balance_type)){
-                            $opening_balance_type = $GLOBALS['null_value'];
-                        }
+                    if($opening_balance_type =='Credit') {
+                        $credit  = $opening_balance; 
+                    } else if($opening_balance_type =='Debit') {
+                        $debit  = $opening_balance; 
+                    }
+                    if(empty($credit)){
+                        $credit = 0;
+                    }
+                    if(empty($debit)){
+                        $debit = 0;
+                    }
+                    if(empty($opening_balance)){
+                        $opening_balance = 0;
+                    }
+                    if(empty($opening_balance_type)){
+                        $opening_balance_type = $GLOBALS['null_value'];
+                    }
 
-                        if(!empty($edit_id)) {
-                            $date = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $bill_id, 'bill_date');
-                            if(!empty($date)) {
-                                $bill_date = $date;
-                            }
+                    if(!empty($edit_id)) {
+                        $date = $obj->getTableColumnValue($GLOBALS['payment_table'], 'bill_id', $bill_id, 'bill_date');
+                        if(!empty($date)) {
+                            $bill_date = $date;
                         }
+                    }
 
-                        if(!empty($opening_balance) && !empty($opening_balance_type)){
-                            $update_balance ="";
-                            $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
-                        }else{
-                            $payment_unique_id = "";
-                            $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
-                            if(preg_match("/^\d+$/", $payment_unique_id)) {
-                                $action = "Payment Deleted.";
-                            
-                                $columns = array(); $values = array();						
-                                $columns = array('deleted');
-                                $values = array("'1'");
-                                $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
-                            }
-                        }
+                    if(!empty($opening_balance) && !empty($opening_balance_type)) {
+                        $update_balance ="";
+                        $update_balance = $obj->UpdateBalance($bill_id,$bill_number,$bill_date,$bill_type,$agent_id,$agent_name, $party_id,$party_name,$party_type,$payment_mode_id, $payment_mode_name, $bank_id, $bank_name, $credit,$debit,$opening_balance_type);
+                    } else {
+                        $payment_unique_id = "";
+                        $payment_unique_id = $obj->getPartyOpeningBalanceInPaymentExist($party_id,$bill_type);
+                        if(preg_match("/^\d+$/", $payment_unique_id)) {
+                            $action = "Payment Deleted . ";
                         
+                            $columns = array(); $values = array();						
+                            $columns = array('deleted');
+                            $values = array("'1'");
+                            $msg = $obj->UpdateSQL($GLOBALS['payment_table'], $payment_unique_id, $columns, $values, $action);
+                        }
+                    }
                 }  
-            }
-            else {
+            } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
-        }
-        else {
+        } else {
             if(!empty($valid_supplier)) {
                 $result = array('number' => '3', 'msg' => $valid_supplier);
             }
@@ -688,7 +668,6 @@
         }
         echo $result; exit;
     }
-
 
     if(isset($_POST['page_number'])) {
 		$page_number = $_POST['page_number'];
@@ -762,7 +741,6 @@
             include('permission_action.php');
         }
         if(empty($access_error)) {  ?>
-    
             <table class="table nowrap cursor text-center smallfnt">
                 <thead class="bg-light">
                     <tr style="white-space:pre;">
@@ -772,84 +750,86 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody> <?php
-                    if(!empty($show_records_list)) { 
-                        foreach($show_records_list as $key => $data) {
-                            $index = $key + 1;
-                            if(!empty($prefix)) { $index = $index + $prefix; } ?>
+                <tbody> 
+                    <?php
+                        if(!empty($show_records_list)) { 
+                            foreach($show_records_list as $key => $data) {
+                                $index = $key + 1;
+                                if(!empty($prefix)) { $index = $index + $prefix; } ?>
+                                <tr>
+                                    <td class="ribbon-header" style="cursor:default;"> <?php
+                                        echo $index; ?>
+                                    </td>
+                                    <td> <?php
+                                        if(!empty($data['name_mobile_city'])) {
+                                            $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
+                                            echo $data['name_mobile_city'];
+                                        } ?>
+                                        <div class="w-100 py-2">
+                                            Creator : <?php
+                                            if(!empty($data['creator_name'])) {
+                                                $data['creator_name'] = $obj->encode_decode('decrypt', $data['creator_name']);
+                                                echo $data['creator_name'];
+                                            } ?>                                        
+                                        </div>
+                                    </td>
+                                    <?php /*
+                                    <td> <?php
+                                        if(!empty($data['address']) && $data['address'] !=$GLOBALS['null_value']) {
+                                            $data['address'] = $obj->encode_decode('decrypt', $data['address']);
+                                            echo $data['address'];
+                                        }else{
+                                            echo "-";
+                                        } ?>
+                                    </td>
+                                    */ ?>
+                                    <td>
+                                        <?php 
+                                            $edit_access_error = "";
+                                            if(!empty($login_staff_id)) {
+                                                $permission_action = $edit_action;
+                                                include('permission_action.php');
+                                            }
+                                            $delete_access_error = "";
+                                            if(!empty($login_staff_id)) {
+                                                $permission_action = $delete_action;
+                                                include('permission_action.php');
+                                            }
+                                        ?>
+                                        <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
+                                            <div class="dropdown">
+                                                <button class="btn btn-dark show-button poppins" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
+                                                    if(empty($edit_access_error)) { ?> 
+                                                        <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
+                                                    }
+                                                    if(empty($delete_access_error)) { 
+                                                        $linked_count = 0;
+                                                        $linked_count = $obj->GetSupplierLinkedCount($data['supplier_id']); 
+                                                        if($linked_count > 0) { ?>
+                                                            <li><a class="dropdown-item text-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
+                                                        }
+                                                        else { ?> 
+                                                            <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
+                                                        }
+                                                    } ?>  
+                                                </ul>
+                                            </div> 
+                                        <?php } ?>
+                                    </td>
+                                </tr> <?php 
+                            } 
+                        } else { ?>
                             <tr>
-                                <td class="ribbon-header" style="cursor:default;"> <?php
-                                    echo $index; ?>
-                                </td>
-                                <td> <?php
-                                    if(!empty($data['name_mobile_city'])) {
-                                        $data['name_mobile_city'] = html_entity_decode($obj->encode_decode('decrypt', $data['name_mobile_city']));
-                                        echo $data['name_mobile_city'];
-                                    } ?>
-                                    <div class="w-100 py-2">
-                                        Creator : <?php
-                                        if(!empty($data['creator_name'])) {
-                                            $data['creator_name'] = $obj->encode_decode('decrypt', $data['creator_name']);
-                                            echo $data['creator_name'];
-                                        } ?>                                        
-                                    </div>
-                                </td>
-                                <?php /*
-                                <td> <?php
-                                    if(!empty($data['address']) && $data['address'] !=$GLOBALS['null_value']) {
-                                        $data['address'] = $obj->encode_decode('decrypt', $data['address']);
-                                        echo $data['address'];
-                                    }else{
-                                        echo "-";
-                                    } ?>
-                                </td>
-                                */ ?>
-                                <td>
-                                    <?php 
-                                        $edit_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            $permission_action = $edit_action;
-                                            include('permission_action.php');
-                                        }
-                                        $delete_access_error = "";
-                                        if(!empty($login_staff_id)) {
-                                            $permission_action = $delete_action;
-                                            include('permission_action.php');
-                                        }
-                                    ?>
-                                    <?php if(empty($edit_access_error) || empty($delete_access_error)){ ?>
-                                        <div class="dropdown">
-                                            <button class="btn btn-dark show-button poppins" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1"> <?php 
-                                                if(empty($edit_access_error)) { ?> 
-                                                    <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp; Edit</a></li> <?php 
-                                                }
-                                                if(empty($delete_access_error)) { 
-                                                    $linked_count = 0;
-                                                    $linked_count = $obj->GetSupplierLinkedCount($data['supplier_id']); 
-                                                    if($linked_count > 0) { ?>
-                                                        <li><a class="dropdown-item text-secondary" ><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
-                                                    }
-                                                    else { ?> 
-                                                        <li><a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['supplier_id'])) { echo $data['supplier_id']; } ?>');"><i class="fa fa-trash"></i> &ensp; Delete</a></li> <?php 
-                                                    }
-                                                } ?>  
-                                            </ul>
-                                        </div> 
-                                    <?php } ?>
-                                </td>
+                                <td colspan="4" class="text-center">Sorry! No records found</td>
                             </tr> <?php 
-                        } 
-                    }  
-                    else { ?>
-                        <tr>
-                            <td colspan="4" class="text-center">Sorry! No records found</td>
-                        </tr> <?php 
-                    } ?>
+                        }
+                    ?>
                 </tbody>
-            </table> <?php	
+            </table>
+            <?php	
         }
 	}
 
@@ -866,7 +846,7 @@
             
                 $action = "";
                 if(!empty($name_mobile_city)) {
-                    $action = "supplier Deleted. Details - ".$obj->encode_decode('decrypt', $name_mobile_city);
+                    $action = "supplier Deleted. Details - " . $obj->encode_decode('decrypt', $name_mobile_city);
                 }
                 $linked_count = 0;
                 $linked_count = $obj->GetsupplierLinkedCount($delete_supplier_id); 
@@ -876,21 +856,16 @@
                     $columns = array('deleted');
                     $values = array("'1'");
                     $msg = $obj->UpdateSQL($GLOBALS['supplier_table'], $supplier_unique_id, $columns, $values, $action);
-                }
-                else {
+                } else {
                     $msg = "This supplier is associated with other screens";
                 }
-            }
-            else {
+            } else {
                 $msg = "Invalid supplier";
             }
-        }
-        else {
+        } else {
             $msg = "Empty supplier";
         }
         echo $msg;
         exit;	
     }
-
-
 ?>

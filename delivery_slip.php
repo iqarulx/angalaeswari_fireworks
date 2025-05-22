@@ -166,7 +166,8 @@
                 </div>
             </div>  
         </div>
-    </div>          
+    </div>
+</div>
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script>

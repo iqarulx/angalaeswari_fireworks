@@ -496,14 +496,14 @@
                             <?php /*
                             <div class="form-label-group in-border">
                                 <input type="text" name="selected_content" onkeyup="CalProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
-                                <label>Content</label>
+                                <label>Case Contains</label>
                             </div>
                             */ ?>
                             <div class="form-label-group in-border">
                                 <select class="select2 select2-danger" onchange="CalProductAmount();" name="selected_content" data-dropdown-css-class="select2-danger" style="width: 100%;">
                                     <option value="">Select</option>
                                 </select>
-                                <label>Content</label>
+                                <label>Case Contains</label>
                             </div>
                         </div>  
                     </div>
@@ -564,7 +564,7 @@
                                     <!-- <th style="width: 100px;" class="indv_magazine d-none">Magazine</th> -->
                                     <th style="width: 100px;">Type</th>
                                     <th style="width: 100px;">QTY</th>
-                                    <th style="width: 100px;">Content</th>
+                                    <th style="width: 100px;">Case<br>Contains</th>
                                     <th style="width: 100px;">Rate</th>
                                     <th style="width: 150px;">Per</th>
                                     <th class="tax_element d-none" style="width: 70px;">Tax</th>
@@ -1234,10 +1234,10 @@
                                             $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
                                         }     
                                     // } else {
-                                    //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    //     $product_error = "Invalid Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                     // }
                                 } else {
-                                    $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    $product_error = "Empty Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                 } 
                             } else {
                                 $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
@@ -2612,7 +2612,7 @@
                         <strong>Product Name:</strong> <?php echo $obj->encode_decode('decrypt', $product_names[$i]); ?>&nbsp;&nbsp;
                         <?php
                         if(!empty($contents[$i]) && $contents[$i] != $GLOBALS['null_value']){ ?>
-                            <strong>Content:</strong> <?php echo $contents[$i]; 
+                            <strong>Case Contains:</strong> <?php echo $contents[$i]; 
                         } ?>
                     </div><br>
                     <div>

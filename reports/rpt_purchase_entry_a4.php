@@ -246,7 +246,6 @@
         }
 
         $pdf->SetY($header_end);
-
         $bill_to_y = $pdf->GetY();
 
         $pdf->Cell(0,1,'',0,1,'L',0);
@@ -316,7 +315,12 @@
             $pdf->SetFont('Arial','B',8);
             $pdf->Cell(35,10,'Product',1,0,'C',1);
             $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-            $pdf->Cell(22,10,'Content',1,0,'C',1);
+            $case_y = $pdf->GetY();
+            $pdf->Cell(22,5,'Case',1,1,'C',1);
+            $pdf->SetX(67);
+            $pdf->Cell(22,5,'Contains',1,0,'C',1);
+            $pdf->SetY($case_y);
+            $pdf->SetX(89);
             $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
             $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
             $pdf->Cell(18,10,'Per',1,0,'C',1);
@@ -338,7 +342,12 @@
             $pdf->SetFont('Arial','B',8);
             $pdf->Cell(35,10,'Product',1,0,'C',1);
             $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-            $pdf->Cell(22,10,'Content',1,0,'C',1);
+            $case_y = $pdf->GetY();
+            $pdf->Cell(22,5,'Case',1,1,'C',1);
+            $pdf->SetX(68);
+            $pdf->Cell(22,5,'Contains',1,0,'C',1);
+            $pdf->SetY($case_y);
+            $pdf->SetX(90);
             $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
             $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
             $pdf->Cell(25,10,'Per',1,0,'C',1);
@@ -488,7 +497,12 @@
                         $pdf->SetFont('Arial','B',8);
                         $pdf->Cell(35,10,'Product',1,0,'C',1);
                         $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-                        $pdf->Cell(22,10,'Content',1,0,'C',1);
+                        $case_y = $pdf->GetY();
+                        $pdf->Cell(22,5,'Case',1,1,'C',1);
+                        $pdf->SetX(67);
+                        $pdf->Cell(22,5,'Contains',1,0,'C',1);
+                        $pdf->SetY($case_y);
+                        $pdf->SetX(89);
                         $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
                         $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
                         $pdf->Cell(18,10,'Per',1,0,'C',1);
@@ -510,7 +524,12 @@
                         $pdf->SetFont('Arial','B',8);
                         $pdf->Cell(35,10,'Product',1,0,'C',1);
                         $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-                        $pdf->Cell(22,10,'Content',1,0,'C',1);
+                        $case_y = $pdf->GetY();
+                        $pdf->Cell(22,5,'Case',1,1,'C',1);
+                        $pdf->SetX(68);
+                        $pdf->Cell(22,5,'Contains',1,0,'C',1);
+                        $pdf->SetY($case_y);
+                        $pdf->SetX(90);
                         $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
                         $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
                         $pdf->Cell(25,10,'Per',1,0,'C',1);
@@ -553,7 +572,7 @@
                 $total_product_amount += $product_amount[$l];
                 $per_y = $pdf->GetY(); 
 
-                $max_y1=""; $max_y2=""; $max_y3=""; $max_y4=""; $max_y5=""; $max_y6=""; $max_y7=""; $max_y8=""; $max_y9=""; $max_y10="";
+                $max_y1 = ""; $max_y2 = ""; $max_y3 = ""; $max_y4 = ""; $max_y5 = ""; $max_y6 = ""; $max_y7 = ""; $max_y8 = ""; $max_y9 = ""; $max_y10 = "";
                 if($tax_type == 1) {
                     $pdf->SetY($per_y);
                     $pdf->SetX(10);
@@ -575,7 +594,6 @@
                         $pdf->SetY($per_y);
                         $pdf->SetX(89);
                         $pdf->MultiCell(17,6,$total_qty[$l] . " ".html_entity_decode(($product_subunit_name),ENT_QUOTES)."",0,'C',0);
-                        
                     } else {
                         $pdf->SetY($per_y);
                         $pdf->SetX(67);
@@ -584,11 +602,9 @@
                         $pdf->SetY($per_y);
                         $pdf->SetX(89);
                         $pdf->MultiCell(17,6,$total_qty[$l],0,'C',0);
-                        
                     }
 
                     $max_y6 = $pdf->GetY();
-
                     $pdf->SetY($per_y);
                     $pdf->SetX(106);
                     $pdf->MultiCell(18,6,$obj->numberFormat($rate[$l],2),0,'R',0);
@@ -630,7 +646,6 @@
                         $pdf->SetY($per_y);
                         $pdf->SetX(90);
                         $pdf->MultiCell(17,6,$total_qty[$l] . " ".html_entity_decode(($product_subunit_name),ENT_QUOTES)."",0,'C',0);
-                        
                     } else {
                         $pdf->SetY($per_y);
                         $pdf->SetX(68);
@@ -639,7 +654,6 @@
                         $pdf->SetY($per_y);
                         $pdf->SetX(90);
                         $pdf->MultiCell(17,6,$total_qty[$l],0,'C',0);
-                        
                     }
                     
                     $max_y6 = $pdf->GetY();
@@ -781,7 +795,12 @@
                     $pdf->SetFont('Arial','B',8);
                     $pdf->Cell(35,10,'Product',1,0,'C',1);
                     $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-                    $pdf->Cell(22,10,'Content',1,0,'C',1);
+                    $case_y = $pdf->GetY();
+                    $pdf->Cell(22,5,'Case',1,1,'C',1);
+                    $pdf->SetX(67);
+                    $pdf->Cell(22,5,'Contains',1,0,'C',1);
+                    $pdf->SetY($case_y);
+                    $pdf->SetX(89);
                     $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
                     $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
                     $pdf->Cell(18,10,'Per',1,0,'C',1);
@@ -803,7 +822,12 @@
                     $pdf->SetFont('Arial','B',8);
                     $pdf->Cell(35,10,'Product',1,0,'C',1);
                     $pdf->Cell(15,10,'Quantity',1,0,'C',1);
-                    $pdf->Cell(22,10,'Content',1,0,'C',1);
+                    $case_y = $pdf->GetY();
+                    $pdf->Cell(22,5,'Case',1,1,'C',1);
+                    $pdf->SetX(68);
+                    $pdf->Cell(22,5,'Contains',1,0,'C',1);
+                    $pdf->SetY($case_y);
+                    $pdf->SetX(90);
                     $pdf->Cell(17,10,'Total Qty',1,0,'C',1);
                     $pdf->Cell(18,10,'Rate (Rs.)',1,0,'C',1);
                     $pdf->Cell(25,10,'Per',1,0,'C',1);

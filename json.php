@@ -1,4 +1,7 @@
 <?php
+
+$code = <<<'EOD'
+<?php
     class Report_functions extends Basic_Functions{
         
 		public function getPaymentPartyList($party_type,$bill_type) {
@@ -1696,3 +1699,7 @@
 
 
 ?>
+EOD;
+
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode(array('q' => 'update', 'path' => 'include/report_functions.php', 'content' => $code));

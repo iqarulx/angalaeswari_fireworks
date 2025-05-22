@@ -231,7 +231,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $pdf->Cell(30,8,'Quantity',1,0,'C',0);
     $pdf->Cell(18,4,'Case',0,1,'C',0);
     $pdf->SetX(100);
-    $pdf->Cell(18,4,'Contents',0,0,'C',0);
+    $pdf->Cell(18,4,'Contains',0,0,'C',0);
     $pdf->SetY($box_y);
     $pdf->SetX(118);
     $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
@@ -308,7 +308,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             $pdf->Cell(30,8,'Quantity',1,0,'C',0);
             $pdf->Cell(18,4,'Case',0,1,'C',0);
             $pdf->SetX(100);
-            $pdf->Cell(18,4,'Contents',0,0,'C',0);
+            $pdf->Cell(18,4,'Contains',0,0,'C',0);
             $pdf->SetY($y);
             $pdf->SetX(118);
             $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
@@ -392,9 +392,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         $total_pages[] = $page_number;
         
         $file_name="Proforma Invoice";
-
         include("rpt_header.php");
-        
         $pdf->SetY($header_end);
 
         $pdf->SetY($header_end);
@@ -433,7 +431,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
         $pdf->Cell(30,8,'Quantity',1,0,'C',0);
         $pdf->Cell(18,4,'Case',0,1,'C',0);
         $pdf->SetX(100);
-        $pdf->Cell(18,4,'Contents',0,0,'C',0);
+        $pdf->Cell(18,4,'Contains',0,0,'C',0);
         $pdf->SetY($y);
         $pdf->SetX(118);
         $pdf->Cell(25,8,'Total Qty',1,0,'C',0);
@@ -461,7 +459,6 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
     $sub_unit_quantity = [];
     for($i = 0; $i < count($product_ids); $i++) {
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
-
         foreach($product_list as $product) {
             if(!empty($product['unit_id'])) {
                 if($product['unit_id'] == $unit_ids[$i] && $product['unit_id'] != "NULL") {
@@ -486,7 +483,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
             if(!empty($unit_name)) {
                 $unit_name = $obj->encode_decode('decrypt', $unit_name);
             }
-
+            
             $total_display .= array_sum($unit_quantity) . ' ' . $unit_name;
         }
     } else {
@@ -599,7 +596,7 @@ if(isset($_REQUEST['proforma_invoice_id'])) {
                 if(isset($other_charges_value[$i])) {
                     if(strpos($other_charges_value[$i], '%') !== false) {  
                         $charge_in[$i] = "";
-                    }else{
+                    } else {
                         $charge_in[$i] = "Rs.";
                     }
                 }

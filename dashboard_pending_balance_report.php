@@ -2,8 +2,9 @@
 	$page_title = "Pending Balance Report";
 
     $filter_party_id =""; 
-    $bill_company_id =$GLOBALS['bill_company_id'];
+    $bill_company_id = $GLOBALS['bill_company_id'];
 
+    // $from_date = date('Y-m-d', strtotime('-30 days', strtotime($to_date)));
     $to_date = ""; $from_date = ""; $current_date = "";
     $to_date = date('Y-m-d'); $current_date = date('Y-m-d');
 
@@ -142,16 +143,16 @@
                         <div class="border card-box" id="table_records_cover">
                             <div class="card-header align-items-center">
                                 <div class="row justify-content-end p-2">   
-                                    <div class="col-lg-2 col-md-3 col-12">
+                                    <div class="col-lg-3 col-md-3 col-12">
                                         <div class="form-group pb-2">
                                             <div class="form-label-group in-border mb-0">
                                             <?php
-                                            // Set default if not provided
-                                            if (isset($view_type) || !empty($view_type)) {
-                                                $view_type = (array)$view_type; // Ensure it's always an array
+                                            if (!isset($view_type) || empty($view_type)) {
+                                                $view_type = ["1", "2", "3", "4"]; 
+                                            } else {
+                                                $view_type = (array)$view_type;
                                             }
                                             ?>
-
                                             <select class="select2 select2-danger" name="view_type[]" data-dropdown-css-class="select2-danger"
                                                     style="width: 100%;" multiple onchange="Javascript:getPartyName(this);getReport();">
                                                 <option value="1" <?php echo (in_array("1", $view_type) ? 'selected' : ''); ?>>Agent</option>
@@ -180,10 +181,6 @@
                                                                             if(!empty($data['agent_name'])) {
                                                                                 $data['agent_name'] = $obj->encode_decode('decrypt', $data['agent_name']);
                                                                                 echo html_entity_decode($data['agent_name']);
-                                                                                // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                //     echo " - ".$data['city'];
-                                                                                // }
                                                                             }
                                                                         ?>
                                                                     </option>
@@ -197,10 +194,6 @@
                                                                             if(!empty($data['supplier_name'])) {
                                                                                 $data['supplier_name'] = $obj->encode_decode('decrypt', $data['supplier_name']);
                                                                                 echo html_entity_decode($data['supplier_name']);
-                                                                                // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                //     echo " - ".$data['city'];
-                                                                                // }
                                                                             }
                                                                         ?>
                                                                     </option>
@@ -214,10 +207,6 @@
                                                                             if(!empty($data['contractor_name'])) {
                                                                                 $data['contractor_name'] = $obj->encode_decode('decrypt', $data['contractor_name']);
                                                                                 echo html_entity_decode($data['contractor_name']);
-                                                                                // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                //     echo " - ".$data['city'];
-                                                                                // }
                                                                             }
                                                                         ?>
                                                                     </option>
@@ -231,10 +220,6 @@
                                                                             if(!empty($data['customer_name'])) {
                                                                                 $data['customer_name'] = $obj->encode_decode('decrypt', $data['customer_name']);
                                                                                 echo html_entity_decode($data['customer_name']);
-                                                                                // if(!empty($data['city']) && $data['city'] != $GLOBALS['null_value']) {
-                                                                                //     $data['city'] = $obj->encode_decode('decrypt', $data['city']);
-                                                                                //     echo " - ".$data['city'];
-                                                                                // }
                                                                             }
                                                                         ?>
                                                                     </option>
@@ -245,7 +230,7 @@
                                                         }
                                                     ?>
                                                 </select>
-                                                <label>Customer</label>
+                                                <label>Name</label>
                                             </div>
                                         </div> 
                                     </div>
@@ -285,8 +270,6 @@
 
                                         <button class="btn btn-success m-1" style="font-size:11px;" type="button" onclick="window.open('reports/rpt_pending_payment.php?filter_party_id=<?php echo $filter_party_id; ?>&from_date=<?php echo $from_date; ?>&to_date=<?php echo $to_date; ?>&view_type=<?php echo $view_type_value; ?>&is_download=D','_blank')"> <i class="fa fa-file-pdf-o"></i> Pdf </button>
                                         <button class="btn btn-danger m-1" style="font-size:11px;" type="button" onClick="ExportToExcel()"> <i class="fa fa-download"></i> Export </button> 
-
-                                        <!-- <button class="btn btn-secondary float-right " style="font-size:11px;" type="button" onClick="ExportToExcel()"><i class="fa fa-download"></i>&ensp; Export </button>  -->
                                     </div> 
                                     <form name="table_listing_form" method="post">
                                         <div class="col-sm-6 col-xl-8">

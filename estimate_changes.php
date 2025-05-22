@@ -449,7 +449,7 @@
                                     <?php /* <th style="width: 100px;" class="indv_magazine <?php if(empty($magazine_type) || ($magazine_type == 1)) { echo "d-none"; } ?>">Magazine</th> */?>
                                     <th style="width: 100px;">Type</th>
                                     <th style="width: 100px;">QTY</th>
-                                    <th style="width: 100px;">Content</th>
+                                    <th style="width: 100px;">Case<br>Contains</th>
                                     <th style="width: 100px;">Rate</th>
                                     <th style="width: 150px;">Per</th>
                                     <th class="tax_element d-none" style="width: 70px;">Tax</th>
@@ -833,8 +833,7 @@
         if(!empty($estimate_date_error)) {
             if(!empty($valid_estimate)) {
                 $valid_estimate = $valid_estimate." ".$valid->error_display($form_name, "estimate_date", $estimate_date_error, 'text');
-            }
-            else {
+            } else {
                 $valid_estimate = $valid->error_display($form_name, "estimate_date", $estimate_date_error, 'text');
             }
         }
@@ -848,8 +847,7 @@
         if(!empty($customer_id_error)) {
             if(!empty($valid_estimate)) {
                 $valid_estimate = $valid_estimate." ".$valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_estimate = $valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
             }
         }
@@ -865,8 +863,7 @@
         if(!empty($agent_id_error)) {
             if(!empty($valid_estimate)) {
                 $valid_estimate = $valid_estimate." ".$valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_estimate = $valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
             }
         }
@@ -885,8 +882,7 @@
         if(!empty($bank_id_error)) {
             if(!empty($valid_estimate)) {
                 $valid_estimate = $valid_estimate." ".$valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_estimate = $valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
             }
         }
@@ -1173,7 +1169,7 @@
                                         //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
                                         // }
                                     } else {
-                                        $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                        $product_error = "Empty Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                     } 
                                 } else {
                                     $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
@@ -1270,7 +1266,6 @@
         }
         $total_amount = number_format((float)$total_amount, 2, '.', '');
         $grand_total = $total_amount;
-
 
         if($gst_option == '1' && empty($product_error) && empty($valid_estimate)) {
             $percentage = 100;
@@ -1793,42 +1788,38 @@
                                         include('permission_action.php');
                                     }
                                 ?>
-                                <?php 
-                                        ?>
-                                        <div class="dropdown">
-                                            <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                                <li>
-                                                    <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_estimate_a4.php?estimate_id=<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
-                                                </li>
-                                                <?php 
-                                                    if(($show_bill == 0)){
-                                                        if(empty($edit_access_error)) {
-                                                            ?>
-                                                            <li>
-                                                                <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
-                                                            </li>
-                                                            <?php
-                                                        } 
-                                                    }
-                                                ?>  
-                                                 <?php 
-                                                    if(($show_bill == 0)){
-                                                        if(empty($delete_access_error)) {
-                                                            ?>
-                                                                <li>
-                                                                    <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;  Delete</a>
-                                                                </li>  
-                                                            <?php
-                                                        } 
-                                                    }
-                                                ?>  
-                                            </ul>
-                                        </div>
-                                        <?php
-                                ?>
+                                <div class="dropdown">
+                                    <button class="btn btn-dark show-button" type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="window.open('reports/rpt_estimate_a4.php?estimate_id=<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>')"><i class="fa fa-print"></i> &ensp;Print</a>
+                                        </li>
+                                        <?php 
+                                            if(($show_bill == 0)){
+                                                if(empty($edit_access_error)) {
+                                                    ?>
+                                                    <li>
+                                                        <a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-pencil"></i> &ensp;Edit</a>
+                                                    </li>
+                                                    <?php
+                                                } 
+                                            }
+                                        ?>  
+                                            <?php 
+                                            if(($show_bill == 0)){
+                                                if(empty($delete_access_error)) {
+                                                    ?>
+                                                        <li>
+                                                            <a class="dropdown-item" href="Javascript:DeleteModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['estimate_id'])) { echo $list['estimate_id']; } ?>');"><i class="fa fa-trash"></i> &ensp;  Delete</a>
+                                                        </li>  
+                                                    <?php
+                                                } 
+                                            }
+                                        ?>  
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                         

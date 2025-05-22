@@ -251,7 +251,7 @@
                             <select class="select2 select2-danger" name="contains" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:GetStockLimit();">
                             <option value="">Select</option>
                             </select>
-                            <label>Content <span class="text-danger">*</span></label>
+                            <label>Case Contains<span class="text-danger">*</span></label>
                         </div>
                     </div>  
                 </div>
@@ -294,7 +294,7 @@
                                     <!-- <th>Product Group</th> -->
                                     <th>Product</th>
                                     <th>Unit</th>
-                                    <th>Content</th>
+                                    <th>Case<br>Contains</th>
                                     <th>Qty</th>
                                     <th>Stock Action</th>
                                     <th>Action</th>

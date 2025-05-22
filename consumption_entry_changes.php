@@ -7,10 +7,11 @@
             $permission_module = $GLOBALS['consumption_entry_module'];
         }
     }
+
 	if(isset($_REQUEST['show_consumption_entry_id'])) { 
         $show_consumption_entry_id = $_REQUEST['show_consumption_entry_id'];
         $godown_id = array(); $product_id = array(); $unit_type = array(); $quantity = array();  $contractor_id = ""; $consumption_content = array(); $godown_type = ""; $entry_date = date('Y-m-d'); $first_godown_id = ""; $product_count =0;
-       if(!empty($show_consumption_entry_id)) {
+        if(!empty($show_consumption_entry_id)) {
             $show_consumption_entry_list = $obj->getTableRecords($GLOBALS['consumption_entry_table'], 'consumption_id', $show_consumption_entry_id, '');
             if(!empty($show_consumption_entry_list)) {
                 foreach($show_consumption_entry_list as $consumption_entry) {
@@ -75,7 +76,7 @@
                         <?php if(!empty($show_consumption_entry_id)){ ?>
                             <div class="h5">Edit consumption</div>
                             <?php
-                        }else{ ?>
+                        } else { ?>
                             <div class="h5">Add consumption</div>
                             <?php
                         } ?>
@@ -199,9 +200,9 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <select class="select2 select2-danger" name="selected_content" onchange="GetCurrentStock();"  data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                        <option value="">Select Content</option>    
+                                        <option value="">Select</option>    
                                     </select>
-                                    <label>Content</label>
+                                    <label>Case Contains</label>
                                 </div>
                             </div> 
                         </div>
@@ -223,9 +224,9 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <select class="select2 select2-danger" name="selected_consumption_content" onchange="GetStockLimit();" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                        <option value="">Select Contents</option>    
+                                        <option value="">Select</option>    
                                     </select>
-                                    <label>Contents</label>
+                                    <label>Case Contains</label>
                                 </div>
                             </div>        
                         </div>
@@ -248,7 +249,7 @@
                                             <th style="width:200px;">Product</th>
                                             <th style="width:100px;">Type</th>
                                             <th style="width:100px;">Qty</th>
-                                            <th style="width:100px;" class="subunit_contains">Content</th>
+                                            <th style="width:100px;" class="subunit_contains">Case<br>Contains</th>
                                             <th style="width:30px;">Action</th>
                                         </tr>
                                     </thead>
@@ -346,7 +347,7 @@
 
                                                                 $inward_quantity = $obj->getInwardQty('', $godown_id[$i], '', $product_id[$i], $consumption_content[$i]);
                                                                 $outward_quantity = $obj->getOutwardQty($show_consumption_entry_id, $godown_id[$i],'', $product_id[$i],$consumption_content[$i]);
-                                                             }else{
+                                                             } else {
                                                                 $inward_quantity = $obj->getInwardQty('', $godown_id[$i], '', $product_id[$i], '');
                                                                 $outward_quantity = $obj->getOutwardQty($show_consumption_entry_id, $godown_id[$i],'', $product_id[$i],'');
                                                              }
@@ -373,10 +374,9 @@
                                                 $product_count--;
                                              }
 
-                                            } ?>
-                                       
+                                            } 
+                                        ?>
                                     </tbody>
-                               
                                 </table>
                             </div>
                         </div>
@@ -411,7 +411,6 @@
     } 
 
     if(isset($_POST['edit_id'])) {
-        
         function combineAndSumUp ($myArray) {
             $finalArray = Array ();
             foreach ($myArray as $nkey => $nvalue) {
@@ -436,34 +435,34 @@
             return $finalArray;
         }
 
-        $edit_id = "";  $contractor_id = "";  $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = "";
-        $consumption_id = ""; $stock_unique_ids = array(); $group_id = array(); $unit_id = array(); $subunit_id = array();
-        $contractor_error = ""; $consumption_content = array(); $godown_type_error = ""; $overall_godown_error = ""; $overall_godown = "";
+        $edit_id = "";  $contractor_id = "";  $form_name = "consumption_form"; $product_id = array(); $unit_type = array(); $quantity = array(); $result = ""; $update_stock = 0; $unit_sub = array();  $entry_date = ""; $entry_date_error = ""; $consumption_id = ""; $stock_unique_ids = array(); $group_id = array(); $unit_id = array(); $subunit_id = array(); $contractor_error = ""; $consumption_content = array(); $godown_type_error = ""; $overall_godown_error = ""; $overall_godown = "";
+        
         if(isset($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
             $consumption_id = $edit_id;
         }
+
         if(isset($_POST['entry_date'])) {
             $entry_date = $_POST['entry_date'];
             $entry_date = trim($entry_date);
             $entry_date_error = $valid->valid_date($entry_date, 'Entry Date', '1');
             if(!empty($entry_date_error)) {
                 if(!empty($valid_consumption)) {
-                    $valid_consumption = $valid_consumption." ".$valid->error_display($form_name, 'entry_date', $entry_date_error, 'text');
-                }
-                else {
+                    $valid_consumption = $valid_consumption . " " . $valid->error_display($form_name, 'entry_date', $entry_date_error, 'text');
+                } else {
                     $valid_consumption = $valid->error_display($form_name, 'entry_date', $entry_date_error, 'text');
                 }
             }
         }
 
-
         if(isset($_POST['contractor'])) {
             $contractor_id = $_POST['contractor'];
         }
+
         if(empty($contractor_id)) {
             $contractor_error = "Select contractor";
         }
+
         if (!empty($contractor_error)) {
             if (!empty($valid_consumption)) {
                 $valid_consumption = $valid_consumption . " " . $valid->error_display($form_name, 'contractor', $contractor_error, 'select');
@@ -485,8 +484,8 @@
                 }
             }
         }
-        if($godown_type == 1){
-            
+
+        if($godown_type == 1){    
             $overall_godown = $_POST['overall_godown'];
             if(empty($overall_godown)) {
                 $overall_godown_error = "Select Godown";
@@ -499,21 +498,27 @@
                 }
             }
         }
+
         if(isset($_POST['godown_id'])) {
             $godown_id = $_POST['godown_id'];
         }
+
         if(isset($_POST['product_id'])) {
             $product_id = $_POST['product_id'];
         }
+
         if(isset($_POST['unit_type'])) {
             $unit_type = $_POST['unit_type'];
         }
+
         if(isset($_POST['quantity'])) {
             $quantity = $_POST['quantity'];
         }
+
         if(isset($_POST['contains'])) {
             $consumption_content = $_POST['contains'];
         }
+        
         $total_qty = 0;
         if(!empty($product_id) && count($product_id) > 0) {
             if(empty($edit_id)) {
@@ -530,7 +535,7 @@
                 $quantity[$i] = trim($quantity[$i]);
                 if(!empty($consumption_content[$i]) && $consumption_content[$i] != $GLOBALS['null_value']){
                     $consumption_content[$i] = trim($consumption_content[$i]);
-                }else{
+                } else {
                     $consumption_content[$i] = $GLOBALS['null_value'];
                 }
                 $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_id[$i], '');
@@ -553,15 +558,14 @@
                     $unit_sub[$i] = $subunit_id[$i];
                 }
                 $stock_unique_ids[$i] = $obj->getStockUniqueID($edit_id, $godown_id[$i], $GLOBALS['null_value'], $product_id[$i], $unit_sub[$i], $consumption_content[$i]);
-                // echo $stock_unique_ids[$i]."/";
+                // echo $stock_unique_ids[$i] . "/";
                 if(empty($quantity[$i]) || $quantity[$i] == 0) {
                     $quantity_error = "";
                     $quantity_error = $valid->common_validation($quantity[$i], 'quantity', 'text');
                     if(!empty($quantity_error)) {
                         if(!empty($valid_consumption)) {
-                            $valid_consumption = $valid_consumption." ".$valid->row_error_display($form_name, 'quantity[]', $quantity_error, 'text', 'product_row', ($i+1));
-                        }
-                        else {
+                            $valid_consumption = $valid_consumption . " " . $valid->row_error_display($form_name, 'quantity[]', $quantity_error, 'text', 'product_row', ($i+1));
+                        } else {
                             $valid_consumption = $valid->row_error_display($form_name, 'quantity[]', $quantity_error, 'text', 'product_row', ($i+1));
                         }
                     } 
@@ -577,7 +581,6 @@
                 }
 
                 $individual_tax[] = array( 'godown_id' => $godown_id[$i],'product_id' => $product_id[$i],'consumption_content' => $consumption_content[$i],'quantity' => $product_qty);
-
             }
 
             array_multisort(array_column($individual_tax, "godown_id"), SORT_ASC, array_column($individual_tax, "consumption_content"), SORT_ASC, array_column($individual_tax, "product_id"), SORT_ASC, $individual_tax);
@@ -590,8 +593,7 @@
                 $consumption_content = array_reverse($consumption_content);
             }
 
-            if(empty($valid_consumption))
-            {
+            if(empty($valid_consumption)) {
                 $final_array = combineAndSumUp($individual_tax);
             }
 
@@ -600,10 +602,8 @@
         }
 
         $stock_error = 0; $valid_stock = "";
-        if(!empty($final_array) && empty($valid_consumption))
-        {
-            foreach($final_array as $data)
-            {
+        if(!empty($final_array) && empty($valid_consumption)) {
+            foreach($final_array as $data) {
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $subunit_need = 0; $product ="";
                 $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
                 $inward_unit = $obj->getInwardQty('',$data['godown_id'],'',$data['product_id'],$data['consumption_content']);
@@ -616,7 +616,7 @@
                 $available_stock_subunit = $inward_subunit - $outward_subunit;
 
                 $outward_unit += $data['quantity'];
-                // echo $data['quantity']."/".$data['consumption_content'];
+                // echo $data['quantity'] . "/" . $data['consumption_content'];
                 if(!empty($data['consumption_content']) && $data['consumption_content'] != $GLOBALS['null_value']){
                     $outward_subunit += ($data['quantity'] * $data['consumption_content']);
                 }
@@ -624,7 +624,7 @@
                 $current_stock_unit = $inward_unit - $outward_unit;
                 $current_stock_subunit = $inward_subunit - $outward_subunit;
 
-                // echo $current_stock_unit." / ".$data['quantity'];
+                // echo $current_stock_unit . " / " . $data['quantity'];
                 if($current_stock_unit < 0) {
                     $product = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'product_name');
                     if(!empty($product)) {
@@ -746,7 +746,7 @@
                             if (preg_match("/^\d+$/", $stock_table_unique_id)) {
                                 $columns = array(); $values = array();
                                 $columns = array('current_stock_unit', 'current_stock_subunit');
-                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
+                                $values = array("'" . $current_stock_unit . "'", "'" . $current_stock_subunit . "'");
                                 $stock_table_update_id = $obj->UpdateSQL($GLOBALS['stock_by_godown_table'], $stock_table_unique_id, $columns, $values, '');
                             }
                         }
@@ -763,7 +763,6 @@
             $factory_name_location = ""; $magazine_name_location = ""; $contractor_name_mobile_city = "";
             $factory_details = ""; $magazine_details = ""; $contractor_details = "";
 
-       
             if (preg_match("/^\d+$/", $check_user_id_ip_address)) {
                 if(!empty($godown_id)) {
                     $godown_id = implode(",", $godown_id);
@@ -811,7 +810,7 @@
                     $action = "New consumption Created ";
                     $null_value = $GLOBALS['null_value'];
                     $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'company_details','consumption_id','consumption_entry_number', 'entry_date','godown_type','product_id', 'godown_id', 'unit_type', 'quantity','content', 'total_quantity','contractor_id','contractor_details','contractor_mobile_city ', 'cancelled','deleted');
-                    $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$company_details."'","'".$null_value."'", "'".$null_value."'","'".$entry_date."'", "'".$godown_type."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$consumption_content."'", "'".$total_qty."'",  "'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'","'0'","'0'");
+                    $values = array("'" . $created_date_time . "'", "'" . $creator . "'", "'" . $creator_name . "'","'" . $bill_company_id . "'", "'" . $company_details . "'","'" . $null_value . "'", "'" . $null_value . "'","'" . $entry_date . "'", "'" . $godown_type . "'", "'" . $product_id . "'", "'" . $godown_id . "'", "'" . $unit_type . "'", "'" . $quantity . "'", "'" . $consumption_content . "'", "'" . $total_qty . "'",  "'" . $contractor_id . "'", "'" . $contractor_details . "'", "'" . $contractor_mobile_city . "'","'0'","'0'");
                     $insert_id = $obj->InsertSQL($GLOBALS['consumption_entry_table'], $columns, $values, "consumption_id", "consumption_entry_number", $action);
                     if (preg_match("/^\d+$/", $insert_id)) {
 
@@ -826,10 +825,10 @@
                 } else {
                     $getUniqueID = $obj->getTableColumnValue($GLOBALS['consumption_entry_table'], 'consumption_id', $edit_id, 'id');
                     if(preg_match("/^\d+$/", $getUniqueID)) {
-                        $action = "consumption Updated.";
+                        $action = "consumption Updated . ";
                         $columns = array(); $values = array();	
                         $columns = array('company_details', 'product_id', 'godown_id', 'unit_type', 'quantity', 'total_quantity','entry_date','content','godown_type','contractor_id','contractor_details','contractor_mobile_city ');
-                        $values = array("'".$company_details."'", "'".$product_id."'", "'".$godown_id."'", "'".$unit_type."'", "'".$quantity."'", "'".$total_qty."'","'".$entry_date."'","'".$consumption_content."'","'".$godown_type."'","'".$contractor_id."'", "'".$contractor_details."'", "'".$contractor_mobile_city."'");
+                        $values = array("'" . $company_details . "'", "'" . $product_id . "'", "'" . $godown_id . "'", "'" . $unit_type . "'", "'" . $quantity . "'", "'" . $total_qty . "'","'" . $entry_date . "'","'" . $consumption_content . "'","'" . $godown_type . "'","'" . $contractor_id . "'", "'" . $contractor_details . "'", "'" . $contractor_mobile_city . "'");
                         $consumption_update_id = $obj->UpdateSQL($GLOBALS['consumption_entry_table'], $getUniqueID, $columns, $values, $action);
                         if(preg_match("/^\d+$/", $consumption_update_id)) {
                             $consumption_id = $edit_id;
@@ -943,8 +942,7 @@
                     $page_start = ($page_number - 1) * $page_limit;
                     $page_end = $page_start + $page_limit;
                 }
-            }
-            else {
+            } else {
                 $page_start = 0;
                 $page_end = $page_limit;
             }
@@ -988,13 +986,13 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                    if(!empty($show_records_list)) { 
-                        foreach($show_records_list as $key => $data) {
-                            $index = $key + 1;
-                            if(!empty($prefix)) { $index = $index + $prefix; } 
+            <?php
+                if(!empty($show_records_list)) { 
+                    foreach($show_records_list as $key => $data) {
+                        $index = $key + 1;
+                        if(!empty($prefix)) { $index = $index + $prefix; }
                     ?>
-                     <tr>
+                    <tr>
                         <td class="ribbon-header" style="cursor:default;">   
                             <?php  echo $index; ?>
                         </td>
@@ -1016,14 +1014,14 @@
                                 <?php
                                     if(!empty($data['creator_name'])) {
                                         $data['creator_name'] = $obj->encode_decode('decrypt', $data['creator_name']);
-                                        echo " Creator : ". $data['creator_name'];
+                                        echo " Creator : " .  $data['creator_name'];
                                     }
                                 ?>                                        
                             </div>
                             <?php
                                 if(!empty($data['cancelled'])) {
                                     ?>
-                                          <span style="color: red;">Cancelled</span>
+                                            <span style="color: red;">Cancelled</span>
                                     <?php	
                                 }	 ?>
                         </td>
@@ -1035,7 +1033,7 @@
                                     echo $data['contractor_mobile_city'];
                                 }
                             ?>
-                         
+                            
                         </td>
                         */ ?>
                         <td class="ribbon-header" style="cursor:default;">
@@ -1046,7 +1044,7 @@
                             ?>
                         </td>
                         <td>
-                              <?php 
+                            <?php 
                                 $edit_access_error = "";
                                 if(!empty($login_staff_id)) {
                                     $permission_action = $edit_action;
@@ -1063,7 +1061,7 @@
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                     <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_consumption_entry_a5.php?view_consumption_entry_id=<?php if(!empty($data['consumption_id'])) { echo $data['consumption_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
+                                        <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_consumption_entry_a5.php?view_consumption_entry_id=<?php if(!empty($data['consumption_id'])) { echo $data['consumption_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                     <?php 
                                         $edit_access_error = "";
                                         if(!empty($login_staff_id)) {
@@ -1101,20 +1099,18 @@
                             
                         </td>
                     </tr>
-
-                <?php 
-                        } 
-                    } else {
-                ?>
-                        <tr>
-                            <td colspan="5" class="text-center">Sorry! No records found</td>
-                        </tr>
-                <?php 
+                    <?php 
                     } 
-                ?>
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5" class="text-center">Sorry! No records found</td>
+                    </tr>
+                    <?php 
+                } 
+            ?>
             </tbody>
-        </table>   
-                      
+        </table>         
 		<?php	
         }
     }
@@ -1215,20 +1211,18 @@
             $contains_count = count($case_contains);
 
         ?>
-            <option value="">Select Content</option>
-                <?php 
-            for($i=0; $i< count($case_contains); $i++){ 
+            <option value="">Select Case Contains</option>
+            <?php 
+            for($i = 0; $i < count($case_contains); $i++){ 
                 if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { ?>
                     <option value="<?php if(!empty($case_contains[$i]) && $case_contains[$i] != $GLOBALS['null_value']) { echo $case_contains[$i]; } ?>" <?php if(!empty($case_contains) && $case_contains[$i] != $GLOBALS['null_value'] && $contains_count == 1) { ?> selected <?php } ?>>
-                        <?php
-                    
-                                echo  $case_contains[$i];
-                        ?>
+                    <?php
+                        echo $case_contains[$i];
+                    ?>
                     </option>
                     <?php 
                 } 
             }
-
         }
     }
     
@@ -1320,7 +1314,7 @@
             <th class="text-center px-2 py-2">
             <?php if(!empty($contains)) { 
                     echo $contains; 
-                }else{
+                } else {
                     echo " - ";
                 }
              ?>
@@ -1467,7 +1461,7 @@
                             if (preg_match("/^\d+$/", $stock_table_unique_id)) {
                                 $columns = array(); $values = array();
                                 $columns = array('current_stock_unit', 'current_stock_subunit');
-                                $values = array("'".$current_stock_unit."'", "'".$current_stock_subunit."'");
+                                $values = array("'" . $current_stock_unit . "'", "'" . $current_stock_subunit . "'");
                                 $stock_table_update_id = $obj->UpdateSQL($GLOBALS['stock_by_godown_table'], $stock_table_unique_id, $columns, $values, '');
                             }
                         }

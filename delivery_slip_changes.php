@@ -474,7 +474,7 @@
                                     <th style="width: 100px;" class="indv_magazine <?php if(empty($magazine_type) || ($magazine_type == 1)) { echo "d-none"; } ?>">Magazine</th>
                                     <th style="width: 100px;">Type</th>
                                     <th style="width: 100px;">QTY</th>
-                                    <th style="width: 100px;">Content</th>
+                                    <th style="width: 100px;">Case<br>Contains</th>
                                     <?php /*
                                     <th style="width: 100px;">Rate</th>
                                     <th style="width: 150px;">Per</th>
@@ -849,8 +849,7 @@
         if(!empty($proforma_invoice_date_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "proforma_invoice_date", $proforma_invoice_date_error, 'text');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "proforma_invoice_date", $proforma_invoice_date_error, 'text');
             }
         }
@@ -864,8 +863,7 @@
         if(!empty($customer_id_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "customer_id", $customer_id_error, 'select');
             }
         }
@@ -881,8 +879,7 @@
         if(!empty($agent_id_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "agent_id", $agent_id_error, 'select');
             }
         }
@@ -901,8 +898,7 @@
         if(!empty($bank_id_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "bank_id", $bank_id_error, 'select');
             }
         }
@@ -916,8 +912,7 @@
         if(!empty($magazine_type_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "magazine_type", $magazine_type_error, 'select');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "magazine_type", $magazine_type_error, 'select');
             }
         }
@@ -935,8 +930,7 @@
         if(!empty($magazine_id_error)) {
             if(!empty($valid_delivery_slip)) {
                 $valid_delivery_slip = $valid_delivery_slip." ".$valid->error_display($form_name, "magazine_id", $magazine_id_error, 'select');
-            }
-            else {
+            } else {
                 $valid_delivery_slip = $valid->error_display($form_name, "magazine_id", $magazine_id_error, 'select');
             }
         }
@@ -1218,10 +1212,10 @@
                                                     $product_error = "Empty Rate in Product - ".($obj->encode_decode('decrypt', $product_name));
                                                 }     
                                             // } else {
-                                            //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                            //     $product_error = "Invalid Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                             // }
                                         } else {
-                                            $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                            $product_error = "Empty Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                         } 
                                     } else {
                                         $product_error = "Empty Unit Type in Product - ".($obj->encode_decode('decrypt', $product_name));
@@ -1274,12 +1268,10 @@
                         if(!empty($other_charges_error)) {
                             if(!empty($purchase_entry_error)) {
                                 $purchase_entry_error = $purchase_entry_error."<br>".$other_charges_error;
-                            }
-                            else {
+                            } else {
                                 $purchase_entry_error = $other_charges_error;
                             }
-                        }
-                        else {
+                        } else {
                             if(strpos($other_charges_values[$i], '%') !== false) {
                                 $other_charges_value = ($other_charges_value * $total_amount) / 100;
                                 $other_charges_value = number_format($other_charges_value, 2);
@@ -1291,8 +1283,7 @@
                         $other_charges_total[$i] = $other_charges_value;
                         if($charges_type[$i] == "minus") {
                             $total_amount -= $other_charges_value;
-                        }
-                        else if($charges_type[$i] == "plus") {
+                        } else if($charges_type[$i] == "plus") {
                             $total_amount += $other_charges_value;
                         }
                     }
@@ -1340,8 +1331,7 @@
                 $tax = trim($tax);
                 if(preg_match("/^[0-9]+(\\.[0-9]+)?$/", $tax)) {
                     $total_tax_value = ($tax * $grand_total) / $percentage;
-                }
-                else {
+                } else {
                     $product_error = "Invalid Overall tax";
                 }
             }
@@ -1377,14 +1367,12 @@
                         $round_off = 100 - $decimal;
                         if($round_off < 10) {
                             $round_off = "0.0".$round_off;
-                        }
-                        else {
+                        } else {
                             $round_off = "0.".$round_off;
                         }
                         
                         $total_amount = $total_amount + $round_off;
-                    }
-                    else {
+                    } else {
                         $decimal = "0.".$decimal;
                         $round_off = "-".$decimal;
                         $total_amount = $total_amount - $decimal;
@@ -1976,8 +1964,7 @@
 					$page_start = ($page_number - 1) * $page_limit;
 					$page_end = $page_start + $page_limit;
 				}
-			}
-			else {
+			} else {
 				$page_start = 0;
 				$page_end = $page_limit;
 			}
@@ -2200,7 +2187,6 @@
                                 ?>
                             </td>
                         </tr>
-                        
                         <?php
                     }
                 } else {
@@ -2330,8 +2316,7 @@
         exit;
     }
 
-
-   if(isset($_REQUEST['get_stock_product'])) {
+    if(isset($_REQUEST['get_stock_product'])) {
         $product_id = $_REQUEST['product_id'];
         $magazine_id = $_REQUEST['magazine_id'];
         $content = $_REQUEST['content'];
@@ -2382,4 +2367,5 @@
                 echo 0;
             }
         }
-   }
+    }
+?>

@@ -50,6 +50,14 @@
         $excel_name = "Daybook Report"; 
     }
 
+    $selected_payment_mode_name = '';
+    foreach ($payment_mode_list as $mode) {
+        if ($mode['payment_mode_id'] == $payment_mode_id) {
+            $selected_payment_mode_name = $obj->encode_decode('decrypt', $mode['payment_mode_name']);
+            break;
+        }
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +139,16 @@
                                             <thead class="bg-light">
                                                 <tr>
                                                     <th colspan="8" class="text-center py-2 px-2">
-                                                        Daybook Ledger <?php if(!empty($from_date)) { echo " - ( ".date('d-m-Y', strtotime($from_date)). "&nbsp;  to &nbsp; "; } if(!empty($to_date)) { echo  date('d-m-Y', strtotime($to_date))." )"; }  ?> <br>
+                                                        Daybook Ledger 
+                                                        <?php 
+                                                        if(!empty($from_date)) { 
+                                                            echo " - ( ".date('d-m-Y', strtotime($from_date)). " to "; 
+                                                        } 
+                                                        if(!empty($to_date)) { 
+                                                            echo date('d-m-Y', strtotime($to_date))." )"; 
+                                                        } 
+                                                        ?> 
+                                                        <br>
                                                     </th>
                                                 </tr>
                                                 <tr>
@@ -139,203 +156,177 @@
                                                     <th>Date <br> Bill Number</th>
                                                     <th>Bill Type</th>
                                                     <th>Name</th>
-                                                    <th>Payment Type</th>
-                                                    <th>Account</th>
+                                                    <th>Payment Type & Account</th>
                                                     <th>Credit</th>
                                                     <th>Debit</th>
                                                 </tr>
                                             </thead>
-                                            <?php 
-                                            $individual_record = array();
-                                            if(!empty($total_records_list)) { 
-                                                ?>
-                                                <tbody>
-                                                    <?php
-                                                    $credit_amount = 0; $debit_amount = 0; $total =0; 
-                                                    foreach($total_records_list as $val => $data) {
-                                                        $index = $val + 1;
+                                            <tbody>
+                                                <?php 
+                                                $credit_amount = 0; 
+                                                $debit_amount = 0;
+
+                                                if (!empty($total_records_list)) {
+                                                    $i = 1;
+                                                    foreach ($total_records_list as $data) {
+                                                        $types = !empty($data['payment_type']) ? explode(",", $data['payment_type']) : [];
+                                                        $banks = !empty($data['bank_id']) ? explode(",", $data['bank_id']) : [];
+                                                        $amounts = !empty($data['payment_amount']) ? explode(",", $data['payment_amount']) : [];
+
+                                                        $has_match = true;
+                                                        if (!empty($payment_mode_id) && !empty($types)) {
+                                                            $has_match = false;
+                                                            foreach ($types as $index => $pt_enc) {
+                                                                $pt = $obj->encode_decode("decrypt", $pt_enc);
+                                                                if ($pt == $selected_payment_mode_name) {
+                                                                    $has_match = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (!$has_match) continue;
+
                                                         ?>
-                                                        <tr style="cursor:pointer" onclick="open_daybook_report('<?php echo htmlspecialchars($data['bill_id']); ?>','<?php echo htmlspecialchars( $data['type']); ?>')">
-                                                        <td class="text-center py-2 px-2"><?php echo $index; ?></td>
-                                                            <td  class="text-center px-2 py-2">
+                                                        <tr>
+                                                            <td><?= $i++; ?></td>
+                                                            <td>
+                                                                <?= date('d-m-Y', strtotime($data['bill_date'])); ?><br>
+                                                                <?= $data['bill_number']; ?>
+                                                                <?php if (in_array($data['type'], ['Receipt', 'Voucher', 'Expense'])) { ?>
+                                                                    <br>
+                                                                    <span style="font-size:9px;cursor:pointer;" onclick="open_daybook_report('<?= $data['bill_id']; ?>','<?= $data['type']; ?>')">
+                                                                        <i class="bi bi-eye-fill text-dark fs-15"></i>
+                                                                    </span>
+                                                                <?php } ?>
+                                                            </td>
+                                                            <td><?= $data['type']; ?></td>
+                                                            <td>
                                                                 <?php
-                                                                if(!empty($data['bill_number'])) {
-                                                                    echo $data['bill_number'];
-                                                                }
-                                                                ?>
-                                                                <br> <?php
-                                                                echo date('d-m-Y', strtoTime($data['bill_date']));
-                                                                ?>
-                                                            </td>
-                                                            <td  class="text-center px-2 py-2">
-                                                                <?php
-                                                                if(!empty($data['type'])) {
-                                                                    echo $data['type'];
-                                                                }
-                                                                ?>
-                                                            </td>
-                                                            <td  class="text-center py-2 px-2">
-                                                                <?php
-                                                                    if(!empty($data['party_name']) && $data['party_name'] != 'NULL') {
-                                                                        if($data['type'] != "Expense") {
-                                                                            echo html_entity_decode($obj->encode_decode("decrypt",$data['party_name']));
-                                                                        } else {
-                                                                            $expense_party_name = "";
-                                                                            $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $data['party_id'], 'expense_party_name');
-                                                                            if(!empty($expense_party_name)) {
-                                                                                echo html_entity_decode($obj->encode_decode("decrypt", $expense_party_name));
-                                                                            } else {
-                                                                                echo "-";
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                ?>
-                                                            </td>
-                                                            <td  class="text-center px-2 py-2" >
-                                                                <div class="w-100">
-                                                                    <?php 
-                                                                    $mode_of_payment = ""; $account_name ="";
-                                                                    if(!empty($data['payment_type'])) {
-                                                                        $payment_type = explode(",",$data['payment_type']);
-                                                                        for($i=0; $i < count($payment_type); $i++) {
-                                                                            echo $obj->encode_decode("decrypt", $payment_type[$i]);
-                                                                            if($i < (count($payment_type))-1) {
-                                                                                echo "<br>";
-                                                                            }
-                                                                        }                
-                                                                    }else{
-                                                                        echo "-";
-                                                                    }
-                                                                    ?>
-                                                                </div>                        
-                                                            </td>
-                                                            <td  class="text-center px-2 py-2" >
-                                                                <div class="w-100">
-                                                                    <?php 
-                                                                    $mode_of_payment = ""; $account_name ="";
-                                                                        if(!empty($data['bank_id'])) {
-                                                                            $bank_id = explode(",",$data['bank_id']);
-                                                                            for($i=0; $i < count($bank_id); $i++) {
-                                                                                $name = $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $bank_id[$i], 'bank_name');
-                                                                                echo $obj->encode_decode("decrypt", $name);
-                                                                                if($i < (count($bank_id)) -1) {
-                                                                                    echo "<br>";
-                                                                                }
-                                                                            }                            
-                                                                        }else{
-                                                                            echo "-";
-                                                                        }
-                                                                    ?>
-                                                                </div>                          
-                                                            </td>
-                                                            <td  class="text-right px-2 py-2">
-                                                                <?php
-                                                                if(($data['type'] == "Receipt" || $data['type'] == 'Purchase Entry')) {
-                                                                    if(!empty($data['amount'])) {
+                                                                if (!empty($data['party_name']) && $data['party_name'] != 'NULL') {
+                                                                    if ($data['type'] != "Expense") {
+                                                                        echo html_entity_decode($obj->encode_decode("decrypt", $data['party_name']));
+                                                                       
+                                                                    } else {
+                                                                        $expense_party_name = $obj->getTableColumnValue($GLOBALS['expense_party_table'], 'expense_party_id', $data['party_id'], 'expense_party_name');
+                                                                        echo !empty($expense_party_name) ? html_entity_decode($obj->encode_decode("decrypt", $expense_party_name)) : "-";
                                                                         
-                                                                        $credit = explode(",",$data['amount']);
-                                                                        for($i=0; $i < count($credit); $i++) {
-        
-                                                                            echo  $obj->numberFormat($credit[$i],2);
-                                                                            $credit_amount += $credit[$i];
-                                                                    
-                                                                            if($i < (count($credit))-1) {
-                                                                                echo "<div style='border-bottom: 1px solid grey;'>";
-                                                                                echo "</div>";
-                                                                            }
-                                                                        }  
                                                                     }
-                                                                }else if ($data['type'] == "Purchase Entry") {
-                                                                    if(!empty($data['amount'])) {
-                                                                        echo $obj->numberFormat($data['amount'],2);
-                                                                        $credit_amount += $data['amount'];
+                                                                         
+                                                                } else {
+                                                                    if(!empty($data['category_id'])){
+                                                                        $expense_category_name ="";
+                                                                        $expense_category_name = $obj->getTableColumnValue($GLOBALS['expense_category_table'], 'expense_category_id', $data['category_id'], 'expense_category_name');
+                                                                        echo $obj->encode_decode('decrypt',$expense_category_name);
                                                                     }
-                                                                }else{
-                                                                    echo "-";
+                                                                        
                                                                 }
                                                                 ?>
                                                             </td>
-                                                            <td class="text-right px-2 py-2">
-                                                                <?php               
-                                                                if(($data['type'] == "Voucher") || ($data['type'] == "Expense") || ($data['type'] == 'Estimate')) {
-                                                                    if(!empty($data['amount'])) {
-                                                                        $debit = explode(",",$data['amount']);
-                                                                        for($i=0; $i < count($debit); $i++) {
-        
-                                                                            echo  $obj->numberFormat($debit[$i],2);
-                                                                            $debit_amount += $debit[$i];
-                                                                    
-                                                                            if($i < (count($debit))-1) {
-                                                                                echo "<div style='border-bottom: 1px solid grey;'>";
-                                                                                echo "</div>";
-        
-                                                                            }
-                                                                            
-                                                                        }  
-                                                                    
-                                                                    }
-                                                                }else if ($data['type'] == 'Estimate') {
-                                                                    if(!empty($data['amount'])) {
-                                                                        $amount = explode(",",$data['amount']);
-                                                                        echo $obj->numberFormat(array_sum($amount), 2);
-                                                                        $debit_amount += array_sum($amount);
-                                                                    }
-                                                                }else{
+                                                            <td class="text-left">
+                                                                <?php
+                                                                $credit_lines = [];
+                                                                $debit_lines = [];
+
+                                                                if ($data['type'] === 'Purchase Entry' || $data['type'] === 'Estimate') {
                                                                     echo "-";
-                                                                } ?>
+                                                                } else {
+                                                                    if (in_array($data['type'], ['Receipt', 'Voucher', 'Expense'])) {
+                                                                        foreach ($types as $index => $pt_enc) {
+                                                                            $pt = $obj->encode_decode("decrypt", $pt_enc);
+                                                                            $bank_name = isset($banks[$index]) ? $obj->getTableColumnValue($GLOBALS['bank_table'], 'bank_id', $banks[$index], 'bank_name') : '';
+                                                                            $bank = !empty($bank_name) ? $obj->encode_decode("decrypt", $bank_name) : '';
+                                                                            $amount = isset($amounts[$index]) ? floatval($amounts[$index]) : 0;
+
+                                                                            if (empty($payment_mode_id) || $pt == $selected_payment_mode_name) {
+                                                                                $display = $pt . (!empty($bank) ? " (" . $bank . ")" : "") . " - ₹" . $obj->numberFormat($amount, 2);
+
+                                                                                if (in_array($data['type'], ['Receipt'])) {
+                                                                                    $credit_lines[] = $display;
+                                                                                    $credit_amount += $amount;
+                                                                                } elseif (in_array($data['type'], ['Voucher', 'Expense'])) {
+                                                                                    $debit_lines[] = $display;
+                                                                                    $debit_amount += $amount;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if ($data['type'] === 'Purchase Entry') {
+                                                                    if (empty($amounts)) {
+                                                                        $amt = floatval($data['amount']);
+                                                                        if ($amt > 0) {
+                                                                            $credit_amount += $amt;
+                                                                        }
+                                                                    }
+                                                                } elseif ($data['type'] === 'Estimate') {
+                                                                    $amt = floatval($data['amount']);
+                                                                    if ($amt > 0) {
+                                                                        $debit_amount += $amt;
+                                                                    }
+                                                                }
+
+                                                                if ($data['type'] !== 'Purchase Entry' && $data['type'] !== 'Estimate') {
+                                                                    echo !empty($credit_lines) || !empty($debit_lines)
+                                                                        ? implode("<br>", array_merge($credit_lines, $debit_lines))
+                                                                        : "-";
+                                                                }
+                                                                ?>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <?php
+                                                                $credit_total = 0;
+                                                                foreach ($credit_lines as $line) {
+                                                                    preg_match('/₹([\d.,]+)/', $line, $matches);
+                                                                    $credit_total += isset($matches[1]) ? floatval(str_replace(',', '', $matches[1])) : 0;
+                                                                }
+                                                               
+                                                                if ($data['type'] === 'Purchase Entry' && empty($amounts)) {
+                                                                    $credit_total += floatval($data['amount']);
+                                                                }
+                                                                echo $credit_total > 0 ? $obj->numberFormat($credit_total, 2) : "-";
+                                                                ?>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <?php
+                                                                $debit_total = 0;
+                                                                foreach ($debit_lines as $line) {
+                                                                    preg_match('/₹([\d.,]+)/', $line, $matches);
+                                                                    $debit_total += isset($matches[1]) ? floatval(str_replace(',', '', $matches[1])) : 0;
+                                                                }
+                                                                
+                                                                if ($data['type'] === 'Estimate') {
+                                                                    $debit_total += floatval($data['amount']);
+                                                                }
+                                                                echo $debit_total > 0 ? $obj->numberFormat($debit_total, 2) : "-";
+                                                                ?>
                                                             </td>
                                                         </tr>
-                                                       <?php 
-                                                    } ?>  
-                                                </tbody>
-                                                <?php 
-                                                    $display_status =""; $id ="";
-                                                    if(!empty($party_id)) {
-                                                        $id = $obj->getTableColumnValue($GLOBALS['party_table'], 'party_id', $party_id, 'id');
-                                                        if(!empty($id)) { 
-                                                            if($credit_amount > $debit_amount )
-                                                            {
-                                                                $display_status ="Total";
-                                                            }
-                                                            else {
-                                                                $display_status ="Total";
-                                                            }
-                                                        }
-                                                        else{
-                                                            if($credit_amount < $debit_amount )
-                                                            {
-                                                                $display_status ="Total";
-                                                            }
-                                                            else{
-                                                                $display_status ="Total";
-                                                            }
-                                                        }
-                                                    }
-                                                
-                                                ?>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th colspan="6" class="text-right py-2 px-2">Total</th>
-                                                        <th class="sales_total text-right" ><?php if(!empty($credit_amount)){ echo $obj->numberFormat($credit_amount,2); } ?></th>
-                                                        <th class="receipt_total text-right" ><?php if(!empty($debit_amount)){ echo $obj->numberFormat($debit_amount,2); } ?></th>
-                                                    </tr>
-                                                    <tr style="color:red;">
-                                                        <th class="text-center px-2 py-2" colspan="6" >Balance</th>
-                                                        <td class="text-right py-2 px-2"><?php if($credit_amount > $debit_amount) { echo $obj->numberFormat(($credit_amount- $debit_amount),2)." Cr"; } ?>
-                                                        <td  class="text-right px-2 py-2"> <?php if($debit_amount > $credit_amount){ 
-                                                            $total_pending_amount = $debit_amount - $credit_amount; echo $obj->numberFormat($total_pending_amount,2)." Dr"; } ?></td>
-                                                        </td>
-                                                    </tr>
-                                                </tfoot>
-                                                <?php 
-                                            } else { ?>
+                                                    <?php } ?>
+                                                <?php } else { ?>
+                                                    <tr><td colspan="8" class="text-center">No Records Found</td></tr>
+                                                <?php } ?>
+                                            </tbody>
+
+                                            <?php if (!empty($total_records_list)) { ?>
+                                            <tfoot>
                                                 <tr>
-                                                    <td colspan="8" style="border: 1px solid #000; text-align: center; padding: 2px 5px;">
-                                                        No Records Found
+                                                    <th colspan="5" class="text-right py-2 px-2">Total</th>
+                                                    <th class="text-right"><?= $obj->numberFormat($credit_amount, 2); ?></th>
+                                                    <th class="text-right"><?= $obj->numberFormat($debit_amount, 2); ?></th>
+                                                </tr>
+                                                <tr style="color:red;">
+                                                    <th colspan="5" class="text-center px-2 py-2">Balance</th>
+                                                    <td class="text-right py-2 px-2">
+                                                        <?= ($credit_amount > $debit_amount) ? $obj->numberFormat($credit_amount - $debit_amount, 2) . " Cr" : "-"; ?>
+                                                    </td>
+                                                    <td class="text-right px-2 py-2">
+                                                        <?= ($debit_amount > $credit_amount) ? $obj->numberFormat($debit_amount - $credit_amount, 2) . " Dr" : "-"; ?>
                                                     </td>
                                                 </tr>
-                                            <?php } ?> 
-                                        </table> 
+                                            </tfoot>
+                                            <?php } ?>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -343,8 +334,7 @@
                     </div>
                 </div>  
             </div>
-        </div>
-    </div>
+        </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
@@ -358,6 +348,34 @@
         if(jQuery('form[name="daybook_report_form"]').length > 0){
             jQuery('form[name="daybook_report_form"]').submit();
         } 
+    }
+
+    function open_daybook_report(bill_id,type) {
+        var url = "";
+        if(type =='Voucher') {
+            url = "reports/rpt_voucher_a5.php?view_voucher_id=" + bill_id;
+        } else if(type =='Receipt') {
+            url = "reports/rpt_receipt_a5.php?view_receipt_id=" + bill_id;
+        }else if(type =='Expense') {
+            url = "reports/rpt_expense_entry_a5.php?view_expense_id=" + bill_id;  
+        } 
+
+        var post_url = "dashboard_changes.php?check_login_session=1";
+        jQuery.ajax({
+            url: post_url,
+            success: function (check_login_session) {
+                if (check_login_session == 1) {
+                    jQuery('#PaymentModal .modal-header h1').html(type +"  Preview");
+
+                    jQuery('.payment_modal_button').trigger("click");
+                    var iframe = '<iframe src="' + url + '" width="100%" height="500px" style="border:none;"></iframe>';
+                    jQuery('#PaymentModal .modal-body').html(iframe);
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+
     }
     
     function ExportToExcel(type, fn, dl) {

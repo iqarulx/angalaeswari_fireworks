@@ -19,7 +19,7 @@ if (isset($_REQUEST['change_product_id'])) {
         $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $product_id, 'subunit_need');
     }
     if(!empty($subunit_need) && $content_count > 1){
-         $content_option = "<option value = ''>Select Content</option>";
+         $content_option = "<option value = ''>Select Case Contains</option>";
     }
 
     if (!empty($content_list)) {

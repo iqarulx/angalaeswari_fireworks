@@ -223,9 +223,9 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <select name="selected_contains" class="select2 select2-danger"  data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                        <option value="">Select Product</option>
+                                        <option value="">Select</option>
                                     </select>
-                                    <label>Select Content <span class="text-danger">*</span></label>
+                                    <label>Case Contains<span class="text-danger">*</span></label>
                                 </div>
                             </div>        
                         </div>
@@ -253,7 +253,7 @@
                                             <th style="width:50px;">#</th>
                                             <th style="width:300px;">Product</th>
                                             <th style="width:150px;">Unit</th>
-                                            <th style="width:100px;">Content</th>
+                                            <th style="width:100px;">Case<br>Contains</th>
                                             <th style="width:100px;">Qty</th>
                                             <th style="width:100px;">Cooly</th>
                                             <th style="width:100px;">Total Cooly</th>
@@ -1334,7 +1334,7 @@ if(isset($_REQUEST['get_unit'])) {
     <?php
     if($subunit_need == 1){
        ?>
-        <option value="">Select Content</option>
+        <option value="">Select Case Contains</option>
             <?php 
         if(!empty($case_contains)){
             for($i=0; $i< count($case_contains); $i++){ 

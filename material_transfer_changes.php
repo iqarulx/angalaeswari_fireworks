@@ -70,13 +70,13 @@
         if(!empty($location) && $location == '1') {
             if(!empty($login_godown_id)) {
                 $location_list = $obj->getTableRecords($GLOBALS['godown_table'], 'godown_id', $login_godown_id, '');
-            }else{
+            } else {
                 $location_list = $obj->getTableRecords($GLOBALS['godown_table'], '', '', '');
             }
         } else if(!empty($location) && $location == '2') {
             if(!empty($login_magazine_id)) {
                 $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], 'magazine_id', $login_magazine_id, '');
-            }else{
+            } else {
                 $location_list = $obj->getTableRecords($GLOBALS['magazine_table'], '', '', '');
             }
         }
@@ -201,9 +201,9 @@
                             <div class="form-group">
                                 <div class="form-label-group in-border">
                                     <select class="select2 select2-danger" name="selected_content" onchange="GetProductStockLimit();" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                        <option value="">Select Contents</option>    
+                                        <option value="">Select</option>    
                                     </select>
-                                    <label>Contents</label>
+                                    <label>Case Contains</label>
                                 </div>
                             </div>        
                         </div>
@@ -224,7 +224,7 @@
                                             <th style="width:400px;">Product</th>
                                             <th style="width:150px;">Qty</th>
                                             <th style="width:150px;">Type</th>
-                                            <th style="width:150px;">Content</th>
+                                            <th style="width:150px;">Case<br>Contains</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -401,8 +401,7 @@
             $material_date_error = "Select date";
             if(!empty($valid_material_transfer)) {
                 $valid_material_transfer = $valid_material_transfer." ".$valid->error_display($form_name, 'material_date', $material_date_error, 'text');
-            }
-            else {
+            } else {
                 $valid_material_transfer = $valid->error_display($form_name, 'material_date', $material_date_error, 'text');
             }
         }
@@ -413,8 +412,7 @@
         if(!empty($location_error)) {
             if(!empty($valid_material_transfer)) {
                 $valid_material_transfer = $valid_material_transfer." ".$valid->error_display($form_name, 'location', $location_error, 'select');
-            }
-            else {
+            } else {
                 $valid_material_transfer = $valid->error_display($form_name, 'location', $location_error, 'select');
             }
         }
@@ -425,8 +423,7 @@
         if(!empty($from_location_error)) {
             if(!empty($valid_material_transfer)) {
                 $valid_material_transfer = $valid_material_transfer." ".$valid->error_display($form_name, 'from_location', $from_location_error, 'select');
-            }
-            else {
+            } else {
                 $valid_material_transfer = $valid->error_display($form_name, 'from_location', $from_location_error, 'select');
             }
         }
@@ -437,8 +434,7 @@
         if(!empty($to_location_error)) {
             if(!empty($valid_material_transfer)) {
                 $valid_material_transfer = $valid_material_transfer." ".$valid->error_display($form_name, 'to_location', $to_location_error, 'select');
-            }
-            else {
+            } else {
                 $valid_material_transfer = $valid->error_display($form_name, 'to_location', $to_location_error, 'select');
             }
         }
@@ -588,10 +584,8 @@
         }
 
         $stock_error = 0; $valid_stock = "";
-        if(!empty($final_array) && empty($valid_material_transfer))
-        {
-            foreach($final_array as $data)
-            {
+        if(!empty($final_array) && empty($valid_material_transfer)) {
+            foreach($final_array as $data) {
                 $inward_unit = 0; $inward_subunit = 0; $outward_unit = 0; $outward_subunit = 0; $current_stock_subunit = 0;
                 $subunit_need = 0; $product ="";
                 $current_stock_subunit = 0; $available_stock_unit = 0; $available_stock_subunit = 0;
@@ -627,8 +621,7 @@
                     $subunit_need = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id',$data['product_id'],'subunit_need');
 
 
-                    if(!empty($product))
-                    {
+                    if(!empty($product)) {
                         $product = $obj->encode_decode("decrypt",$product);
                     }
                    
@@ -639,7 +632,7 @@
                         $unit_name = $obj->getTableColumnValue($GLOBALS['unit_table'],'unit_id', $unit_id, 'unit_name');
                         if(!empty($unit_name)) {
                             $unit_name = $obj->encode_decode("decrypt", $unit_name);
-                        }   
+                        }
                     }
 
                     $sub_unit_id = $obj->getTableColumnValue($GLOBALS['product_table'],'product_id', $data['product_id'], 'subunit_id');
@@ -671,7 +664,6 @@
                 }
             }
         }
-
 
         // echo $edit_id. " / " .$product_error." // ".$valid_stock."<br>";
         if (!empty($edit_id) && empty($product_error) && empty($valid_stock)) {
@@ -759,7 +751,7 @@
                         }
                     }
                     
-                     if(!in_array($stock_id, $stock_unique_ids)) {
+                    if(!in_array($stock_id, $stock_unique_ids)) {
                         $columns = array(); $values = array();
                         $columns = array('deleted');
                         $values = array('"1"');
@@ -795,8 +787,6 @@
 
         $result = "";
 
-        // echo $valid_stock .= "hi";
-
         if(empty($valid_material_transfer) && empty($product_error) && empty($valid_stock)) {
             $check_user_id_ip_address = 0;
             $check_user_id_ip_address = $obj->check_user_id_ip_address();	
@@ -807,76 +797,76 @@
                 if(!empty($product_id)) {
                     $product_id = array_reverse($product_id);
                     $product_id = implode(",", $product_id);
-                }else{
+                } else {
                     $product_id = $GLOBALS['null_value'];
                 }
                
                 if(!empty($product_name)) {
                     $product_name = array_reverse($product_name);
                     $product_name = implode(",", $product_name);
-                }else{
+                } else {
                     $product_name = $GLOBALS['null_value'];
                 }
     
                 if(!empty($unit_id)) {
                     $unit_id = array_reverse($unit_id);
                     $unit_id = implode(",", $unit_id);
-                }else{
+                } else {
                     $unit_id = $GLOBALS['null_value'];
                 }
 
                 if(!empty($unit_name)) {
                     $unit_name = array_reverse($unit_name);
                     $unit_name = implode(",", $unit_name);
-                }else{
+                } else {
                     $unit_name = $GLOBALS['null_value'];
                 }
 
                 if(!empty($subunit_id)) {
                     $subunit_id = array_reverse($subunit_id);
                     $subunit_id = implode(",", $subunit_id);
-                }else{
+                } else {
                     $subunit_id = $GLOBALS['null_value'];
                 }
 
                 if(!empty($subunit_name)) {
                     $subunit_name = array_reverse($subunit_name);
                     $subunit_name = implode(",", $subunit_name);
-                }else{
+                } else {
                     $subunit_name = $GLOBALS['null_value'];
                 }
 
                 if(!empty($quantity)) {
                     $quantity = array_reverse($quantity);
                     $quantity = implode(",", $quantity);
-                }else{
+                } else {
                     $quantity = $GLOBALS['null_value'];
                 }
                 if(!empty($unit_type)) {
                     $unit_type = array_reverse($unit_type);
                     $unit_type = implode(",", $unit_type);
-                }else{
+                } else {
                     $unit_type = $GLOBALS['null_value'];
                 }
 
                 if(!empty($content)) {
                     $content = array_reverse($content);
                     $content = implode(",", $content);
-                }else{
+                } else {
                     $content = $GLOBALS['null_value'];
                 }
 
                 if(!empty($quantity_limit)) {
                     $quantity_limit = array_reverse($quantity_limit);
                     $quantity_limit = implode(",", $quantity_limit);
-                }else{
+                } else {
                     $quantity_limit = $GLOBALS['null_value'];
                 }
 
                 if(!empty($negative)) {
                     $negative = array_reverse($negative);
                     $negative = implode(",", $negative);
-                }else{
+                } else {
                     $negative = $GLOBALS['null_value'];
                 }
                 $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
@@ -896,26 +886,26 @@
                         $result = array('number' => '1', 'msg' => 'Material Transfer Entry Successfully Created','redirection_page' =>'material_transfer.php');
                     }
                 } else {
-                        $getUniqueID = "";
-                        $getUniqueID = $obj->getTableColumnValue($GLOBALS['material_transfer_table'], 'material_transfer_id', $edit_id, 'id');
-                        if(preg_match("/^\d+$/", $getUniqueID)) {
-                            $action = "Material Transfer Updated";
-                            $columns = array(); $values = array();						
-                            $columns = array('creator_name','bill_company_details','location', 'from_location', 'to_location', 'product_id', 'product_name', 'unit_type', 'unit_id', 'unit_name', 'subunit_id', 'subunit_name', 'negative', 'content', 'quantity', 'quantity_limit', 'material_transfer_date', 'deleted', 'cancelled');
-                            $values = array("'".$creator_name."'", "'".$bill_company_details."'", "'".$location."'", "'".$from_location."'", "'".$to_location."'", "'".$product_id."'", "'".$product_name."'", "'".$unit_type."'", "'".$unit_id."'", "'".$unit_name."'", "'".$subunit_id."'", "'".$subunit_name."'", "'".$negative."'", "'".$content."'", "'".$quantity."'", "'".$quantity_limit."'", "'".$material_date."'","'0'", "'0'");
-                            
-                            $material_transfer_update_id = $obj->UpdateSQL($GLOBALS['material_transfer_table'], $getUniqueID, $columns, $values, $action);
+                    $getUniqueID = "";
+                    $getUniqueID = $obj->getTableColumnValue($GLOBALS['material_transfer_table'], 'material_transfer_id', $edit_id, 'id');
+                    if(preg_match("/^\d+$/", $getUniqueID)) {
+                        $action = "Material Transfer Updated";
+                        $columns = array(); $values = array();						
+                        $columns = array('creator_name','bill_company_details','location', 'from_location', 'to_location', 'product_id', 'product_name', 'unit_type', 'unit_id', 'unit_name', 'subunit_id', 'subunit_name', 'negative', 'content', 'quantity', 'quantity_limit', 'material_transfer_date', 'deleted', 'cancelled');
+                        $values = array("'".$creator_name."'", "'".$bill_company_details."'", "'".$location."'", "'".$from_location."'", "'".$to_location."'", "'".$product_id."'", "'".$product_name."'", "'".$unit_type."'", "'".$unit_id."'", "'".$unit_name."'", "'".$subunit_id."'", "'".$subunit_name."'", "'".$negative."'", "'".$content."'", "'".$quantity."'", "'".$quantity_limit."'", "'".$material_date."'","'0'", "'0'");
+                        
+                        $material_transfer_update_id = $obj->UpdateSQL($GLOBALS['material_transfer_table'], $getUniqueID, $columns, $values, $action);
 
-                            if(preg_match("/^\d+$/", $material_transfer_update_id)) {
-                                $stock_update = 1;
-                                $material_transfer_id = $edit_id;
-                                $material_transfer_number = $obj->getTableColumnValue($GLOBALS['material_transfer_table'], 'material_transfer_id', $edit_id, 'material_transfer_number');
-                                $result = array('number' => '1', 'msg' => 'Updated Successfully');
-                            }
-                            else {
-                                $result = array('number' => '2', 'msg' => $material_transfer_update_id);
-                            }		
+                        if(preg_match("/^\d+$/", $material_transfer_update_id)) {
+                            $stock_update = 1;
+                            $material_transfer_id = $edit_id;
+                            $material_transfer_number = $obj->getTableColumnValue($GLOBALS['material_transfer_table'], 'material_transfer_id', $edit_id, 'material_transfer_number');
+                            $result = array('number' => '1', 'msg' => 'Updated Successfully');
                         }
+                        else {
+                            $result = array('number' => '2', 'msg' => $material_transfer_update_id);
+                        }		
+                    }
                 }
                 if (!empty($stock_update) && $stock_update == 1) {
                     if (!empty($from_location) && !empty($to_location) && !empty($product_id) && !empty($quantity) && !empty($material_transfer_number)) {
@@ -941,20 +931,15 @@
                                 $unit_sub = $subunit_id[$i];
                             }
                             if($location == '1') {
-
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['material_transfer_table'], "Out", $material_transfer_id, $material_transfer_number, $product_id[$i], $remarks, $material_date, $from_location, $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 1);
-
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['material_transfer_table'], "In", $material_transfer_id, $material_transfer_number, $product_id[$i], $remarks, $material_date, $to_location, $GLOBALS['null_value'], $unit_sub, $quantity[$i], $contents[$i], $group_id, 1);
-
                             } else if($location == '2') {
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['material_transfer_table'], "Out", $material_transfer_id, $material_transfer_number, $product_id[$i], $remarks, $material_date, $GLOBALS['null_value'], $from_location, $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
-
                                 $stock_update_id = $obj->StockUpdate($GLOBALS['material_transfer_table'], "In", $material_transfer_id, $material_transfer_number, $product_id[$i], $remarks, $material_date, $GLOBALS['null_value'], $to_location, $unit_sub, $quantity[$i], $contents[$i], $group_id, 2);
                             }
                         }
                     }
                 }
-
             } else {
                 $result = array('number' => '2', 'msg' => 'Invalid IP');
             }
@@ -974,8 +959,6 @@
             $result = json_encode($result);
         }
         echo $result; exit;
-            
-
     }
 
     if(isset($_POST['page_number'])) {
@@ -1037,8 +1020,7 @@
 					$page_start = ($page_number - 1) * $page_limit;
 					$page_end = $page_start + $page_limit;
 				}
-			}
-			else {
+			} else {
 				$page_start = 0;
 				$page_end = $page_limit;
 			}
@@ -1071,7 +1053,6 @@
         }
         if(empty($view_access_error)) { 
         ?>
-    
             <table class="table nowrap cursor text-center smallfnt">
                 <thead class="bg-light">
                     <tr>
@@ -1125,7 +1106,7 @@
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                                       <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_material_transfer_a5.php?view_material_transfer_id=<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
+                                        <li><a class="dropdown-item" target="_blank" style="cursor:pointer;" href="reports/rpt_material_transfer_a5.php?view_material_transfer_id=<?php if(!empty($list['material_transfer_id'])) { echo $list['material_transfer_id']; } ?>"><i class="fa fa-print"></i> &ensp; Print</a></li>
                                         <?php 
                                             $edit_access_error = "";
                                             if(!empty($login_staff_id)) {
@@ -1164,8 +1145,9 @@
                 ?>
                     
                 </tbody>
-            </table>                
-    <?php }
+            </table>              
+        <?php 
+        }
     }
 
     if (isset($_REQUEST['delete_material_transfer_id'])) {
@@ -1175,9 +1157,7 @@
             $material_transfer_unique_id = "";
             $material_transfer_unique_id = $obj->getTableColumnValue($GLOBALS['material_transfer_table'], 'material_transfer_id', $delete_material_transfer_id, 'id');
             if (preg_match("/^\d+$/", $material_transfer_unique_id)) {
-    
                 $action =  "material_transfer Deleted.";
-
                 $columns = array();
                 $values = array();
                 $columns = array('deleted');

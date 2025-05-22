@@ -367,7 +367,7 @@
                     </div>  
                 </div>
                 
-                <div class="col-lg-3 col-md-2 col-12 d-none">
+                <div class="col-lg-3 col-md-2 col-12">
                     <div class="form-group mb-1">
                         <div class="flex-shrink-0">
                             <div class="form-check form-switch form-switch-right form-switch-md">
@@ -532,7 +532,7 @@
                     <div class="form-group">
                         <div class="form-label-group in-border">
                             <input type="text" name="content" onkeyup="CalcPurchaseProductAmount();" onfocus="Javascript:KeyboardControls(this,'number',7,'');" class="form-control shadow-none">
-                            <label>Content</label>
+                            <label>Case<br>Contains</label>
                             <span class="text-success fw-bold content_name_span"></span>
                         </div>
                     </div>  
@@ -587,7 +587,7 @@
                                 <th style="width:180px;">Product</th>
                                 <th style="width:70px;">QTY</th>
                                 <th style="width:100px;">Unit</th>
-                                <th style="width:70px;">Content</th>
+                                <th style="width:70px;">Case Contains</th>
                                 <th style="width:90px;">Rate</th>
                                 <th style="width:120px;">Per</th>
                                 <th class="tax_element d-none" style="width: 100px;">Tax</th>
@@ -1549,11 +1549,11 @@
                                         
                                     // }
                                     // else {
-                                    //     $product_error = "Invalid Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    //     $product_error = "Invalid Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                     // }
                                 }
                                 else {
-                                    $product_error = "Empty Content in Product - ".($obj->encode_decode('decrypt', $product_name));
+                                    $product_error = "Empty Case Contains in Product - ".($obj->encode_decode('decrypt', $product_name));
                                 } 
                             }
                             else {

@@ -1,7 +1,7 @@
 <?php 
     include("include.php");
 ?>
-    
+
 <script type="text/javascript" src="include/js/xlsx.full.min.js"></script>
 <table id="tbl_product_list" class="data-table table nowrap tablefont" style="margin: auto; width: 900px;display:none;">
     <thead class="thead-dark">
@@ -22,7 +22,7 @@
     </thead>
     
     <tbody>
-        <?php 
+    <?php 
         $group = ""; $search_text = "";
         if(isset($_REQUEST['group'])) {
             $group = $_REQUEST['group'];
@@ -54,7 +54,8 @@
 
         if(!empty($total_records_list)) {
             foreach($total_records_list as $key => $data) {
-                $index = $key + 1; ?>
+                $index = $key + 1; 
+                ?>
                 <tr>
                     <td class="text-center px-2 py-2"><?php echo $index; ?></td>
                     <td class="text-center px-2 py-2">
@@ -71,21 +72,20 @@
                    
                     <td class="text-center px-2 py-2">
                         <div class="w-100">
-                            <?php                            
-                           
+                            <?php
                                 if(!empty($data['finished_group_id']) && ($data['finished_group_id'] != $GLOBALS['null_value'])) {
                                     $finished_group_name = $obj->getTableColumnValue($GLOBALS['finished_group_table'],'finished_group_id',$data['finished_group_id'],'finished_group_name');
                                     echo $obj->encode_decode("decrypt",$finished_group_name);
                                     
-                                }else if(!empty($data['raw_material_group_id']) && ($data['raw_material_group_id'] != $GLOBALS['null_value'])) {
+                                } else if(!empty($data['raw_material_group_id']) && ($data['raw_material_group_id'] != $GLOBALS['null_value'])) {
                                     $raw_material_group_name = "";
                                     $raw_material_group_name = $obj->getTableColumnValue($GLOBALS['raw_material_group_table'],'raw_material_group_id',$data['raw_material_group_id'],'raw_material_group_name');
                                     echo $obj->encode_decode("decrypt",$raw_material_group_name);
-                                }else if(!empty($data['semi_finished_group_id']) && ($data['semi_finished_group_id'] != $GLOBALS['null_value'])) {
+                                } else if(!empty($data['semi_finished_group_id']) && ($data['semi_finished_group_id'] != $GLOBALS['null_value'])) {
                                     $semi_finished_group_name = $obj->getTableColumnValue($GLOBALS['semi_finished_group_table'],'semi_finished_group_id',$data['semi_finished_group_id'],'semi_finished_group_name');
                                     echo $obj->encode_decode("decrypt",$semi_finished_group_name);
                                 }
-                        ?>
+                            ?>
                         </div>
                     </td>
                             
@@ -159,7 +159,7 @@
                                     $per_type = $data['per_type'];
                                     if($per_type == '1'){
                                         echo "Unit";
-                                    }else if($per_type == '2'){
+                                    } else if($per_type == '2'){
                                         echo "SubUnit";
                                     }
                                 }
@@ -167,8 +167,10 @@
                         </div>
                     </td>
                 </tr>
-            <?php }
-        } ?>
+                <?php 
+            }
+        }
+    ?>
     </tbody>
 </table>
 

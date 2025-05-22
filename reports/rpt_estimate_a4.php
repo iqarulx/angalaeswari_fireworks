@@ -185,6 +185,7 @@ if(isset($_REQUEST['estimate_id'])) {
             }
         }
     }
+
     $less_for_tax = 0;
     if(!empty($other_charges_id) && count($other_charges_id) > 1) {
         for($i=1; $i < count($other_charges_id); $i++) {
@@ -202,7 +203,6 @@ if(isset($_REQUEST['estimate_id'])) {
     if($gst_option == '1' && $tax_type == '1') {
         $less_for_tax = 3;
     }
-
 
     // require_once('../fpdf/fpdf.php');
     // $pdf = new FPDF('P','mm','A4');
@@ -280,7 +280,12 @@ if(isset($_REQUEST['estimate_id'])) {
     $pdf->Cell(20,8,'S.No.',1,0,'C',0);
     $pdf->Cell(40,8,'Products',1,0,'C',0);
     $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-    $pdf->Cell(18,8,'Contents',1,0,'C',0);
+    $case_y = $pdf->GetY();
+    $pdf->Cell(18,4,'Case',1,1,'C',0);
+    $pdf->SetX(100);
+    $pdf->Cell(18,4,'Contains',1,0,'C',0);
+    $pdf->SetY($case_y);
+    $pdf->SetX(118);
     $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
     if($gst_option == '1' && $tax_type == '1') {
         $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -379,7 +384,12 @@ if(isset($_REQUEST['estimate_id'])) {
             $pdf->Cell(20,8,'S.No.',1,0,'C',0);
             $pdf->Cell(40,8,'Products',1,0,'C',0);
             $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-            $pdf->Cell(18,8,'Contents',1,0,'C',0);
+            $case_y = $pdf->GetY();
+            $pdf->Cell(18,4,'Case',1,1,'C',0);
+            $pdf->SetX(100);
+            $pdf->Cell(18,4,'Contains',1,0,'C',0);
+            $pdf->SetY($case_y);
+            $pdf->SetX(118);
             $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
             if($gst_option == '1' && $tax_type == '1') {
                 $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -427,7 +437,7 @@ if(isset($_REQUEST['estimate_id'])) {
         }
         if(!empty($subunit_needs[$i]) && $subunit_needs[$i] =='1'){
             $pdf->Cell(25-$less_for_tax,8,$subunit_qty.' ' . $subunit_name,1,0,'C',0);
-        }else{
+        } else {
             $pdf->Cell(25-$less_for_tax,8,$subunit_qty.' ' . $unit_name,1,0,'C',0);
         }
         if($gst_option == '1' && $tax_type == '1') {
@@ -474,7 +484,6 @@ if(isset($_REQUEST['estimate_id'])) {
         $total_pages[] = $page_number;
         
         $file_name="Estimate";
-
         include("rpt_header.php");
 
         if($deleted == '1') {
@@ -508,6 +517,7 @@ if(isset($_REQUEST['estimate_id'])) {
                 }
             }
         }
+
         $detials_y = $pdf->GetY();
         $pdf->SetY($header_end);
         $pdf->SetX(110);
@@ -536,7 +546,12 @@ if(isset($_REQUEST['estimate_id'])) {
         $pdf->Cell(20,8,'S.No.',1,0,'C',0);
         $pdf->Cell(40,8,'Products',1,0,'C',0);
         $pdf->Cell(30,8,'Quantity',1,0,'C',0);
-        $pdf->Cell(18,8,'Contents',1,0,'C',0);
+        $case_y = $pdf->GetY();
+        $pdf->Cell(18,4,'Case',1,1,'C',0);
+        $pdf->SetX(100);
+        $pdf->Cell(18,4,'Contains',1,0,'C',0);
+        $pdf->SetY($case_y);
+        $pdf->SetX(118);
         $pdf->Cell(25-$less_for_tax,8,'Total Qty',1,0,'C',0);
         if($gst_option == '1' && $tax_type == '1') {
             $pdf->Cell(9,8,'Tax',1,0,'C',0);
@@ -562,13 +577,12 @@ if(isset($_REQUEST['estimate_id'])) {
     $pdf->Line(180,$y_axis,180,$end_content);
     $pdf->Line(200,$y_axis,200,$end_content);
 
-        $unit_arrays = [];
+    $unit_arrays = [];
     $unit_quantity = [];
     $sub_unit_arrays = [];
     $sub_unit_quantity = [];
     for($i = 0; $i < count($product_ids); $i++) {
         $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'product_id', $product_ids[$i], '');
-
         foreach($product_list as $product) {
             if(!empty($product['unit_id'])) {
                 if($product['unit_id'] == $unit_ids[$i] && $product['unit_id'] != "NULL") {
@@ -688,6 +702,7 @@ if(isset($_REQUEST['estimate_id'])) {
             $pdf->Cell(40,4, ' : '.$ifsc_code, 0, 1, '');
         }
     }
+
     $bank_y = $pdf->GetY();
     $pdf->SetY($bank_start_y);
 
@@ -705,7 +720,7 @@ if(isset($_REQUEST['estimate_id'])) {
                 if(isset($other_charges_value[$i])) {
                     if(strpos($other_charges_value[$i], '%') !== false) {  
                         $charge_in[$i] = $other_charges_value[$i];
-                    }else{
+                    } else {
                         $charge_in[$i] = "Rs.".$other_charges_value[$i];
                     }
                 }
@@ -732,6 +747,7 @@ if(isset($_REQUEST['estimate_id'])) {
             }
         }
     }
+
     $total_amount_ = $purchase_subtotal;
 
     if(!empty($agent_id) && $agent_id != "NULL"){
@@ -762,8 +778,7 @@ if(isset($_REQUEST['estimate_id'])) {
         for($o = 0; $o < count($other_charges_id); $o++) {
             if($charges_type[$o] == "minus") {
                 $total_amount_ -= $other_charges_total[$o];
-            }
-            else if($charges_type[$o] == "plus") {
+            } else if($charges_type[$o] == "plus") {
                 $total_amount_ += $other_charges_total[$o];
             }
             $charges_name = $obj->getTableColumnValue($GLOBALS['charges_table'], 'charges_id', $other_charges_id[$o], 'charges_name');
@@ -779,6 +794,7 @@ if(isset($_REQUEST['estimate_id'])) {
             $pdf->Cell(20,5,number_format(((float) $total_amount_),2),1,1,'R',0);
         }
     }
+    
     if(!empty($customer_id)) {
         $party_state = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'state');
         if(!empty($party_state)) {
