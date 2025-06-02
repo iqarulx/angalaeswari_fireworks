@@ -209,7 +209,8 @@
             <script src="include/select2/js/select.js"></script>
         </form>
 		<?php
-    } 
+    }
+    
     if(isset($_POST['company_name'])) {	
         $name = ""; $name_error = ""; $address = ""; $address_error = "";
         $gst_number = ""; $gst_number_error = ""; $city = ""; $city_error = ""; $district = ""; $district_error = "";

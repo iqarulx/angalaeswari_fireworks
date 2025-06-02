@@ -151,6 +151,7 @@ function KeyboardControls(obj, type, characters, color) {
         InputBoxColor(obj, type);
     }
 }
+
 function SnoCalculation() {
     if (jQuery('.sno').length > 0) {
         var row_count = 0;

@@ -469,7 +469,6 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 	});
 }
 function DeleteModalContent(page_title, delete_content_id) {
-
 	var check_login_session = 1;
 	var post_url = "dashboard_changes.php?check_login_session=1";
 	jQuery.ajax({
@@ -538,7 +537,7 @@ function confirm_delete_modal(obj) {
 				if (jQuery('input[name="page_title"]').length > 0) {
 					page_title = jQuery('input[name="page_title"]').val();
 					if (typeof page_title != "undefined" && page_title != "") {
-						page_title = page_title.replace(" ", "_");
+						page_title = page_title.replaceAll(" ", "_");
 						page_title = page_title.toLowerCase();
 						page_title = jQuery.trim(page_title);
 						post_send_file = page_title + "_changes.php";
@@ -552,10 +551,10 @@ function confirm_delete_modal(obj) {
 						var intRegex = /^\d+$/;
 						if (intRegex.test(result) == true) {
 							if (page_title == "proformainvoice" || page_title == "estimate" || page_title == "salesinvoice" || page_title == "inwardmaterials" || page_title == "consumptionentry" || page_title == "dailyproduction" || page_title == "materialtransfer" || page_title == "stockadjustment" || page_title == "semifinished_inward") {
-								jQuery('#DeleteModal .modal-body').append('<div class="alert alert-success"> <button type="button" class="btn-close" data-dismiss="alert"></button> Successfully Cancelled the ' + page_title.replace("_", " ") + ' </div>');
+								jQuery('#DeleteModal .modal-body').append('<div class="alert alert-success"> <button type="button" class="btn-close" data-dismiss="alert"></button> Successfully Cancelled the ' + page_title.replaceAll("_", " ") + ' </div>');
 							}
 							else {
-								jQuery('#DeleteModal .modal-body').append('<div class="alert alert-success"> <button type="button" class="btn-close" data-dismiss="alert"></button> Successfully Deleted the ' + page_title.replace("_", " ") + ' </div>');
+								jQuery('#DeleteModal .modal-body').append('<div class="alert alert-success"> <button type="button" class="btn-close" data-dismiss="alert"></button> Successfully Deleted the ' + page_title.replaceAll("_", " ") + ' </div>');
 							}
 							setTimeout(function () {
 								jQuery('#DeleteModal .modal-header .close').trigger("click");
@@ -630,7 +629,7 @@ function ViewDetails(type) {
 	if (type != "") {
 		lower_type = type.toLowerCase();
 		lower_type = lower_type.trim();
-		type = type.replace("_", " ");
+		type = type.replaceAll("_", " ");
 	}
 	if (jQuery('select[name="' + lower_type + '_id"]').length > 0) {
 		type_id = jQuery('select[name="' + lower_type + '_id"]').val();

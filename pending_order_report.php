@@ -196,7 +196,8 @@
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-2">
                                         <div class="form-group mb-1">
-                                            <div class="form-label-group in-border pb-2">                                               <select class="select2 select2-danger" name="filter_customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getReport();">
+                                            <div class="form-label-group in-border pb-2">                                               
+                                                <select class="select2 select2-danger" name="filter_customer_id" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="Javascript:getReport();">
                                                 <option value="">Select Customer</option>
                                                     <?php if (!empty($customer_list)) {
                                                         foreach ($customer_list as $customer) { ?>
@@ -233,13 +234,13 @@
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                                if(!empty($total_records_list)) { 
+                                                                if(!empty($total_records_list['list'])) { 
                                                                     $total_pending_order_unit = 0;
                                                                     $total_current_stock_unit = 0;
                                                                     $total_need_order_unit = 0;
 
-                                                                    for($i = 0; $i < count($total_records_list); $i++) {
-                                                                        $record = $total_records_list[$i];
+                                                                    for($i = 0; $i < count($total_records_list['list']); $i++) {
+                                                                        $record = $total_records_list['list'][$i];
                                                             ?>
                                                                         <tr>
                                                                             <th><?php echo $i + 1; ?></th>      
@@ -287,7 +288,7 @@
                                                                     <tr>
                                                                         <th colspan="2" class="text-end">Total</th>
                                                                         <th><?php echo $total_pending_order_unit; ?></th>
-                                                                        <th><?php echo $total_current_stock_unit; ?></th>
+                                                                        <th><?php echo $total_records_list['total_current_stock']; ?></th>
                                                                         <th><?php echo $total_need_order_unit; ?></th>
                                                                     </tr>
                                                                     <?php
@@ -498,13 +499,13 @@
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                                if(!empty($total_records_list)) { 
+                                                                if(!empty($total_records_list['list'])) { 
                                                                     $total_pending_order_unit = 0;
                                                                     $total_current_stock_unit = 0;
                                                                     $total_need_order_unit = 0;
 
-                                                                    for($i = 0; $i < count($total_records_list); $i++) {
-                                                                        $record = $total_records_list[$i];
+                                                                    for($i = 0; $i < count($total_records_list['list']); $i++) {
+                                                                        $record = $total_records_list['list'][$i];
                                                             ?>
                                                                         <tr>
                                                                             <th><?php echo $i + 1; ?></th>      
@@ -543,7 +544,7 @@
                                                                     <tr>
                                                                         <th colspan="2" class="text-end">Total</th>
                                                                         <th><?php echo $total_pending_order_unit; ?></th>
-                                                                        <th><?php echo $total_current_stock_unit; ?></th>
+                                                                        <th><?php echo $total_records_list['total_current_stock']; ?></th>
                                                                         <th><?php echo $total_need_order_unit; ?></th>
                                                                     </tr>
                                                                     <?php

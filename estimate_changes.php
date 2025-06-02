@@ -1596,7 +1596,7 @@
                     $customer_name = "";
                     $customer_name = $obj->getTableColumnValue($GLOBALS['customer_table'], 'customer_id', $customer_id, 'customer_name');
 
-                    if(!empty($agent_id)) {
+                    if(!empty($agent_id) && $agent_id != $GLOBALS['null_value']) {
                         $agent_name = "";
                         $agent_name = $obj->getTableColumnValue($GLOBALS['agent_table'], 'agent_id', $agent_id, 'agent_name');
 

@@ -369,10 +369,10 @@
                             </div>
                         </div>
                         <div class="row mx-0 my-3">
-                            <div class="col-lg-8 col-md-6 col-12 text-end">
+                            <div class="col-lg-6 col-md-6 col-12 text-end">
                                 <h4>Total Quantity : <span class="overall_qty"></span></h3>
                             </div>
-                            <div class="col-lg-4 col-md-6 col-12 text-end">
+                            <div class="col-lg-4 col-md-6 col-12 text-center">
                                 <h4>Total Cooly : <span class="overall_total"></span></h3>
                             </div>
                         </div>
@@ -1471,6 +1471,16 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
     }
 
     $contractor_unit_id = $obj->getContractorProductUnitId($contractor_id, $product_id, $unit_type);
+    $contractor_cooly_list = $obj->getContractorProductCooly($contractor_id, $product_id);
+
+    $contractor_cooly = 0;
+    if(!empty($contractor_cooly_list)) {
+        foreach($contractor_cooly_list as $cooly) {
+            if(!empty($cooly['rate'])) {
+                $contractor_cooly = $cooly['rate'];
+            }
+        }
+    }
 
     $c_unit_name = "";
     if(!empty($contractor_unit_id)) {
@@ -1551,7 +1561,7 @@ if(isset($_REQUEST['product_daily_production_row_index'])) {
             <input type="text" name="quantity[]" class="form-control shadow-none" value="<?php if(!empty($quantity)) { echo $quantity; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);">
         </th>
         <th class="text-center px-2 py-2">
-            <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);"><?php if(!empty($contains) && $contains != $GLOBALS['null_value']){ echo $contains . '/' . $c_unit_name; } else { echo $c_unit_name; }; ?>
+            <input type="text" name="cooly_per_qty[]" class="form-control shadow-none" value="<?php if(!empty($cooly_per_qty)) { echo $cooly_per_qty; } ?>" onfocus="Javascript:KeyboardControls(this,'number',8,'');" onkeyup="Javascript:calQuantityTotal(this);"><?php if(!empty($contractor_cooly)) { echo $contractor_cooly . '/' . $c_unit_name; } else { echo $c_unit_name; }; ?>
         </th>
         <th class="text-center px-2 py-2">
             <input type="text" name="cooly_amount[]" class="form-control shadow-none" value="<?php if(!empty($cooly_amount)) { echo $cooly_amount; } ?>"  readonly>

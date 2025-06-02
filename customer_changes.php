@@ -92,7 +92,7 @@
                 <div class="col-lg-3 col-md-4 col-12 py-2">
                     <div class="form-group">
                         <div class="form-label-group in-border">
-                            <input type="text" id="name" name="customer_name" class="form-control shadow-none" value="<?php if(!empty($customer_name)){echo $customer_name;} ?>"  onkeydown="Javascript:KeyboardControls(this,'text',25,1);">
+                            <input type="text" id="name" name="customer_name" class="form-control shadow-none" value="<?php if(!empty($customer_name)){echo $customer_name;} ?>"  onkeydown="Javascript:KeyboardControls(this,'text',100,1);">
                             <label>Customer Name (*)</label>
                         </div>
                         <div class="new_smallfnt">Contains Text, Symbols &amp;, -,',.</div>
@@ -238,8 +238,8 @@
         if(!empty($customer_name)) {
             $customer_name_error = $valid->valid_name_text($customer_name, 'customer Name', '1');
         }
-        if(!empty($customer_name) && strlen($customer_name) > 25) {
-            $customer_name_error = "Only 25 characters allowed";
+        if(!empty($customer_name) && strlen($customer_name) > 100) {
+            $customer_name_error = "Only 100 characters allowed";
         }
         if(empty($customer_name)){
             $customer_name_error = "Enter the customer name";

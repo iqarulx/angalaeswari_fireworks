@@ -1070,7 +1070,7 @@
 		}
 
 		public function GetPendingOrderReportAgentWIse($from_date, $to_date, $customer_id, $agent_id, $unit_type) {
-			$where = ""; $list = array();
+			$where = ""; $list = array(); $total_current_stock_list = [];
 
 			if (!empty($from_date)) {
 				$where = "bill_date >= '" . $from_date . "'";
@@ -1104,15 +1104,16 @@
 				$agent_select_query = "";
 				if ($unit_type == "1") {
 					if(!empty($where)) 
-					$agent_select_query = "SELECT SUM(inward_unit) AS inward_unit, SUM(outward_unit) AS outward_unit, product_id, unit_id, agent_id, agent_name, party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY party_id";
+					$agent_select_query = "SELECT SUM(inward_unit) AS inward_unit, SUM(outward_unit) AS outward_unit, product_id, unit_id, agent_id, agent_name, party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY product_id, party_id";
 				} else {
-					$agent_select_query = "SELECT SUM(inward_sub_unit) AS inward_sub_unit,  SUM(outward_sub_unit) AS outward_sub_unit, product_id, unit_id, agent_id, agent_name,  party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY party_id";
+					$agent_select_query = "SELECT SUM(inward_sub_unit) AS inward_sub_unit,  SUM(outward_sub_unit) AS outward_sub_unit, product_id, unit_id, agent_id, agent_name,  party_id, party_name FROM " . $GLOBALS['stock_conversion_table'] . " WHERE " . $where . " AND agent_id != 'NULL' AND agent_id != '' AND deleted = '0' GROUP BY product_id, party_id";
 				}
 				
 				if (!empty($agent_select_query)) {
 					$agent_conversion_records = $this->getQueryRecords('', $agent_select_query);
 					if (!empty($agent_conversion_records)) {
 						$grouped_by_party = [];
+						$product_stock_cache = [];
 				
 						foreach ($agent_conversion_records as $data) {
 							$party_id = $data['party_id'];
@@ -1154,6 +1155,10 @@
 							$total_current_stock = 0;
 							foreach ($party_data['products'] as $prod_data) {
 								$total_current_stock += $prod_data['current_stock_unit'];
+
+								if(!isset($total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']])) {
+									$total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']] = $prod_data['current_stock_unit'];
+								}
 							}
 				
 							$need_order_unit = max(0, $party_data['pending_order_unit'] - $total_current_stock);
@@ -1207,10 +1212,12 @@
 				
 					if (!empty($agent_conversion_records)) {
 						$grouped_by_agent = [];
+						$product_stock_cache = [];
 				
 						foreach ($agent_conversion_records as $data) {
 							$agent_id = $data['agent_id'];
 							$product_id = $data['product_id'];
+
 							if (!isset($product_stock_cache[$product_id])) {
 								$stock_obj = new Stock_functions();
 								$inward_qty = $stock_obj->getInwardQty($GLOBALS['stock_by_magazine_table'], '', '', $product_id, '');
@@ -1242,11 +1249,14 @@
 								'current_stock_unit' => $current_stock_unit,
 							];
 						}
-				
+						
 						foreach ($grouped_by_agent as $agent_id => $agent_data) {
 							$total_current_stock = 0;
 							foreach ($agent_data['products'] as $prod_data) {
 								$total_current_stock += $prod_data['current_stock_unit'];
+								if(!isset($total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']])) {
+									$total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']] = $prod_data['current_stock_unit'];
+								}
 							}
 				
 							$need_order_unit = max(0, $agent_data['pending_order_unit'] - $total_current_stock);
@@ -1267,6 +1277,7 @@
 
 					if (!empty($party_conversion_records)) {
 						$grouped_by_party = [];
+						$product_stock_cache = [];
 				
 						foreach ($party_conversion_records as $data) {
 							$party_id = $data['party_id'];
@@ -1309,6 +1320,9 @@
 							$total_current_stock = 0;
 							foreach ($party_data['products'] as $prod_data) {
 								$total_current_stock += $prod_data['current_stock_unit'];
+								if(!isset($total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']])) {
+									$total_current_stock_list[$prod_data['product_id'].$prod_data['unit_id']] = $prod_data['current_stock_unit'];
+								}
 							}
 				
 							$need_order_unit = max(0, $party_data['pending_order_unit'] - $total_current_stock);
@@ -1325,7 +1339,10 @@
 				}
 			}
 
-			return $list;
+			$total_current_stock_list = array_values($total_current_stock_list);
+			$total_current_stock_final = array_sum($total_current_stock_list);
+
+			return ['list' => $list, 'total_current_stock' => $total_current_stock_final];
 		}
 
 		public function GetInwardStockCasewise($godown_id, $magazine_id, $product_id, $case_contains) {

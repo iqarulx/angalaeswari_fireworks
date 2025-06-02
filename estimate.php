@@ -149,14 +149,12 @@
                                                 </div>
                                             <?php } ?>
                                         </div>
-                                        <form name="table_listing_form" method="post">
-                                            <div class="col-sm-6 col-xl-8">
-                                                <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
-                                                <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
-                                                <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
-                                                <input type="hidden" name='show_bill' value="0" id='show_bill'>
-                                            </div>	
-                                        </form>
+                                        <div class="col-sm-6 col-xl-8">
+                                            <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
+                                            <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
+                                            <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                            <input type="hidden" name='show_bill' value="0" id='show_bill'>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="table_listing_records"></div>

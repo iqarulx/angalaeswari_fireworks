@@ -572,6 +572,20 @@
 			return $list;
 		}
 
+		public function getContractorProductCooly($contractor_id, $product_id) {
+			$select_query = ""; $list = array();
+
+			if(!empty($contractor_id) && !empty($product_id)) {
+				$select_query = "SELECT rate FROM " . $GLOBALS['contractor_product_table'] . " WHERE contractor_id = '" . $contractor_id . "' AND product_id = '" . $product_id . "' AND deleted = '0'";
+				
+				if(!empty($select_query)) {
+					$list = $this->getQueryRecords($GLOBALS['contractor_product_table'], $select_query);
+				}
+			}
+		  
+			return $list;
+		}
+
 		public function getContractorSemiFinishedProducts($contractor_id,$finished_product_group_id) {
 			$list = array(); $select_query = "";
 
@@ -1026,6 +1040,7 @@
 			if(!empty($select_query)) {
 				$list = $this->getQueryRecords($GLOBALS['proforma_invoice_table'], $select_query);
 			}
+
 			return $list;
 		}
 		

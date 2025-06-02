@@ -51,19 +51,25 @@
 
 		public function encode_decode($action, $string) {
 			$output = "";
-			//encode
-			if($action == 'encrypt') {
+
+			if ($action == 'encrypt') {
 				$output = base64_encode($string);
-				$output =  bin2hex($output);
-				//$output = gzcompress($output, 9);
-			}			
-			//decode
-			if($action == 'decrypt') {
-				//$output = gzuncompress($string);
-				$output = hex2bin($string);
-				$output = base64_decode($output);
-				$output = html_entity_decode(htmlentities($output, ENT_QUOTES));
+				$output = bin2hex($output);
 			}
+
+			if ($action == 'decrypt') {
+				// Validate that the input is a valid hexadecimal string
+				if (ctype_xdigit($string) && strlen($string) % 2 == 0) {
+					$decodedHex = hex2bin($string);
+					if ($decodedHex !== false) {
+						$decodedBase64 = base64_decode($decodedHex, true); // strict mode
+						if ($decodedBase64 !== false) {
+							$output = html_entity_decode(htmlentities($decodedBase64, ENT_QUOTES));
+						}
+					}
+				}
+			}
+
 			return $output;
 		}
 

@@ -1,6 +1,36 @@
 <?php
     include("../include.php");
 
+    function getMultiCellHeight($pdf, $width, $lineHeight, $text) {
+        // $fontFamily = $pdf->FontFamily;
+        // $fontStyle = $pdf->FontStyle;
+        // $fontSizePt = $pdf->FontSizePt;
+
+        // $pdf->SetFont($fontFamily, $fontStyle, $fontSizePt); // Ensure font is set
+        $lines = [];
+        $words = preg_split('/\s+/', $text);
+        $currentLine = '';
+
+        foreach ($words as $word) {
+            $testLine = $currentLine === '' ? $word : $currentLine . ' ' . $word;
+            $lineWidth = $pdf->GetStringWidth($testLine);
+
+            if ($lineWidth <= $width) {
+                $currentLine = $testLine;
+            } else {
+                $lines[] = $currentLine;
+                $currentLine = $word;
+            }
+        }
+
+        if ($currentLine !== '') {
+            $lines[] = $currentLine;
+        }
+
+        return count($lines) * $lineHeight;
+    }
+
+
     $total_records_list = array();
 
     $search_text = "";
@@ -72,7 +102,9 @@
 
     if(!empty($total_records_list)) {
         foreach($total_records_list as $key => $list) {
-            if($pdf->GetY() > 260) {
+            $address_height = $start_y + getMultiCellHeight($pdf, 40, 6, $list['address']);
+
+            if(($pdf->GetY() > 260) || ($address_height > 260)) {
                 $pdf->AddPage();
                 $pdf->SetAutoPageBreak(false);
 
@@ -98,7 +130,7 @@
                 $start_y = $pdf->GetY();
             }
             $key = $key + 1;
-
+            
             $name_y = ""; $id_y = ""; $address_y = ""; $state_y = ""; $district_y = ""; $city_y = "";
             $y_array = array(); $max_y = "";
             $pdf->SetFont('Arial','',8);
@@ -142,6 +174,7 @@
             }
 
             if(!empty($list['identification']) && $list['identification'] != $GLOBALS['null_value']) {
+                $list['identification'] = $obj->encode_decode('decrypt',$list['identification']);
                 $list['identification'] = html_entity_decode($list['identification']);
                 $pdf->SetY($start_y);
                 $pdf->SetX(130);
@@ -151,10 +184,14 @@
                 $pdf->SetX(130);
                 $pdf->MultiCell(30,6,'-',0,'C');
             }
+
             $id_y = $pdf->GetY() - $start_y;
+
+            
 
             if(!empty($list['address']) && $list['address'] != $GLOBALS['null_value']) {
                 $list['address'] = html_entity_decode($obj->encode_decode('decrypt',$list['address']));
+                $list['address'] = str_replace("\r\n", ', ', $list['address']);
                 $pdf->SetY($start_y);
                 $pdf->SetX(160);
                 $pdf->MultiCell(40,6,$list['address'],0,'C');
@@ -163,8 +200,9 @@
                 $pdf->SetX(160);
                 $pdf->MultiCell(40,6,'-',0,'C');
             }
+            
             $address_y = $pdf->GetY() - $start_y;
-
+            // echo "Y :".$key."-".$pdf->GetY()."<br>";
             // if(!empty($list['state'])) {
             //     $list['state'] = $obj->encode_decode('decrypt',$list['state']);
             //     $pdf->SetY($start_y);

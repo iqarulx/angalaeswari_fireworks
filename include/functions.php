@@ -464,6 +464,13 @@
 			$list = $create_obj-> getContractorProductUnitId($contractor_id, $product_id, $unit_type);
 			return $list;
 		}
+		public function getContractorProductCooly($contractor_id, $product_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj-> getContractorProductCooly($contractor_id, $product_id);
+			return $list;
+		}
 		public function GetProductLinkedCount($product_id) {
 			$create_obj = "";
 			$create_obj = $this->creation_function_object();
